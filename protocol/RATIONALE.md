@@ -189,16 +189,25 @@ research-demo version.
 
 ## What the earlier RFC drafts got wrong
 
-Both prior drafts predate implementation. Three commitments did not survive
-contact:
+Both prior drafts predate implementation, and most of their analysis held up.
+Two things did not, and a third was never in view.
 
-- **Cross-org replication (RFC §1.3).** Buzz has none. `federat*` appears once
-  repo-wide, in a Helm README, unimplemented.
-- **A stock relay accepting new kinds.** It does not. Ingest allowlists kinds and
-  rejects unknown ones — including **ratified NIPs**. NIP-89 and NIP-22 both had
-  to be registered by hand.
-- **Ordering by `created_at`.** Insufficient at the resolution the protocol
-  actually operates at, as above.
+- **Cross-org replication (RFC 0.2 §1.3)** was correctly flagged as unbuilt in
+  Buzz by the comparison note, nominated as one of the most important original
+  problems — and then never worked on. `federat*` appears once repo-wide, in a
+  Helm README. This is a gap that was identified and left open, not an analysis
+  error.
+- **"Feature extension via new event kinds rather than schema entanglement"**
+  was listed as a reusable property of Buzz. It is not one. Ingest allowlists
+  kinds and rejects unknown ones — including **ratified NIPs**; NIP-89 and
+  NIP-22 both had to be registered by hand in Rust.
+- **Ordering by `created_at`** is insufficient at the resolution the protocol
+  actually operates at. Neither draft addressed ordering at all, which is fair —
+  it is not visible until you fold a real change stream.
+
+The full layer-by-layer reconciliation, including why the RFC's three-level
+Folder/File/Component structure collapsed to two levels in practice, is in
+[RFC-0.2-RECONCILIATION.md](RFC-0.2-RECONCILIATION.md).
 
 Multi-workspace remains the product goal and Stage 1 is single-workspace. Buzz
 is built for it — it resolves the community per request — but profiles do not

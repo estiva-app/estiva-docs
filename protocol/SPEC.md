@@ -1,9 +1,13 @@
 # Nostr for Business — Estiva Protocol, v1.0
 
 **Status:** Descriptive of a running system, 2026-08-18.
-**Supersedes:** NfB RFC 0.2 and the "Buzz architecture vs RFC-02" note, both of
-which were written before implementation. Where this document and those
-disagree, this one is right, because this one was measured.
+**Relationship to prior drafts:** NfB RFC 0.2 and the "Buzz architecture vs
+RFC 0.2" note both predate implementation. Neither is superseded wholesale —
+RFC 0.2 is still the product thesis and the note is still the build strategy.
+This document supersedes them **only on what is built and how it behaves**,
+because this one was measured. The layer-by-layer diff, including the two places
+the implementation diverged structurally, is in
+[RFC-0.2-RECONCILIATION.md](RFC-0.2-RECONCILIATION.md).
 
 The key words MUST, MUST NOT, SHOULD, SHOULD NOT and MAY are to be interpreted
 as in RFC 2119.

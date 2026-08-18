@@ -59,6 +59,7 @@ that layout (`../peek-app/...`), never as absolute paths.
 | Look up an event kind | [protocol/KINDS.md](protocol/KINDS.md) |
 | Add a *new* kind to the ecosystem | [protocol/ADDING-A-KIND.md](protocol/ADDING-A-KIND.md) |
 | Understand *why* the protocol is shaped this way | [protocol/RATIONALE.md](protocol/RATIONALE.md) |
+| See what became of RFC 0.2 | [protocol/RFC-0.2-RECONCILIATION.md](protocol/RFC-0.2-RECONCILIATION.md) |
 | Deploy, or debug production | [operations/PRODUCTION.md](operations/PRODUCTION.md) |
 | Know which docs in each repo are worth reading | [repos/](repos/) |
 
