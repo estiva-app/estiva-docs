@@ -1,0 +1,90 @@
+/**
+ * Which documents the site publishes, and how they are grouped in the sidebar.
+ *
+ * **Publication is opt-in, and that is the whole point of this file.** A doc
+ * added to the repo is NOT published until it is listed here. The alternative —
+ * publishing everything except a denylist — puts one forgotten entry between an
+ * internal runbook and the public internet, and the password is scheduled to be
+ * removed, so a mistake made now becomes permanent later rather than being
+ * caught then.
+ *
+ * The test for adding something: **would this still be fine to serve on the day
+ * the password comes off?** If the answer needs a caveat, leave it out.
+ *
+ * Deliberately absent, and not to be added without a decision:
+ *
+ *   operations/PRODUCTION.md      the box's address, its SSH accounts, deploy
+ *                                 commands, JWT lifetimes, the offboarding
+ *                                 levers. None of this belongs on a public host
+ *   operations/SILENT-FAILURES.md internal debugging lore naming container
+ *                                 names and paths on the box
+ *
+ * Both stay in the repo, which is where the people who need them already are.
+ */
+
+export const SITE = {
+  title: 'Estiva',
+  tagline: 'Nostr for Business',
+  /** Shown on every page while the site is gated. Set to null once it is public. */
+  banner: 'Pre-release documentation. Shared with invited readers while the protocol settles.',
+}
+
+export const NAV = [
+  {
+    section: 'Introduction',
+    items: [
+      { file: 'README.md', slug: 'index', title: 'Overview' },
+    ],
+  },
+  {
+    section: 'Protocol',
+    items: [
+      { file: 'protocol/SPEC.md', slug: 'spec', title: 'Specification' },
+      { file: 'protocol/KINDS.md', slug: 'kinds', title: 'Event kinds' },
+      { file: 'protocol/ADDING-A-KIND.md', slug: 'adding-a-kind', title: 'Adding a kind' },
+      { file: 'protocol/RATIONALE.md', slug: 'rationale', title: 'Rationale' },
+      { file: 'protocol/RFC-0.2-RECONCILIATION.md', slug: 'rfc-0-2', title: 'RFC 0.2 reconciliation' },
+    ],
+  },
+  {
+    section: 'Building on it',
+    items: [
+      { file: 'local-dev/RUNNING.md', slug: 'running', title: 'Running locally' },
+      { file: 'repos/README.md', slug: 'repos', title: 'The repositories' },
+    ],
+  },
+]
+
+/** Flat list, in sidebar order — drives prev/next and the search index. */
+export const PAGES = NAV.flatMap((s) => s.items.map((i) => ({ ...i, section: s.section })))
+
+/**
+ * Documents that exist in the repo and are deliberately NOT published.
+ *
+ * A link to one of these is rendered as plain text marked "internal" rather
+ * than as a dead link — the reader is told the document exists and that they
+ * need the repo, instead of clicking into a 404.
+ *
+ * Listing them here is also what makes the build's check meaningful: a link to
+ * anything in neither this list nor NAV is a mistake (a typo, or a new doc
+ * nobody decided about) and fails the build.
+ */
+export const INTERNAL = new Set([
+  'operations/PRODUCTION.md',
+  'operations/SILENT-FAILURES.md',
+  // The site's own runbook — it names the box, its SSH account and the pull
+  // token. Publishing the instructions for the gate alongside the gate would
+  // be its own kind of funny.
+  'deploy/README.md',
+])
+
+/**
+ * Maps a repo-relative markdown path to its published slug, so cross-document
+ * links keep working on the site.
+ *
+ * A link to a file that is NOT published must not silently 404. `build.mjs`
+ * turns those into plain text with a marker, and `check.mjs` fails the build if
+ * a published page links to an unpublished one — otherwise the split above
+ * leaks as a trail of dead links pointing at documents nobody outside can read.
+ */
+export const BY_FILE = new Map(PAGES.map((p) => [p.file, p]))

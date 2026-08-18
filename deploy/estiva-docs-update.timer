@@ -1,0 +1,12 @@
+[Unit]
+Description=Check for a new Estiva docs image every two minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=2min
+# Two minutes, matching the other three services. Docs change more often than
+# code and are cheap to redeploy, so there is no reason to be slower here.
+AccuracySec=30s
+
+[Install]
+WantedBy=timers.target

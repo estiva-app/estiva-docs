@@ -1,0 +1,14 @@
+{
+  "name": "estiva-docs",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node site/build.mjs",
+    "serve": "node site/build.mjs && node site/serve.mjs",
+    "check": "node site/check.mjs"
+  },
+  "dependencies": {
+    "markdown-it": "^14.1.0",
+    "markdown-it-anchor": "^9.2.0"
+  }
+}

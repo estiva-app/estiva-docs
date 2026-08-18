@@ -1,0 +1,22 @@
+# Estiva docs on the box. Lives at /opt/estiva-docs/docker-compose.yml.
+#
+# Bound to loopback like everything else here: `cloudflared` reaches it locally,
+# and binding wider would expose it past the Hetzner firewall.
+
+name: estiva-docs
+
+services:
+  estiva-docs:
+    image: ${ESTIVA_DOCS_IMAGE:-ghcr.io/estiva-app/estiva-docs:main}
+    restart: unless-stopped
+    # From /opt/estiva-docs/.env. The container refuses to start without
+    # DOCS_PASSWORD, so a missing file is a failed deploy rather than an
+    # accidentally public site.
+    env_file: .env
+    ports:
+      - '127.0.0.1:8083:80'
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'

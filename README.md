@@ -62,6 +62,25 @@ that layout (`../peek-app/...`), never as absolute paths.
 | See what became of RFC 0.2 | [protocol/RFC-0.2-RECONCILIATION.md](protocol/RFC-0.2-RECONCILIATION.md) |
 | Deploy, or debug production | [operations/PRODUCTION.md](operations/PRODUCTION.md) |
 | Know which docs in each repo are worth reading | [repos/](repos/) |
+| Publish or operate the docs site | [deploy/README.md](deploy/README.md) |
+
+## The docs site
+
+Part of this repo is published to **https://docs.estiva.app**, behind a shared
+password while the protocol settles.
+
+**Publication is opt-in.** `site/nav.mjs` lists what goes out; anything not
+listed stays in the repo, and `operations/` is not even copied into the image.
+The build fails if a published page links to an unpublished one, because that is
+the only way the split can go wrong quietly.
+
+```bash
+npm install && npm run serve      # preview at localhost:5195
+DOCS_PASSWORD=x npm run serve     # preview with the gate on
+```
+
+Before publishing anything new, ask the question the split was made against:
+**would this still be fine to serve on the day the password comes off?**
 
 ## For Claude
 
