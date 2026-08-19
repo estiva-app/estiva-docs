@@ -66,10 +66,10 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # NOTE: unlike ship and peek, this package must stay PRIVATE on GHCR. The
-      # image contains the documents themselves, so making it public would put
-      # the whole site behind `docker pull` regardless of the password. See the
-      # header comment in the Dockerfile.
+      # This package is PUBLIC on GHCR, like ship's and peek's, so the box needs
+      # no registry credentials. The consequence is that the password gates the
+      # website and not the content — see the header comment in the Dockerfile
+      # for why that is accepted, and what would invalidate it.
       - name: Build and push
         uses: docker/build-push-action@v6
         with:

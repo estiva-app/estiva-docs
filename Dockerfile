@@ -1,15 +1,24 @@
 # Estiva docs — production image.
 #
 # Static HTML behind nginx, served at the root of `docs.estiva.app`. Same shape
-# as Estiva Ship's image, with one deliberate difference: **this package stays
-# private on GHCR.**
+# as Estiva Ship's image, including a **public GHCR package** so the box needs
+# no registry credentials.
 #
-# The other three services publish their packages so the box needs no registry
-# credentials. That works because their images contain a bundle whose contents
-# are meant to be fetched by any browser anyway. This one contains the documents
-# themselves, so a public package would make the password decorative — anyone
-# who knows the package name could `docker pull` the whole site. The gate has to
-# cover the image as well as the origin, or it covers neither.
+# Be clear about what that means, because it is a decision and not an oversight:
+# this image contains the documents themselves, so **the password gates the
+# website, not the content.** Anyone who knows to try
+# `docker pull ghcr.io/estiva-app/estiva-docs:main` gets the whole site without
+# it.
+#
+# Accepted deliberately (2026-08-19): what is published here is the protocol
+# specification, which is intended to become public anyway. The gate exists
+# because the docs are unfinished, not because they are confidential, and
+# obscurity is a fair match for "not ready yet". The alternative — a private
+# package — costs a standing registry credential on the box, which the whole
+# deploy posture otherwise avoids.
+#
+# If something genuinely confidential is ever added to site/nav.mjs, this trade
+# stops being valid and the package has to go private. See deploy/README.md.
 
 FROM node:24-bookworm-slim AS build
 WORKDIR /app

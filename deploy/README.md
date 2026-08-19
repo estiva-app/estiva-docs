@@ -4,32 +4,38 @@ Target: `https://docs.estiva.app`, through the `estiva-prod` Cloudflare Tunnel,
 on the same box as everything else.
 
 Shape is identical to Estiva Ship's — CI builds an image, a systemd timer on the
-box pulls it every two minutes — with **two deliberate differences**, both
-because this image contains documents rather than an app bundle.
+box pulls it every two minutes — with **one deliberate difference**: the
+container refuses to start without a password.
 
 ---
 
-## The two differences from the other services
+## What the password does, and does not, cover
 
-### 1. The GHCR package stays private
+**It gates the website, not the content.**
 
-Ship, Peek and Estiva ID publish their packages so the box needs no registry
-credentials. That is the right call for them: their images hold a bundle any
-browser is meant to fetch anyway.
+The GHCR package is public, like ship's and peek's, so the box needs no registry
+credentials. But this image contains the documents themselves, which means
+anyone who knows to try `docker pull ghcr.io/estiva-app/estiva-docs:main` gets
+the whole site without ever meeting the password.
 
-**This image holds the documents.** A public package would let anyone who knows
-the name `docker pull ghcr.io/estiva-app/estiva-docs:main` and read the whole
-site, which makes the password decorative. The gate has to cover the image as
-well as the origin, or it covers neither.
+That was accepted on 2026-08-19, deliberately. What is published here is the
+protocol specification, which is intended to become public anyway; the gate
+exists because the docs are unfinished, not because they are confidential, and
+obscurity is a fair match for "not ready yet". The alternative — a private
+package — costs a standing registry credential on the box, which this deploy
+posture otherwise avoids entirely.
 
-The cost is one standing credential on the box — see step 3.
+**What would invalidate that trade:** anything genuinely confidential being
+added to `site/nav.mjs`. If that happens, the package must go private and the
+box needs a fine-grained PAT with `read:packages` only, scoped to `estiva-app`,
+plus a rotation reminder. Nothing else about this deploy changes.
 
-### 2. The container refuses to start without a password
+## The container refuses to start without a password
 
 `deploy/entrypoint.sh` exits rather than serving unauthenticated, and the
 healthcheck asserts an anonymous request gets **401**, not merely that nginx is
 answering. A dropped gate would otherwise report perfectly healthy while the
-docs were public, which is the one mistake here that cannot be taken back.
+site was open, which is the one mistake here that cannot be taken back.
 
 ---
 
@@ -56,28 +62,21 @@ Do **not** set `HTTP Host Header`.
 
 ### 2. Create the GitHub repo and push
 
-The repo does not exist on GitHub yet.
-
 ```bash
 gh repo create estiva-app/estiva-docs --private --source=. --remote=origin --push
 ```
 
-The first push runs the workflow and produces the image. **Leave the package
-private** — do not change its visibility the way ship's README instructs.
+The first push runs the workflow and produces the image.
 
-### 3. Give the box a read-only pull token
+### 3. Make the image pullable
 
-A fine-grained PAT with **`read:packages` only**, scoped to `estiva-app`, and
-nothing else. This is the one standing credential the private package costs.
+A new GHCR package is private by default even when created from a private repo:
 
-```bash
-ssh root@167.233.252.136
-echo '<token>' | docker login ghcr.io -u <github-username> --password-stdin
-```
+> GitHub → `estiva-app` → **Packages** → `estiva-docs` → **Package settings** →
+> **Change visibility** → Public.
 
-Rotate it on a calendar reminder. When it expires the symptom is
-`docker compose pull` failing with `denied`, and `update.sh` says so in the
-journal rather than silently serving the old image.
+The box then needs no registry credentials. Read the section above on what this
+costs before doing it.
 
 ### 4. Lay out the deploy directory
 
@@ -184,6 +183,10 @@ Not done here because you asked for a simple password, and this is one.
 **Rotate the password:** edit `.env`, then
 `docker compose up -d --force-recreate`. No rebuild — the credential is never in
 the image.
+
+**A rotation does not un-share what the old password reached.** The package is
+public, so anyone who pulled the image still has that copy of the docs. Rotating
+stops future website access, nothing more.
 
 **Roll back:** every build is tagged with its commit sha. Stop the timer first,
 or it will pull `main` over the rollback within two minutes.
