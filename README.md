@@ -67,7 +67,11 @@ that layout (`../peek-app/...`), never as absolute paths.
 ## The docs site
 
 Part of this repo is published to **https://docs.estiva.app**, behind a shared
-password while the protocol settles.
+password while the protocol settles. Live since 2026-08-19; ask Jan for the
+credentials.
+
+Pushing to `main` redeploys it within about two minutes — CI builds an image and
+a systemd timer on the box pulls it. Nothing connects inward to the server.
 
 **Publication is opt-in.** `site/nav.mjs` lists what goes out; anything not
 listed stays in the repo, and `operations/` is not even copied into the image.
