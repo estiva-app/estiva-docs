@@ -19,8 +19,14 @@ invisible until someone builds against the wrong one.
 
 **Buzz is the neutral protocol layer. Estiva is a vendor suite on top of it.**
 The apps interoperate through published Nostr events and NIP-89 manifests,
-exactly as a third party's app would — there is no shared database, no shared
-package, and no private channel between them.
+exactly as a third party's app would — there is no shared database and no
+private channel between them.
+
+They do share libraries for *speaking* the protocol — event construction,
+NIP-98 auth, the relay client. A second hand-written copy of an event-id hash
+is not duplication, it is a divergence the relay notices and we do not. What
+they never share is **interpretation**: how an app folds events into current
+state is where apps are supposed to differ. See [ROADMAP.md](ROADMAP.md).
 
 | Repo | What it is | Language |
 | --- | --- | --- |
@@ -29,8 +35,8 @@ package, and no private channel between them.
 | **peek** | Team communication — DMs, Topics, Huddles, Screener, Desk | React + Vite + Convex |
 | **ship** | A minimal issue tracker — projects, issues, comments | TypeScript, plain DOM |
 
-Peek and Ship are the proof: two apps, built separately, sharing no code and no
-database, working on the same objects in the same Folder.
+Peek and Ship are the proof: two apps, built separately, sharing no application
+code and no database, working on the same objects in the same Folder.
 
 ## Naming, and where things live
 
