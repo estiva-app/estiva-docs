@@ -76,6 +76,19 @@ export const INTERNAL = new Set([
   // token. Publishing the instructions for the gate alongside the gate would
   // be its own kind of funny.
   'deploy/README.md',
+  // A living plan: ticket refs, gate ordering, and the psql that verifies a
+  // re-seed. It changes weekly and would be stale on a public host within days.
+  'ROADMAP.md',
+  // The decision itself is stable and would be publishable; it is held back
+  // because it cites the roadmap and the ticket tracker throughout, and a
+  // decision record whose every reference is internal reads as half a document.
+  'decisions/0001-relay-canonical-by-default.md',
+  // Design debate rather than specification — written as a response to a
+  // proposal that is not restated, in the first person. The conclusion it
+  // reaches (documents use relay git) belongs in the spec if it is ever wanted
+  // publicly; this is the working out.
+  'protocol/FILES_ARCHITECTURE.md',
+  'protocol/nips/NIP-FC.md',
 ])
 
 /**
