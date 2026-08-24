@@ -160,7 +160,7 @@ Small, and deliberately so — per rule 2, the RFC's undecided parts produced no
 | **CRO-3** | conversation read state stays keyed on the channel, so the convention holds as written. Add one line reserving a *folder*-level context (`folder:<address>`) — NIP-RS blobs are grow-only, so a bad context id is effectively permanent | commented on the issue |
 | **PEE-6** | no change. One REQ per channel is still right. But build the manager keyed on **channel uuid**, never on a topic id, because later there are fewer channels each carrying several files' threads | commented on the issue |
 | **REW-10** *(new)* | comments become NIP-22 `kind:1111` instead of `kind:9`+`about`. Upstream plans the same kind, and our relay already accepts it — no gate | filed |
-| **REW-11** *(new)* | Ship's project record goes global with `buzz-channel`. **Fixes a live defect** — 13 of 65 production issues are unreachable because discovery runs through access-gated records | filed |
+| **REW-11** *(new)* | Ship's project record goes global with `buzz-channel`. Reader half landed; writer blocked on a Buzz change (see below). It was filed as fixing a live defect — 13 unreachable production issues — and **that turned out to be wrong**: the 13 are unreachable because their parent record was *deleted*, not gated. Still worth doing on its other merits | reader in review |
 | **CRO-11** | reinforced, not changed. RFC 0.3 §4.6 uses the app-private convention for folder follow-lists | none needed |
 | **DMS-\*** | unaffected. DM channels are orthogonal to folders | none needed |
 | **SHA-\*** | unaffected now. `@estiva/protocol` would carry folder kinds eventually, but not before they exist | none needed |
@@ -186,7 +186,7 @@ If §12.3 comes back badly the RFC needs rework **before** anyone reasons furthe
 
 **REW-11 makes Ship's project record global with a `buzz-channel` tag. That is structurally the same move as making a folder global with a channel reference.** Building it answers, empirically rather than on paper:
 
-- does global discovery actually fix the unreachable-record problem (13 of 65 issues today)?
+- ~~does global discovery actually fix the unreachable-record problem?~~ **No — measured 13 before, 13 after.** 12 of the 13 have a *deleted* parent record and 1 never had an `a` tag; every one sits in a folder the reader can already see. The right fix is discovering issues directly rather than through their parents, which is a different change
 - what breaks when a record's name becomes world-readable?
 - how does a fold cope with two shapes coexisting, given republishing is barred by the ±15 minute drift window?
 - how much work is it, really?
