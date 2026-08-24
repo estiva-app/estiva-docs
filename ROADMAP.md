@@ -171,16 +171,19 @@ Both new REW tickets are independently valuable and depend on nothing deferred. 
 
 The folder decision unblocks the most: folder implementation, Peek's `topic = channel` → `topic = file` migration, and the upstream NIP proposal all wait on it. It has two halves and they land in different places.
 
-### The cheap half — do it now
+### The cheap half — done, 2026-08-24
 
-Two verification questions gate whether the design is even valid. Both are relay probes, about an hour of work, blocked by nothing:
+Two verification questions gated whether the design was even valid. Both were probed against production; both came back clean, so the folder model needs no rework on their account.
 
-| question | why it matters |
+| question | answer |
 | --- | --- |
-| **RFC 0.3 §12.3** — does the relay's key rotate? | Topics are addressed as `39000:<relay-pubkey>:<channel-uuid>`. NIP-11 advertises `keys: [{ current: true, id: "relay-v1", … }]`, and a `current` flag with a versioned id implies rotation is designed for. **If it rotates, every folder's topic reference breaks** — and the "one tag type lists every file" property the model rests on goes with it. |
-| **RFC 0.3 §5.2** — is `39000`'s `d` exactly the channel uuid, and can a non-member read a *listed* channel's `39000`? | If not, listed folders cannot show their topics to non-members. |
+| **Does the relay's key rotate?** *(was RFC 0.3 §12.3, now [§5.3](protocol/RFC-0.3-FOLDERS.md))* | **No, and it is not designed to.** The `keys: [{ current: true, id: "relay-v1", … }]` that suggested otherwise is not relay identity — it sits inside NIP-11's `push` object and is the NIP-PL push-executor descriptor, whose `id` defaults to the literal string `relay-v1`. No rotation exists in the fork or in upstream's extra 625 commits, the key is bound once at boot, and three subsystems already depend on it being stable. Every relay-signed event on production, back to 2026-08-07, has one author. |
+| **Is `39000`'s `d` exactly the channel uuid, and can a non-member read a *listed* channel's `39000`?** *([§5.2](protocol/RFC-0.3-FOLDERS.md))* | **Yes and yes.** `d` is the `Uuid` verbatim; across all 50 production channels every `d` is a lowercase v4 uuid and every message `h` resolves to one. A reader that is a member of *nothing* reads all 50 `39000`s, because open visibility is a second route into the accessible set alongside membership. |
 
-If §12.3 comes back badly the RFC needs rework **before** anyone reasons further about it. That is a cheap way to de-risk a large decision, and it is the kind of thing that is much more expensive to discover after implementation starts.
+Two things the probes turned up that the RFC did not ask for, both recorded in §5.2:
+
+- **An open channel's member roster is world-readable** to any relay member — `39002` rides the same access rule as `39000`. A listed folder discloses who is in it, not only that it exists.
+- **The negative arm is unmeasured.** Production has no private channel a non-member could be refused, and constructing the case needs a second relay-member identity the suite does not provision. Private gating follows from the SQL, which is a read of the code rather than a measurement.
 
 ### The decision itself — end of the Ship rewrite, and REW-11 is the rehearsal
 
@@ -199,7 +202,7 @@ That is rule 3 applied: build the small version, then decide the big one. It cos
 
 ### What the decision then consists of
 
-1. Accept or amend RFC 0.3, with the §12.3 and §5.2 answers in hand and REW-11's experience behind it.
+1. Accept or amend RFC 0.3, with the §5.2 and §5.3 answers now in hand and REW-11's experience behind it.
 2. Decide RFC 0.3 §10.1 — upstream proposal or private fork implementation. Its own stated trigger is the first line of folder command/state code, so this is the same moment.
 3. Only then does folder implementation get tickets.
 
