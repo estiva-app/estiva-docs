@@ -1,14 +1,35 @@
-# Roadmap — five projects, sequenced
+# Roadmap — six projects, sequenced
 
-**Working reference. Living document.** The tickets in Estiva Ship are the source of truth for detail; this is the map between them — what depends on what, what can run in parallel, and what is still undecided.
+**Working reference. Living document.** The tickets in Estiva Ship are the source of truth for detail; this is the map between them — what depends on what, what can run in parallel, and what is deliberately still undecided.
 
-Last updated 2026-08-22. Not published to the docs site (`site/nav.mjs` is opt-in) because it changes often and carries operational detail.
+Last updated 2026-08-24. Not published to the docs site (`site/nav.mjs` is opt-in) because it changes often and carries operational detail.
 
 ---
 
+## How this document is meant to be used
+
+Three rules, and they are why this roadmap looks the way it does:
+
+1. **Aim for high-level architectural clarity.** Know the shape before building the parts. [ADR 0001](decisions/0001-relay-canonical-by-default.md) and [RFC 0.3](protocol/RFC-0.3-FOLDERS.md) exist for that.
+
+2. **Do not force a decision that does not need making yet.** Where something is risky or genuinely unclear, name it, name the *latest responsible moment* to decide, and move on. A deferred decision with a trigger is a plan. A guessed decision is debt with interest.
+
+3. **Learn as you go, and fold what you learn back into the architecture.** This is not optional tidying — it is where the architecture comes from. Every substantial finding in this programme came from having built the previous piece, not from planning harder:
+
+   | built | taught us |
+   | --- | --- |
+   | Peek's relay interop | there is no polling at all, and the projection is where the bugs live |
+   | Ship's agent CLI | two copies of one fold drift silently (PEEK-165) |
+   | Ship's tracker | change events solve multi-writer, which upstream calls a non-goal |
+   | reading Buzz upstream | Projects ≈ Folders, and NIP-22 already does cross-app comments |
+
+   So: no waterfall. Each project is expected to change this document, and the *first* thing to do when one finishes is say what it taught.
+
+**What this means in practice for anything unfiled:** if a piece of work needs a decision we have deliberately deferred, it does not get tickets yet. Filing implementation tickets against an undecided design produces a backlog that looks like progress and is not.
+
 ## State
 
-**48 tickets across five projects.** Nothing started.
+**58 tickets across six projects.** Nothing started.
 
 | Project | Tickets | What it is |
 | --- | --- | --- |
@@ -16,11 +37,17 @@ Last updated 2026-08-22. Not published to the docs site (`site/nav.mjs` is opt-i
 | Cross-app read state | CRO-1…11 | Read/unread becomes a property of the person, not the app. Read it in Ship, it is read in Peek. |
 | DMs on Nostr (DM channels) | DMS-1…11 | Move Peek's DMs off Convex and onto the relay. |
 | Shared foundation packages | SHA-1…6 | Four packages plus a scaffold, so app four is cheap. |
-| Rewrite Ship with shared foundation | REW-1…9 | Ship on React/Vite/Tailwind, and the second consumer that makes the packages extractable. |
+| Rewrite Ship with shared foundation | REW-1…11 | Ship on React/Vite/Tailwind, and the second consumer that makes the packages extractable. |
+| Catch up the Buzz fork | CAT-1…8 | 625 commits behind upstream. The survey is cheap; the deploy is not. |
 
-The architectural decisions underneath are recorded in
-[`decisions/0001-relay-canonical-by-default.md`](decisions/0001-relay-canonical-by-default.md).
-Read that first if you are picking this up cold.
+Two architecture documents sit under all of it. Read both if you are picking this up cold:
+
+| document | what it settles |
+| --- | --- |
+| [ADR 0001](decisions/0001-relay-canonical-by-default.md) | **accepted** — relay-canonical by default; a database is a per-feature exception; Estiva ID excluded |
+| [RFC 0.3](protocol/RFC-0.3-FOLDERS.md) | **draft** — Folders, Files, Components, Conversations. Resolves the huddle model. Two decisions inside it are deliberately deferred |
+
+RFC 0.3 is a *draft*, and per rule 2 above nothing is filed against its undecided parts. What it changes about already-filed work is in §"RFC 0.3 implications" below.
 
 ---
 
@@ -53,7 +80,7 @@ Where the foundation packages live and how they publish. Contains decisions that
 
 ---
 
-## Start now — seven tickets, no gate
+## Start now — ten tickets, no gate
 
 | ticket | note |
 | --- | --- |
@@ -62,12 +89,14 @@ Where the foundation packages live and how they publish. Contains decisions that
 | **CRO-11** | The app-private storage convention (`kind:30078`). A document. |
 | **SHA-1** | Gate 2. |
 | **REW-1** | Can begin the scaffold immediately; needs SHA-1 before it consumes packages. |
+| **REW-11** | **Pulled forward out of the rewrite.** Its changes live in `src/events.ts`, `src/store.ts` and `src/fold.ts` — the shared code REW-1 explicitly says not to move — so it needs no React and can be done in the current vanilla-DOM app. It fixes a live defect *and* rehearses the folder decision. See §"Finishing the Folder decision". |
+| **CAT-1, CAT-2, CAT-3** | The catch-up survey. Read-only, nothing merged, nothing deployed. CAT-3 answers whether an upstream deploy would break production data, which is the gate for the rest of that project. |
 
 Meanwhile, prepare the Gate 1 release.
 
 ---
 
-## The five tracks
+## The six tracks
 
 ```
 Gate 1 (Estiva ID) ──┬─> A. Peek real-time   PEE-5 → 6 → 7 → 8 → 9,10 → 11
@@ -77,9 +106,14 @@ Gate 1 (Estiva ID) ──┬─> A. Peek real-time   PEE-5 → 6 → 7 → 8 →
 Gate 2 (SHA-1) ──────┬─> D. Foundation       SHA-2, SHA-3, SHA-6
                      └─> E. Ship rewrite     REW-2 → 3,4,5 → 6,7 → 8 → 9
                                              (SHA-4 lands in REW-2, SHA-5 in REW-3)
+
+no gate ─────────────┬─> F. Buzz catch-up    CAT-1,2,3 → CAT-4 → 5 → 6 → 7 → 8
+                     └─> REW-10, REW-11      independent of the rewrite (see Start now)
 ```
 
-A, B, C, D and E touch different code and share no gate beyond the two above. They can run concurrently with different people.
+A through F touch different code and share no gate beyond the two above. They can run concurrently with different people.
+
+**Track F is deliberately two-speed.** CAT-1/2/3 are read-only and should happen soon. CAT-4 onward waits for a reason — deploying 625 commits of relay change against the database Peek and Ship both depend on is not something to do because the number is annoying. CAT-3's answer is what makes that trigger legible.
 
 ### The programme splits cleanly in two
 
@@ -117,13 +151,73 @@ The second is longer in wall-clock terms and has the most sequential UI work. Th
 
 ---
 
+## RFC 0.3 implications for filed work
+
+Small, and deliberately so — per rule 2, the RFC's undecided parts produced no tickets.
+
+| ticket | effect | status |
+| --- | --- | --- |
+| **CRO-3** | conversation read state stays keyed on the channel, so the convention holds as written. Add one line reserving a *folder*-level context (`folder:<address>`) — NIP-RS blobs are grow-only, so a bad context id is effectively permanent | commented on the issue |
+| **PEE-6** | no change. One REQ per channel is still right. But build the manager keyed on **channel uuid**, never on a topic id, because later there are fewer channels each carrying several files' threads | commented on the issue |
+| **REW-10** *(new)* | comments become NIP-22 `kind:1111` instead of `kind:9`+`about`. Upstream plans the same kind, and our relay already accepts it — no gate | filed |
+| **REW-11** *(new)* | Ship's project record goes global with `buzz-channel`. **Fixes a live defect** — 13 of 65 production issues are unreachable because discovery runs through access-gated records | filed |
+| **CRO-11** | reinforced, not changed. RFC 0.3 §4.6 uses the app-private convention for folder follow-lists | none needed |
+| **DMS-\*** | unaffected. DM channels are orthogonal to folders | none needed |
+| **SHA-\*** | unaffected now. `@estiva/protocol` would carry folder kinds eventually, but not before they exist | none needed |
+
+Both new REW tickets are independently valuable and depend on nothing deferred. REW-11 in particular is worth doing for the bug alone.
+
+## Finishing the Folder decision
+
+The folder decision unblocks the most: folder implementation, Peek's `topic = channel` → `topic = file` migration, and the upstream NIP proposal all wait on it. It has two halves and they land in different places.
+
+### The cheap half — do it now
+
+Two verification questions gate whether the design is even valid. Both are relay probes, about an hour of work, blocked by nothing:
+
+| question | why it matters |
+| --- | --- |
+| **RFC 0.3 §12.3** — does the relay's key rotate? | Topics are addressed as `39000:<relay-pubkey>:<channel-uuid>`. NIP-11 advertises `keys: [{ current: true, id: "relay-v1", … }]`, and a `current` flag with a versioned id implies rotation is designed for. **If it rotates, every folder's topic reference breaks** — and the "one tag type lists every file" property the model rests on goes with it. |
+| **RFC 0.3 §5.2** — is `39000`'s `d` exactly the channel uuid, and can a non-member read a *listed* channel's `39000`? | If not, listed folders cannot show their topics to non-members. |
+
+If §12.3 comes back badly the RFC needs rework **before** anyone reasons further about it. That is a cheap way to de-risk a large decision, and it is the kind of thing that is much more expensive to discover after implementation starts.
+
+### The decision itself — end of the Ship rewrite, and REW-11 is the rehearsal
+
+**REW-11 makes Ship's project record global with a `buzz-channel` tag. That is structurally the same move as making a folder global with a channel reference.** Building it answers, empirically rather than on paper:
+
+- does global discovery actually fix the unreachable-record problem (13 of 65 issues today)?
+- what breaks when a record's name becomes world-readable?
+- how does a fold cope with two shapes coexisting, given republishing is barred by the ±15 minute drift window?
+- how much work is it, really?
+
+That is rule 3 applied: build the small version, then decide the big one. It costs nothing extra — REW-11 was already filed to fix the bug.
+
+**So REW-11 is pulled forward** (see Start now). It needs no React and lives entirely in code the rewrite does not touch, so it can be done today in the current app. Doing so moves the folder decision months earlier than the second critical path would otherwise allow.
+
+**REW-10 is in the same position** — `kind:1111` comments also change only `src/`. It is not a rehearsal for anything, so there is less reason to hurry it, but nothing stops it either.
+
+### What the decision then consists of
+
+1. Accept or amend RFC 0.3, with the §12.3 and §5.2 answers in hand and REW-11's experience behind it.
+2. Decide RFC 0.3 §10.1 — upstream proposal or private fork implementation. Its own stated trigger is the first line of folder command/state code, so this is the same moment.
+3. Only then does folder implementation get tickets.
+
 ## Open items
 
-### Not filed
+### Not filed, and why
 
-1. **Huddles.** Deliberately parked — the concept is still an experiment. The findings are worth keeping: Buzz's "huddle" is a live audio room (Opus frames, ephemeral Redis-only channel, kinds 48100–48103 are call lifecycle) while Peek's is a persistent membership-scoped sub-conversation with stored messages and a `resolved` lifecycle. The right mapping is an ordinary private Buzz **channel** — `channel_type` is an unvalidated free string, and `ChannelRecord` already has `ttl_deadline`, `topic`, `purpose` and `canvas`. The one missing primitive is an **anchor**: channels are flat, so "this private space is about that issue/topic/document" has nowhere to live. Precedent exists in `huddle_started_content_links`. Two things to decide before any code: the **name collision** with Buzz's own huddle kinds, and **DM promotion**, which crosses an encryption boundary rather than re-parenting.
-2. **The Convex working rule**, as a line in `peek-app/CLAUDE.md` beside the existing data-access-seam rule — which has actually held, unlike most documented intentions:
-   > Convex may never be the source of truth for something the relay owns, and never the only home for something a person would reasonably expect to own.
+Per rule 2, these are held deliberately rather than forgotten.
+
+| work | why not yet | what unblocks it |
+| --- | --- | --- |
+| **Folder implementation** (RFC 0.3 §4) | the RFC is a draft, kind numbers are deliberately unassigned, and the upstream-versus-fork decision is deferred | RFC 0.3 accepted + §10.1 decided |
+| **The upstream NIP proposal** (RFC 0.3 §10.1/10.2) | deferred on purpose — hard to reason about now, easier after Ship's rewrite and after we see whether upstream ships their forge layer | reaching the first line of folder command/state code, which is the latest responsible moment |
+| **Peek's `topic = channel` → `topic = file` migration** (RFC 0.3 §11.1) | depends on folders existing. Plausibly larger than the Ship rewrite | folders shipped; sequence after the Ship rewrite has proven the shared foundation |
+| **Component anchoring** (RFC 0.3 §6) | the least settled part of the RFC — needs a real editor to choose against | Leaf existing enough to test one option |
+| ~~Buzz upstream catch-up~~ | **now filed** as CAT-1…8. Two-speed: the survey is read-only and should happen soon; the merge and deploy wait for CAT-3's answer | — |
+
+Two items that *were* here are now filed: the Ship rewrite (REW-1…11) and the Buzz catch-up (CAT-1…8). The folder decision has its own section above rather than a row here, because it is the one that unblocks the most.
 
 ### Documents
 
@@ -158,7 +252,7 @@ Worth knowing which claims in the tickets are observations rather than inference
 
 ---
 
-## Appendix — all 48 tickets
+## Appendix — all 58 tickets
 
 **Peek: Real-time Ship→Peek updates** — PEE-1 topic refetch · PEE-2 project panel re-resolve · PEE-3 profile cache TTL · PEE-4 grant 22242 · PEE-5 WS client + NIP-42 · PEE-6 per-channel subscriptions · PEE-7 route events into the projection · PEE-8 wire useTopicView · PEE-9 connection state · PEE-10 surface read failures · PEE-11 subscribe outside topics
 
@@ -168,4 +262,6 @@ Worth knowing which claims in the tickets are observations rather than inference
 
 **Shared foundation packages** — SHA-1 registry decision · SHA-2 PWA package · SHA-3 `@estiva/protocol` · SHA-4 `@estiva/identity` · SHA-5 `@estiva/ui` · SHA-6 scaffold with no backend
 
-**Rewrite Ship with shared foundation** — REW-1 shape and scaffold · REW-2 auth via `@estiva/identity` · REW-3 projects views · REW-4 issue views · REW-5 writes · REW-6 keep the poll · REW-7 parity checklist · REW-8 cut over · REW-9 remove the old app
+**Rewrite Ship with shared foundation** — REW-1 shape and scaffold · REW-2 auth via `@estiva/identity` · REW-3 projects views · REW-4 issue views · REW-5 writes · REW-6 keep the poll · REW-7 parity checklist · REW-8 cut over · REW-9 remove the old app · REW-10 NIP-22 comments · REW-11 global project record
+
+**Catch up the Buzz fork** — CAT-1 survey the gap · CAT-2 collisions and conflict surface · CAT-3 migration audit · CAT-4 merge into `nfb-demo-kinds` · CAT-5 probe the kinds · CAT-6 rehearse migrations on a throwaway · CAT-7 deploy and verify by image id · CAT-8 exercise Peek, Ship and the agent
