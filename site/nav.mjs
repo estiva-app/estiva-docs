@@ -89,6 +89,9 @@ export const INTERNAL = new Set([
   // publicly; this is the working out.
   'protocol/FILES_ARCHITECTURE.md',
   'protocol/nips/NIP-FC.md',
+  // Draft design, explicitly not accepted, and it cites ticket ids throughout.
+  // Publish only once it is settled and the internal references are gone.
+  'protocol/RFC-0.3-FOLDERS.md',
 ])
 
 /**
