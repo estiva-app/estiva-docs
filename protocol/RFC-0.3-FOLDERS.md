@@ -88,7 +88,11 @@ Three of the four required properties are **impossible** if the folder state car
 | "follow / unfollow a folder" | a stable address to point a follow-list at | **no** |
 | "access permissions, core team" | channel access | yes — the one thing `h` does well |
 
-So the channel stays and keeps doing access and conversation; the folder becomes a layer above it. This also removes a live defect: Ship loses issues whose project record is unreachable — 13 of 65 in production — precisely because discovery runs through access-gated records.
+So the channel stays and keeps doing access and conversation; the folder becomes a layer above it.
+
+**A claim that was here and is not true, corrected rather than deleted.** This section used to say the change "removes a live defect: Ship loses issues whose project record is unreachable — 13 of 65 in production — precisely because discovery runs through access-gated records." Building REW-11 measured those issues one at a time, and **none of them is caused by access gating**: 12 have a parent project record that was *deleted* and resolves by no query at all, and 1 never carried an `a` tag. All of them sit in folders the reader can already see. Global discovery takes the count from 13 to 13.
+
+The argument above is unaffected — it rests on the four properties, not on that defect. What the correction costs is the evidence, and the lesson is worth more than the sentence was: **the workspace this was measured on has no private channel at all.** All 50 of production's channels are `open` (§5.2), so discovery-through-access-gating is a failure mode Estiva has not yet had. It is a real one, and the first private Folder will produce it. It was simply not what was happening to these thirteen.
 
 #### Why visibility cannot then be a tag
 
@@ -311,6 +315,12 @@ Two paths. Propose this as a NIP to Buzz, or implement it privately in the fork.
 1. ~~**Answer §5.2 and §12.3.**~~ **Done, 2026-08-24.** Both came back clean: the `d` is exactly the channel uuid, a non-member does read an open channel's `39000`, and the relay's signing key does not rotate — §12.3's evidence for rotation was a misread NIP-11 field. §5.2 and §5.3 carry the answers, and the topic-addressing model stands as written.
 2. **Build REW-11** — Ship's project record going global with a `buzz-channel` tag. That is structurally the same move as making a folder global, so it is a **rehearsal for this decision** run at one-tenth the scale, on a ticket that was already justified by a bug. It answers empirically whether global discovery fixes unreachable records, what breaks when a name becomes world-readable, and how a fold copes with two shapes coexisting. REW-11 needs no part of the Ship rewrite and can be done today.
 3. **Watch whether upstream ships `kind:1621` issues.** Their forge layer is `"📋 Designed"`; if it ships, its shape is data for this decision.
+
+**What item 2 taught, 2026-08-24.** REW-11's reader half is built and the four answers are on the issue. Three of them bear on the choice above:
+
+- **The relay is on the critical path, and its ingest gates are invisible from the app.** Buzz refuses a `kind:30850` with no `h` — `KIND_LL_PROJECT` sits in `requires_h_channel_scope` — and refuses it as `200 {"accepted": false, …}` rather than an error. That is one line to change for a project record. It will *not* be one line for folder command and state kinds. This is the concrete form of the fourth bullet above: **read the ingest path, do not estimate it, and read it before the client work rather than after.**
+- **The reader must land before the writer, as its own change.** No migration is available — a replaceable event is rewritable only by its author, and rewriting stamps a `created_at` the relay will not backdate — so the two wire shapes coexist permanently. A folder model inherits that property with more at stake, and §4.2's stub/detail pair doubles it.
+- **Measure the defect a design change is justified by, before the change.** REW-11's was measured after, and it did not say what the ticket assumed. See §4.2.
 
 ### 10.2 If it does go upstream, the list
 
