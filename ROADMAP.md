@@ -89,7 +89,7 @@ Where the foundation packages live and how they publish. Contains decisions that
 | **CRO-11** | The app-private storage convention (`kind:30078`). A document. |
 | **SHA-1** | Gate 2. |
 | **REW-1** | Can begin the scaffold immediately; needs SHA-1 before it consumes packages. |
-| **REW-11** | **Pulled forward out of the rewrite.** Its changes live in `src/events.ts`, `src/store.ts` and `src/fold.ts` — the shared code REW-1 explicitly says not to move — so it needs no React and can be done in the current vanilla-DOM app. It fixes a live defect *and* rehearses the folder decision. See §"Finishing the Folder decision". |
+| ~~**REW-11**~~ | **Done, 2026-08-24**, with CAT-9 (the relay change it needed) and SHI-7 (the defect it turned out not to fix). See §"Finishing the Folder decision". |
 | **CAT-1, CAT-2, CAT-3** | The catch-up survey. Read-only, nothing merged, nothing deployed. CAT-3 answers whether an upstream deploy would break production data, which is the gate for the rest of that project. |
 
 Meanwhile, prepare the Gate 1 release.
@@ -160,7 +160,9 @@ Small, and deliberately so — per rule 2, the RFC's undecided parts produced no
 | **CRO-3** | conversation read state stays keyed on the channel, so the convention holds as written. Add one line reserving a *folder*-level context (`folder:<address>`) — NIP-RS blobs are grow-only, so a bad context id is effectively permanent | commented on the issue |
 | **PEE-6** | no change. One REQ per channel is still right. But build the manager keyed on **channel uuid**, never on a topic id, because later there are fewer channels each carrying several files' threads | commented on the issue |
 | **REW-10** *(new)* | comments become NIP-22 `kind:1111` instead of `kind:9`+`about`. Upstream plans the same kind, and our relay already accepts it — no gate | filed |
-| **REW-11** *(new)* | Ship's project record goes global with `buzz-channel`. Reader half landed; writer blocked on a Buzz change (see below). It was filed as fixing a live defect — 13 unreachable production issues — and **that turned out to be wrong**: the 13 are unreachable because their parent record was *deleted*, not gated. Still worth doing on its other merits | reader in review |
+| **REW-11** | **Done.** Ship's project record is global, carrying `buzz-channel`, `name` and `description`. Verified against production: served by an unscoped `kinds` query, *not* by an `#h` query for its own channel, while its issues still are. It was filed as fixing 13 unreachable issues and **that was wrong** — see SHI-7 | done |
+| **CAT-9** *(new)* | The relay change REW-11 needed: `KIND_LL_PROJECT` out of `requires_h_channel_scope`, so a project record may omit `h`. One line, plus a manual deploy | done |
+| **SHI-7** *(new)* | The actual fix for the 13: discover `kind:30851` directly instead of only through parents, **and** widen into each issue's own Folder so its changes come with it. Coverage 13 → 0 | in review |
 | **CRO-11** | reinforced, not changed. RFC 0.3 §4.6 uses the app-private convention for folder follow-lists | none needed |
 | **DMS-\*** | unaffected. DM channels are orthogonal to folders | none needed |
 | **SHA-\*** | unaffected now. `@estiva/protocol` would carry folder kinds eventually, but not before they exist | none needed |
@@ -185,24 +187,24 @@ Two things the probes turned up that the RFC did not ask for, both recorded in �
 - **An open channel's member roster is world-readable** to any relay member — `39002` rides the same access rule as `39000`. A listed folder discloses who is in it, not only that it exists.
 - **The negative arm is unmeasured.** Production has no private channel a non-member could be refused, and constructing the case needs a second relay-member identity the suite does not provision. Private gating follows from the SQL, which is a read of the code rather than a measurement.
 
-### The decision itself — end of the Ship rewrite, and REW-11 is the rehearsal
+### The rehearsal is done — 2026-08-24
 
-**REW-11 makes Ship's project record global with a `buzz-channel` tag. That is structurally the same move as making a folder global with a channel reference.** Building it answers, empirically rather than on paper:
+**REW-11 made Ship's project record global with a `buzz-channel` tag, which is structurally the same move as making a folder global with a channel reference.** It is finished and verified against production, so the four questions it was pulled forward to answer have answers rather than arguments:
 
-- ~~does global discovery actually fix the unreachable-record problem?~~ **No — measured 13 before, 13 after.** 12 of the 13 have a *deleted* parent record and 1 never had an `a` tag; every one sits in a folder the reader can already see. The right fix is discovering issues directly rather than through their parents, which is a different change
-- what breaks when a record's name becomes world-readable?
-- how does a fold cope with two shapes coexisting, given republishing is barred by the ±15 minute drift window?
-- how much work is it, really?
+| question | answer |
+| --- | --- |
+| does global discovery fix the unreachable-record problem? | **No — 13 before, 13 after.** 12 had a *deleted* parent record, 1 never had an `a` tag, all 13 sat in folders the reader could already see. The real fix was discovering issues directly (SHI-7), which took coverage to **0 of 97** |
+| what breaks when a record's name becomes world-readable? | Nothing mechanically, and the exposure is narrower than it looked — an open channel's member roster was *already* world-readable on the same rule. Two things broke **silently**: a lookup keyed on the channel tag reported "no access" for a global record, and the read-one-container methods stopped seeing it. Both are RFC 0.3 §4.2 material now |
+| how does a fold cope with two shapes coexisting? | Three fallbacks, not one, because the tags move independently. `h` beats `buzz-channel` when both are present; an empty `description` tag beats leftover `.content`. Conformance passing with the fixture untouched is the evidence it costs nothing |
+| how much work is it, really? | The client change was half a day and four files. **The relay change was one line and took longer to land than the whole client change** — merge, image build, and a manual deploy the relay has no timer for |
 
-That is rule 3 applied: build the small version, then decide the big one. It costs nothing extra — REW-11 was already filed to fix the bug.
-
-**So REW-11 is pulled forward** (see Start now). It needs no React and lives entirely in code the rewrite does not touch, so it can be done today in the current app. Doing so moves the folder decision months earlier than the second critical path would otherwise allow.
+That is rule 3 applied and paid off: the small version was built, and it moved two claims from "argued" to "measured" and produced two failure shapes nobody had predicted.
 
 **REW-10 is in the same position** — `kind:1111` comments also change only `src/`. It is not a rehearsal for anything, so there is less reason to hurry it, but nothing stops it either.
 
 ### What the decision then consists of
 
-1. Accept or amend RFC 0.3, with the §5.2 and §5.3 answers now in hand and REW-11's experience behind it.
+1. Accept or amend RFC 0.3, with the §5.2 and §5.3 answers in hand, REW-11 built and its two new failure shapes written into §4.2.
 2. Decide RFC 0.3 §10.1 — upstream proposal or private fork implementation. Its own stated trigger is the first line of folder command/state code, so this is the same moment.
 3. Only then does folder implementation get tickets.
 

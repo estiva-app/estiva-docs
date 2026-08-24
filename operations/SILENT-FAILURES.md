@@ -26,6 +26,7 @@ Postgres row, `origin/main`, the bytes.
 | `/sign` returns, the app renders the change | The kind is not in the app's `allowed_kinds`; `/sign` refused with `kind_not_allowed` on a console line nobody was watching | Read `app_credentials` in Postgres |
 | Signing succeeded, publish failed | The relay's kind allowlist rejects at ingest — *after* signing | `npm run probe` in `~/estiva-ship` |
 | `HTTP 200` from `POST /events` | `{"accepted":false,"message":"duplicate: …"}`. **The status code is not the answer** | Read the `accepted` field |
+| The kind is registered and `/sign` signed it, and the relay still says no | A *second* list. `requires_h_channel_scope` (`ingest.rs`) names kinds that must carry an `h`; being on the kind allowlist says nothing about it. Also a `200` with `accepted:false` | Publish the exact shape and read `accepted` |
 | Old messages never appear on the relay | The relay rejects `created_at` outside ~±15 min of its clock | Send a new message |
 | Profile edits reach nobody | `RELAY_BRIDGE_URL` empty → publishing off. `COMMUNITY_HOST` mismatched → Buzz **silently discards** the `kind:0` | `estiva-doctor.sh` |
 | Every relay request fails after the app loads fine | The relay does not name the app's origin in `BUZZ_CORS_ORIGINS` | Check `/opt/buzz/.env`, restart the relay |
@@ -37,6 +38,7 @@ Postgres row, `origin/main`, the bytes.
 | Deploy log says `seeded N app credential(s)` | `update.sh` runs `migrate`, never `seed`. A seed-only change ships into the image and does nothing |
 | Re-seed ran and exited 0 | It ran **before** the new image was pulled, wrote the old values back, and exited 0. Order is **merge → wait for the pull → re-seed → verify** |
 | Relay is healthy | Buzz has **no update timer**. A healthy relay serving last month's image is exactly what this produces. Compare the running image id to `:nfb`, not health |
+| The relay-image CI run is green | The image exists in the registry; nothing pulled it. A probe run seconds after a successful build still got the pre-change behaviour. **A build is not a deploy** — the only check that separates them from outside the box is publishing the shape and reading `accepted` |
 | PR reports **merged**, content never reached `main` | It was stacked on a branch that merged first, so the merge landed in a branch nothing feeds from. Never stack on a branch about to merge |
 
 ## Reading logs and state

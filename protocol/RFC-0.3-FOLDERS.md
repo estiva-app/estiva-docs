@@ -94,6 +94,14 @@ So the channel stays and keeps doing access and conversation; the folder becomes
 
 The argument above is unaffected — it rests on the four properties, not on that defect. What the correction costs is the evidence, and the lesson is worth more than the sentence was: **the workspace this was measured on has no private channel at all.** All 50 of production's channels are `open` (§5.2), so discovery-through-access-gating is a failure mode Estiva has not yet had. It is a real one, and the first private Folder will produce it. It was simply not what was happening to these thirteen.
 
+#### Two failure shapes the rehearsal found, both of which this model repeats
+
+Two of the things REW-11 and SHI-7 cost on Ship are not Ship-specific. They are what happens whenever a container's *description* stops living inside the container — which is exactly what §4.2 proposes, one level up:
+
+**1. Discovering children only through their parent loses them when the parent goes.** Ship reached an issue only by widening from its project, so 13 of 97 became unreachable when their projects were deleted. **A folder is one level up from the same shape.** A folder lists its contents; a client that resolves files only by walking folders loses every file whose folder was deleted, went private, or was never followed — and §5.1's "one home, many references" makes it worse, because a file's *home* folder is the one most likely to be walked and the reference folders are not. Any folder client needs a direct `authors`/`kinds` route to a file as well as the folder route. Ship's fix was one extra unscoped filter; designing it in costs nothing and retrofitting it cost a ticket.
+
+**2. A global container's address is no longer its location, and code that conflates the two fails as a permission error.** Ship's `resolveObject` found the project record, looked for the `h` it had always had, found none, and returned "not found" — which the UI reported as *"you may not have access to its Folder."* A lie, about the record type most likely to be public. Every read path that answers "which channel is this in?" has to answer "none, and that is legal" once a container is global, and the ones that get it wrong will say **access denied** rather than crashing. Grep for the channel tag before implementing folders, not after.
+
 #### Why visibility cannot then be a tag
 
 A tag cannot hide anything on a global event. `buzz-visibility: private` on a world-readable event still exposes the folder's name, description and the addresses of everything in it — which for "Employees evaluation" leaks precisely the sensitive part.
@@ -313,14 +321,16 @@ Two paths. Propose this as a NIP to Buzz, or implement it privately in the fork.
 **What to do meanwhile, cheaply.** Three things, none of which commits to either path:
 
 1. ~~**Answer §5.2 and §12.3.**~~ **Done, 2026-08-24.** Both came back clean: the `d` is exactly the channel uuid, a non-member does read an open channel's `39000`, and the relay's signing key does not rotate — §12.3's evidence for rotation was a misread NIP-11 field. §5.2 and §5.3 carry the answers, and the topic-addressing model stands as written.
-2. **Build REW-11** — Ship's project record going global with a `buzz-channel` tag. That is structurally the same move as making a folder global, so it is a **rehearsal for this decision** run at one-tenth the scale, on a ticket that was already justified by a bug. It answers empirically whether global discovery fixes unreachable records, what breaks when a name becomes world-readable, and how a fold copes with two shapes coexisting. REW-11 needs no part of the Ship rewrite and can be done today.
+2. ~~**Build REW-11**~~ — **done, 2026-08-24**, along with the relay change it needed (CAT-9) and the discovery fix it turned out *not* to be (SHI-7). See below.
 3. **Watch whether upstream ships `kind:1621` issues.** Their forge layer is `"📋 Designed"`; if it ships, its shape is data for this decision.
 
-**What item 2 taught, 2026-08-24.** REW-11's reader half is built and the four answers are on the issue. Three of them bear on the choice above:
+**What item 2 taught, 2026-08-24.** REW-11 is complete — reader, relay change and writer — and verified against production: the record is served by an unscoped `kinds` query and **not** by an `#h` query for its own channel, while its issues still are. §4.2's central claim now has a working instance behind it at one-tenth the scale. Five things bear on the choice above:
 
 - **The relay is on the critical path, and its ingest gates are invisible from the app.** Buzz refuses a `kind:30850` with no `h` — `KIND_LL_PROJECT` sits in `requires_h_channel_scope` — and refuses it as `200 {"accepted": false, …}` rather than an error. That is one line to change for a project record. It will *not* be one line for folder command and state kinds. This is the concrete form of the fourth bullet above: **read the ingest path, do not estimate it, and read it before the client work rather than after.**
 - **The reader must land before the writer, as its own change.** No migration is available — a replaceable event is rewritable only by its author, and rewriting stamps a `created_at` the relay will not backdate — so the two wire shapes coexist permanently. A folder model inherits that property with more at stake, and §4.2's stub/detail pair doubles it.
 - **Measure the defect a design change is justified by, before the change.** REW-11's was measured after, and it did not say what the ticket assumed. See §4.2.
+- **A Buzz change is cheap to write and expensive to land.** CAT-9 was one line and a test. Merging it, building the image and deploying took longer than the entire client change, because the relay has no update timer and **a green image build is not a deploy** — a probe run straight after the build still got the old refusal. Whatever the folder work costs in Rust, add a deploy that only a behavioural check can confirm.
+- **The relay refuses in a shape that reads as success.** `200 {"accepted": false, …}`. Every gate this touched answered 200. Any folder command or state kind will be gated the same way, so the acceptance criteria for folder work must name the `accepted` field, not the status code.
 
 ### 10.2 If it does go upstream, the list
 
