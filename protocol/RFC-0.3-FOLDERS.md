@@ -2,6 +2,8 @@
 
 **Status: draft, not accepted.** Written 2026-08-23, revised 2026-08-24. Kind numbers are deliberately unassigned (§12.1) and the upstream-versus-fork question is deliberately deferred (§10.1). Tag shapes here are proposals nobody has implemented. Read §12 before building anything.
 
+The two verification questions that could have invalidated the model — is a topic addressable, and does the address survive — were answered against production on 2026-08-24 and both came back clean. See §5.2 and §5.3.
+
 Succeeds the Folder/File/Component layer of [RFC 0.2](RFC-0.2-RECONCILIATION.md), which proposed three concepts and never specified them. It does **not** supersede [FILES_ARCHITECTURE.md](FILES_ARCHITECTURE.md) — it resolves the two gaps that document named and otherwise leaves its conclusion (git provides folders, files, history and merge) intact.
 
 ---
@@ -172,13 +174,46 @@ A file's **home** is the folder its own event names. A folder listing a file it 
 
 Proposal: the file names its home, and folders name their contents. A reference is a folder listing a file whose home is elsewhere — no extra mechanism, and no way for one folder to steal another's file.
 
-### 5.2 Topics are addressable, which was not obvious
+### 5.2 Topics are addressable, which was not obvious — verified
 
-A channel is not an event, so it appeared to have no address. It does: the relay emits an addressable discovery event per channel — `kind:39000`, signed by the relay, with the channel uuid as its `d` (`buzz-relay/src/handlers/side_effects.rs:1029`).
+A channel is not an event, so it appeared to have no address. It does: the relay emits an addressable discovery event per channel — `kind:39000`, signed by the relay, with the channel uuid as its `d` (`buzz-relay/src/handlers/side_effects.rs:971`).
 
 This matters more than it sounds. It means **one tag type — `a` — lists every file**, topics included, with no special case.
 
-**To verify before building:** that the `d` value is exactly the channel uuid, and that a non-member can read a listed channel's `39000` (if not, listed folders cannot show their topics to non-members, and the first property in §4.2 fails for topics specifically).
+Both facts this section asked to verify were checked against production on 2026-08-24. Both hold.
+
+**The `d` value is exactly the channel uuid.** `emit_group_discovery_events` binds `group_id = channel_id.to_string()` — the `Uuid` itself, lowercase and hyphenated, with nothing derived or prefixed — and passes it as the `d` of all three discovery kinds. Upstream is identical here. Measured over all 50 channels the relay serves: every `d` is a lowercase v4 uuid, none missing, none duplicated, and the set of `d` values on `39000` is exactly the set on `39002`. The same uuid is the `h` tag of the channel's messages — all 32 distinct `h` values across 156 `kind:9` events resolve to a `39000` `d`. One uuid, three roles: channel id, `h` tag, `d` tag.
+
+**A non-member can read an open channel's `39000`.** The read path is `get_accessible_channel_ids` (`buzz-db/src/channel.rs:638`), and its whole body is *channels where this pubkey is an active member* `UNION` *every channel with `visibility = 'open'`*. Membership is one of two routes in; open visibility is the other.
+
+Measured end to end with two identities: the Ship agent key (`b38fd268…`) appears in **none** of the 50 `kind:39002` rosters on production — it is a member of nothing — and it reads all 50 `kind:39000`, all 50 `kind:39001` and all 50 `kind:39002`. The channels belong to other people, 42 of the 50 to `f3a38fa6…`. A direct address read, `{"kinds":[39000],"#d":["925897ad-…"]}`, returns the event with its `d` intact. So a listed folder can show its topics to non-members, and §4.2's first property holds for topics.
+
+Two consequences worth stating, because both are disclosures rather than conveniences:
+
+- **An open channel's full member roster is world-readable** to any relay member. `39002` rides the same `UNION` and carries a `p` tag per member, so a listed folder discloses *who is in it*, not merely that it exists. §4.2 already accepts that a listed folder's metadata is public; this says the people are metadata too, and whatever the product says at the moment a folder is *listed* has to name that, the way §4.5 names it at the moment access is granted.
+- **The negative arm was not measured.** All 50 channels on production are `public`, so there was nothing private for this reader to be refused, and constructing the case needs a second relay-member identity the suite does not currently provision. The `UNION` above is the only non-membership route into the accessible set, so the gate follows from it — but that is a read of the code, not a measurement, and it should be closed the first time a second service identity exists.
+
+### 5.3 The address depends on the relay's signing key, which does not rotate
+
+`39000:<relay-pubkey>:<channel-uuid>` is only as stable as the pubkey inside it. This was open question §12.3, and its premise turned out to be wrong.
+
+**The evidence for "rotation is designed for" was a misread field.** `keys: [{ current: true, id: "relay-v1", … }]` is not relay-identity metadata. It sits **inside the `push` object** of the NIP-11 document, and it is the NIP-PL push-executor descriptor: `id` is `BUZZ_PUSH_EXECUTOR_KEY_ID`, whose default is the literal string `relay-v1` (`buzz-relay/src/config.rs:746`). NIP-PL does design for rotation *of the executor key* — it has a `retiring` flag and a two-entry example — but Buzz emits exactly one entry, always `current: true`, always `state.relay_keypair` (`nip11.rs:199`), so the descriptor cannot express rotation even for push.
+
+The relay's actual identity field is NIP-11 **`self`**: a bare hex pubkey, no version, no flag. On production it equals `push.keys[0].pubkey`, which is how the two came to be conflated.
+
+**Rotation is not implemented, in the fork or upstream.** `relay_keypair` is parsed once at boot from `BUZZ_RELAY_PRIVATE_KEY` into a plain `nostr::Keys` field on `AppState` (`main.rs:392`, `state.rs:528`); `AppState` lives behind an `Arc` with no interior mutability, so it cannot change while the process runs. Nothing in either tree re-signs, re-keys or retires a discovery event, and upstream — 625 commits ahead — has added nothing: `nip11_facts` is byte-identical to ours.
+
+**The code requires the key to be stable and says so.** `nip11_facts` withholds `self` entirely when `BUZZ_RELAY_PRIVATE_KEY` is unset, on the stated ground that ephemeral keys "change on restart, leaving previously-signed events unverifiable" (`nip11.rs:293`). The relay refuses to boot with membership enforcement and no stable key. The mesh anchors peer acceptance to the same pubkey — "all pods share the relay signing key, so a seed attested by any other key is foreign and rejected" (`mesh_boot.rs:441`). Stability is already an invariant three subsystems depend on. Topic addressing would be the fourth, not the first.
+
+**No rotation has happened on this deployment.** Every relay-signed event production serves — 50 `39000`, 50 `39001`, 50 `39002`, 50 `40099`, 1 `13534`, spanning 2026-08-07 to 2026-08-24 — has exactly one distinct author, equal to NIP-11 `self`.
+
+**So the address is stable and §5.2's model stands.** The residual risk is not that rotation happens by design; it is that nothing stops an operator doing it by hand, and the result would be silent:
+
+`replace_addressable_event` soft-deletes the prior event `WHERE … AND pubkey = $3` (`buzz-db/src/lib.rs:3370`). Under a new key that matches nothing. The old `39000` is **orphaned — not re-signed, not deleted**: still live in the store, still returned by a `#d` query, never updated again. Discovery events are re-emitted only when the channel itself changes (create, metadata edit, membership change, archive) and there is no boot-time sweep, so an unchanged channel would keep only its old-key event indefinitely, while a changed one would return **two** events for one `d` under different authors — one live, one frozen and progressively wrong. Every `a` tag pointing at the old address would keep resolving. Nothing would error. That is exactly the shape [SILENT-FAILURES.md](../operations/SILENT-FAILURES.md) catalogues.
+
+**There is no stable relay identity separate from the signing key**, so there is nothing to switch the address to. NIP-11 `pubkey` is null; `push.origin` (`wss://estiva.estiva.app`) is stable but is a URL, and a NIP-01 `a` tag needs 64 hex characters; the community id is a Postgres column that never reaches the wire.
+
+**What to do instead of a mechanism.** Treat `BUZZ_RELAY_PRIVATE_KEY` as load-bearing for addressing, and record that where operators look rather than only here. If it ever has to change, re-signing every discovery event and tombstoning the old ones is a migration to design deliberately — not an operational step somebody takes on a Tuesday.
 
 ## 6. Component
 
@@ -228,7 +263,7 @@ This also disposes of a name collision. Buzz's `kind:48100`–`48103` "huddle" i
 | --- | --- |
 | threaded comments scoped to any address | ✅ NIP-22 `1111`, accepted by our relay |
 | channels, membership, read gating | ✅ Buzz channels |
-| addressable identity for a channel | ✅ relay-emitted `39000` — verify §5.2 |
+| addressable identity for a channel | ✅ relay-emitted `39000` — verified against production, §5.2 |
 | container shape, tags, visibility | ✅ upstream NIP-MP, generalised here |
 | git-backed files with history and merge | ✅ live — Smart HTTP, NIP-98 gated |
 | pointing at another app's object | ✅ NIP-19, NIP-21, NIP-27 |
@@ -273,7 +308,7 @@ Two paths. Propose this as a NIP to Buzz, or implement it privately in the fork.
 
 **What to do meanwhile, cheaply.** Three things, none of which commits to either path:
 
-1. **Answer §5.2 and §12.3.** Both are relay probes, about an hour. §12.3 in particular can invalidate this document's topic-addressing model, so it should be answered before anyone reasons further from it.
+1. ~~**Answer §5.2 and §12.3.**~~ **Done, 2026-08-24.** Both came back clean: the `d` is exactly the channel uuid, a non-member does read an open channel's `39000`, and the relay's signing key does not rotate — §12.3's evidence for rotation was a misread NIP-11 field. §5.2 and §5.3 carry the answers, and the topic-addressing model stands as written.
 2. **Build REW-11** — Ship's project record going global with a `buzz-channel` tag. That is structurally the same move as making a folder global, so it is a **rehearsal for this decision** run at one-tenth the scale, on a ticket that was already justified by a bug. It answers empirically whether global discovery fixes unreachable records, what breaks when a name becomes world-readable, and how a fold copes with two shapes coexisting. REW-11 needs no part of the Ship rewrite and can be done today.
 3. **Watch whether upstream ships `kind:1621` issues.** Their forge layer is `"📋 Designed"`; if it ships, its shape is data for this decision.
 
@@ -322,18 +357,19 @@ Leaf is the only app that needs §6, and therefore the only one that can choose 
 
 2. **Component anchoring** (§6). The least settled part of this document. An anchor must survive edits to the file it points into, and the three candidate approaches have different fragility. Needs a real editor to choose against.
 
-3. **Relay key rotation breaks topic addressing.** §5.2 addresses a topic as `39000:<relay-pubkey>:<channel-uuid>`. The relay's NIP-11 advertises `keys: [{ current: true, id: "relay-v1", … }]` — a `current` flag and a versioned id imply rotation is designed for. **If the relay's key rotates, every folder's topic references break.** Either the relay identity must be guaranteed stable for this purpose, or channels need a different address. This was called "elegant" before it was checked.
+3. **What happens to Peek's existing topics.** They are channels with no folder. Do they gain membership retroactively, who decides which folder, and what happens to one nobody claims?
 
-4. **What happens to Peek's existing topics.** They are channels with no folder. Do they gain membership retroactively, who decides which folder, and what happens to one nobody claims?
+4. **Does the folder's channel hold every file's conversation at scale?** One busy folder is one busy channel. Probably fine; worth knowing the ceiling before finding it.
 
-5. **Does the folder's channel hold every file's conversation at scale?** One busy folder is one busy channel. Probably fine; worth knowing the ceiling before finding it.
+5. **The word "huddle"** (§8), given Buzz's `48100`-family audio rooms already own it in the same registry.
 
-6. **The word "huddle"** (§8), given Buzz's `48100`-family audio rooms already own it in the same registry.
-
-7. **Disclosure UI** (§4.5). Granting access discloses all history. That is decided, but *how* the product says so before the click is unspecified, and it is the difference between a considered decision and an accident.
+6. **Disclosure UI** (§4.5). Granting access discloses all history. That is decided, but *how* the product says so before the click is unspecified, and it is the difference between a considered decision and an accident.
 
 ### Answered, recorded so they are not re-opened
 
+- **Is a topic addressable, and is `39000`'s `d` the channel uuid** — yes, and yes exactly. Measured on production. §5.2.
+- **Can a non-member read a listed channel's `39000`** — yes. Open visibility is a second route into the accessible set alongside membership, and a reader who is a member of nothing reads all 50 of production's channels. §5.2.
+- **Does the relay's signing key rotate** *(was §12.3)* — no, and it is not designed to. The `keys`/`current`/`relay-v1` evidence was the NIP-PL push-executor descriptor, not relay identity. Recorded with the failure mode a hand-rolled rotation would cause. §5.3.
 - **Private folder privacy** — existence may be known; name, people and contents must not be readable. §4.2.
 - **Slug versus uuid for `d`** — always uuid. §4.3.
 - **Nesting** — out of scope, and upstream agrees.
