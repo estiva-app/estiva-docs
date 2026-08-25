@@ -29,7 +29,20 @@ Three rules, and they are why this roadmap looks the way it does:
 
 ## State
 
-**58 tickets across six projects.** Nothing started.
+**Updated 2026-08-25.** Nine tickets are done and the first real cross-app change has shipped end to end.
+
+| shipped | what it proved |
+| --- | --- |
+| **REW-11** | Ship's project record is global — served by an unscoped `kinds` query, *not* by an `#h` query for its own channel, while its issues still are. §4.2's central claim now has a working instance at one-tenth the scale |
+| **CAT-9** | The relay accepts a global `kind:30850`. One line in Buzz, deployed and probed |
+| **SHI-7** | Issue coverage **13 unreachable → 0**, 97 of 97 |
+| **REW-10** | Comments are NIP-22 `kind:1111`, end to end: signing ceiling, relay, Ship's fold, both Peek surfaces, and the published manifest |
+| **PEE-9 / PEE-10** | Peek reads both comment kinds, and a manifest can declare the kinds it *used* to emit (`emits.alsoRead`) |
+| **SHI-8 / SHI-9** | The manifest verifier works again, cleans up after itself, and the projection reaches records written under either tag spelling |
+
+Also done and not on any ticket: Estiva ID's live `allowed_kinds` were read against `seed.ts` for the first time and **matched exactly** — a caveat CRO-2, PEE-4 and this document had all been carrying.
+
+The remaining ~49 tickets are unstarted.
 
 | Project | Tickets | What it is |
 | --- | --- | --- |
@@ -38,14 +51,15 @@ Three rules, and they are why this roadmap looks the way it does:
 | DMs on Nostr (DM channels) | DMS-1…11 | Move Peek's DMs off Convex and onto the relay. |
 | Shared foundation packages | SHA-1…6 | Four packages plus a scaffold, so app four is cheap. |
 | Rewrite Ship with shared foundation | REW-1…11 | Ship on React/Vite/Tailwind, and the second consumer that makes the packages extractable. |
-| Catch up the Buzz fork | CAT-1…8 | 625 commits behind upstream. The survey is cheap; the deploy is not. |
+| Catch up the Buzz fork | CAT-1…9 | 625 commits behind upstream. The survey is cheap; the deploy is not. CAT-9 is done, and it added a *ninth* fork commit which is a **deletion** — the kind a merge silently undoes |
+| Agent / Steer | AGE-1…2 | *(new)* The CLI, MCP server and Claude Code plugin. Filed separately because a defect there is invisible to `ship.estiva.app` and the agent has constraints the apps do not |
 
 Two architecture documents sit under all of it. Read both if you are picking this up cold:
 
 | document | what it settles |
 | --- | --- |
 | [ADR 0001](decisions/0001-relay-canonical-by-default.md) | **accepted** — relay-canonical by default; a database is a per-feature exception; Estiva ID excluded |
-| [RFC 0.3](protocol/RFC-0.3-FOLDERS.md) | **draft** — Folders, Files, Components, Conversations. Resolves the huddle model. Two decisions inside it are deliberately deferred |
+| [RFC 0.3](protocol/RFC-0.3-FOLDERS.md) | **draft, and now decidable** — both questions that could have invalidated it are answered (§5.2, §5.3), and REW-11 rehearsed §4.2 at one-tenth the scale. §10.1 (upstream versus fork) can still legitimately wait |
 
 RFC 0.3 is a *draft*, and per rule 2 above nothing is filed against its undecided parts. What it changes about already-filed work is in §"RFC 0.3 implications" below.
 
@@ -53,26 +67,33 @@ RFC 0.3 is a *draft*, and per rule 2 above nothing is filed against its undecide
 
 ## Two gates, and everything else is parallel
 
-### Gate 1 — one Estiva ID release unblocks three projects
+### Gate 1 — half done, and what is left is code rather than configuration
 
-Four tickets in three projects are all Estiva ID changes needing the same manual re-seed. **Batch them into one deploy.** Done separately it is three trips to the box and three chances to forget that `update.sh` runs `migrate` and never `seed`.
+Four tickets in three projects, all Estiva ID changes. **The two that were only a seed line are live** (2026-08-25, merged, re-seeded by hand, row verified).
 
-| ticket | change |
-| --- | --- |
-| CRO-1 | `POST /nip44/encrypt` and `/nip44/decrypt`, scoped to **self-encryption only** |
-| CRO-2 | `peek` and `estiva-ship` += `30078` |
-| PEE-4 | `peek` += `22242`, scoped by `relay` tag |
-| DMS-1 | `peek` += `41010`, `41011`, `41012` — and **not** `30622`, which is relay-signed |
+| ticket | change | state |
+| --- | --- | --- |
+| CRO-2 | `peek` and `estiva-ship` += `30078` | **granted and live** |
+| DMS-1 | `peek` += `41010/41011/41012` — and **not** `30622`, which is relay-signed | **granted and live** |
+| PEE-4 | `peek` += `22242`, **scoped by `relay` tag** | **not done** — see below |
+| CRO-1 | `POST /nip44/encrypt` and `/nip44/decrypt`, scoped to **self-encryption only** | **not done** — new endpoints |
 
-Order on the box: **deploy → confirm the image pulled → re-seed → verify the row.** See `operations/PRODUCTION.md` for the box itself.
+`1111` was added in the same pass for REW-10, and `claude-agent` was widened separately through `PATCH /admin/credentials/:clientId/kinds` — it is not in `SEED_APPS`, and that route exists so a capability change need not rotate the secret.
+
+**PEE-4 is not a seed line and was deliberately not batched.** `policy.ts` constrains `kind:27235` by URL prefix and has no equivalent for `22242`; granted unqualified it lets Peek mint relay-auth credentials for *any* relay. The grant without the control is a widening, so the two land together. There is a test asserting `22242`'s absence — delete it when PEE-4 lands rather than flipping it.
+
+CRO-2 and DMS-1 remain `in_progress` rather than done: each done-when also asks that `/sign` accept the kind from a browser session, which needs a person signed in as themselves.
+
+Deploy order on the box is **merge → confirm the image pulled → re-seed → verify the row**, and the verify is the step that has been skipped before:
 
 ```bash
+docker compose exec -T estiva-id node dist/db/seed.js
 docker compose exec -T postgres psql -U estiva_id -d estiva_id -tAc "select client_id, allowed_kinds from app_credentials"
 ```
 
 Verify the row, never the `seeded N app credential(s)` log line.
 
-**Run that query before editing `seed.ts`** — the live values were never read during planning (the check was blocked), so production may already differ from the file.
+~~**Run that query before editing `seed.ts`** — the live values were never read.~~ **Done.** Production matched `seed.ts` exactly for all four credentials. The worry can be dropped. For any credential whose secret you hold, `/token` also returns `allowed_kinds`, which reads the live ceiling without the box.
 
 ### Gate 2 — SHA-1 unblocks the packages
 
@@ -80,7 +101,7 @@ Where the foundation packages live and how they publish. Contains decisions that
 
 ---
 
-## Start now — ten tickets, no gate
+## Start now — no gate
 
 | ticket | note |
 | --- | --- |
@@ -90,9 +111,10 @@ Where the foundation packages live and how they publish. Contains decisions that
 | **SHA-1** | Gate 2. |
 | **REW-1** | Can begin the scaffold immediately; needs SHA-1 before it consumes packages. |
 | ~~**REW-11**~~ | **Done, 2026-08-24**, with CAT-9 (the relay change it needed) and SHI-7 (the defect it turned out not to fix). See §"Finishing the Folder decision". |
-| **CAT-1, CAT-2, CAT-3** | The catch-up survey. Read-only, nothing merged, nothing deployed. CAT-3 answers whether an upstream deploy would break production data, which is the gate for the rest of that project. |
+| ~~**REW-10**~~ | **Done, 2026-08-25.** Comments are NIP-22 `kind:1111`. Needed grants for three credentials, both Peek read paths, and a manifest republish — none of which the ticket named. |
+| **CAT-1, CAT-2, CAT-3** | The catch-up survey. Read-only, nothing merged, nothing deployed. CAT-3 answers whether an upstream deploy would break production data, which is the gate for the rest of that project. **CAT-2's title says "our four commits" and the fork is now nine** — the newest is CAT-9's *deletion* inside a match arm, the kind a merge silently undoes. There is a test that catches it; keep it through the merge. |
 
-Meanwhile, prepare the Gate 1 release.
+**The highest-leverage thing left is finishing Gate 1** — PEE-4 and CRO-1, both in `estiva-id`, one deploy. It unblocks the M3 socket work, the read-state client and the DM migration at once, and half of it is already live.
 
 ---
 
@@ -204,7 +226,7 @@ That is rule 3 applied and paid off: the small version was built, and it moved t
 
 ### What the decision then consists of
 
-1. Accept or amend RFC 0.3, with the §5.2 and §5.3 answers in hand, REW-11 built and its two new failure shapes written into §4.2.
+1. Accept or amend RFC 0.3, with the §5.2 and §5.3 answers in hand, REW-11 and REW-10 both built, and their failure shapes written into §4.2. Nothing is waiting on more evidence — this is now a reading session and a decision, not an investigation.
 2. Decide RFC 0.3 §10.1 — upstream proposal or private fork implementation. Its own stated trigger is the first line of folder command/state code, so this is the same moment.
 3. Only then does folder implementation get tickets.
 
