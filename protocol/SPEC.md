@@ -345,6 +345,36 @@ This is a ceiling, not a grant of meaning: it says an app *may sign* the kind,
 not that it decides what one means. The relay still applies its own membership
 and authorization checks.
 
+#### `alsoRead` — the kinds an action *used* to emit
+
+An action's `emits.kind` is the single kind a consumer publishes. It MAY also
+carry `alsoRead`, a list of kinds the owner has published in the past:
+
+```jsonc
+"emits": { "kind": 1111, "scope": "address", "alsoRead": [9] }
+```
+
+A consumer MUST publish under `kind` alone, and MUST read the union of `kind`
+and `alsoRead`.
+
+**Why it exists.** An app that changes the kind it emits does not move the
+events it already published, and often *cannot* — a `kind:9` message is not
+replaceable at all, so its history is fixed permanently. A consumer reading only
+the declared kind then shows an object's newest comments and silently drops
+every earlier one: a thread that begins in the middle, with nothing reporting a
+problem. The migration is not a window that closes, it is the steady state.
+
+**Why it belongs to the owner.** The consumer could hardcode the old kind, and
+that is worse in two ways: it puts a fact about one app's history in every other
+app, and it does nothing for the next app that migrates. The owner is the only
+party that knows what it used to publish.
+
+Absent `alsoRead`, a consumer reads exactly one kind, so every manifest
+published before this field behaves unchanged.
+
+Ship's move of comments from `kind:9` to NIP-22 `kind:1111` is the case this was
+written for, and Peek implements it as `commentKindsOf`.
+
 ### 7.4 Vocabularies
 
 An app publishing objects with enumerated fields MUST publish the vocabulary
