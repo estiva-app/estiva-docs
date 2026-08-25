@@ -45,7 +45,7 @@ Three rules, and they are why this roadmap looks the way it does:
 
 Also done and not on any ticket: Estiva ID's live `allowed_kinds` were read against `seed.ts` for the first time and **matched exactly** — a caveat CRO-2, PEE-4 and this document had all been carrying.
 
-The remaining ~47 are unstarted, except **CRO-2 and DMS-1, which are `in_progress` with all their work already live** — see Gate 1.
+The remaining ~45 are unstarted. **All four Gate 1 tickets are done**, CRO-2 and DMS-1 included — their browser-session clause was met on 2026-08-25 rather than waived.
 
 | Project | Tickets | What it is |
 | --- | --- | --- |
@@ -76,14 +76,24 @@ Four tickets in three projects, all Estiva ID changes, all now live in productio
 
 | ticket | change | state |
 | --- | --- | --- |
-| CRO-2 | `peek` and `estiva-ship` += `30078` | granted and live |
-| DMS-1 | `peek` += `41010/41011/41012` — and **not** `30622`, which is relay-signed | granted and live |
+| CRO-2 | `peek` and `estiva-ship` += `30078` | **done** |
+| DMS-1 | `peek` += `41010/41011/41012` — and **not** `30622`, which is relay-signed | **done** |
 | PEE-4 | `peek` += `22242`, **scoped by `relay` tag** | **done** — grant and scope shipped together |
 | CRO-1 | `POST /nip44/encrypt` and `/nip44/decrypt`, scoped to **self-encryption only** | **done** |
 
 `1111` was added in the same pass for REW-10, and `claude-agent` was widened separately through `PATCH /admin/credentials/:clientId/kinds` — it is not in `SEED_APPS`, and that route exists so a capability change need not rotate the secret.
 
-**CRO-2 and DMS-1 are still `in_progress`, and their work is entirely live.** Each done-when also asks that `/sign` accept the kind from a browser session, which needs a person signed in as themselves. PEE-4 carried the same clause and was closed on the row instead, on the grounds that the browser leg belongs to the ticket that writes the client. Whoever picks up track B or C should either close these two the same way or do the browser check and be done with it — but the programme is not blocked either way.
+All four done-whens asked that `/sign` accept the kind **from a browser session**, which no terminal can produce. That was run rather than waived — devtools on a signed-in `https://peek.estiva.app`, cross-origin to the live `https://id.estiva.app`:
+
+| signed | result |
+| --- | --- |
+| `22242`, `relay=wss://estiva.estiva.app` | `200` |
+| `22242`, `relay=wss://evil.test` | `422 relay_auth_relay_not_allowed` |
+| `30078` | `200` |
+| `41010` | `200` |
+| `30622` | `422 kind_not_allowed` |
+
+**The two refusals are the valuable half.** One is the scope declining a relay Peek has no business authenticating to; the other is the relay-signed visibility kind staying ungrantable. Both were also *readable by the browser*, which is PEEK-93's failure mode checked from the far side — a refusal a browser cannot read arrives as a generic network error, and this one arrives as `policy_violation` with its reason.
 
 The live row, which is what "verify" means here:
 
@@ -141,7 +151,7 @@ Where the foundation packages live and how they publish. Contains decisions that
 
 ~~**The highest-leverage thing left is finishing Gate 1.**~~ **Done, 2026-08-25**, both tickets in one deploy. Three tracks came unblocked at once.
 
-**What is highest-leverage now is PEE-5** — the relay WebSocket client with NIP-42 AUTH. It is the head of the longest Peek-side chain, every M3 ticket queues behind it, and the ceiling it needs is live and unexercised. It is also the ticket that closes out PEE-4's last unproven claim: nothing has yet signed a `22242` and had the relay accept it.
+**What is highest-leverage now is PEE-5** — the relay WebSocket client with NIP-42 AUTH. It is the head of the longest Peek-side chain and every M3 ticket queues behind it. Its ceiling is live and now *exercised*: a browser has signed a `22242` bounded to our relay and been refused for another. What PEE-5 still settles is the far side of the wire — that the relay accepts a challenge response it actually issued, and that a REQ then returns events. If that fails, the ceiling is not the place to look.
 
 ---
 
@@ -304,7 +314,9 @@ Worth knowing which claims in the tickets are observations rather than inference
 
 Added 2026-08-25, all read from production rather than from a passing suite: **the live `allowed_kinds` rows** (they matched `seed.ts`); a full `/nip44/encrypt` → `/nip44/decrypt` round trip, against a `404` taken as the negative control beforehand; that a NIP-44 audit row records the operation and neither the plaintext nor its length, checked by scanning the whole table rather than the `detail` column; and the **CORS preflight for `/nip44/*` and `/sign` from `https://peek.estiva.app`** — `204` with the headers, `403` from an unregistered origin, and the header present on a `401`, which matters because nothing enforces CORS when a Hono app is called in-process and this repo has shipped that failure twice with green tests.
 
-**Not verified:** end-to-end `kind:22242` signing — the grant and its scope are live and the row is verified, but nothing has yet answered a real challenge, because that needs a WebSocket client and a live user token (**PEE-5**); whether `kind:41010` is accepted over HTTP (DMS-2 exists for exactly this); whether `nostr-tools` covers enough to replace part of `@estiva/protocol` (SHA-3 allocates an hour).
+Also verified from a real signed-in browser session, cross-origin, which is the only place some of this is checkable: `/sign` issuing `22242`, `30078` and `41010`; the `22242` scope **refusing** `wss://evil.test`; `30622` still refused as relay-signed; and both refusal bodies being readable by the browser rather than arriving as network errors.
+
+**Not verified:** that the *relay* accepts a `22242` — signing one is now proven, but the challenge was fabricated rather than issued by a socket, so no real AUTH has round-tripped and no REQ has returned events instead of `auth-required` (**PEE-5**); whether `kind:41010` is accepted over HTTP — Estiva ID will sign one, which says nothing about ingest (**DMS-2**); whether `nostr-tools` covers enough to replace part of `@estiva/protocol` (SHA-3 allocates an hour).
 
 ---
 
