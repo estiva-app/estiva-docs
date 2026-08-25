@@ -24,6 +24,7 @@ Three rules, and they are why this roadmap looks the way it does:
    | reading Buzz upstream | Projects ≈ Folders, and NIP-22 already does cross-app comments |
    | Gate 1's signing ceiling | a capability grant has **two halves**, and the row shows one of them |
    | PEE-5's socket | read the relay's source, not the NIP — three of its behaviours present as a healthy socket that delivers nothing |
+   | M3's four tickets | the ticket's kind list was the thing most often wrong, and only live traffic showed it |
 
    So: no waterfall. Each project is expected to change this document, and the *first* thing to do when one finishes is say what it taught.
 
@@ -31,7 +32,7 @@ Three rules, and they are why this roadmap looks the way it does:
 
 ## State
 
-**Updated 2026-08-25.** Twelve tickets are done, **Gate 1 is closed and M3 has started**, and the first real cross-app change has shipped end to end.
+**Updated 2026-08-25.** Fifteen tickets are done, **Gate 1 is closed and M3's core is live** — Peek updates from the relay in real time, in production — and the first real cross-app change has shipped end to end.
 
 | shipped | what it proved |
 | --- | --- |
@@ -44,10 +45,13 @@ Three rules, and they are why this roadmap looks the way it does:
 | **CRO-1** | Estiva ID can encrypt and decrypt NIP-44 **to yourself**, verified on production. All 108 reference vectors run in CI, ten of them pinning our ciphertext byte-for-byte against the spec's |
 | **PEE-4** | Peek may sign `kind:22242`, **bounded to one relay**. The last thing between M3 and being testable |
 | **PEE-5** | A live relay socket that authenticates with NIP-42 and restores its subscriptions across reconnects. Proven end to end against production — challenge, accepted `22242`, then events instead of `auth-required` |
+| **PEE-6** | One REQ per channel, refcounted. Two channels confirmed receiving simultaneously on production while a multi-`#h` control received nothing |
+| **PEE-7** | Live events routed into the existing Convex projection — messages, reactions, deletions and assertions, batched per burst |
+| **PEE-8** | `useTopicView` subscribes to its channel. **Proven on production**: a `kind:9` signed by the agent and POSTed straight to the relay appeared in an open Peek topic within a second, with no reload and nothing touching Peek's Convex |
 
 Also done and not on any ticket: Estiva ID's live `allowed_kinds` were read against `seed.ts` for the first time and **matched exactly** — a caveat CRO-2, PEE-4 and this document had all been carrying.
 
-The remaining ~44 are unstarted. **All four Gate 1 tickets are done**, CRO-2 and DMS-1 included — their browser-session clause was met on 2026-08-25 rather than waived.
+The remaining ~41 are unstarted. **All four Gate 1 tickets are done**, CRO-2 and DMS-1 included — their browser-session clause was met on 2026-08-25 rather than waived.
 
 | Project | Tickets | What it is |
 | --- | --- | --- |
@@ -155,14 +159,25 @@ Where the foundation packages live and how they publish. Contains decisions that
 
 ~~**What is highest-leverage now is PEE-5.**~~ **Done, 2026-08-25**, and the far side of the wire came back clean: the relay accepted a challenge response it had issued, and the REQ on that connection returned events. Nothing on the Estiva ID side needed changing to get there.
 
-**What is highest-leverage now is PEE-7 → PEE-8**, which is where the socket stops being unconsumed code. `liveRelay.ts` is merged, unit-covered and protocol-proven, but **nothing imports it yet** — PEE-7 routes its events into the projection and PEE-8 wires `useTopicView`. PEE-8 is where "the socket reaches `live` *in the real app*" actually gets observed, and it is worth observing rather than assuming: correct against a fake relay and a hand-run protocol is not the same as correct inside React's lifecycle. The specific thing to watch is that this is **one connection per tab**, so a component mounting twice under StrictMode must not open two.
+~~**What is highest-leverage now is PEE-7 → PEE-8.**~~ **Both done, 2026-08-25.** The socket is no longer unconsumed code: `useTopicView` subscribes to its channel, live events reach the projection, and Convex reactivity does the rest. That it is genuinely the deployed code was checked by fetching the served bundle and grepping it, not by comparing image ids — a container whose image id matches a local tag proves nothing about what it serves.
+
+**A two-window test of one account proves none of it**, and that is worth writing down because it is an easy and convincing mistake — it was made here first, and the result looked like success. Both windows share one Convex deployment, so a reply sent in one reaches the other by **Convex reactivity alone**, exactly as it did before M3. Nothing in the socket path is involved.
+
+The relay path is only exercised when an event originates **outside Peek's own database**. What actually settled it: a `kind:9` signed by the agent through `/sign` and POSTed to the relay's bridge — `accepted: true` — which then appeared in an open topic within a second, no reload. Socket → `liveProjection` → `importChannel` → Convex reactivity, with no other route to the screen. Any future verification of this track has to publish from Ship, the agent, or a second identity.
+
+**What is highest-leverage now is PEE-1, PEE-2 and PEE-3**, and their reason has changed. They were filed as the cheap fix that would "probably clear most reported symptoms" while the socket was still ahead. The socket is here, so they are no longer the mitigation — they are the **fallback**, and PEE-8 has left them a specific job:
+
+- PEE-8 returns `relayState` from `useTopicView` rather than rendering it. PEE-1's interval should **idle against that** and run only when the socket is not `live`. Deriving it from a second socket would double the AUTH round trips for nothing.
+- The reconnect gap is already covered — PEE-8 re-runs the HTTP backfill on every transition into `live`, because a restored subscription delivers only what is *new* and the outage's events would otherwise be missing permanently.
+
+**PEE-9 is the other natural next step** and should consume the same `relayState`. It has two states worth distinguishing that nothing renders yet: `failed` is terminal and means *authentication* — a missing grant, a clock more than 60s out — while a relay that is merely down stays `reconnecting` forever by design. One says "wait", the other says "this will never work".
 
 ---
 
 ## The six tracks
 
 ```
-Gate 1 ✔ CLOSED ─────┬─> A. Peek real-time   PEE-5 → 6 → 7 → 8 → 9,10 → 11
+Gate 1 ✔ CLOSED ─────┬─> A. Peek real-time   ✔5 → ✔6 → ✔7 → ✔8 → 9,10 → 11  (+1,2,3 fallback)
   (Estiva ID, live)  ├─> B. Read state       CRO-4 → 5 → 6 → 7 → 9
                      └─> C. DMs              DMS-2 → 3,4 → 5,6 → 7 → 9,10,11
 
@@ -200,7 +215,7 @@ The only real contact between the halves is CRO-8 (Ship publishes read state), w
 
 ### Two critical paths
 
-1. ~~`PEE-5`~~ → `6 → 7 → 8 → CRO-10` — **PEE-5 done; PEE-6 and PEE-7 are next**
+1. ~~`PEE-5 → 6 → 7 → 8`~~ → `CRO-10` — **the whole M3 core is done**; CRO-10 now needs only read state on the protocol (CRO-5, CRO-11)
 2. `Gate 2 → SHA-4 → REW-2 → REW-3,4,5 → REW-6,7 → REW-8 → REW-9`
 
 The second is longer in wall-clock terms and has the most sequential UI work. The Ship rewrite is the programme's long pole, not the Peek work.
