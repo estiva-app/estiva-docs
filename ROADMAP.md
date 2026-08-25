@@ -2,7 +2,7 @@
 
 **Working reference. Living document.** The tickets in Estiva Ship are the source of truth for detail; this is the map between them — what depends on what, what can run in parallel, and what is deliberately still undecided.
 
-Last updated 2026-08-24. Not published to the docs site (`site/nav.mjs` is opt-in) because it changes often and carries operational detail.
+Last updated 2026-08-25. Not published to the docs site (`site/nav.mjs` is opt-in) because it changes often and carries operational detail.
 
 ---
 
@@ -22,6 +22,7 @@ Three rules, and they are why this roadmap looks the way it does:
    | Ship's agent CLI | two copies of one fold drift silently (PEEK-165) |
    | Ship's tracker | change events solve multi-writer, which upstream calls a non-goal |
    | reading Buzz upstream | Projects ≈ Folders, and NIP-22 already does cross-app comments |
+   | Gate 1's signing ceiling | a capability grant has **two halves**, and the row shows one of them |
 
    So: no waterfall. Each project is expected to change this document, and the *first* thing to do when one finishes is say what it taught.
 
@@ -29,7 +30,7 @@ Three rules, and they are why this roadmap looks the way it does:
 
 ## State
 
-**Updated 2026-08-25.** Nine tickets are done and the first real cross-app change has shipped end to end.
+**Updated 2026-08-25.** Eleven tickets are done, **Gate 1 is closed**, and the first real cross-app change has shipped end to end.
 
 | shipped | what it proved |
 | --- | --- |
@@ -39,10 +40,12 @@ Three rules, and they are why this roadmap looks the way it does:
 | **REW-10** | Comments are NIP-22 `kind:1111`, end to end: signing ceiling, relay, Ship's fold, both Peek surfaces, and the published manifest |
 | **PEE-9 / PEE-10** | Peek reads both comment kinds, and a manifest can declare the kinds it *used* to emit (`emits.alsoRead`) |
 | **SHI-8 / SHI-9** | The manifest verifier works again, cleans up after itself, and the projection reaches records written under either tag spelling |
+| **CRO-1** | Estiva ID can encrypt and decrypt NIP-44 **to yourself**, verified on production. All 108 reference vectors run in CI, ten of them pinning our ciphertext byte-for-byte against the spec's |
+| **PEE-4** | Peek may sign `kind:22242`, **bounded to one relay**. The last thing between M3 and being testable |
 
 Also done and not on any ticket: Estiva ID's live `allowed_kinds` were read against `seed.ts` for the first time and **matched exactly** — a caveat CRO-2, PEE-4 and this document had all been carrying.
 
-The remaining ~49 tickets are unstarted.
+The remaining ~47 are unstarted, except **CRO-2 and DMS-1, which are `in_progress` with all their work already live** — see Gate 1.
 
 | Project | Tickets | What it is |
 | --- | --- | --- |
@@ -67,31 +70,53 @@ RFC 0.3 is a *draft*, and per rule 2 above nothing is filed against its undecide
 
 ## Two gates, and everything else is parallel
 
-### Gate 1 — half done, and what is left is code rather than configuration
+### Gate 1 — closed, 2026-08-25
 
-Four tickets in three projects, all Estiva ID changes. **The two that were only a seed line are live** (2026-08-25, merged, re-seeded by hand, row verified).
+Four tickets in three projects, all Estiva ID changes, all now live in production. **Nothing is waiting on this any more:** the M3 socket work, the read-state client and the DM migration are each unblocked.
 
 | ticket | change | state |
 | --- | --- | --- |
-| CRO-2 | `peek` and `estiva-ship` += `30078` | **granted and live** |
-| DMS-1 | `peek` += `41010/41011/41012` — and **not** `30622`, which is relay-signed | **granted and live** |
-| PEE-4 | `peek` += `22242`, **scoped by `relay` tag** | **not done** — see below |
-| CRO-1 | `POST /nip44/encrypt` and `/nip44/decrypt`, scoped to **self-encryption only** | **not done** — new endpoints |
+| CRO-2 | `peek` and `estiva-ship` += `30078` | granted and live |
+| DMS-1 | `peek` += `41010/41011/41012` — and **not** `30622`, which is relay-signed | granted and live |
+| PEE-4 | `peek` += `22242`, **scoped by `relay` tag** | **done** — grant and scope shipped together |
+| CRO-1 | `POST /nip44/encrypt` and `/nip44/decrypt`, scoped to **self-encryption only** | **done** |
 
 `1111` was added in the same pass for REW-10, and `claude-agent` was widened separately through `PATCH /admin/credentials/:clientId/kinds` — it is not in `SEED_APPS`, and that route exists so a capability change need not rotate the secret.
 
-**PEE-4 is not a seed line and was deliberately not batched.** `policy.ts` constrains `kind:27235` by URL prefix and has no equivalent for `22242`; granted unqualified it lets Peek mint relay-auth credentials for *any* relay. The grant without the control is a widening, so the two land together. There is a test asserting `22242`'s absence — delete it when PEE-4 lands rather than flipping it.
+**CRO-2 and DMS-1 are still `in_progress`, and their work is entirely live.** Each done-when also asks that `/sign` accept the kind from a browser session, which needs a person signed in as themselves. PEE-4 carried the same clause and was closed on the row instead, on the grounds that the browser leg belongs to the ticket that writes the client. Whoever picks up track B or C should either close these two the same way or do the browser check and be done with it — but the programme is not blocked either way.
 
-CRO-2 and DMS-1 remain `in_progress` rather than done: each done-when also asks that `/sign` accept the kind from a browser session, which needs a person signed in as themselves.
+The live row, which is what "verify" means here:
+
+```
+estiva-peek | {9,7,5,9007,27235,1851,9101,9002,9008,1111,30078,41010,41011,41012,22242} | {wss://estiva.estiva.app}
+estiva-ship | {30850,30851,1851,9,5,9007,31989,27235,1111,30078}                        | {}
+```
+
+### What Gate 1 taught — a grant has two halves
+
+**The kind list is not the capability.** Two of Estiva ID's kinds are credentials *aimed at somewhere* rather than things an app publishes, and for those the number alone says nothing about what was granted:
+
+| kind | tag read | bounded by | match |
+| --- | --- | --- | --- |
+| `27235` NIP-98 | `u` | `SIGN_NIP98_ALLOWED_URL_PREFIXES` ∩ `app_credentials.nip98_url_prefixes` | prefix |
+| `22242` NIP-42 | `relay` | `SIGN_RELAY_AUTH_ALLOWED_URLS` ∩ `app_credentials.relay_auth_urls` | **exact**, after URL normalization |
+
+Three things fell out of building the second row, and none of them were in the ticket:
+
+- **`SIGN_RELAY_AUTH_ALLOWED_URLS` is a new required setting.** It is the deployment half of the AND, it lives only in `.env`, and empty means refuse. So `allowed_kinds` can contain `22242` and read as correct while every challenge is refused. On the box it must be added **before** the new container starts, or the timer's `--force-recreate` brings up an image without it. Check it inside the container (`docker compose exec -T estiva-id printenv SIGN_RELAY_AUTH_ALLOWED_URLS`), not in the file.
+- **Copy a pattern's structure, not necessarily its matching rule.** PEE-4 said to copy the NIP-98 URL-prefix branch. The two-bound structure was right to copy; the prefix was not. A `u` tag is a full request URL with a path, so a prefix is the only workable shape. A `relay` tag has no path, and as a prefix `wss://estiva.estiva.app` also admits `wss://estiva.estiva.app.attacker.example/` — the hazard redirect URIs are already matched exactly for.
+- **`RELAY_BRIDGE_URL` exists and is the wrong thing to reuse.** Three planning documents said Estiva ID had no relay URL at all. It has one — but empty means *profile publishing is off*, so deriving relay auth from it would give two unrelated capabilities one switch. Same objection to reusing `nip98_url_prefixes`: widening an app's bridge access would silently widen what it can authenticate *as*. **A column per capability, or you cannot grant one without the other.**
+
+And one that generalises past Estiva ID: **`update.sh` applying migrations makes a half-deployed state look finished.** Mid-deploy this time, the migration had run, the container was healthy, the timer log was green — and the row still had no `22242` and an empty relay list, because `update.sh` runs `migrate` and never `seed`. Every signal said done.
 
 Deploy order on the box is **merge → confirm the image pulled → re-seed → verify the row**, and the verify is the step that has been skipped before:
 
 ```bash
 docker compose exec -T estiva-id node dist/db/seed.js
-docker compose exec -T postgres psql -U estiva_id -d estiva_id -tAc "select client_id, allowed_kinds from app_credentials"
+docker compose exec -T postgres psql -U estiva_id -d estiva_id -tAc "select client_id, allowed_kinds, relay_auth_urls from app_credentials"
 ```
 
-Verify the row, never the `seeded N app credential(s)` log line.
+Verify the row, never the `seeded N app credential(s)` log line. `docker compose run --rm -T estiva-id node dist/db/seed.js` works too, if the service container is mid-restart.
 
 ~~**Run that query before editing `seed.ts`** — the live values were never read.~~ **Done.** Production matched `seed.ts` exactly for all four credentials. The worry can be dropped. For any credential whose secret you hold, `/token` also returns `allowed_kinds`, which reads the live ceiling without the box.
 
@@ -114,15 +139,17 @@ Where the foundation packages live and how they publish. Contains decisions that
 | ~~**REW-10**~~ | **Done, 2026-08-25.** Comments are NIP-22 `kind:1111`. Needed grants for three credentials, both Peek read paths, and a manifest republish — none of which the ticket named. |
 | **CAT-1, CAT-2, CAT-3** | The catch-up survey. Read-only, nothing merged, nothing deployed. CAT-3 answers whether an upstream deploy would break production data, which is the gate for the rest of that project. **CAT-2's title says "our four commits" and the fork is now nine** — the newest is CAT-9's *deletion* inside a match arm, the kind a merge silently undoes. There is a test that catches it; keep it through the merge. |
 
-**The highest-leverage thing left is finishing Gate 1** — PEE-4 and CRO-1, both in `estiva-id`, one deploy. It unblocks the M3 socket work, the read-state client and the DM migration at once, and half of it is already live.
+~~**The highest-leverage thing left is finishing Gate 1.**~~ **Done, 2026-08-25**, both tickets in one deploy. Three tracks came unblocked at once.
+
+**What is highest-leverage now is PEE-5** — the relay WebSocket client with NIP-42 AUTH. It is the head of the longest Peek-side chain, every M3 ticket queues behind it, and the ceiling it needs is live and unexercised. It is also the ticket that closes out PEE-4's last unproven claim: nothing has yet signed a `22242` and had the relay accept it.
 
 ---
 
 ## The six tracks
 
 ```
-Gate 1 (Estiva ID) ──┬─> A. Peek real-time   PEE-5 → 6 → 7 → 8 → 9,10 → 11
-                     ├─> B. Read state       CRO-4 → 5 → 6 → 7 → 9
+Gate 1 ✔ CLOSED ─────┬─> A. Peek real-time   PEE-5 → 6 → 7 → 8 → 9,10 → 11
+  (Estiva ID, live)  ├─> B. Read state       CRO-4 → 5 → 6 → 7 → 9
                      └─> C. DMs              DMS-2 → 3,4 → 5,6 → 7 → 9,10,11
 
 Gate 2 (SHA-1) ──────┬─> D. Foundation       SHA-2, SHA-3, SHA-6
@@ -133,7 +160,7 @@ no gate ─────────────┬─> F. Buzz catch-up    CAT-1
                      └─> REW-10, REW-11      independent of the rewrite (see Start now)
 ```
 
-A through F touch different code and share no gate beyond the two above. They can run concurrently with different people.
+A through F touch different code and share no gate beyond Gate 2, now that Gate 1 is closed. They can run concurrently with different people.
 
 **Track F is deliberately two-speed.** CAT-1/2/3 are read-only and should happen soon. CAT-4 onward waits for a reason — deploying 625 commits of relay change against the database Peek and Ship both depend on is not something to do because the number is annoying. CAT-3's answer is what makes that trigger legible.
 
@@ -159,7 +186,7 @@ The only real contact between the halves is CRO-8 (Ship publishes read state), w
 
 ### Two critical paths
 
-1. `Gate 1 → PEE-5 → 6 → 7 → 8 → CRO-10`
+1. `PEE-5 → 6 → 7 → 8 → CRO-10` — **its gate is open; PEE-5 can start now**
 2. `Gate 2 → SHA-4 → REW-2 → REW-3,4,5 → REW-6,7 → REW-8 → REW-9`
 
 The second is longer in wall-clock terms and has the most sequential UI work. The Ship rewrite is the programme's long pole, not the Peek work.
@@ -275,7 +302,9 @@ Worth knowing which claims in the tickets are observations rather than inference
 
 **Verified:** the WebSocket handshake and AUTH challenge at `wss://estiva.estiva.app` (with `curl --http1.1` — over HTTP/2 the same request returns NIP-11 JSON, because `Connection`/`Upgrade` are not h2 headers); NIP-11 capabilities including NIP-42, `auth_required`, `max_subscriptions: 1024`; relay git hosting responding `401` on `/git/{owner}/{repo}/info/refs`; `#h` filters matching reactions and deletions through the `channel_id` fallback; `claude-agent` can sign `30850`/`30851`/`1851` but is refused `9007`; every kind these projects need already present in the relay's `ALL_KINDS`, so **no Buzz change and no relay deploy is required by any of this work**; gift wrap rejected over the HTTP bridge; and `computeEventId`, `threadTags`, `toNostrSeconds`, `canonicalChannelName`, `normalizeUrl` byte-identical between `peek-app` and `estiva-ship`.
 
-**Not verified:** the live `allowed_kinds` rows; end-to-end `kind:22242` signing (needs a live user token); whether `kind:41010` is accepted over HTTP (DMS-2 exists for exactly this); whether `nostr-tools` covers enough to replace part of `@estiva/protocol` (SHA-3 allocates an hour).
+Added 2026-08-25, all read from production rather than from a passing suite: **the live `allowed_kinds` rows** (they matched `seed.ts`); a full `/nip44/encrypt` → `/nip44/decrypt` round trip, against a `404` taken as the negative control beforehand; that a NIP-44 audit row records the operation and neither the plaintext nor its length, checked by scanning the whole table rather than the `detail` column; and the **CORS preflight for `/nip44/*` and `/sign` from `https://peek.estiva.app`** — `204` with the headers, `403` from an unregistered origin, and the header present on a `401`, which matters because nothing enforces CORS when a Hono app is called in-process and this repo has shipped that failure twice with green tests.
+
+**Not verified:** end-to-end `kind:22242` signing — the grant and its scope are live and the row is verified, but nothing has yet answered a real challenge, because that needs a WebSocket client and a live user token (**PEE-5**); whether `kind:41010` is accepted over HTTP (DMS-2 exists for exactly this); whether `nostr-tools` covers enough to replace part of `@estiva/protocol` (SHA-3 allocates an hour).
 
 ---
 
