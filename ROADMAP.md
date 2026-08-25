@@ -23,6 +23,7 @@ Three rules, and they are why this roadmap looks the way it does:
    | Ship's tracker | change events solve multi-writer, which upstream calls a non-goal |
    | reading Buzz upstream | Projects ≈ Folders, and NIP-22 already does cross-app comments |
    | Gate 1's signing ceiling | a capability grant has **two halves**, and the row shows one of them |
+   | PEE-5's socket | read the relay's source, not the NIP — three of its behaviours present as a healthy socket that delivers nothing |
 
    So: no waterfall. Each project is expected to change this document, and the *first* thing to do when one finishes is say what it taught.
 
@@ -30,7 +31,7 @@ Three rules, and they are why this roadmap looks the way it does:
 
 ## State
 
-**Updated 2026-08-25.** Eleven tickets are done, **Gate 1 is closed**, and the first real cross-app change has shipped end to end.
+**Updated 2026-08-25.** Twelve tickets are done, **Gate 1 is closed and M3 has started**, and the first real cross-app change has shipped end to end.
 
 | shipped | what it proved |
 | --- | --- |
@@ -42,10 +43,11 @@ Three rules, and they are why this roadmap looks the way it does:
 | **SHI-8 / SHI-9** | The manifest verifier works again, cleans up after itself, and the projection reaches records written under either tag spelling |
 | **CRO-1** | Estiva ID can encrypt and decrypt NIP-44 **to yourself**, verified on production. All 108 reference vectors run in CI, ten of them pinning our ciphertext byte-for-byte against the spec's |
 | **PEE-4** | Peek may sign `kind:22242`, **bounded to one relay**. The last thing between M3 and being testable |
+| **PEE-5** | A live relay socket that authenticates with NIP-42 and restores its subscriptions across reconnects. Proven end to end against production — challenge, accepted `22242`, then events instead of `auth-required` |
 
 Also done and not on any ticket: Estiva ID's live `allowed_kinds` were read against `seed.ts` for the first time and **matched exactly** — a caveat CRO-2, PEE-4 and this document had all been carrying.
 
-The remaining ~45 are unstarted. **All four Gate 1 tickets are done**, CRO-2 and DMS-1 included — their browser-session clause was met on 2026-08-25 rather than waived.
+The remaining ~44 are unstarted. **All four Gate 1 tickets are done**, CRO-2 and DMS-1 included — their browser-session clause was met on 2026-08-25 rather than waived.
 
 | Project | Tickets | What it is |
 | --- | --- | --- |
@@ -151,7 +153,9 @@ Where the foundation packages live and how they publish. Contains decisions that
 
 ~~**The highest-leverage thing left is finishing Gate 1.**~~ **Done, 2026-08-25**, both tickets in one deploy. Three tracks came unblocked at once.
 
-**What is highest-leverage now is PEE-5** — the relay WebSocket client with NIP-42 AUTH. It is the head of the longest Peek-side chain and every M3 ticket queues behind it. Its ceiling is live and now *exercised*: a browser has signed a `22242` bounded to our relay and been refused for another. What PEE-5 still settles is the far side of the wire — that the relay accepts a challenge response it actually issued, and that a REQ then returns events. If that fails, the ceiling is not the place to look.
+~~**What is highest-leverage now is PEE-5.**~~ **Done, 2026-08-25**, and the far side of the wire came back clean: the relay accepted a challenge response it had issued, and the REQ on that connection returned events. Nothing on the Estiva ID side needed changing to get there.
+
+**What is highest-leverage now is PEE-7 → PEE-8**, which is where the socket stops being unconsumed code. `liveRelay.ts` is merged, unit-covered and protocol-proven, but **nothing imports it yet** — PEE-7 routes its events into the projection and PEE-8 wires `useTopicView`. PEE-8 is where "the socket reaches `live` *in the real app*" actually gets observed, and it is worth observing rather than assuming: correct against a fake relay and a hand-run protocol is not the same as correct inside React's lifecycle. The specific thing to watch is that this is **one connection per tab**, so a component mounting twice under StrictMode must not open two.
 
 ---
 
@@ -196,7 +200,7 @@ The only real contact between the halves is CRO-8 (Ship publishes read state), w
 
 ### Two critical paths
 
-1. `PEE-5 → 6 → 7 → 8 → CRO-10` — **its gate is open; PEE-5 can start now**
+1. ~~`PEE-5`~~ → `6 → 7 → 8 → CRO-10` — **PEE-5 done; PEE-6 and PEE-7 are next**
 2. `Gate 2 → SHA-4 → REW-2 → REW-3,4,5 → REW-6,7 → REW-8 → REW-9`
 
 The second is longer in wall-clock terms and has the most sequential UI work. The Ship rewrite is the programme's long pole, not the Peek work.
@@ -316,7 +320,9 @@ Added 2026-08-25, all read from production rather than from a passing suite: **t
 
 Also verified from a real signed-in browser session, cross-origin, which is the only place some of this is checkable: `/sign` issuing `22242`, `30078` and `41010`; the `22242` scope **refusing** `wss://evil.test`; `30622` still refused as relay-signed; and both refusal bodies being readable by the browser rather than arriving as network errors.
 
-**Not verified:** that the *relay* accepts a `22242` — signing one is now proven, but the challenge was fabricated rather than issued by a socket, so no real AUTH has round-tripped and no REQ has returned events instead of `auth-required` (**PEE-5**); whether `kind:41010` is accepted over HTTP — Estiva ID will sign one, which says nothing about ingest (**DMS-2**); whether `nostr-tools` covers enough to replace part of `@estiva/protocol` (SHA-3 allocates an hour).
+Added 2026-08-25 with PEE-5, and it closes the oldest open question in this list: **a real NIP-42 round trip against production.** A browser opened a socket to `wss://estiva.estiva.app`, was issued a challenge, signed a `22242` through the PEE-4 grant, was accepted (`OK … true`), and its REQ came back with three events and an `EOSE` rather than `auth-required`. Every clause of PEE-4's done-when, on one connection.
+
+**Not verified:** whether `kind:41010` is accepted over HTTP — Estiva ID will sign one, which says nothing about ingest (**DMS-2**); whether `nostr-tools` covers enough to replace part of `@estiva/protocol` (SHA-3 allocates an hour).
 
 ---
 
