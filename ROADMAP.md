@@ -33,7 +33,7 @@ Three rules, and they are why this roadmap looks the way it does:
 
 ## State
 
-**Updated 2026-08-26.** Eighteen tickets are done. **Gate 1 is closed and track A is complete except its fallback** — Peek updates from the relay in real time, in production, on every surface that has a channel to watch.
+**Updated 2026-08-26.** Twenty-one tickets are done. **Gate 1 is closed and track A is finished** — Peek updates from the relay in real time, in production, on every surface that has a channel to watch, with a polling fallback for when it cannot.
 
 | shipped | what it proved |
 | --- | --- |
@@ -52,10 +52,11 @@ Three rules, and they are why this roadmap looks the way it does:
 | **PEE-9** | One connection state, surfaced once. Took four rounds of production feedback to stop crying wolf — see below |
 | **PEE-10** | An empty Folder and one we could not read are now different things on screen |
 | **PEE-11** | The Desk and inbox hold their own subscriptions. **Proven on production**: a topic went unread while a different one was open, no reload |
+| **PEE-1 / 2 / 3** | The fallback: refresh on focus, visibility and a 30s timer, never in a hidden tab, and a profile cache that expires. The topic timer stands down while the socket is live |
 
 Also done and not on any ticket: Estiva ID's live `allowed_kinds` were read against `seed.ts` for the first time and **matched exactly** — a caveat CRO-2, PEE-4 and this document had all been carrying.
 
-The remaining ~38 are unstarted. **All four Gate 1 tickets are done**, CRO-2 and DMS-1 included — their browser-session clause was met on 2026-08-25 rather than waived.
+The remaining ~35 are unstarted. **All four Gate 1 tickets are done**, CRO-2 and DMS-1 included — their browser-session clause was met on 2026-08-25 rather than waived.
 
 | Project | Tickets | What it is |
 | --- | --- | --- |
@@ -150,7 +151,7 @@ Where the foundation packages live and how they publish. Contains decisions that
 
 | ticket | note |
 | --- | --- |
-| **PEE-1, PEE-2, PEE-3** | Client-side refetch on focus/visibility plus a ~30s interval, and a profile-cache TTL. Turns "until remount" into "within 30 seconds" and probably clears most reported symptoms. **PEEK-109 is in milestone M6, target 2026-08-27 — these go first.** |
+| ~~**PEE-1, PEE-2, PEE-3**~~ | **Done, 2026-08-26.** Ahead of the M6 target. Not the mitigation they were filed as — the socket arrived first, so they shipped as its fallback, and the topic timer stands down while it is live. |
 | **CRO-3** | The read-context convention: `h:<folder-uuid>` / `thread:<root>` / `msg:<id>`. A document. Every later read-state ticket cites it. |
 | **CRO-11** | The app-private storage convention (`kind:30078`). A document. |
 | **SHA-1** | Gate 2. |
@@ -159,31 +160,35 @@ Where the foundation packages live and how they publish. Contains decisions that
 | ~~**REW-10**~~ | **Done, 2026-08-25.** Comments are NIP-22 `kind:1111`. Needed grants for three credentials, both Peek read paths, and a manifest republish — none of which the ticket named. |
 | **CAT-1, CAT-2, CAT-3** | The catch-up survey. Read-only, nothing merged, nothing deployed. CAT-3 answers whether an upstream deploy would break production data, which is the gate for the rest of that project. **CAT-2's title says "our four commits" and the fork is now nine** — the newest is CAT-9's *deletion* inside a match arm, the kind a merge silently undoes. There is a test that catches it; keep it through the merge. |
 
-~~**The highest-leverage thing left is finishing Gate 1.**~~ **Done, 2026-08-25**, both tickets in one deploy. Three tracks came unblocked at once.
+## Track A is finished — what it cost and what it left
 
-~~**What is highest-leverage now is PEE-5.**~~ **Done, 2026-08-25**, and the far side of the wire came back clean: the relay accepted a challenge response it had issued, and the REQ on that connection returned events. Nothing on the Estiva ID side needed changing to get there.
+**Eleven tickets, 2026-08-25 to 2026-08-26**, from a Peek that read the relay once per mount to one that updates live on every surface with a channel, and falls back to polling where it cannot.
 
-~~**What is highest-leverage now is PEE-7 → PEE-8.**~~ **Both done, 2026-08-25.** The socket is no longer unconsumed code: `useTopicView` subscribes to its channel, live events reach the projection, and Convex reactivity does the rest. That it is genuinely the deployed code was checked by fetching the served bundle and grepping it, not by comparing image ids — a container whose image id matches a local tag proves nothing about what it serves.
+Three things from it are worth carrying to any track, and none is about WebSockets.
 
-**A two-window test of one account proves none of it**, and that is worth writing down because it is an easy and convincing mistake — it was made here first, and the result looked like success. Both windows share one Convex deployment, so a reply sent in one reaches the other by **Convex reactivity alone**, exactly as it did before M3. Nothing in the socket path is involved.
+**A two-window test of one account proves nothing.** It was the first test run here and it looked exactly like success. Both windows share one Convex deployment, so a reply sent in one reaches the other by **Convex reactivity alone** — as it did before any of this existed. The relay path is only exercised when an event originates *outside Peek's own database*. What settled it was a `kind:9` signed by the agent and POSTed to the relay's bridge, appearing in an open topic with no other route to the screen. Any future verification of a live path has to publish from Ship, the agent, or a second identity.
 
-The relay path is only exercised when an event originates **outside Peek's own database**. What actually settled it: a `kind:9` signed by the agent through `/sign` and POSTed to the relay's bridge — `accepted: true` — which then appeared in an open topic within a second, no reload. Socket → `liveProjection` → `importChannel` → Convex reactivity, with no other route to the screen. Any future verification of this track has to publish from Ship, the agent, or a second identity.
+**Check the bytes, not the image id.** A container whose image id matches a local tag proves nothing about what it serves. The deploys here were confirmed by fetching the served bundle and grepping it for the new code.
 
-~~**What is highest-leverage now is PEE-7 → PEE-8.**~~ ~~**PEE-9 and PEE-10.**~~ **PEE-11 done, 2026-08-26 — track A is complete except its fallback.**
+**A status signal must earn its way onto the screen by persisting.** PEE-9 shipped correct and was reported four times for crying wolf. Every state now has a threshold. An indicator built from "is everything perfect right now?" fires at every transition, and a badge that lights during normal use is one people stop seeing.
 
-**What is highest-leverage now is PEE-1, PEE-2 and PEE-3**, and their reason has changed. They were filed as the cheap fix that would "probably clear most reported symptoms" while the socket was still ahead. The socket is here, so they are no longer the mitigation — they are the **fallback**, and PEE-8 has left them a specific job:
+### What is worth doing next, and why
 
-- PEE-8 returns `relayState` from `useTopicView` rather than rendering it. PEE-1's interval should **idle against that** and run only when the socket is not `live`. Deriving it from a second socket would double the AUTH round trips for nothing.
-- The reconnect gap is already covered — PEE-8 re-runs the HTTP backfill on every transition into `live`, because a restored subscription delivers only what is *new* and the outage's events would otherwise be missing permanently.
+Nothing is blocked. In rough order of leverage:
 
-**PEE-9 is the other natural next step** and should consume the same `relayState`. It has two states worth distinguishing that nothing renders yet: `failed` is terminal and means *authentication* — a missing grant, a clock more than 60s out — while a relay that is merely down stays `reconnecting` forever by design. One says "wait", the other says "this will never work".
+| next | why |
+| --- | --- |
+| **SHA-1** (Gate 2) | Unblocks the entire foundation half — tracks D and E, which contain the programme's long pole. It is also mostly *decisions* rather than implementation: repo layout, public npm versus GitHub Packages, who owns a breaking change. Needs a person, not an implementer. |
+| **CRO-3, CRO-11** | Two convention documents every later read-state ticket cites. Cheap, and they unblock CRO-4 onward, which Gate 1 already cleared the way for. |
+| **CAT-1, CAT-2, CAT-3** | The catch-up survey. Read-only, nothing merged or deployed. CAT-3's answer is the trigger for the rest of that project. |
+| **The Folder decision** | §"Finishing the Folder decision" — both verification questions are answered and both rehearsals are built. It is now a reading session and a decision, not an investigation. |
 
 ---
 
 ## The six tracks
 
 ```
-Gate 1 ✔ CLOSED ─────┬─> A. Peek real-time   ✔5 → ✔6 → ✔7 → ✔8 → ✔9,✔10 → ✔11  (1,2,3 fallback left)
+Gate 1 ✔ CLOSED ─────┬─> A. Peek real-time   ✔ COMPLETE (11 of 11)
   (Estiva ID, live)  ├─> B. Read state       CRO-4 → 5 → 6 → 7 → 9
                      └─> C. DMs              DMS-2 → 3,4 → 5,6 → 7 → 9,10,11
 
@@ -304,6 +309,7 @@ Per rule 2, these are held deliberately rather than forgotten.
 | **The upstream NIP proposal** (RFC 0.3 §10.1/10.2) | deferred on purpose — hard to reason about now, easier after Ship's rewrite and after we see whether upstream ships their forge layer | reaching the first line of folder command/state code, which is the latest responsible moment |
 | **Peek's `topic = channel` → `topic = file` migration** (RFC 0.3 §11.1) | depends on folders existing. Plausibly larger than the Ship rewrite | folders shipped; sequence after the Ship rewrite has proven the shared foundation |
 | **Component anchoring** (RFC 0.3 §6) | the least settled part of the RFC — needs a real editor to choose against | Leaf existing enough to test one option |
+| **Live project-panel updates** *(new, small)* | found while building PEE-2. The Ship project panel polls on a 30s timer because `liveProjection` routes only message-shaped kinds — so a project or issue record changing in Ship reaches Peek eventually rather than instantly. The socket already delivers those events: the subscription is kindless, so nothing new is asked of the relay. Routing `30850`/`30851` into a panel refresh would close it | nothing — it is filed here only because it is smaller than a ticket and nobody has decided it is worth one |
 | ~~Buzz upstream catch-up~~ | **now filed** as CAT-1…8. Two-speed: the survey is read-only and should happen soon; the merge and deploy wait for CAT-3's answer | — |
 
 Two items that *were* here are now filed: the Ship rewrite (REW-1…11) and the Buzz catch-up (CAT-1…8). The folder decision has its own section above rather than a row here, because it is the one that unblocks the most.
