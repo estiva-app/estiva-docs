@@ -83,6 +83,10 @@ export const INTERNAL = new Set([
   // because it cites the roadmap and the ticket tracker throughout, and a
   // decision record whose every reference is internal reads as half a document.
   'decisions/0001-relay-canonical-by-default.md',
+  // Same reasoning, and it additionally names a registry scope, a token
+  // layout and work nobody has done yet. Publishable once the packages are
+  // real and the ticket references are gone.
+  'decisions/0002-foundation-packages.md',
   // Design debate rather than specification — written as a response to a
   // proposal that is not restated, in the first person. The conclusion it
   // reaches (documents use relay git) belongs in the spec if it is ever wanted
