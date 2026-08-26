@@ -50,8 +50,10 @@ in this repo depend on it:
 | Estiva Peek | `estiva-app/peek` | `~/peek-app` |
 | Estiva Ship | `estiva-app/ship` | `~/estiva-ship` |
 | *(these docs)* | `estiva-app/estiva-docs` | `~/estiva-docs` |
+| Foundation packages | `estiva-app/estiva-foundation` | `~/estiva-foundation` |
+| Estiva UI | `estiva-app/estiva-ui` | `~/estiva-ui` |
 
-All five are siblings. Cross-repo links in this repo are written relative to
+All of them are siblings. Cross-repo links in this repo are written relative to
 that layout (`../peek-app/...`), never as absolute paths.
 
 ---

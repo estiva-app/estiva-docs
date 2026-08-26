@@ -104,9 +104,14 @@ registry 404s for `@estiva-app/hello`, `/protocol`, `/platform`, `/identity` and
   today. A published tarball ships `dist/`, `src/` and source maps, so the
   foundation's code becomes public even though its repo is not. That is
   consistent with the decision — the protocol is public — but it is a real change
-  in posture and it should be a surprise to nobody. It also means the packages
-  need a **license**; the throwaway used MIT and the real ones are an open
-  question (§8).
+  in posture and it should be a surprise to nobody.
+
+**The licence is MIT**, decided 2026-08-26, and it is the default for every
+`@estiva-app` package. `UNLICENSED` — which is what `@estiva-app/ui` carried —
+means all rights reserved, and on public npm that reads as *anyone may download
+this and nobody may use it*. A `LICENSE` file ships inside each tarball rather
+than living only in the repo, because the tarball is what a consumer actually
+receives.
 
 ## 4. Decision 3 — versioning, release, and what is in the tarball
 
@@ -354,8 +359,9 @@ In order, all of it human work that needs an npm account:
   trigger is the answer to it.
 - **A build step now stands between editing a package and seeing it in an app.**
   Raw TypeScript would have avoided that, and §4a is why it is not worth it.
-- Publishing requires an npm org that does not exist yet, so the last leg of this
-  ADR is unproven until someone with an npm account acts.
+- The npm org, the packages and their licence are now real and public, and none
+  of the three can be taken back cleanly: a name is permanent after 72 hours, and
+  an MIT grant cannot be withdrawn from a version already published.
 
 ## 9. Related
 
