@@ -145,6 +145,15 @@ Verify the row, never the `seeded N app credential(s)` log line. `docker compose
 
 Where the foundation packages live and how they publish. Contains decisions that are not an implementer's to make: repo layout, public npm versus GitHub Packages, and who owns a breaking change. SHA-1 asks for a throwaway package published and upgraded in two apps before it closes, because the failure mode is a build that cannot resolve a dependency in CI rather than locally.
 
+**Decided, 2026-08-26 — [`decisions/0002-foundation-packages.md`](decisions/0002-foundation-packages.md).** One repo (`estiva-foundation`, npm workspaces, per-package CI), public npm under **`@estiva-app`**, built ESM + `.d.ts` rather than TypeScript source, and the person making a break opens the upgrade PR in every consumer before the major publishes.
+
+**The gate is not closed.** The pipeline is proved from clean checkouts of all three consumers — publish, install, `0.0.1` → `0.0.2`, and the new version present in Peek's and Ship's *built bundles* — but against a **local registry**, because there are no npm credentials on the machine and the `@estiva-app` org does not exist. What remains is human: create the org, mint a granular token, publish for real. §7 of the ADR is the list.
+
+Two findings worth having before SHA-2 and SHA-3 start:
+
+- **Publishing raw `.ts` would have shipped a package that is green in Peek and red in Ship** — Ship's `noUnusedLocals` applied to the library's own source, `skipLibCheck` no help because these are not `.d.ts`. Ship's esbuild build passed the same package. That is b990b57's objection relocated into a typecheck, and it is why the packages are built.
+- **Peek's Vercel build could not be confirmed and may no longer exist.** `peek-develop.vercel.app` is serving a build four commits behind `main`, and the repo shows no Vercel check-runs or deployments — only `github-actions`. Public npm needs no registry token, so the stakes are low, but somebody with Vercel access should say whether that project still builds Peek at all.
+
 ---
 
 ## Start now — no gate
@@ -329,7 +338,7 @@ Two items that *were* here are now filed: the Ship rewrite (REW-1…11) and the 
 
 | decision | ticket |
 | --- | --- |
-| Package repo layout; public npm vs GitHub Packages; who owns a breaking change | SHA-1 |
+| ~~Package repo layout; public npm vs GitHub Packages; who owns a breaking change~~ — **decided 2026-08-26**, [ADR 0002](decisions/0002-foundation-packages.md). What is left is not a decision: create the npm org | SHA-1 |
 | What the product says about DM privacy — "private" is accurate for membership-scoped; whether to say more is product and possibly legal | DMS-11 |
 | What happens to existing Convex-only DMs. The relay's ±15 minute drift window means republished history cannot carry original timestamps, so migration is not free | DMS-7 |
 | Whether `claude-agent` gets `kind:30078` — decide rather than omit | CRO-2 |
