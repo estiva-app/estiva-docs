@@ -240,18 +240,26 @@ package exports a version constant at all.
   the `@estiva-app` org does not exist yet. Everything above ran against a local
   registry, which exercises the client, the tarball, resolution and the upgrade —
   but not npm's auth, org permissions or scope creation. §7 is what remains.
-- **Peek's Vercel build is unverified.** `peek-develop.vercel.app` is live and
-  served a build from 09:50 UTC on 2026-08-25, while production
-  (`peek.estiva.app`, Cloudflare → Hetzner via GHCR) served one from 15:12 the
-  same day, after four more commits to `main`. The `estiva-app/peek` repo shows
-  **no Vercel check-runs and no GitHub deployments** — only `github-actions`. So
-  either the Vercel project tracks something other than this repo's `main`, or it
-  is no longer wired to it. SHA-1 asks for the Vercel build specifically because
-  a private-registry token would break there first; on public npm there is no
-  token to be missing, which lowers the stakes but does not answer the question.
-  **Someone with Vercel access should say whether that project still builds Peek
-  at all** — if it does not, the clause is moot and Peek's real gate is the
-  GitHub Actions build, which did pass here.
+- **Peek's Vercel build no longer exists.** SHA-1's done-when names it
+  specifically, because a private-registry token would break there first.
+  Confirmed obsolete by Miky on 2026-08-26: `peek-develop.vercel.app` is a
+  leftover, still serving a build four commits behind `main`, and the repo shows
+  no Vercel check-runs and no GitHub deployments — only `github-actions`. **Peek's
+  build gate is GitHub Actions**, `npm ci` → `npm run test:run` → `npx convex
+  deploy --cmd 'npm run build'`, and the image build after it. That is the check
+  the done-when's Vercel clause now means, and it passed here from a clean
+  checkout: 42 test files, 565 tests, then `tsc -b && vite build` with the
+  package resolved by name.
+
+  Two loose ends this leaves in `peek-app`, both stale rather than harmful:
+  `vercel.json` and the "Publishing them on Vercel" section of `HOW-TO-RUN.md`
+  describe a deployment that is gone. `@vercel/analytics` is *not* stale — it
+  runs in production on the Hetzner deploy.
+
+- **The tag → publish path is unproven.** GitHub Actions has been in a major
+  outage since 15:11 UTC on 2026-08-26 and queues nothing, org-wide. The first
+  release will be published from a laptop out of necessity; the second one must
+  go through `release.yml`, or §4c is a decision nobody has executed.
 
 ## 7. Setup this implies, and nobody has done it
 
@@ -282,8 +290,8 @@ In order, all of it human work that needs an npm account:
 - A consumer's tsconfig can no longer fail a foundation package's build, because
   a `.d.ts` is not typechecked with the consumer's flags. The measurement in §4a
   is what that sentence is worth.
-- No registry auth anywhere: not on a laptop, not in Vercel, not in three CI
-  workflows, not in the scaffold REW-1 produces.
+- No registry auth anywhere: not on a laptop, not in three CI workflows, not in
+  the scaffold REW-1 produces.
 - A third party can install exactly what the suite installs, which is the interop
   claim made literal.
 

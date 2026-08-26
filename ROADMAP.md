@@ -152,7 +152,8 @@ Where the foundation packages live and how they publish. Contains decisions that
 Two findings worth having before SHA-2 and SHA-3 start:
 
 - **Publishing raw `.ts` would have shipped a package that is green in Peek and red in Ship** — Ship's `noUnusedLocals` applied to the library's own source, `skipLibCheck` no help because these are not `.d.ts`. Ship's esbuild build passed the same package. That is b990b57's objection relocated into a typecheck, and it is why the packages are built.
-- **Peek's Vercel build could not be confirmed and may no longer exist.** `peek-develop.vercel.app` is serving a build four commits behind `main`, and the repo shows no Vercel check-runs or deployments — only `github-actions`. Public npm needs no registry token, so the stakes are low, but somebody with Vercel access should say whether that project still builds Peek at all.
+- **Peek's Vercel build no longer exists** — confirmed obsolete 2026-08-26. SHA-1's done-when names it because a private-registry token would break there first; on public npm there is no token, and **Peek's actual gate is GitHub Actions** (`npm ci` → `test:run` → `npx convex deploy --cmd 'npm run build'`). That is what the clause now means, and it passed from a clean checkout with the package installed: 565 tests, then `tsc -b && vite build`.
+- **GitHub Actions has been in a major outage since 15:11 UTC on 2026-08-26** and queues nothing org-wide, so the tag→publish path is unproven. The first release comes off a laptop by necessity; the second must go through `release.yml`.
 
 ---
 
@@ -333,6 +334,7 @@ Two items that *were* here are now filed: the Ship rewrite (REW-1…11) and the 
 **Still wrong:**
 
 - `README.md` lists Ship as "TypeScript, plain DOM", which the rewrite makes false. REW-9 flags it, and it stays true until the cutover — so fix it then, not now.
+- `peek-app` still carries `vercel.json` and a "Publishing them on Vercel" section in `HOW-TO-RUN.md`, for a deployment that is obsolete as of 2026-08-26. Not filed — it is a five-minute cleanup for whoever is next in that repo. `@vercel/analytics` is *not* stale: it runs in production on the Hetzner deploy.
 
 ### Decisions that are not an implementer's to make
 
