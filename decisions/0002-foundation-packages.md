@@ -61,7 +61,15 @@ independently; and a new person clones four things to change one.
 3. **A written split trigger.** A package moves out when it acquires a *different
    consumer set or release cadence* from the rest, or the second time a CI run
    for one package blocks a release of another. Splitting later costs a repo
-   move and a redirect; it does not cost a rewrite.
+   move and a redirect; it does not cost a rewrite. The npm name does not change
+   when a package moves, which is what makes this cheap.
+
+**One cost that four repos would not pay, recorded because it is real.** Access
+is granted per repository, so write on `ui` is write on `protocol`. With SHA-5
+starting under a second pair of hands, that is not hypothetical. The mitigation
+is `CODEOWNERS` — a package's owner reviews its changes — not a repo boundary,
+because a boundary that exists to express permissions will express them badly
+the moment somebody needs to change two packages at once.
 
 ## 3. Decision 2 — public npm, scope `@estiva-app` (already decided)
 
@@ -176,16 +184,56 @@ when the answer is nothing:
 A missing line is what lets a bytes-changing release pass as a refactor, so
 "unchanged" is written out rather than left implied.
 
-### 4c. Releases are cut from CI, on a tag
+### 4c. Releases are cut from CI, on a tag, and CI holds no token
 
 The version bump is a PR — `package.json` plus a CHANGELOG entry. On merge, push
-the tag `<package>@<version>`; a workflow on that tag runs the build and
-publishes. Nobody publishes from a laptop.
+the tag `<package>@<version>`; a workflow on that tag builds and publishes.
+Nobody publishes from a laptop, with exactly one exception below.
 
-CI authenticates with a **granular access token scoped to `@estiva-app`**, held
-as the `NPM_TOKEN` repo secret. Not a personal classic token: a classic token is
-a standing credential for everything its owner can publish, which is the same
-objection the deploy workflows already make about SSH keys in GitHub.
+**This subsection originally said "a granular access token in `NPM_TOKEN`". That
+was wrong, and the first real release proved it in the only way that counts.**
+The tag went up, the workflow ran, the tarball was built, and npm answered:
+
+```
+npm error code EOTP
+npm error This operation requires a one-time password.
+```
+
+The token authenticates; the account requires 2FA for writes; the token is not
+permitted to bypass it. And npm's own notice says where this is going:
+
+> npm tokens that bypass 2FA are being restricted for account changes and direct
+> publishing.
+
+Per [GitHub's changelog](https://github.blog/changelog/2026-07-31-restricting-npm-bypass-2fa-granular-access-tokens/),
+those restrictions took effect 2026-07-31 and **2FA-bypass tokens lose direct
+publish entirely in January 2027**. A token in CI is therefore a decision with a
+five-month shelf life, and choosing it would have meant discovering this again in
+December with four packages depending on it.
+
+**So: releases publish with trusted publishing (OIDC), and GitHub holds no npm
+credential at all.** The workflow declares `id-token: write` and npm verifies the
+run against a trusted publisher registered on the package — provider GitHub
+Actions, org `estiva-app`, repo `estiva-foundation`, workflow `release.yml`. This
+is the same posture the deploy workflows already argue for about SSH keys: the
+objection to a standing credential in GitHub is not that it is hard to rotate, it
+is that it exists.
+
+Two consequences of that, both awkward and both better known now:
+
+- **A package's *first* publish cannot use trusted publishing**, because the
+  trusted publisher is configured on a package that already exists. Creating a
+  package is therefore a deliberate manual act, from a laptop, with an
+  interactive OTP — once per package, ever. Every release after it is CI.
+- **Trusted publishing generates provenance, and provenance attests to a public
+  source commit.** `estiva-foundation` is private. Whether npm refuses, or
+  publishes without provenance, is **unmeasured** — it will be measured on the
+  first CI release and recorded here. If it refuses, the options are making the
+  repo public — which is coherent, since the tarball already ships `src/` — or
+  staged publishing, where a maintainer approves the release with 2FA.
+
+Delete the `NPM_TOKEN` secret once OIDC publishes successfully. A credential kept
+"just in case" is a credential nobody rotates.
 
 ## 5. Decision 4 — who owns a breaking change
 
@@ -269,9 +317,9 @@ In order, all of it human work that needs an npm account:
    free on 2026-08-26; a scope is claimed by whoever gets there first.
 2. **Decide who holds publish rights** — at least two people, or the bus factor
    is one.
-3. **Mint a granular access token** scoped to `@estiva-app`, read-write, and put
-   it in the `estiva-app/estiva-foundation` repo secrets as `NPM_TOKEN`. Not a
-   personal classic token (§4c).
+3. **Publish the first version of each package by hand**, with an interactive
+   OTP — a trusted publisher cannot be registered on a package that does not
+   exist (§4c). Then register it on npmjs.com and let CI do every release after.
 4. **Publish `@estiva-app/hello@0.0.1`, then `0.0.2`**, and re-run §6 against the
    public registry from clean checkouts. The commands are in the foundation
    repo's README.
@@ -291,7 +339,8 @@ In order, all of it human work that needs an npm account:
   a `.d.ts` is not typechecked with the consumer's flags. The measurement in §4a
   is what that sentence is worth.
 - No registry auth anywhere: not on a laptop, not in three CI workflows, not in
-  the scaffold REW-1 produces.
+  the scaffold REW-1 produces. And after §4c, no npm credential in GitHub either
+  — the release workflow proves who it is rather than presenting a secret.
 - A third party can install exactly what the suite installs, which is the interop
   claim made literal.
 
