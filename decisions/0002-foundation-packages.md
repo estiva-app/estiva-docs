@@ -23,11 +23,37 @@ and *proved* before any real code moves.
 This ADR records four decisions. The second was made by Miky and is recorded
 here rather than reasoned to; the other three were open.
 
-## 2. Decision 1 — one repo, `estiva-foundation`, npm workspaces
+## 2. Decision 1 — one repo for three packages, and `ui` outside it
 
-All four packages live in **one repository** at `~/estiva-foundation`
-(`estiva-app/estiva-foundation`), joining the sibling layout under `$HOME` that
-`README.md` documents. Each package versions and releases independently.
+**`protocol`, `platform` and `identity` live in one repository** at
+`~/estiva-foundation` (`estiva-app/estiva-foundation`), npm workspaces, each
+versioned and released independently. **`ui` stays its own repository**,
+`estiva-app/estiva-ui`. Both join the sibling layout under `$HOME` that
+`README.md` documents.
+
+**This changed on 2026-08-26, the day it was written**, and the reasoning is
+kept rather than tidied away. The first version of this ADR put all four in one
+repo and defined a split trigger: *a package moves out when it acquires a
+different consumer set or release cadence from the rest.* Within hours the
+trigger fired for `ui`, on three counts at once and none of them hypothetical:
+
+- **Nothing in the foundation depends on it.** `ui` needs React, clsx and
+  tailwind-merge, and nothing of ours. `identity` and `platform` will both
+  depend on `protocol` — those three genuinely want one repo, and `ui` gains
+  nothing from being beside them.
+- **It carries a toolchain the others have no use for.** Storybook, Tailwind,
+  jsdom, React: 269 packages. In one repo, `npm ci` for a one-line `protocol`
+  change installs all of it.
+- **It has a different maintainer and will churn fastest**, because design
+  churns fastest, while `protocol` should change rarely and carefully.
+
+The cost, and it is real: two mental models instead of one, and "why is `ui`
+different?" is a question every newcomer will ask. That is a documentation cost,
+which this section is paying.
+
+**What would fold `ui` back in:** `identity` or `platform` coming to depend on
+it — sign-in screens shipping real components would do it — because every auth
+change would then become a two-repo release. Worth watching during SHA-4.
 
 **The objection, which is real.** b990b57 moved the agent out of Ship for a
 reason that appears to apply here verbatim:
@@ -38,13 +64,13 @@ reason that appears to apply here verbatim:
 A single foundation repo means `@estiva-app/ui`'s CI has an opinion about
 `@estiva-app/protocol`. That is the same shape.
 
-**Why it is nonetheless one repo.** The rule b990b57 actually established is
-narrower than "one repo per unit of code": a repository should not contain
-things outside its remit. Ship's remit is issue tracking, and Peek's kinds were
-outside it. A foundation repo's remit *is* the shared layer — all four packages
-are the same thing seen from four angles, and three of them will depend on
-`protocol`. Splitting them means either publishing a version to test a
-cross-package change, or a chain of `npm link`s, for a team this size.
+**Why the remaining three are nonetheless one repo.** The rule b990b57 actually
+established is narrower than "one repo per unit of code": a repository should not
+contain things outside its remit. Ship's remit is issue tracking, and Peek's
+kinds were outside it. The foundation's remit *is* the shared protocol layer, and
+`identity` and `platform` both build on `protocol`. Splitting those three means
+either publishing a version to test a cross-package change, or a chain of
+`npm link`s, for a team this size.
 
 Three concrete costs of four repos that one repo does not pay: a protocol change
 plus its identity consumer cannot land atomically; four release toolchains drift
