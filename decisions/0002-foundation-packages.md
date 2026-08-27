@@ -369,10 +369,42 @@ new name is not a failed publish.
   describe a deployment that is gone. `@vercel/analytics` is *not* stale — it
   runs in production on the Hetzner deploy.
 
-- **The tag → publish path is unproven.** GitHub Actions has been in a major
-  outage since 15:11 UTC on 2026-08-26 and queues nothing, org-wide. The first
-  release will be published from a laptop out of necessity; the second one must
-  go through `release.yml`, or §4c is a decision nobody has executed.
+- ~~**The tag → publish path is unproven.**~~ **This bullet was already false
+  when it merged**, and the table above already said so — an internal
+  contradiction worth recording rather than quietly deleting. The Actions outage
+  it describes was real, but it had ended: `hello@0.0.2` published on its tag at
+  07:37 UTC on 2026-08-27 (run `33048894123`), through the credential-free
+  workflow, and the ADR merged later the same day. Written from the state of the
+  world a few hours earlier and not re-checked before merging.
+
+  **What was genuinely unproven until 14:25 UTC on 2026-08-27 is narrower, and it
+  is the part that matters: a trusted publisher is registered per *package*.**
+  `hello`'s success proved the workflow, the OIDC exchange and the tag parsing. It
+  could say nothing about whether `@estiva-app/protocol` had a publisher
+  registered, because that is a separate configuration on a separate package —
+  and a missing one fails `ENEEDAUTH` in a way that looks like a workflow fault
+  rather than a registry setting.
+
+  `protocol@0.1.1` closed that (run `33082089732`), and it is the first time the
+  path carried a package anything depends on rather than the throwaway. Two
+  measurements from it:
+
+  - **A new *version* of an existing package is readable in 1 second**, against
+    the 243s the new *name* `@estiva-app/protocol` took. So a 404 after
+    publishing a version — as opposed to a name — is a real failure, not
+    propagation.
+  - **Provenance is absent and nothing failed**, confirming §4c's finding on a
+    second package: a private source repo costs the attestation only.
+
+  The release also carried its own falsifiability. Its changelog says "Wire
+  behaviour: unchanged", and that was checked rather than asserted — `diff -r`
+  between 0.1.0's published tarball and 0.1.1's build was two lines, both the
+  version string, and both versions compute an identical event id for identical
+  input.
+
+  **The lesson is about this document, not the pipeline.** A "not proved" list is
+  a claim with a timestamp, and this one outlived its evidence by six hours
+  because nobody re-ran the check between writing and merging.
 
 ## 7. Adding a package after this one
 
