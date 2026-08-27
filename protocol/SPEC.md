@@ -35,9 +35,20 @@ assume about one. The reference relay is [Buzz](https://github.com/block/buzz).
 | Transport & storage | Buzz relay | NIP-01, NIP-29, NIP-09, NIP-98 |
 | Identity | Estiva ID | NIP-01 `kind:0`, NIP-05, NIP-43, Blossom BUD-11 |
 | Applications | Peek, Ship, yours | NIP-22, NIP-89 + §7 of this document |
+| Per-person state | read state, app data | NIP-RS, NIP-78 + §11 and §12 of this document |
 
 The only genuinely new protocol in this document is **§7, the projection
-manifest**. Everything else is composition of existing NIPs.
+manifest**. Everything else is composition of existing NIPs — but three of those
+compositions are load-bearing conventions that the NIPs deliberately leave open,
+and an app that picks its own instead will interoperate on everything except the
+thing the convention covers: **§7** (how another app folds your objects), **§11**
+(what a read marker is called) and **§12** (where a person's own app state
+lives).
+
+**On the numbering:** §11 and §12 arrive after §10's closing argument rather than
+beside the sections they relate to, because the section numbers in this document
+are cited from three repositories and a renumbering would break every one of them
+silently. Read §11 after §6 if you are reading in order.
 
 ---
 
@@ -493,3 +504,248 @@ convenience and never a requirement. If you do write your own, pin its event ids
 to a reference implementation rather than to itself — `nostr-tools/pure`'s
 `getEventHash` agrees with `@estiva-app/protocol` on every event this workspace
 has published, which makes it a usable oracle for anybody.
+
+**Two sections follow this one**, despite it reading as a conclusion — see the
+note in §1.1 on why they are numbered where they are. §11 fixes what a read
+marker is called, and §12 fixes where a person's own app state lives. Both are
+conventions over NIPs that decline to specify them, and both are the difference
+between an app interoperating and an app being a second opinion.
+
+---
+
+## 11. Read state
+
+Read state is **per person, not per app.** Reading a conversation in one Estiva
+app marks it read in the others, and in any other client on the relay that
+implements NIP-RS.
+
+The mechanism is NIP-RS: `kind:30078` blobs, NIP-44 encrypted to self, one per
+installation, merged by taking the **maximum** timestamp per context. The relay
+already implements it. What NIP-RS deliberately does not specify is the *context
+identifier*, and it says so: "Interoperability between different client
+implementations on context ID conventions is outside the scope of this NIP."
+
+That single omission is the whole reason "read it in Ship, it's read in Peek"
+does not already work. This section fixes the identifiers for the Estiva suite.
+
+### 11.1 Context identifiers
+
+| grain | context id | format |
+| --- | --- | --- |
+| container | `<channel-uuid>` — **bare, no prefix** | lowercase UUID v4 |
+| thread | `thread:<root-event-id>` | 64-char lowercase hex |
+| message | `msg:<event-id>` | 64-char lowercase hex |
+| folder | `folder:<folder-address>` | **RESERVED, unspecified** — see §11.5 |
+
+**The container context is the bare channel uuid.** NIP-RS's grandfathered
+clause states that "a bare channel identifier remains the channel context", and
+the reference clients write exactly that. An app MUST NOT prefix it. A prefixed
+variant would be a second convention for the same object on the same relay: one
+app marks a container read and the other still shows it unread, and because
+NIP-RS blobs are grow-only, reconciling later means tolerating both keys
+permanently or migrating published blobs.
+
+`thread:` and `msg:` are NIP-RS's own optional well-known schemes, adopted
+verbatim rather than replaced. A key beginning `thread:` or `msg:` whose
+remainder is not 64 lowercase hex characters is not a well-known context and
+MUST NOT be treated as one.
+
+The container grain is a **channel**, which is what messages carry in their `h`
+tag — not a Folder address and not an application's own id for whatever is
+rendered in it. One convention therefore covers a Peek topic, a Ship project and
+a DM channel without any app knowing about the others.
+
+### 11.2 Write discipline
+
+- Marking a thread read MUST advance only `thread:<root>`.
+- Marking a message read MUST advance only `msg:<id>`.
+- Neither MUST advance the parent container context.
+
+Advancing the parent when a person reads one reply silently marks every later
+top-level message read. **This becomes load-bearing rather than tidy the moment
+one channel carries more than one file's conversations**: today a container holds
+one topic, so getting it wrong is invisible; a container holding five topics
+marks four of them read.
+
+### 11.3 Hierarchy at read time
+
+A container's frontier propagates down: `effective(thread:<root>)` is the later
+of the thread's own marker and the container's. Marking a container read clears
+threads whose events predate the frontier; replies newer than it stay unread
+until their own marker advances.
+
+The hierarchy is applied **at read time**, never by writing extra keys.
+
+### 11.4 Monotonic, and there is no mark-as-unread
+
+A client MUST NOT lower a timestamp. The merge rule is a maximum, so a lower
+value is not merely ignored — it cannot be expressed.
+
+**There is no mark-as-unread in this protocol**, and NIP-RS says so about itself.
+An app that wants the feature needs a separate mechanism; it is not a gap to be
+filled by writing a smaller number. Stated here so nobody promises it.
+
+### 11.5 Reserved: the folder grain
+
+`folder:<folder-address>` is **reserved and unspecified.** "I have read
+everything in this folder" is a different frontier from "I have read this
+conversation", and it will want a scheme.
+
+It is reserved rather than specified because the folder model is still a draft.
+Reserving it costs a line; discovering the need later means either colliding with
+an identifier an app chose in the meantime, or migrating published blobs — and
+NIP-RS blobs are grow-only, so a bad context id is effectively permanent.
+
+**No huddle context is standardised.** If huddles land as channels they get the
+container scheme for free. Nothing is reserved for them.
+
+### 11.6 Storage shape, and the limits that come with it
+
+A client MUST publish `kind:30078` with:
+
+- `d` = `read-state:<32 lowercase hex>` — the installation's slot id;
+- exactly one `d` tag, and exactly one `["t", "read-state"]` tag;
+- `content` = the NIP-44 self-encrypted blob.
+
+The relay's NIP-RS handling is a **narrow predicate** on exactly that shape. Any
+`kind:30078` that misses it is an ordinary addressable event with ordinary
+replaceable semantics — which is what §12 relies on.
+
+Limits an implementer needs before writing a client, from NIP-RS and the
+reference implementation:
+
+| limit | value |
+| --- | --- |
+| context entries per blob | 10,000 max |
+| context id length | 256 bytes max |
+| timestamp range | integer 0–4294967295 |
+| plaintext per slot | 32,768 bytes in the reference client |
+| slots per person | 8 in the reference client |
+| schema version `v` | `1` |
+
+To load read state, fetch every slot and merge:
+
+```json
+{"kinds": [30078], "authors": ["<pubkey>"], "#t": ["read-state"], "since": <now - horizon>}
+```
+
+**The horizon is a client choice with no protocol default.** NIP-RS states that
+blobs are "best-effort recent activity hints bounded by a time horizon" and does
+not fix the value. A consequence that bites: absence of a context means unread,
+so a container last read before the horizon reads as unread unless the client
+keeps its own cache behind the protocol.
+
+Superseded blobs at a NIP-RS coordinate are **hard-deleted** by the relay, and a
+watermark survives a NIP-09 deletion so an old signed blob cannot be
+resurrected. Read state is not an audit log.
+
+### 11.7 What the relay does not tell you
+
+The relay does **not** advertise NIP-RS, and `supported_nips` does not include
+78. An app cannot discover this support from NIP-11 and MUST NOT gate on it.
+
+---
+
+## 12. App-private, user-owned storage
+
+"You own your data" holds for content on the relay. It fails for everything else:
+a person's starred containers, their curated work queues and their app
+preferences have generally lived in an app's own database, which they cannot
+read, export, or take with them. A relay-wide export by author does not include
+it and NIP-09 cannot delete it.
+
+Closing that needs no protocol change. `kind:30078` (NIP-78, "arbitrary custom
+app data") is addressable by `(pubkey, kind, d)` and the relay already treats it
+as user-owned global state.
+
+> **`kind:30078` is not reserved by NIP-RS.** The relay's constant is named for
+> read state, which reads as though the kind were taken. The NIP-RS handling is
+> the narrow predicate in §11.6; ingest performs no other `d`-tag validation on
+> the kind. Anything outside that predicate is an ordinary addressable event.
+
+### 12.1 The three layers, and the test for choosing between them
+
+| layer | where | what |
+| --- | --- | --- |
+| 1 · interop | relay, a standard kind | anything another app must see |
+| 2 · app-private, user-owned | relay, `kind:30078` per this section | only one app reads it, but the person still owns it |
+| 3 · app backend | a database | genuinely needs one |
+
+Two questions, in order:
+
+1. Does another app need to see it? → **layer 1**, using a standard kind.
+2. Otherwise: would the person reasonably expect to own it, export it, or take it
+   with them? → **layer 2**.
+3. Only then, and only if it needs a **query, an index, server-side compute, or
+   size** → **layer 3**.
+
+**"Only this app reads it" is not grounds for layer 3.** That conflation is what
+put a person's own preferences somewhere they could not reach them.
+
+### 12.2 Address, tag and content
+
+- **`d` = `<app>:<name>:v<n>`** — e.g. `peek:screener:v1`. The prefix is the
+  app's Estiva ID `client_id`, so two apps cannot collide by construction. The
+  trailing version lets a schema change without a migration.
+- **Exactly one `["t", "<app>-appdata"]` tag**, so a reader can filter by `#t`
+  rather than fetching every `kind:30078` the person owns — the same reason
+  NIP-RS carries `["t", "read-state"]`.
+- **`content` MUST be NIP-44 encrypted to self**, unless the data is
+  deliberately public. See §12.4.
+
+An app MUST NOT use a `d` beginning `read-state:` — that prefix is §11.6's
+predicate, and it brings hard-deletion of superseded blobs with it.
+
+An app MUST NOT add an `h` tag. These events are user-owned and global. The relay
+classifies the kind as global-only precisely so a stray `h` cannot channel-scope
+it — but the read path still treats an explicit `h` tag as authoritative when
+matching `#h` filters, which the relay's own source records as a known
+limitation. So a stray `h` does not scope the event on write and *does* make it
+answer channel queries on read. That asymmetry is the reason this is a MUST NOT
+rather than a style note.
+
+### 12.3 The limits, so nobody puts a table in a blob
+
+- **No queries.** Fetch by coordinate, or filter by `#t`. No sorting, no ranges,
+  no aggregation, no joins.
+- **Whole-blob writes.** Parameterized-replaceable: each write replaces the
+  coordinate, so a hundred-item list is rewritten to change one item.
+- **Size.** The relay rejects an event whose `content` exceeds **256 KiB** at
+  ingest. Three other numbers in the same neighbourhood are *not* this limit and
+  are routinely mistaken for it — see §12.5.
+- **No server-side compute.** No functions, no scheduled work, no validated
+  authoritative writes, no transactions.
+- **Last write wins, at seconds resolution.** Two tabs writing one coordinate can
+  silently lose one, and several events from one client routinely land in the
+  same second (§6.2). An app MUST either use a convergent structure with
+  per-installation slots, as NIP-RS does, or accept the loss knowingly — and its
+  convention MUST say which.
+
+### 12.4 Encrypt, or "app-private" is a misnomer
+
+The relay serves any `kind:30078` by author, so an **unencrypted blob is readable
+by every app the person signs into**, and by the operator. Private-from-other-apps
+and private-from-the-operator are the same requirement here, and NIP-44 is what
+satisfies both.
+
+Encrypted is the default. Plaintext is a documented exception, not a shortcut.
+
+`kind:30078` requires the `users:write` scope, and each app needs the kind in its
+Estiva ID `allowed_kinds` — the same three gates §8 describes for any kind.
+
+### 12.5 Four size limits, and only one of them applies
+
+The relay advertises numbers that look like content caps and are not. This is the
+same shape as the NIP-11 `push` object's `keys` array being mistaken for relay
+identity, and it has now caught two readers.
+
+| number | value | what it actually bounds |
+| --- | --- | --- |
+| `limitation.max_message_length` | 524288 | the whole websocket message, not one event's content |
+| `push.limitation.max_content_len` | 65536 | **the NIP-PL push executor.** Inside the `push` object, nothing to do with stored events |
+| `push.limitation.max_plaintext_len` | 32768 | also the push executor |
+| *(not advertised at all)* | **262144** | the per-event `content` cap the relay enforces at ingest |
+
+**The one that applies is not in NIP-11.** An implementer reading the relay's own
+document will find three wrong answers and not the right one, so treat 256 KiB as
+the ceiling and stay far below it — a blob is not a table, whatever the cap says.
