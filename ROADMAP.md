@@ -33,7 +33,7 @@ Three rules, and they are why this roadmap looks the way it does:
 
 ## State
 
-**Updated 2026-08-26.** Twenty-one tickets are done. **Gate 1 is closed and track A is finished** — Peek updates from the relay in real time, in production, on every surface that has a channel to watch, with a polling fallback for when it cannot.
+**Updated 2026-08-27.** Twenty of the programme's 63 tickets are done, counted from the workspace. **Both gates are closed**, track A is finished, and the shared packages are real and installable — Peek updates from the relay in real time, in production, on every surface that has a channel to watch, with a polling fallback for when it cannot.
 
 | shipped | what it proved |
 | --- | --- |
@@ -141,19 +141,32 @@ Verify the row, never the `seeded N app credential(s)` log line. `docker compose
 
 ~~**Run that query before editing `seed.ts`** — the live values were never read.~~ **Done.** Production matched `seed.ts` exactly for all four credentials. The worry can be dropped. For any credential whose secret you hold, `/token` also returns `allowed_kinds`, which reads the live ceiling without the box.
 
-### Gate 2 — SHA-1 unblocks the packages
+### Gate 2 — closed, 2026-08-27
 
-Where the foundation packages live and how they publish. Contains decisions that are not an implementer's to make: repo layout, public npm versus GitHub Packages, and who owns a breaking change. SHA-1 asks for a throwaway package published and upgraded in two apps before it closes, because the failure mode is a build that cannot resolve a dependency in CI rather than locally.
+Where the foundation packages live and how they publish. **Decided and proved** — [`decisions/0002-foundation-packages.md`](decisions/0002-foundation-packages.md).
 
-**Decided, 2026-08-26 — [`decisions/0002-foundation-packages.md`](decisions/0002-foundation-packages.md).** One repo (`estiva-foundation`, npm workspaces, per-package CI), public npm under **`@estiva-app`**, built ESM + `.d.ts` rather than TypeScript source, and the person making a break opens the upgrade PR in every consumer before the major publishes.
+| decision | answer |
+| --- | --- |
+| Where they live | `protocol`, `platform`, `identity` in **`estiva-foundation`** (npm workspaces, path-filtered CI per package); **`ui` in its own repo**, `estiva-ui` |
+| How they publish | **public npm, scope `@estiva-app`**, MIT. Install auth on a new machine is *nothing* — `npm install`, no token, no `.npmrc` |
+| Format | **built ESM + `.d.ts`**, never TypeScript source |
+| Versioning | semver per package; a `@estiva-app/protocol` MAJOR is a *wire* event, and release notes answer the wire question explicitly even when the answer is "unchanged" |
+| Who owns a break | whoever makes it opens the upgrade PR in every consumer in `CONSUMERS.md` before the major publishes |
 
-**The gate is not closed.** The pipeline is proved from clean checkouts of all three consumers — publish, install, `0.0.1` → `0.0.2`, and the new version present in Peek's and Ship's *built bundles* — but against a **local registry**, because there are no npm credentials on the machine and the `@estiva-app` org does not exist. What remains is human: create the org, mint a granular token, publish for real. §7 of the ADR is the list.
+**Live:** `@estiva-app/hello@0.0.2` (the throwaway, published by hand then upgraded **by CI through OIDC with no credential in GitHub**) and `@estiva-app/ui@0.1.0`, consumed by Peek and Ship from the registry.
 
-Two findings worth having before SHA-2 and SHA-3 start:
+**The layout decision changed the day it was written**, and that is recorded rather than tidied: one repo for all four was the first answer, and the split trigger fired for `ui` within hours — nothing in the foundation depends on it, it carries a 269-package toolchain the others have no use for, and it has a different maintainer and the fastest churn.
 
-- **Publishing raw `.ts` would have shipped a package that is green in Peek and red in Ship** — Ship's `noUnusedLocals` applied to the library's own source, `skipLibCheck` no help because these are not `.d.ts`. Ship's esbuild build passed the same package. That is b990b57's objection relocated into a typecheck, and it is why the packages are built.
-- **Peek's Vercel build no longer exists** — confirmed obsolete 2026-08-26. SHA-1's done-when names it because a private-registry token would break there first; on public npm there is no token, and **Peek's actual gate is GitHub Actions** (`npm ci` → `test:run` → `npx convex deploy --cmd 'npm run build'`). That is what the clause now means, and it passed from a clean checkout with the package installed: 565 tests, then `tsc -b && vite build`.
-- **GitHub Actions has been in a major outage since 15:11 UTC on 2026-08-26** and queues nothing org-wide, so the tag→publish path is unproven. The first release comes off a laptop by necessity; the second must go through `release.yml`.
+Four things this cost a failed release each to learn, all worth having before SHA-2 and SHA-3:
+
+- **Publishing raw `.ts` ships a package that is green in Peek and red in Ship.** Ship's `noUnusedLocals` applied to the library's own source; `skipLibCheck` is no help because these are not `.d.ts`. Ship's esbuild build passed the same package, so only the typecheck catches it, in one of two apps. That is b990b57's objection relocated into a typecheck, and it is why the packages are built.
+- **A token in CI was never going to work.** A granular token got `EOTP` — the account requires 2FA for writes — and npm removes direct publish from 2FA-bypass tokens entirely in January 2027. Releases go through **trusted publishing (OIDC)**; GitHub holds no npm credential. A package's *first* publish must still be manual, because a trusted publisher is configured on a package that already exists.
+- **`registry-url` in `actions/setup-node` breaks OIDC and lies about why** — it writes a placeholder token and npm reports the unauthorised write as `404 Not Found`, which reads as *the package does not exist*.
+- **Provenance is skipped, not refused**, when the source repo is private. So a private repo costs the attestation and nothing else.
+
+A fifth, cheaper: **a new package *name* is invisible on the read path for minutes after a successful publish** — 204 seconds, while `npm access` already lists it. A new *version* of an existing package: 1 second.
+
+**Peek's Vercel build no longer exists** — confirmed obsolete. Peek's actual gate is GitHub Actions (`npm ci` → `test:run` → `npx convex deploy --cmd 'npm run build'`), and that is what SHA-1's Vercel clause was met against.
 
 ---
 
@@ -164,8 +177,8 @@ Two findings worth having before SHA-2 and SHA-3 start:
 | ~~**PEE-1, PEE-2, PEE-3**~~ | **Done, 2026-08-26.** Ahead of the M6 target. Not the mitigation they were filed as — the socket arrived first, so they shipped as its fallback, and the topic timer stands down while it is live. |
 | **CRO-3** | The read-context convention: `h:<folder-uuid>` / `thread:<root>` / `msg:<id>`. A document. Every later read-state ticket cites it. |
 | **CRO-11** | The app-private storage convention (`kind:30078`). A document. |
-| **SHA-1** | Gate 2. |
-| **REW-1** | Can begin the scaffold immediately; needs SHA-1 before it consumes packages. |
+| ~~**SHA-1**~~ | **Done, 2026-08-27.** Gate 2 is closed; see above. |
+| ~~**REW-1**~~ | **Merged, 2026-08-26**, in ship#41 with REW-3, 4 and 5. Still open on the ticket — its status is Katerina's to close. |
 | ~~**REW-11**~~ | **Done, 2026-08-24**, with CAT-9 (the relay change it needed) and SHI-7 (the defect it turned out not to fix). See §"Finishing the Folder decision". |
 | ~~**REW-10**~~ | **Done, 2026-08-25.** Comments are NIP-22 `kind:1111`. Needed grants for three credentials, both Peek read paths, and a manifest republish — none of which the ticket named. |
 | **CAT-1, CAT-2, CAT-3** | The catch-up survey. Read-only, nothing merged, nothing deployed. CAT-3 answers whether an upstream deploy would break production data, which is the gate for the rest of that project. **CAT-2's title says "our four commits" and the fork is now nine** — the newest is CAT-9's *deletion* inside a match arm, the kind a merge silently undoes. There is a test that catches it; keep it through the merge. |
@@ -188,7 +201,8 @@ Nothing is blocked. In rough order of leverage:
 
 | next | why |
 | --- | --- |
-| **SHA-1** (Gate 2) | Unblocks the entire foundation half — tracks D and E, which contain the programme's long pole. It is also mostly *decisions* rather than implementation: repo layout, public npm versus GitHub Packages, who owns a breaking change. Needs a person, not an implementer. |
+| **SHA-3** (`@estiva-app/protocol`) | The reason the foundation exists. The wire format is written three times today — `peek/convex/nostr/`, `ship/lib/nostr/`, and the agent's vendored copy kept honest by a `diff -r` somebody has to remember to run. **Its collision has expired**: it was held back because PEE-7 was routing live events into the same Convex projection, and track A is now complete. It is also the riskiest extraction, which argues for doing it while the pipeline is fresh — the failure mode is not a red build but a signature the relay rejects. |
+| **SHA-4 → REW-2** | `@estiva-app/identity` is extracted during Ship's auth ticket, which is the rewrite's next step. Identity wants protocol underneath it, so SHA-3 first. |
 | **CRO-3, CRO-11** | Two convention documents every later read-state ticket cites. Cheap, and they unblock CRO-4 onward, which Gate 1 already cleared the way for. |
 | **CAT-1, CAT-2, CAT-3** | The catch-up survey. Read-only, nothing merged or deployed. CAT-3's answer is the trigger for the rest of that project. |
 | **The Folder decision** | §"Finishing the Folder decision" — both verification questions are answered and both rehearsals are built. It is now a reading session and a decision, not an investigation. |
@@ -202,15 +216,15 @@ Gate 1 ✔ CLOSED ─────┬─> A. Peek real-time   ✔ COMPLETE (11 of
   (Estiva ID, live)  ├─> B. Read state       CRO-4 → 5 → 6 → 7 → 9
                      └─> C. DMs              DMS-2 → 3,4 → 5,6 → 7 → 9,10,11
 
-Gate 2 (SHA-1) ──────┬─> D. Foundation       SHA-2, SHA-3, SHA-6
-                     └─> E. Ship rewrite     REW-2 → 3,4,5 → 6,7 → 8 → 9
-                                             (SHA-4 lands in REW-2, SHA-5 in REW-3)
+Gate 2 ✔ CLOSED ─────┬─> D. Foundation       SHA-3 → SHA-2, SHA-6   (SHA-5 ✔ shipped)
+  (@estiva-app on     └─> E. Ship rewrite     REW-2 → 6,7 → 8 → 9
+   public npm)                                (REW-1,3,4,5 merged; SHA-4 lands in REW-2)
 
 no gate ─────────────┬─> F. Buzz catch-up    CAT-1,2,3 → CAT-4 → 5 → 6 → 7 → 8
                      └─> REW-10, REW-11      independent of the rewrite (see Start now)
 ```
 
-A through F touch different code and share no gate beyond Gate 2, now that Gate 1 is closed. They can run concurrently with different people.
+A through F touch different code and no gate remains, both being closed. They can run concurrently with different people.
 
 **Track F is deliberately two-speed.** CAT-1/2/3 are read-only and should happen soon. CAT-4 onward waits for a reason — deploying 625 commits of relay change against the database Peek and Ship both depend on is not something to do because the number is annoying. CAT-3's answer is what makes that trigger legible.
 
@@ -227,17 +241,17 @@ The only real contact between the halves is CRO-8 (Ship publishes read state), w
 
 | dependency | note |
 | --- | --- |
-| SHA-4 → REW-2 | `@estiva/identity` is extracted *during* the auth ticket. Ship is the second consumer that stops it coming out Peek-shaped. |
-| SHA-5 → REW-3 | Same for `@estiva/ui`. Tokens land in REW-1, primitives in REW-3. |
+| SHA-4 → REW-2 | `@estiva-app/identity` is extracted *during* the auth ticket. Ship is the second consumer that stops it coming out Peek-shaped. |
+| ~~SHA-5 → REW-3~~ | **Done.** `@estiva-app/ui@0.1.0` is on npm and both Peek and Ship install it from the registry. |
 | CRO-8 → REW M3/M4 | CRO-8 says so itself: if the rewrite is underway it belongs there rather than being written twice in the old app. |
 | DMS-8 → CRO-3 | DM read state uses the context convention. Do DMS-8 last in track C. |
 | CRO-10 → PEE-8, CRO-5, CRO-11 | The spike needs live relay data in the browser *and* read state on the protocol. |
-| SHA-3 ↔ REW | SHA-3 deletes Ship's hand-written `lib/nostr/`, which REW-1 says not to move. Not a conflict — SHA-3 owns that deletion, including what `estiva-agent` does — but whoever hits it first should not resolve it alone. |
+| SHA-3 ↔ REW | SHA-3 deletes Ship's hand-written `lib/nostr/`, which REW-1 says not to move. Not a conflict — SHA-3 owns that deletion, including what `estiva-agent` does — but whoever hits it first should not resolve it alone. **Note Ship's `web/` now compiles `../lib/nostr` too**, so the deletion has a consumer the ticket predates. |
 
 ### Two critical paths
 
 1. ~~`PEE-5 → 6 → 7 → 8`~~ → `CRO-10` — **track A is done bar its fallback**; CRO-10 now needs only read state on the protocol (CRO-5, CRO-11)
-2. `Gate 2 → SHA-4 → REW-2 → REW-3,4,5 → REW-6,7 → REW-8 → REW-9`
+2. ~~`Gate 2`~~ → `SHA-3 → SHA-4 → REW-2 → REW-6,7 → REW-8 → REW-9` — **Gate 2 closed; REW-3, 4 and 5 are merged**, so the path is shorter than it was and now runs through the protocol package
 
 The second is longer in wall-clock terms and has the most sequential UI work. The Ship rewrite is the programme's long pole, not the Peek work.
 
@@ -245,7 +259,7 @@ The second is longer in wall-clock terms and has the most sequential UI work. Th
 
 - **CRO-6 before CRO-7.** NIP-RS's fetch horizon defaults to 7 days and absence of a context means "unread", so a topic read three weeks ago reads as unread. Cutting over before the cache exists regresses unread for every quiet container — which would look exactly like the bugs track A is fixing.
 - **DMS-2 before any DM code.** It verifies the assumption track C's independence rests on: that `kind:41010` is accepted over the HTTP bridge. If it is not, track C needs the WebSocket path from track A and changes shape.
-- **PEE-5 and PEE-6 build in `peek-app`, not the package.** They currently say "shared package". Gate 2 has not happened when PEE-5 is due, and PEE-5 is on the M6 deadline — build locally, move it into `@estiva/protocol` as part of SHA-3.
+- **PEE-5 and PEE-6 built in `peek-app`, not the package**, because Gate 2 had not happened when they were due. **Moving them into `@estiva-app/protocol` is now SHA-3's job**, and it is a live debt: the relay client and the subscription manager are Peek-only today.
 - **REW-6 is a release blocker, not a detail.** Ship polls every 5 s and refreshes on `visibilitychange`; Peek does neither. Adopting Peek's conventions naively moves Peek's staleness into Ship, and no test would catch it.
 
 ---
@@ -264,7 +278,7 @@ Small, and deliberately so — per rule 2, the RFC's undecided parts produced no
 | **SHI-7** *(new)* | The actual fix for the 13: discover `kind:30851` directly instead of only through parents, **and** widen into each issue's own Folder so its changes come with it. Coverage 13 → 0 | in review |
 | **CRO-11** | reinforced, not changed. RFC 0.3 §4.6 uses the app-private convention for folder follow-lists | none needed |
 | **DMS-\*** | unaffected. DM channels are orthogonal to folders | none needed |
-| **SHA-\*** | unaffected now. `@estiva/protocol` would carry folder kinds eventually, but not before they exist | none needed |
+| **SHA-\*** | unaffected now. `@estiva-app/protocol` would carry folder kinds eventually, but not before they exist | none needed |
 
 Both new REW tickets are independently valuable and depend on nothing deferred. REW-11 in particular is worth doing for the bug alone.
 
@@ -360,7 +374,7 @@ Also verified from a real signed-in browser session, cross-origin, which is the 
 
 Added 2026-08-25 with PEE-5, and it closes the oldest open question in this list: **a real NIP-42 round trip against production.** A browser opened a socket to `wss://estiva.estiva.app`, was issued a challenge, signed a `22242` through the PEE-4 grant, was accepted (`OK … true`), and its REQ came back with three events and an `EOSE` rather than `auth-required`. Every clause of PEE-4's done-when, on one connection.
 
-**Not verified:** whether `kind:41010` is accepted over HTTP — Estiva ID will sign one, which says nothing about ingest (**DMS-2**); whether `nostr-tools` covers enough to replace part of `@estiva/protocol` (SHA-3 allocates an hour).
+**Not verified:** whether `kind:41010` is accepted over HTTP — Estiva ID will sign one, which says nothing about ingest (**DMS-2**); whether `nostr-tools` covers enough to replace part of `@estiva-app/protocol` (SHA-3 allocates an hour).
 
 ---
 
@@ -372,8 +386,8 @@ Added 2026-08-25 with PEE-5, and it closes the oldest open question in this list
 
 **DMs on Nostr (DM channels)** — DMS-1 grant 41010/41011/41012 · DMS-2 probe · DMS-3 open channel · DMS-4 publish messages · DMS-5 project channels · DMS-6 hidden set · DMS-7 existing DMs · DMS-8 DM read state · DMS-9 immutable participants · DMS-10 participant cap · DMS-11 privacy copy
 
-**Shared foundation packages** — SHA-1 registry decision · SHA-2 PWA package · SHA-3 `@estiva/protocol` · SHA-4 `@estiva/identity` · SHA-5 `@estiva/ui` · SHA-6 scaffold with no backend
+**Shared foundation packages** — ~~SHA-1 registry decision~~ ✔ · SHA-2 PWA package (`@estiva-app/platform`) · SHA-3 `@estiva-app/protocol` · SHA-4 `@estiva-app/identity` · ~~SHA-5 `@estiva-app/ui`~~ ✔ · SHA-6 scaffold with no backend
 
-**Rewrite Ship with shared foundation** — REW-1 shape and scaffold · REW-2 auth via `@estiva/identity` · REW-3 projects views · REW-4 issue views · REW-5 writes · REW-6 keep the poll · REW-7 parity checklist · REW-8 cut over · REW-9 remove the old app · REW-10 NIP-22 comments · REW-11 global project record
+**Rewrite Ship with shared foundation** — REW-1 shape and scaffold · REW-2 auth via `@estiva-app/identity` · REW-3 projects views · REW-4 issue views · REW-5 writes · REW-6 keep the poll · REW-7 parity checklist · REW-8 cut over · REW-9 remove the old app · REW-10 NIP-22 comments · REW-11 global project record
 
 **Catch up the Buzz fork** — CAT-1 survey the gap · CAT-2 collisions and conflict surface · CAT-3 migration audit · CAT-4 merge into `nfb-demo-kinds` · CAT-5 probe the kinds · CAT-6 rehearse migrations on a throwaway · CAT-7 deploy and verify by image id · CAT-8 exercise Peek, Ship and the agent
