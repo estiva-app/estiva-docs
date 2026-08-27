@@ -250,18 +250,36 @@ is the same posture the deploy workflows already argue for about SSH keys: the
 objection to a standing credential in GitHub is not that it is hard to rotate, it
 is that it exists.
 
+**Two settings on the npm side, and neither is the default.** A trusted
+publisher must be registered on each package — provider GitHub Actions, the org,
+the repo, and the workflow *filename* — or npm falls back to token auth and
+fails with `ENEEDAUTH` even though everything in the workflow is correct. Under
+*Allowed actions*, `npm publish` alone is enough; `npm stage publish` is a
+different flow nothing here uses. Under *Publishing access*, choose **"require
+two-factor authentication and disallow bypass 2fa tokens"** — every option there
+is compatible with OIDC, so the strict one is free, and it closes the door on
+the exact credential class §4c already had to abandon.
+
+**`registry-url` in `actions/setup-node` breaks OIDC, and lies about why.** With
+it set, setup-node writes an `.npmrc` containing `_authToken=${NODE_AUTH_TOKEN}`
+and, when no token secret is supplied, sets that variable to the literal
+placeholder `XXXXX-XXXXX-XXXXX-XXXXX`. npm then authenticates with a nonsense
+token instead of exchanging its OIDC assertion — and npm reports an unauthorised
+write as **`404 Not Found`**, which reads as *the package does not exist* when
+the package plainly does. Omit `registry-url` entirely.
+
 Two consequences of that, both awkward and both better known now:
 
 - **A package's *first* publish cannot use trusted publishing**, because the
   trusted publisher is configured on a package that already exists. Creating a
   package is therefore a deliberate manual act, from a laptop, with an
   interactive OTP — once per package, ever. Every release after it is CI.
-- **Trusted publishing generates provenance, and provenance attests to a public
-  source commit.** `estiva-foundation` is private. Whether npm refuses, or
-  publishes without provenance, is **unmeasured** — it will be measured on the
-  first CI release and recorded here. If it refuses, the options are making the
-  repo public — which is coherent, since the tarball already ships `src/` — or
-  staged publishing, where a maintainer approves the release with 2FA.
+- **Provenance is skipped, not refused.** This was the open question, and the
+  answer is the mild one: `@estiva-app/hello@0.0.2` published from a **private**
+  repo through trusted publishing, and npm simply recorded no attestations
+  (`dist.attestations` is absent). It did not fail. So a private repo costs the
+  provenance attestation and nothing else, and making the repo public is a
+  choice about attestation rather than a precondition for releasing.
 
 Delete the `NPM_TOKEN` secret once OIDC publishes successfully. A credential kept
 "just in case" is a credential nobody rotates.
@@ -312,13 +330,29 @@ The last row is the one worth insisting on. "The lockfile says 0.0.2" is not the
 check — the built bundle carrying the new version string is, and that is why the
 package exports a version constant at all.
 
-**Not proved, and honestly so:**
+**Then proved again on the public registry, 2026-08-27, which is what closes
+this ticket:**
 
-- **Nothing has been published to the public npm registry.** There are no npm
-  credentials on this machine (`~/.npmrc` absent, `npm whoami` → `ENEEDAUTH`) and
-  the `@estiva-app` org does not exist yet. Everything above ran against a local
-  registry, which exercises the client, the tarball, resolution and the upgrade —
-  but not npm's auth, org permissions or scope creation. §7 is what remains.
+| step | result |
+| --- | --- |
+| `0.0.1` published by hand, browser 2FA | live |
+| installed into fresh clones of Peek, Ship, agent | resolved from `registry.npmjs.org` |
+| each toolchain's own CI commands | pass — Peek 565 tests + `tsc -b && vite build`, Ship typecheck/test/build, agent typecheck + `tsx` |
+| `0.0.2` published **by CI, through OIDC, with no credential in GitHub** | live |
+| upgraded in all three, rebuilt | `0.0.2` in Peek's and Ship's built bundles; the agent compiled and ran an export that only exists in `0.0.2` |
+
+**And the pipeline carried a real package the same day.** `@estiva-app/ui@0.1.0`
+went out under these rules and is consumed by Peek and Ship from the registry —
+so the rehearsal was overtaken by the thing it was rehearsing for.
+
+**A propagation trap worth knowing.** A *new package name* is invisible on the
+read path for minutes after a successful publish — `@estiva-app/hello` took
+**204 seconds** to become installable, and `npm view` returns a flat `404` the
+whole time while `npm access list packages` already lists it. A *new version* of
+an existing package appeared in **1 second**. A 404 straight after publishing a
+new name is not a failed publish.
+
+**Not proved:**
 - **Peek's Vercel build no longer exists.** SHA-1's done-when names it
   specifically, because a private-registry token would break there first.
   Confirmed obsolete by Miky on 2026-08-26: `peek-develop.vercel.app` is a
@@ -340,24 +374,45 @@ package exports a version constant at all.
   release will be published from a laptop out of necessity; the second one must
   go through `release.yml`, or §4c is a decision nobody has executed.
 
-## 7. Setup this implies, and nobody has done it
+## 7. Adding a package after this one
 
-In order, all of it human work that needs an npm account:
+The org, the scope and the pipeline exist as of 2026-08-27. What follows is the
+recipe, in the order the steps actually have to happen — the ordering is the part
+that is not obvious, because two of these cannot be done in the other order.
 
-1. **Create the `@estiva-app` org on npm.** The scope and all five names were
-   free on 2026-08-26; a scope is claimed by whoever gets there first.
-2. **Decide who holds publish rights** — at least two people, or the bus factor
-   is one.
-3. **Publish the first version of each package by hand**, with an interactive
-   OTP — a trusted publisher cannot be registered on a package that does not
-   exist (§4c). Then register it on npmjs.com and let CI do every release after.
-4. **Publish `@estiva-app/hello@0.0.1`, then `0.0.2`**, and re-run §6 against the
-   public registry from clean checkouts. The commands are in the foundation
-   repo's README.
-5. **Retire the throwaway** once SHA-2 lands a real package: `npm deprecate
-   '@estiva-app/hello@*'`. Note that **unpublishing is only possible within 72
-   hours**; after that the name is permanent, so "unpublish or leave it as
-   documentation" resolves to deprecate-and-leave unless it happens immediately.
+1. **Write the package** against `tsconfig.base.json`: built ESM plus `.d.ts`,
+   `publishConfig.access: "public"`, MIT, no ambient Node or DOM globals in the
+   declarations (§4a).
+2. **Publish the first version by hand**, from a maintainer's machine:
+
+   ```bash
+   npm publish --auth-type=web --browser=false
+   ```
+
+   It prints a URL, you authenticate in a browser, it completes. Passkeys work;
+   there is no OTP to type. On WSL the browser is on the other side, so
+   `--browser=false` prints the URL rather than failing to open one. **This step
+   cannot be skipped or automated** — a trusted publisher is configured *on* a
+   package, so the package has to exist first.
+3. **Register the trusted publisher** on npmjs.com: provider GitHub Actions, the
+   org, the repo, workflow filename `release.yml`, no environment. Allowed
+   actions: `npm publish` only. Publishing access: *require two-factor
+   authentication and disallow bypass 2fa tokens*.
+4. **Every release after that is a tag.** Bump in a PR, then push
+   `<name>@<version>` (or `v<version>` in a single-package repo). No credential
+   goes near GitHub.
+5. **Add it to `CONSUMERS.md`** in the same PR that gives it its first consumer,
+   because §5's rule is only enforceable against a list somebody maintains.
+
+**Still open, and it is the bus factor:** publish rights are held by one npm
+account, `estiva-admin`. A second person should hold them before this matters.
+
+**The throwaway stays.** `@estiva-app/hello` has done its job twice — once for
+the manual first publish, once for the OIDC release — and it is the only thing
+that can prove the pipeline again without risking a real package. Deprecate it
+with `npm deprecate '@estiva-app/hello@*'` when it stops being useful; note that
+**unpublishing is only possible within 72 hours**, so the name is permanent
+either way.
 
 ## 8. Consequences
 
