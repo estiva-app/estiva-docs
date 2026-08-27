@@ -427,23 +427,69 @@ looks exactly like nothing happening.
 cd ~/estiva-ship && npm run probe     # which kinds does this relay accept?
 cd ~/estiva-ship && npm run verify    # full round trip, two identities
 cd ~/estiva-ship && npm run manifest  # publish the manifest, check it is satisfiable
-cd ~/peek-app && npx vitest run convex/nostr/events.test.ts
+cd ~/estiva-foundation && npm test -w packages/protocol
+cd ~/estiva-foundation && npm run verify:live -w packages/protocol   # needs a credential
 ```
 
-The last one pins one implementation's event ids to ids **Buzz's own Rust
-crates** produced. A failure means two implementations have drifted. **Do not
-update the expected ids.**
+The fourth pins the wire format's event ids to ids **Buzz's own Rust crates**
+produced (`test/buzz-parity.test.ts`, which was
+`peek-app/convex/nostr/events.test.ts` until SHA-3 moved the code it covers), and
+to the ids the live relay is storing real events under. A failure means two
+implementations have drifted. **Do not update the expected ids.**
+
+The fifth is the one a green suite cannot be. It publishes a real signed event and
+reads the `accepted` field back, with two negative controls — a tampered event the
+relay must refuse, and a `kind:0` the identity service must refuse — so "it works"
+is distinguishable from "the rule was removed". It needs a workspace credential,
+which is why it is a hand-run check rather than a CI job.
 
 ---
 
 ## 10. Independence is the point
 
-Estiva Peek, Estiva Ship and Estiva ID each implement NIP-01 event
-serialization separately. They share no package and no database.
+Estiva Peek, Estiva Ship and Estiva ID share **no interpretation and no
+database.** That is what makes "apps sharing no code and no database work on the
+same data" a true statement rather than a claim about siblings, and it is
+unchanged.
 
-**The duplication is the architecture.** It is what makes "apps sharing no code
-and no database work on the same data" a true statement rather than a claim
-about siblings. It is kept honest by every implementation pinning its event ids
-to the same reference, which is independence without divergence.
+**Amended 2026-08-27 (SHA-3).** This section used to say the *duplication* was
+the architecture: three separate implementations of NIP-01 serialization,
+"kept honest by every implementation pinning its event ids to the same
+reference", and it told an implementer to copy the shapes rather than import
+them. That was right about the claim and wrong about the mechanism, and the
+third copy is what settled it.
 
-An implementer reading this should copy the shapes, not import them.
+A second hand-written event-id hash is not a demonstration of independence. It is
+a divergence the relay notices and we do not — and it had already happened, in
+this suite, unnoticed. Peek's `buildMessage` grew an `about` parameter emitting
+`a` tags; Ship's copy never received it and could not emit one at all. The same
+logical message produced different bytes depending on which app sent it,
+**nothing failed, and each copy was self-consistent.** Between the other two
+copies — Ship's and `estiva-agent`'s — a `diff -r` somebody had to remember to
+run was the entire safety mechanism. PEEK-165 had already found drift of exactly
+this shape *inside one repository*, caught only because a person read two
+outputs side by side.
+
+So the wire format is one implementation on purpose:
+**[`@estiva-app/protocol`](https://www.npmjs.com/package/@estiva-app/protocol)**,
+public npm, MIT, installable with no auth of any kind. Event construction, the id
+preimage, NIP-19, NIP-98, signing, and the relay clients. Peek, Ship and
+`estiva-agent` all consume it, and a third party installs exactly what they
+install. The reasoning behind packaging it — and behind the layer split that
+keeps interpretation out — is recorded in this repository's decision records
+0001 §8 and 0002, which are internal while the protocol settles.
+
+**What is still separate is the part that matters.** How an app folds events into
+current truth is where apps are *supposed* to differ, and the package deliberately
+contains none of it: Ship's `foldFolder`, Peek's `foldResolution` and its
+projection all stay in their apps, and each app keeps its own conformance fixture.
+The test for what belongs in the package is not "both apps need it" — it is
+**"would the relay notice if the two apps disagreed?"**
+
+**An implementer reading this may import it or copy the shapes, and both are
+supported.** Everything in this document is enough to build an independent
+implementation, which is the point of §9's conformance list; the package is a
+convenience and never a requirement. If you do write your own, pin its event ids
+to a reference implementation rather than to itself — `nostr-tools/pure`'s
+`getEventHash` agrees with `@estiva-app/protocol` on every event this workspace
+has published, which makes it a usable oracle for anybody.

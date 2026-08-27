@@ -23,10 +23,14 @@ exactly as a third party's app would — there is no shared database and no
 private channel between them.
 
 They do share libraries for *speaking* the protocol — event construction,
-NIP-98 auth, the relay client. A second hand-written copy of an event-id hash
-is not duplication, it is a divergence the relay notices and we do not. What
-they never share is **interpretation**: how an app folds events into current
-state is where apps are supposed to differ. See [ROADMAP.md](ROADMAP.md).
+NIP-98 auth, the relay clients. Since SHA-3 that is one published package,
+**`@estiva-app/protocol`**, rather than three hand-written copies: a second
+hand-written copy of an event-id hash is not duplication, it is a divergence the
+relay notices and we do not, and two of the three copies had already drifted.
+What they never share is **interpretation**: how an app folds events into current
+state is where apps are supposed to differ, and the package deliberately contains
+none of it. See [ROADMAP.md](ROADMAP.md) and [SPEC.md §10](protocol/SPEC.md) —
+which argued the opposite until SHA-3 amended it, and the amendment says why.
 
 | Repo | What it is | Language |
 | --- | --- | --- |
@@ -52,6 +56,7 @@ in this repo depend on it:
 | *(these docs)* | `estiva-app/estiva-docs` | `~/estiva-docs` |
 | Foundation packages | `estiva-app/estiva-foundation` | `~/estiva-foundation` |
 | Estiva UI | `estiva-app/estiva-ui` | `~/estiva-ui` |
+| The agent | `estiva-app/estiva-agent` | `~/estiva-agent` |
 
 All of them are siblings. Cross-repo links in this repo are written relative to
 that layout (`../peek-app/...`), never as absolute paths.
