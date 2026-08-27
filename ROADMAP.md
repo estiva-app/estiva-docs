@@ -170,6 +170,101 @@ A fifth, cheaper: **a new package *name* is invisible on the read path for minut
 
 ---
 
+## SHA-3 — the wire format stops existing three times
+
+**Built 2026-08-27. One manual step outstanding.**
+
+`@estiva-app/protocol` is written, tested and verified against the live relay,
+and Peek, Ship and `estiva-agent` all import it with their local copies deleted —
+about 5,400 lines removed across the three. What is not done is the **first
+publish**, which cannot be automated: a trusted publisher can only be configured
+on a package that already exists, so creating one is a once-ever manual act with
+browser 2FA from the account that holds publish rights (ADR 0002 §4c, §7). Until
+that happens the three consumer PRs are unmergeable, because their lockfiles
+would have to name a version nobody has published.
+
+**The drift was real, and nothing had failed.** Peek's `buildMessage` grew an
+`about` parameter emitting `a` tags for cross-app routing; Ship's copy never
+received it and could not emit one at all. The same logical message produced
+different bytes depending on which app sent it, and both copies were
+self-consistent — which is the whole failure mode, and why a red build was never
+going to be the signal. On the 12 event shapes both apps *did* implement, the ids
+were byte-identical, so the merge was a deduplication rather than a
+reconciliation.
+
+**What replaced `diff -r`.** Four checks in CI and a fifth by hand, and none of
+them is a green tick next to a value we chose:
+
+| check | authority |
+| --- | --- |
+| 21 wire vectors | recorded from Peek's and Ship's trees *before* the package existed |
+| 7 production vectors | the **relay's** own ids and signatures, for events it is storing |
+| `buzz-parity.test.ts` | ids **Buzz's own Rust crates** produced — was `peek-app/convex/nostr/events.test.ts`, moved with the code |
+| `nostr-tools` as an oracle | a third implementation, with a negative control that fails when the bytes are wrong |
+| `npm run verify:live` | a real signed event, `accepted` read back, plus two negative controls |
+
+The live check is the one worth repeating here, because it is the only one that
+asks the authority. It publishes a `kind:9007` naming a channel that already
+exists — so the relay answers `200 {"accepted":false,"duplicate: …"}`, proving the
+event was parsed, its id recomputed and its signature verified, while creating
+nothing. Then it swaps two tags on the same signed event and gets:
+
+```
+400 invalid: invalid event id: computed 70f206d4…, got b9d1e606…
+```
+
+That is the control that makes the first arm mean something: the relay recomputes
+the id itself, so agreement is agreement about the bytes rather than indifference
+to them. A third arm confirms `/sign` still refuses `kind:0` for every app —
+`422 policy_violation` — so the gates are live and not merely quiet.
+
+**`nostr-tools` is a devDependency, not a dependency.** SHA-3 allocated an hour to
+the question and the answer is a hybrid nobody proposed: its `getEventHash` agrees
+with ours on all 103 events recorded from production and its `nip19` round-trips
+exactly, but its NIP-98 emits **no nonce** — which Buzz's Redis replay set refuses
+for two identical requests inside one second — and it needs `@noble/*` v2 where
+both apps are on v1. So it runs as an independent oracle in the test suite: the
+third-party cross-check with no dependency, no second `@noble`, and no bytes for
+consumers.
+
+**Three things this cost, all worth having before SHA-2 and SHA-4:**
+
+- **A published `.d.ts` cannot reach for an ambient global, and `lib.es2022` has
+  none of the ones this code needs** — not `URL`, `btoa`, `fetch`, `WebSocket`,
+  `TextDecoder`, or the timers. Each is declared *inside* the module that uses it
+  and read *inside* a function body: the first keeps it out of every consumer's
+  global scope, the second means importing the package touches no global at all,
+  which matters because `WebSocket` does not exist in Convex's default runtime and
+  an eager read at module scope would throw on import in Peek's backend. There is
+  one honest exception, found by writing the test that checks it: **`@noble/curves`
+  reads `TextEncoder` while its module body runs.** `@estiva-app/ui` ships
+  declarations naming `HTMLButtonElement` and gets away with it only because both
+  its consumers are browser apps — worth knowing before SHA-4 gives it a third.
+- **`node --test` strips TypeScript types rather than checking them**, exactly as
+  vitest does. A second `tsc` pass over the tests found a real error in an
+  assertion that had been passing, on the day it was added.
+- **A stale generated file is invisible to `tsc`.** Peek's
+  `convex/_generated/api.d.ts` still imported four deleted modules and `tsc -b`
+  passed, because `skipLibCheck` skips `.d.ts`. `npx convex deploy` regenerates it
+  in CI, so this would have merged green and been correct by accident.
+
+**What deliberately did not move:** the fold, and anything that interprets events.
+Ship's `foldFolder`, Peek's `foldResolution` and its projection stay in their apps,
+and each app keeps its own conformance fixture. The test for the package is not
+"both apps need it" but **"would the relay notice if the two apps disagreed?"** —
+which is also why `SPEC.md` §10 needed amending rather than deleting: the suite's
+independence claim was always about interpretation, never about hand-copying a
+hash.
+
+**Still duplicated, and now more important for it:** `src/` in `estiva-ship` and
+`estiva-agent`, held together by `scripts/conformance.test.ts` — byte-identical in
+both, checked rather than assumed. That duplication is the one nobody intends to
+remove, so the check guarding it matters more than it did, not less.
+`lib/nostr/signer.ts` is also still duplicated; it is `@estiva-app/identity`'s to
+take, in SHA-4.
+
+---
+
 ## Start now — no gate
 
 | ticket | note |
@@ -201,7 +296,7 @@ Nothing is blocked. In rough order of leverage:
 
 | next | why |
 | --- | --- |
-| **SHA-3** (`@estiva-app/protocol`) | The reason the foundation exists. The wire format is written three times today — `peek/convex/nostr/`, `ship/lib/nostr/`, and the agent's vendored copy kept honest by a `diff -r` somebody has to remember to run. **Its collision has expired**: it was held back because PEE-7 was routing live events into the same Convex projection, and track A is now complete. It is also the riskiest extraction, which argues for doing it while the pipeline is fresh — the failure mode is not a red build but a signature the relay rejects. |
+| ~~**SHA-3**~~ (`@estiva-app/protocol`) | **Built, 2026-08-27; blocked on one manual publish.** See §"SHA-3" below. |
 | **SHA-4 → REW-2** | `@estiva-app/identity` is extracted during Ship's auth ticket, which is the rewrite's next step. Identity wants protocol underneath it, so SHA-3 first. |
 | **CRO-3, CRO-11** | Two convention documents every later read-state ticket cites. Cheap, and they unblock CRO-4 onward, which Gate 1 already cleared the way for. |
 | **CAT-1, CAT-2, CAT-3** | The catch-up survey. Read-only, nothing merged or deployed. CAT-3's answer is the trigger for the rest of that project. |
@@ -216,7 +311,7 @@ Gate 1 ✔ CLOSED ─────┬─> A. Peek real-time   ✔ COMPLETE (11 of
   (Estiva ID, live)  ├─> B. Read state       CRO-4 → 5 → 6 → 7 → 9
                      └─> C. DMs              DMS-2 → 3,4 → 5,6 → 7 → 9,10,11
 
-Gate 2 ✔ CLOSED ─────┬─> D. Foundation       SHA-3 → SHA-2, SHA-6   (SHA-5 ✔ shipped)
+Gate 2 ✔ CLOSED ─────┬─> D. Foundation       SHA-3 ✔ built → SHA-2, SHA-6   (SHA-5 ✔ shipped)
   (@estiva-app on     └─> E. Ship rewrite     REW-2 → 6,7 → 8 → 9
    public npm)                                (REW-1,3,4,5 merged; SHA-4 lands in REW-2)
 
@@ -246,12 +341,12 @@ The only real contact between the halves is CRO-8 (Ship publishes read state), w
 | CRO-8 → REW M3/M4 | CRO-8 says so itself: if the rewrite is underway it belongs there rather than being written twice in the old app. |
 | DMS-8 → CRO-3 | DM read state uses the context convention. Do DMS-8 last in track C. |
 | CRO-10 → PEE-8, CRO-5, CRO-11 | The spike needs live relay data in the browser *and* read state on the protocol. |
-| SHA-3 ↔ REW | SHA-3 deletes Ship's hand-written `lib/nostr/`, which REW-1 says not to move. Not a conflict — SHA-3 owns that deletion, including what `estiva-agent` does — but whoever hits it first should not resolve it alone. **Note Ship's `web/` now compiles `../lib/nostr` too**, so the deletion has a consumer the ticket predates. |
+| ~~SHA-3 ↔ REW~~ | **Resolved.** SHA-3 deleted five of the six files in Ship's `lib/nostr/` and `web/` compiles against the package; 105 vitest tests and `tsc -b && vite build` pass. `lib/nostr/signer.ts` is what remains, and it is SHA-4's to remove. |
 
 ### Two critical paths
 
 1. ~~`PEE-5 → 6 → 7 → 8`~~ → `CRO-10` — **track A is done bar its fallback**; CRO-10 now needs only read state on the protocol (CRO-5, CRO-11)
-2. ~~`Gate 2`~~ → `SHA-3 → SHA-4 → REW-2 → REW-6,7 → REW-8 → REW-9` — **Gate 2 closed; REW-3, 4 and 5 are merged**, so the path is shorter than it was and now runs through the protocol package
+2. ~~`Gate 2`~~ → ~~`SHA-3`~~ → `SHA-4 → REW-2 → REW-6,7 → REW-8 → REW-9` — **Gate 2 closed, SHA-3 built, REW-3/4/5's *code* merged.** Their verification waits on REW-2 (see the ordering constraints), so the remaining path is one door wide and it is Katerina's: SHA-4 lands inside REW-2
 
 The second is longer in wall-clock terms and has the most sequential UI work. The Ship rewrite is the programme's long pole, not the Peek work.
 
@@ -259,7 +354,7 @@ The second is longer in wall-clock terms and has the most sequential UI work. Th
 
 - **CRO-6 before CRO-7.** NIP-RS's fetch horizon defaults to 7 days and absence of a context means "unread", so a topic read three weeks ago reads as unread. Cutting over before the cache exists regresses unread for every quiet container — which would look exactly like the bugs track A is fixing.
 - **DMS-2 before any DM code.** It verifies the assumption track C's independence rests on: that `kind:41010` is accepted over the HTTP bridge. If it is not, track C needs the WebSocket path from track A and changes shape.
-- **PEE-5 and PEE-6 built in `peek-app`, not the package**, because Gate 2 had not happened when they were due. **Moving them into `@estiva-app/protocol` is now SHA-3's job**, and it is a live debt: the relay client and the subscription manager are Peek-only today.
+- ~~**PEE-5 and PEE-6 built in `peek-app`, not the package.**~~ **Paid, 2026-08-27.** `createLiveRelay` and `createChannelSubscriptions` are in `@estiva-app/protocol`, with the 84 tests that came with them. The only behavioural change is that the REQ id prefix is an option instead of the hardcoded `peek-`.
 - **REW-3, 4 and 5 verify against production, and therefore wait on REW-2.** Decided 2026-08-27. Their done-whens say "against production", production refuses anonymous reads, and the new app has no sign-in until REW-2 — so three tickets sit behind one door. Their *code* is merged in ship#41; what is outstanding is the verification. The method already in use carries over unchanged: read each result back from the relay rather than trusting the UI's report. Deciding this once is the point — otherwise it is re-argued per ticket.
 - **REW-1 is done with one clause deferred, not met.** "Deploys through the existing `deploy/` path" is REW-8's job: production expects the bundle at `<repo>/dist/ship`, which the old app still writes, and `web/vite.config.ts` records that re-pointing `outDir` belongs to the cutover. Do not read REW-1 as "the new app is deployable".
 - **REW-6 is a release blocker, not a detail.** Ship polls every 5 s and refreshes on `visibilitychange`; Peek does neither. Adopting Peek's conventions naively moves Peek's staleness into Ship, and no test would catch it.
@@ -376,7 +471,7 @@ Also verified from a real signed-in browser session, cross-origin, which is the 
 
 Added 2026-08-25 with PEE-5, and it closes the oldest open question in this list: **a real NIP-42 round trip against production.** A browser opened a socket to `wss://estiva.estiva.app`, was issued a challenge, signed a `22242` through the PEE-4 grant, was accepted (`OK … true`), and its REQ came back with three events and an `EOSE` rather than `auth-required`. Every clause of PEE-4's done-when, on one connection.
 
-**Not verified:** whether `kind:41010` is accepted over HTTP — Estiva ID will sign one, which says nothing about ingest (**DMS-2**); whether `nostr-tools` covers enough to replace part of `@estiva-app/protocol` (SHA-3 allocates an hour).
+**Not verified:** whether `kind:41010` is accepted over HTTP — Estiva ID will sign one, which says nothing about ingest (**DMS-2**). ~~Whether `nostr-tools` covers enough to replace part of `@estiva-app/protocol`.~~ **Answered** — see §"SHA-3" below.
 
 ---
 
@@ -388,7 +483,7 @@ Added 2026-08-25 with PEE-5, and it closes the oldest open question in this list
 
 **DMs on Nostr (DM channels)** — DMS-1 grant 41010/41011/41012 · DMS-2 probe · DMS-3 open channel · DMS-4 publish messages · DMS-5 project channels · DMS-6 hidden set · DMS-7 existing DMs · DMS-8 DM read state · DMS-9 immutable participants · DMS-10 participant cap · DMS-11 privacy copy
 
-**Shared foundation packages** — ~~SHA-1 registry decision~~ ✔ · SHA-2 PWA package (`@estiva-app/platform`) · SHA-3 `@estiva-app/protocol` · SHA-4 `@estiva-app/identity` · ~~SHA-5 `@estiva-app/ui`~~ ✔ · SHA-6 scaffold with no backend
+**Shared foundation packages** — ~~SHA-1 registry decision~~ ✔ · SHA-2 PWA package (`@estiva-app/platform`) · ~~SHA-3 `@estiva-app/protocol`~~ ✔ built · SHA-4 `@estiva-app/identity` · ~~SHA-5 `@estiva-app/ui`~~ ✔ · SHA-6 scaffold with no backend
 
 **Rewrite Ship with shared foundation** — REW-1 shape and scaffold · REW-2 auth via `@estiva-app/identity` · REW-3 projects views · REW-4 issue views · REW-5 writes · REW-6 keep the poll · REW-7 parity checklist · REW-8 cut over · REW-9 remove the old app · REW-10 NIP-22 comments · REW-11 global project record
 
