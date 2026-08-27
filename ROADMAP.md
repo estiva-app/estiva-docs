@@ -2,7 +2,7 @@
 
 **Working reference. Living document.** The tickets in Estiva Ship are the source of truth for detail; this is the map between them — what depends on what, what can run in parallel, and what is deliberately still undecided.
 
-Last updated 2026-08-25. Not published to the docs site (`site/nav.mjs` is opt-in) because it changes often and carries operational detail.
+Last updated 2026-08-27. Not published to the docs site (`site/nav.mjs` is opt-in) because it changes often and carries operational detail.
 
 ---
 
@@ -172,16 +172,18 @@ A fifth, cheaper: **a new package *name* is invisible on the read path for minut
 
 ## SHA-3 — the wire format stops existing three times
 
-**Built 2026-08-27. One manual step outstanding.**
+**Done 2026-08-27, published and consumed.**
 
 `@estiva-app/protocol` is written, tested and verified against the live relay,
 and Peek, Ship and `estiva-agent` all import it with their local copies deleted —
-about 5,400 lines removed across the three. What is not done is the **first
-publish**, which cannot be automated: a trusted publisher can only be configured
-on a package that already exists, so creating one is a once-ever manual act with
-browser 2FA from the account that holds publish rights (ADR 0002 §4c, §7). Until
-that happens the three consumer PRs are unmergeable, because their lockfiles
-would have to name a version nobody has published.
+about 5,400 lines removed across the three. The step that could not be automated
+is done: a trusted publisher can only be configured on a package that already
+exists, so **`0.1.0` went out by hand**, with browser 2FA from the account that
+holds publish rights (ADR 0002 §4c, §7). `0.1.1` then existed only to exercise
+the tag path, which is the release that proved CI can publish holding no
+credential, and `0.1.2` added `KIND.APP_DATA`. `npm view @estiva-app/protocol
+versions` reads `0.1.0, 0.1.1, 0.1.2`, and that is what let the three consumer
+PRs merge — their lockfiles could not name a version nobody had published.
 
 **The drift was real, and nothing had failed.** Peek's `buildMessage` grew an
 `about` parameter emitting `a` tags for cross-app routing; Ship's copy never
@@ -263,6 +265,25 @@ remove, so the check guarding it matters more than it did, not less.
 `lib/nostr/signer.ts` is also still duplicated; it is `@estiva-app/identity`'s to
 take, in SHA-4.
 
+**What moved on a different footing, and it is now SHA-7.** The socket
+(`createLiveRelay`, `createChannelSubscriptions`) went into the same package, and
+the argument that made SHA-3 safe does not cover it. Everything else here was a
+byte-identical duplicate pinned by wire vectors, so extraction could not change
+behaviour and needed no second consumer to find the seam. The socket was never
+duplicated: it is one implementation with one caller, and nothing has pushed back
+on its API — which is exactly what SHA-4 and SHA-5 avoid by extracting *during*
+REW-2 and REW-3.
+
+The unproven part is not `live.ts`, it is the plumbing that stayed in Peek's
+`liveTopics.ts` and that a second app would write again: one instance per tab, a
+credential read on every connect rather than captured, and `navigator.onLine` →
+`reconnect()` for the socket that stays OPEN while delivering nothing. None of it
+interprets events, so it is `@estiva-app/platform`'s (SHA-2) rather than
+`protocol`'s or an app's. `freshness.ts` is the opposite case and stays in Peek.
+**Not inside the rewrite:** REW-6 keeps Ship's poll on purpose, so SHA-7 lands
+after REW-8 — or sooner in `estiva-agent`, which costs a `22242` grant in Estiva
+ID and nothing else.
+
 ---
 
 ## Start now — no gate
@@ -296,7 +317,7 @@ Nothing is blocked. In rough order of leverage:
 
 | next | why |
 | --- | --- |
-| ~~**SHA-3**~~ (`@estiva-app/protocol`) | **Built, 2026-08-27; blocked on one manual publish.** See §"SHA-3" below. |
+| ~~**SHA-3**~~ (`@estiva-app/protocol`) | **Done, 2026-08-27.** Published and consumed by all three repos. It left one thing behind — see SHA-7 in §"SHA-3" below. |
 | **SHA-4 → REW-2** | `@estiva-app/identity` is extracted during Ship's auth ticket, which is the rewrite's next step. Identity wants protocol underneath it, so SHA-3 first. |
 | **CRO-3, CRO-11** | Two convention documents every later read-state ticket cites. Cheap, and they unblock CRO-4 onward, which Gate 1 already cleared the way for. |
 | **CAT-1, CAT-2, CAT-3** | The catch-up survey. Read-only, nothing merged or deployed. CAT-3's answer is the trigger for the rest of that project. |
@@ -475,7 +496,7 @@ Added 2026-08-25 with PEE-5, and it closes the oldest open question in this list
 
 ---
 
-## Appendix — all 58 tickets
+## Appendix — all 59 tickets
 
 **Peek: Real-time Ship→Peek updates** — PEE-1 topic refetch · PEE-2 project panel re-resolve · PEE-3 profile cache TTL · PEE-4 grant 22242 · PEE-5 WS client + NIP-42 · PEE-6 per-channel subscriptions · PEE-7 route events into the projection · PEE-8 wire useTopicView · PEE-9 connection state · PEE-10 surface read failures · PEE-11 subscribe outside topics
 
@@ -483,7 +504,7 @@ Added 2026-08-25 with PEE-5, and it closes the oldest open question in this list
 
 **DMs on Nostr (DM channels)** — DMS-1 grant 41010/41011/41012 · DMS-2 probe · DMS-3 open channel · DMS-4 publish messages · DMS-5 project channels · DMS-6 hidden set · DMS-7 existing DMs · DMS-8 DM read state · DMS-9 immutable participants · DMS-10 participant cap · DMS-11 privacy copy
 
-**Shared foundation packages** — ~~SHA-1 registry decision~~ ✔ · SHA-2 PWA package (`@estiva-app/platform`) · ~~SHA-3 `@estiva-app/protocol`~~ ✔ built · SHA-4 `@estiva-app/identity` · ~~SHA-5 `@estiva-app/ui`~~ ✔ · SHA-6 scaffold with no backend
+**Shared foundation packages** — ~~SHA-1 registry decision~~ ✔ · SHA-2 PWA package (`@estiva-app/platform`) · ~~SHA-3 `@estiva-app/protocol`~~ ✔ · SHA-4 `@estiva-app/identity` · ~~SHA-5 `@estiva-app/ui`~~ ✔ · SHA-6 scaffold with no backend · SHA-7 *(new)* a second consumer for the socket
 
 **Rewrite Ship with shared foundation** — REW-1 shape and scaffold · REW-2 auth via `@estiva-app/identity` · REW-3 projects views · REW-4 issue views · REW-5 writes · REW-6 keep the poll · REW-7 parity checklist · REW-8 cut over · REW-9 remove the old app · REW-10 NIP-22 comments · REW-11 global project record
 
