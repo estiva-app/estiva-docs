@@ -733,19 +733,31 @@ Encrypted is the default. Plaintext is a documented exception, not a shortcut.
 `kind:30078` requires the `users:write` scope, and each app needs the kind in its
 Estiva ID `allowed_kinds` — the same three gates §8 describes for any kind.
 
-### 12.5 Four size limits, and only one of them applies
+### 12.5 Five size limits, and the one that binds is neither advertised nor the relay's
 
 The relay advertises numbers that look like content caps and are not. This is the
 same shape as the NIP-11 `push` object's `keys` array being mistaken for relay
-identity, and it has now caught two readers.
+identity, and it has now caught three readers — including the first draft of this
+section, which named four limits and called the wrong one operative.
 
 | number | value | what it actually bounds |
 | --- | --- | --- |
 | `limitation.max_message_length` | 524288 | the whole websocket message, not one event's content |
 | `push.limitation.max_content_len` | 65536 | **the NIP-PL push executor.** Inside the `push` object, nothing to do with stored events |
 | `push.limitation.max_plaintext_len` | 32768 | also the push executor |
-| *(not advertised at all)* | **262144** | the per-event `content` cap the relay enforces at ingest |
+| *(not advertised at all)* | 262144 | the per-event `content` cap the relay enforces at ingest |
+| *(not the relay's at all)* | **65535** | **the binding one.** Estiva ID's `POST /nip44/encrypt` refuses a plaintext over 65535 bytes of UTF-8 |
 
-**The one that applies is not in NIP-11.** An implementer reading the relay's own
-document will find three wrong answers and not the right one, so treat 256 KiB as
-the ceiling and stay far below it — a blob is not a table, whatever the cap says.
+**The limit that applies is not in NIP-11, and it is not the relay's.** §12.4
+requires the content to be NIP-44 encrypted, and no Estiva app holds a key — so
+every layer-2 write goes through the identity service, whose plaintext cap is
+65535 bytes. Ciphertext is larger than plaintext, so **the relay's 256 KiB ceiling
+is never the one an app reaches first.**
+
+An implementer reading the relay's own document therefore finds four numbers,
+three of which are irrelevant, one of which is nine times too generous, and none
+of which is the answer. Budget against 65535 bytes of **plaintext** and stay far
+below it: a blob is not a table, whatever any of these say.
+
+An app that genuinely needs more than 64 KiB of app-private state has outgrown
+layer 2 rather than found a limit to raise — see the layer-3 test in §12.1.
