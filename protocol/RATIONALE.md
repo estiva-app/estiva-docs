@@ -172,20 +172,36 @@ carries only what the world may see. An email on a shared relay cannot be taken
 back, and a token scoped to one app should not be able to export the staff
 directory.
 
-## Why every app reimplements NIP-01 serialization
+## Why every app used to reimplement NIP-01 serialization, and no longer does
 
-Shared branding makes the pull towards a shared package much stronger than it
-was when these looked like strangers' apps. The moment it happens, "apps sharing
-no code and no database work on the same data" stops being true.
+**Superseded 2026-08-27 by SHA-3.** The original argument is kept because it was
+half right, and which half matters.
 
-**The duplication is the architecture.** It is kept honest by every
-implementation pinning its event ids to ids Buzz's own Rust crates produced — a
-test that fails when the implementations drift. Independence without divergence.
+It said: shared branding makes the pull towards a shared package strong, and the
+moment it happens, "apps sharing no code and no database work on the same data"
+stops being true. **The duplication is the architecture** — kept honest by every
+implementation pinning its event ids to ids Buzz's own Rust crates produced.
 
-The two-layer story to hold onto: **Buzz is the neutral protocol layer; Estiva
-is a vendor suite on top of it.** The suite interoperates exactly as a third
-party's app would. That is the commercial claim, and it is stronger than the
-research-demo version.
+The claim was right. The mechanism was wrong, and the third copy is what settled
+it. A second hand-written event-id hash is not a demonstration of independence,
+it is a divergence the relay notices and we do not — and it had already happened:
+one app's message builder grew an `a`-tag parameter and another's did not, so the
+same logical message produced different bytes depending on which app sent it.
+Nothing failed. Each copy was self-consistent. Between two of the three copies,
+the only safety mechanism was a `diff -r` somebody had to remember to run.
+
+What makes the interop claim true is that the apps share **no interpretation and
+no database**, which is still exactly the case. The fold is where apps are
+supposed to differ, and no shared package contains one. They now agree on the
+wire format on purpose rather than by coincidence, and the event ids are still
+pinned to Buzz's Rust output — that test moved into the package with the code it
+covers.
+
+The two-layer story is unchanged and is the part to hold onto: **Buzz is the
+neutral protocol layer; Estiva is a vendor suite on top of it.** The suite
+interoperates exactly as a third party's app would — and now a third party can
+install precisely what the suite installs, which makes the claim testable rather
+than rhetorical.
 
 ## What the earlier RFC drafts got wrong
 
@@ -214,3 +230,59 @@ is built for it — it resolves the community per request — but profiles do no
 inherit across community domains, so a pubkey reposts its profile in each. The
 invariant that keeps the eventual split cheap is that **a pubkey must survive
 it.**
+
+## Why the container read context is a bare uuid rather than a namespaced one
+
+The obvious design is `h:<channel-uuid>` — self-describing, and it cannot be
+confused with the `thread:` and `msg:` keys beside it. It was the filed decision.
+It is the wrong one, and the reason is not aesthetic.
+
+NIP-RS declines to specify context identifiers, but it does grandfather one:
+"a bare channel identifier remains the channel context." The reference clients
+write exactly that. So a prefix does not add a namespace to an empty space — it
+creates a *second* convention for an object the ecosystem already agrees about.
+The failure is not an error message. One app marks a container read, another
+still shows it unread, and both are behaving correctly.
+
+A lowercase UUID v4 also cannot collide with anything: every other scheme in §11
+is prefixed, so the bare form is unambiguous by construction. The prefix buys
+self-description and costs interoperability on the one key everybody shares.
+
+**Why the folder model does not change this.** A folder holding several files is
+a real divergence from one-channel-one-topic, and it was the strongest argument
+for namespacing. But conversations stay on the folder's channel — one channel per
+folder, not one per file — so the container context still identifies the same
+object it identifies upstream. What the folder model actually adds is two things,
+neither of which is the container: the finer grain matters more, which `thread:`
+already covers with the same spelling; and "everything in this folder" becomes a
+distinct frontier, which is why §11.5 reserves `folder:` for it.
+
+The principle: **add a scheme for the new idea, never relabel the shared one.**
+
+## Why a person's app state belongs on the relay rather than in an app's database
+
+"You own your data" was true of content and quietly false of everything else. A
+person's starred containers and curated queues sat in a database they could not
+read, export or take with them; a relay-wide export by author did not include
+them, and NIP-09 could not delete them.
+
+The reflex that produced that is reasonable and wrong: *only this app reads it,
+so it belongs in this app's backend.* Readership is not ownership. The question
+that decides the layer is whether the **person** would expect to keep the thing,
+not whether another program needs to see it.
+
+`kind:30078` costs nothing to adopt — it is a standard kind the relay already
+classifies as user-owned global state, and the pattern has a precedent in the
+relay's own code, which keeps its mesh member status in a generic addressable
+kind under a namespaced `d` tag. So the gap closed without a protocol change,
+which is why it took a convention rather than a project.
+
+**What the convention is careful not to claim.** A blob is not a table: no
+queries, no indexes, no server-side compute, whole-blob writes, and
+last-write-wins at one-second resolution. Layer 3 still exists and is still
+correct for anything needing those. The convention's value is that reaching for
+layer 3 now requires answering a question, and the question is on the record.
+
+And the encryption is not optional in practice. The relay serves any `kind:30078`
+by author, so an unencrypted blob is readable by every app the person signs into.
+"App-private" without NIP-44 is a misnomer, not a weaker guarantee.
