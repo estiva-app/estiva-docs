@@ -33,7 +33,7 @@ Three rules, and they are why this roadmap looks the way it does:
 
 ## State
 
-**Updated 2026-08-27.** Twenty of the programme's 63 tickets are done, counted from the workspace. **Both gates are closed**, track A is finished, and the shared packages are real and installable — Peek updates from the relay in real time, in production, on every surface that has a channel to watch, with a polling fallback for when it cannot.
+**Updated 2026-08-28.** Forty-two of the programme's 70 tickets are done, counted from the workspace. **Both gates are closed**, track A is finished, and the shared packages are real and installable — Peek updates from the relay in real time, in production, on every surface that has a channel to watch, with a polling fallback for when it cannot.
 
 | shipped | what it proved |
 | --- | --- |
@@ -56,7 +56,7 @@ Three rules, and they are why this roadmap looks the way it does:
 
 Also done and not on any ticket: Estiva ID's live `allowed_kinds` were read against `seed.ts` for the first time and **matched exactly** — a caveat CRO-2, PEE-4 and this document had all been carrying.
 
-The remaining ~35 are unstarted. **All four Gate 1 tickets are done**, CRO-2 and DMS-1 included — their browser-session clause was met on 2026-08-25 rather than waived.
+The remaining 28 are unstarted or in flight. **All four Gate 1 tickets are done**, CRO-2 and DMS-1 included — their browser-session clause was met on 2026-08-25 rather than waived.
 
 | Project | Tickets | What it is |
 | --- | --- | --- |
@@ -531,7 +531,7 @@ Added 2026-08-28 with the Buzz catch-up (track F), all measured against producti
 
 **DMs on Nostr (DM channels)** — DMS-1 grant 41010/41011/41012 · DMS-2 probe · DMS-3 open channel · DMS-4 publish messages · DMS-5 project channels · DMS-6 hidden set · DMS-7 existing DMs · DMS-8 DM read state · DMS-9 immutable participants · DMS-10 participant cap · DMS-11 privacy copy
 
-**Shared foundation packages** — ~~SHA-1 registry decision~~ ✔ · SHA-2 PWA package (`@estiva-app/platform`) · ~~SHA-3 `@estiva-app/protocol`~~ ✔ · SHA-4 `@estiva-app/identity` · ~~SHA-5 `@estiva-app/ui`~~ ✔ · SHA-6 scaffold with no backend · SHA-7 *(new)* a second consumer for the socket
+**Shared foundation packages** — ~~SHA-1 registry decision~~ ✔ · SHA-2 PWA package (`@estiva-app/platform`) · ~~SHA-3 `@estiva-app/protocol`~~ ✔ · SHA-4 `@estiva-app/identity` · ~~SHA-5 `@estiva-app/ui`~~ ✔ · SHA-6 scaffold with no backend · SHA-7 *(new)* a second consumer for the socket · ~~SHA-8 the relay's page ceiling belongs in `@estiva-app/protocol`~~ ✔
 
 **Rewrite Ship with shared foundation** — REW-1 shape and scaffold · REW-2 auth via `@estiva-app/identity` · REW-3 projects views · REW-4 issue views · REW-5 writes · REW-6 keep the poll · REW-7 parity checklist · REW-8 cut over · REW-9 remove the old app · REW-10 NIP-22 comments · REW-11 global project record
 
