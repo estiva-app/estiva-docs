@@ -473,9 +473,11 @@ Two items that *were* here are now filed: the Ship rewrite (REW-1…11) and the 
 - `README.md` no longer claims the apps share *"no shared package"*. It now states the distinction that matters: shared libraries for **speaking** the protocol, never for **interpreting** it.
 - The relay-git decision for documents moved here from Peek's repo — [`protocol/FILES_ARCHITECTURE.md`](protocol/FILES_ARCHITECTURE.md) and [`protocol/nips/NIP-FC.md`](protocol/nips/NIP-FC.md). Pointer stubs remain at the old paths so existing links resolve. **This is the document to hand whoever starts Leaf.**
 
-**Still wrong:**
+**Fixed 2026-08-28, at the cutover:**
 
-- `README.md` lists Ship as "TypeScript, plain DOM", which the rewrite makes false. REW-9 flags it, and it stays true until the cutover — so fix it then, not now.
+- `README.md` listed Ship as *"TypeScript, plain DOM"*. It now reads **React + Vite, no backend**, which became true the moment REW-8 put the React app behind `ship.estiva.app`. Deliberately *"no backend"* rather than a bare framework list: the row beside it says Peek is `React + Vite + Convex`, and the paragraph below claims the two apps share no database — so the absence is the load-bearing half of Ship's entry.
+
+**Still wrong:**
 - `peek-app` still carries `vercel.json` and a "Publishing them on Vercel" section in `HOW-TO-RUN.md`, for a deployment that is obsolete as of 2026-08-26. Not filed — it is a five-minute cleanup for whoever is next in that repo. `@vercel/analytics` is *not* stale: it runs in production on the Hetzner deploy.
 
 ### Decisions that are not an implementer's to make
