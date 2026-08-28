@@ -1,6 +1,14 @@
 # RFC 0.4 — The Workspace: Folders, Files, Components, Conversations, Projections
 
-**Status: draft, not accepted.** Written 2026-08-23 as RFC 0.3, revised 2026-08-24, superseded by this version 2026-08-28.
+- **Status:** accepted
+- **Date:** 2026-08-28 (SHA-10). Written 2026-08-23 as RFC 0.3, revised 2026-08-24, superseded by this version 2026-08-28
+- **Supersedes:** [RFC 0.3](RFC-0.3-FOLDERS.md), now a pointer stub
+
+**What acceptance settles.** The containment model of §4–§8 — folder state is relay-maintained, visibility is structural rather than a tag, a folder's `d` is always an opaque uuid, a file is anything with an address, a conversation is NIP-22 `kind:1111` anchored to one, and a huddle needs no new concept. The projection vocabulary of §13 — slots closed and extended with `image`, `list` and `body`; widgets open with a fallback chain that terminates in a closed type; object-creating actions rendered as forms; two machine-facing fields on an action. That messages and rich text are **two models sharing only an inline layer** (§14). And that §6 is unfrozen, answered in Ship's description field rather than waiting for Leaf.
+
+**What acceptance does not settle.** Every item in §12 stays open, and accepting this document does not decide any of them. Four carry tickets: **which content format** (§14.5, RIC-1), **the reaction horizon** (§7.2, CON-1), **upstream or fork** (§10.1, whose *latest* responsible moment is still the first line of folder command or state code), and **the folder kind numbers** (§12.1, which §10.1 governs). Component anchoring is *unfrozen, not chosen* — §6's three candidate mechanisms are all still live and want a real editor to choose between.
+
+**What this means for [SPEC](SPEC.md).** SPEC is the ratified protocol and describes what an implementer can build against **today**. An accepted design lands in SPEC when it is implemented, not when it is accepted — otherwise SPEC documents a protocol no app speaks, which is the failure this programme keeps finding in its own documents. So §13's slot and widget rules move into SPEC §7 as PRO-2 and PRO-3 land, and §14's format moves once RIC-1 is decided and built.
 
 **This is RFC 0.3's next version, not a companion to it.** Everything 0.3 said is here — folders, files, components, conversations, the two production measurements, the rejected alternatives, the answered-questions ledger. [RFC 0.3](RFC-0.3-FOLDERS.md) is now a pointer stub. **Section numbers 1–12 are unchanged on purpose**, because the roadmap, [SPEC](SPEC.md) and several Ship issues cite §4.2, §5.2, §5.3 and §10.1 by number; renumbering would break every one of those silently. New material is §13–§15, and amendments to 1–12 are marked where they occur.
 
@@ -532,6 +540,15 @@ The two vocabularies get different policies, because they are different kinds of
 | `image` | *new* — an avatar, thumbnail or cover, as a URL |
 | `list` | *new* — child objects by address, so the consumer resolves and renders them with their own projections |
 | `body` | *new* — structured content per §14, for objects whose body is the point |
+
+**A consumer MUST ignore a slot it does not implement, and MUST still render the rest.** *Amended at acceptance, 2026-08-28.* "Unknown is unrenderable by definition" reads as though the case cannot arise. It arises constantly: the set is closed but it **grows**, and producers and consumers upgrade at different times — so between this document and the last consumer shipping `list`, every manifest declaring one is read by something that has never heard of it. That is the same staggered-upgrade condition the widget chain exists for, and slots have no chain.
+
+Ignoring is safe rather than merely tolerable because **`title` is required**: a consumer that drops every slot it does not know still renders a named, resolvable object rather than a blank. Two obligations follow, and they are what make the guarantee real:
+
+- a producer **MUST NOT** put information *only* in a slot added after `title`, `subtitle`, `status` and `meta` — a new slot enriches a projection, it never carries the whole of it
+- a consumer **MUST NOT** treat an unknown slot as an error, an empty object, or a reason to refuse the projection
+
+The failure this forbids is PEE-10's, one level up: an object that renders blank is indistinguishable from one the reader may not see, and a consumer that refuses a whole projection over one unfamiliar slot reports *"that app is broken"* about an app that is doing exactly what this section tells it to.
 
 **`widget` — open, with a required fallback chain.** A widget type is a *layout hint*, not a semantic, so an unknown one can degrade honestly. A manifest MAY declare any widget name, and MUST declare it as an ordered chain:
 

@@ -93,10 +93,11 @@ export const INTERNAL = new Set([
   // publicly; this is the working out.
   'protocol/FILES_ARCHITECTURE.md',
   'protocol/nips/NIP-FC.md',
-  // Draft design, explicitly not accepted, and it cites ticket ids throughout.
-  // Publish only once it is settled and the internal references are gone.
-  // 0.3 is now a pointer stub; 0.4 is the live draft and is held back for the
-  // same two reasons, plus it cites production measurements by ticket.
+  // 0.4 was accepted 2026-08-28, so the first of the two reasons these were
+  // held back is gone. The second stands: it cites ticket ids throughout and
+  // names production measurements by ticket, so publishing it would leak a
+  // trail of references nobody outside can follow. Publish once those are gone.
+  // 0.3 is a pointer stub and follows whatever 0.4 does.
   'protocol/RFC-0.3-FOLDERS.md',
   'protocol/RFC-0.4-WORKSPACE.md',
 ])
