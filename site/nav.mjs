@@ -95,7 +95,10 @@ export const INTERNAL = new Set([
   'protocol/nips/NIP-FC.md',
   // Draft design, explicitly not accepted, and it cites ticket ids throughout.
   // Publish only once it is settled and the internal references are gone.
+  // 0.3 is now a pointer stub; 0.4 is the live draft and is held back for the
+  // same two reasons, plus it cites production measurements by ticket.
   'protocol/RFC-0.3-FOLDERS.md',
+  'protocol/RFC-0.4-WORKSPACE.md',
 ])
 
 /**

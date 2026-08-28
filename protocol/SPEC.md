@@ -249,15 +249,35 @@ event `id` as a stable tiebreak.
 
 ### 6.4 Conversations
 
-A conversation is a **`kind:9`** NIP-29 stream message posted into the object's
-Folder. There is no separate comment kind for this.
+**Corrected 2026-08-28.** This section said a conversation is a `kind:9` NIP-29
+stream message and that *"there is no separate comment kind for this."* That was
+true when written and stopped being true with REW-10, which moved comments to
+NIP-22 — while §7.3 below documented the move at length. A builder reading this
+section therefore built the wrong thing, and was told so three sections later.
+The correction:
+
+**A comment anchored to an object is a NIP-22 `kind:1111`. A message in a channel
+is a `kind:9`. A reader MUST read both, permanently.**
+
+`kind:1111` is the right kind for anything scoped to an object because it scopes
+to an **addressable** event, which is what lets two apps comment on the same
+object without either owning the comment kind. `kind:9` remains what it always
+was: a message in a channel, not about anything in particular.
+
+The pair can never shrink to one. A `kind:9` is not replaceable, so every comment
+written before an app switched stays a `kind:9` for good — there is no migration
+and there never will be. §7.3's `alsoRead` is how an app declares that history so
+a consumer reads the union rather than showing a thread that begins in the middle.
 
 | Shape | Meaning |
 | --- | --- |
 | no `e` tag | a root message — starts a conversation |
 | `['e', <root>, '', 'reply']` | a reply in that conversation |
 | `a` tag | the object the thread is about |
-| `nostr:naddr…` in the body | the same thing, as a person types it |
+| uppercase `A`/`E`/`K`/`P` (on a `1111`) | the thread **root** — the object being commented on |
+| lowercase `a`/`e`/`k`/`p` (on a `1111`) | the immediate **parent** — the comment being replied to |
+| `h` tag | the Folder the thread lives in, which is what gates who reads it |
+| `nostr:naddr…` in the body | the object, as a person types it |
 
 A thread belongs to whatever anyone in it referenced, at any point. A thread
 that mentions an object halfway through is from then on about that object, and
@@ -283,6 +303,38 @@ and available to anyone in the Folder.
   rather than offer one that silently fails.
 - It removes the **record**, not the work. Children are separate events with
   their own authors; they remain in the Folder.
+
+### 6.6 Reactions
+
+**Added 2026-08-28**, recording behaviour that has been in production since before
+this document existed and was never written down.
+
+A reaction is a **`kind:7`** (NIP-25) pointing at the event being reacted to.
+
+**A `kind:7` carries no `h` tag, and that is the whole difficulty.** Reactions
+cannot be found the way messages are — a channel query does not return them. An
+app MUST fetch reactions **addressed by target**: collect the event ids it is
+displaying, then query for reactions pointing at those ids.
+
+The consequence is a horizon rather than a complete answer. A client fetching
+reactions for N targets has to choose N, and the choice is invisible to the
+person reading: reactions on older messages simply do not appear, and nothing
+reports that they were not asked for. The reference client's N is **100**.
+
+Two rules follow:
+
+- An app MUST NOT assume a channel or cursor query returns reactions.
+- An app that displays reaction counts MUST decide its own horizon deliberately,
+  and SHOULD state it where a reader can find it. An undocumented cap is
+  indistinguishable from "nobody reacted".
+
+**What the horizon SHOULD be is unsettled** and is open question 10 in
+[RFC 0.4](RFC-0.4-WORKSPACE.md). This section records the mechanism, not a
+guarantee.
+
+**Reactions attach to messages.** Whether they attach to anything else — a block
+inside a rich text field, an object — is a product question RFC 0.4 §7.2 answers
+in the negative for blocks, and it is not settled for objects.
 
 ---
 

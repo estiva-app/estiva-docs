@@ -10,7 +10,7 @@ Last updated 2026-08-27. Not published to the docs site (`site/nav.mjs` is opt-i
 
 Three rules, and they are why this roadmap looks the way it does:
 
-1. **Aim for high-level architectural clarity.** Know the shape before building the parts. [ADR 0001](decisions/0001-relay-canonical-by-default.md) and [RFC 0.3](protocol/RFC-0.3-FOLDERS.md) exist for that.
+1. **Aim for high-level architectural clarity.** Know the shape before building the parts. [ADR 0001](decisions/0001-relay-canonical-by-default.md) and [RFC 0.4](protocol/RFC-0.4-WORKSPACE.md) exist for that.
 
 2. **Do not force a decision that does not need making yet.** Where something is risky or genuinely unclear, name it, name the *latest responsible moment* to decide, and move on. A deferred decision with a trigger is a plan. A guessed decision is debt with interest.
 
@@ -33,7 +33,7 @@ Three rules, and they are why this roadmap looks the way it does:
 
 ## State
 
-**Updated 2026-08-28.** Forty-two of the programme's 70 tickets are done, counted from the workspace. **Both gates are closed**, track A is finished, and the shared packages are real and installable — Peek updates from the relay in real time, in production, on every surface that has a channel to watch, with a polling fallback for when it cannot.
+**Updated 2026-08-28.** Forty-two of the programme's 70 tickets are done, counted from the workspace. **SHA-9's research is complete** and produced RFC 0.4, two SPEC corrections and three new projects — see §"SHA-9" below. **Both gates are closed**, track A is finished, and the shared packages are real and installable — Peek updates from the relay in real time, in production, on every surface that has a channel to watch, with a polling fallback for when it cannot.
 
 | shipped | what it proved |
 | --- | --- |
@@ -73,9 +73,9 @@ Two architecture documents sit under all of it. Read both if you are picking thi
 | document | what it settles |
 | --- | --- |
 | [ADR 0001](decisions/0001-relay-canonical-by-default.md) | **accepted** — relay-canonical by default; a database is a per-feature exception; Estiva ID excluded |
-| [RFC 0.3](protocol/RFC-0.3-FOLDERS.md) | **draft, and now decidable** — both questions that could have invalidated it are answered (§5.2, §5.3), and REW-11 rehearsed §4.2 at one-tenth the scale. §10.1 (upstream versus fork) is **now decidable too**: the catch-up showed upstream shipped its own project kind, `30621`, parameterized-replaceable and **global-only**, with members as `a` tags. That was §10.1's stated trigger — "see whether upstream ships their forge layer" |
+| [RFC 0.4](protocol/RFC-0.4-WORKSPACE.md) | **draft, and now decidable.** Supersedes RFC 0.3 (2026-08-28, SHA-9) — same document, next version, §1–§12 renumbered nowhere. Both questions that could have invalidated the containment model are answered (§5.2, §5.3) and REW-11 rehearsed §4.2 at one-tenth the scale. §10.1's trigger has **fired**: upstream shipped `kind:30621`, parameterized-replaceable, global-only, members as `a` tags. **New in 0.4:** the projection layer (§13), messages and rich text as two models (§14), and the third-app checklist (§15) |
 
-RFC 0.3 is a *draft*, and per rule 2 above nothing is filed against its undecided parts. What it changes about already-filed work is in §"RFC 0.3 implications" below.
+RFC 0.4 is a *draft*, and per rule 2 above nothing is filed against its undecided parts. What it changes about already-filed work is in §"RFC 0.4 implications" below.
 
 ---
 
@@ -325,6 +325,33 @@ Nothing is blocked. In rough order of leverage:
 
 ---
 
+## SHA-9 — what the research settled
+
+**Done 2026-08-28.** Four topics were researched against the running code and against production rather than designed on paper. The output is [RFC 0.4](protocol/RFC-0.4-WORKSPACE.md), two [SPEC](protocol/SPEC.md) corrections, and the work below. **The framing that decided everything** is that all of it serves one goal: making the **third major app** cheap enough to build. Leaf is that app.
+
+**Two of the four topics were already built.** The "widget library" and "actions register" are the NIP-89 projection manifest, running in production between Ship and Peek since before RFC 0.3 was written — which 0.3 listed as an unsolved gap. The document was stale, not the system. So that work is **extraction and extension, not design**, and RFC 0.4 §13.2 names the four specific limits that stop a third app using it: a closed four-value widget vocabulary owned by nobody, scalar-only slots (so "a project card with its issues" is bespoke consumer code rather than a projection), object-creating actions declared but deliberately unrenderable, and nothing in an action addressed to a machine.
+
+**One topic is a live defect, and it was measured rather than argued:**
+
+| corpus | events | carrying structure |
+| --- | --- | --- |
+| messages (`kind:9`, `kind:1111`) | 398 | **165 (41%)** |
+| descriptions (`kind:30850`, `kind:30851`) | 89 with a body | **76 (85%)** |
+
+Three producers write formatting — Peek's composer, the agent CLI, Ship's plain textarea — using **two different undocumented dialects**, and two renderers disagree about all of it: Peek parses the markers, Ship renders them literally and deliberately (*"untrusted text… rendered as text, never as markup"*). So 41% of messages read formatted in one app and raw in the other, today. Ship's position is the correct one and must survive: the fix is to specify a format and ship one safe renderer, never to make Ship render markup.
+
+**A message field and a rich text field are two models, not one** (RFC 0.4 §14), and the production corpora already prove it — messages use a light inline subset, descriptions use full GFM with tables and code fences. They share only their inline layer. Attachments sit below a message and inline in a field; messages carry reactions and blocks do not; **a block is addressable and that is what unfreezes §6.**
+
+**The deadlock that broke.** 0.3 said component anchoring needed a real editor, and that Leaf should not start until §6 was answered. Each waited on the other. Ship's description field is a block-structured rich text field that exists today, with a second app already reading it — so §6 gets answered there at one-tenth of Leaf's scale, and **Leaf starts with an answer instead of starting blocked.**
+
+**What is deliberately not here.** The intelligence layer is parked with a trigger — see "not filed, and why". The content-format choice is recommended in RFC 0.4 §14.5 and not decided, because 487 published events cannot move whichever way it goes, and every candidate needs an `alsoRead`-shaped compatibility story.
+
+**Three projects follow from this** — the projection/interop layer, rich text and blocks, and the conversation standard. They are described in RFC 0.4 §13, §14 and §15 respectively, and none of them is blocked.
+
+**The rule they are built under**, because "we will extract it later" is how the live socket became SHA-7: functionality lands in a real app first and is packaged afterwards, but the extraction is designed for from the first line — no imports from the app's data layer, every environment touch an injected parameter, tests that run with no app, and the file placed where it is going. `projection.ts` passes all four and is extractable today; `textParsing.ts` imports Peek's own fixtures and cannot leave the building. Proposed as an amendment to [ADR 0002](decisions/0002-foundation-packages.md), which owns package decisions.
+
+---
+
 ## The six tracks
 
 ```
@@ -392,7 +419,7 @@ The second is longer in wall-clock terms and has the most sequential UI work. Th
 
 ---
 
-## RFC 0.3 implications for filed work
+## RFC 0.4 implications for filed work
 
 Small, and deliberately so — per rule 2, the RFC's undecided parts produced no tickets.
 
@@ -404,7 +431,7 @@ Small, and deliberately so — per rule 2, the RFC's undecided parts produced no
 | **REW-11** | **Done.** Ship's project record is global, carrying `buzz-channel`, `name` and `description`. Verified against production: served by an unscoped `kinds` query, *not* by an `#h` query for its own channel, while its issues still are. It was filed as fixing 13 unreachable issues and **that was wrong** — see SHI-7 | done |
 | **CAT-9** *(new)* | The relay change REW-11 needed: `KIND_LL_PROJECT` out of `requires_h_channel_scope`, so a project record may omit `h`. One line, plus a manual deploy | done |
 | **SHI-7** *(new)* | The actual fix for the 13: discover `kind:30851` directly instead of only through parents, **and** widen into each issue's own Folder so its changes come with it. Coverage 13 → 0 | in review |
-| **CRO-11** | reinforced, not changed. RFC 0.3 §4.6 uses the app-private convention for folder follow-lists | none needed |
+| **CRO-11** | reinforced, not changed. RFC 0.4 §4.6 uses the app-private convention for folder follow-lists | none needed |
 | **DMS-\*** | unaffected. DM channels are orthogonal to folders | none needed |
 | **SHA-\*** | unaffected now. `@estiva-app/protocol` would carry folder kinds eventually, but not before they exist | none needed |
 
@@ -420,8 +447,8 @@ Two verification questions gated whether the design was even valid. Both were pr
 
 | question | answer |
 | --- | --- |
-| **Does the relay's key rotate?** *(was RFC 0.3 §12.3, now [§5.3](protocol/RFC-0.3-FOLDERS.md))* | **No, and it is not designed to.** The `keys: [{ current: true, id: "relay-v1", … }]` that suggested otherwise is not relay identity — it sits inside NIP-11's `push` object and is the NIP-PL push-executor descriptor, whose `id` defaults to the literal string `relay-v1`. No rotation exists in the fork or in upstream's extra 625 commits, the key is bound once at boot, and three subsystems already depend on it being stable. Every relay-signed event on production, back to 2026-08-07, has one author. |
-| **Is `39000`'s `d` exactly the channel uuid, and can a non-member read a *listed* channel's `39000`?** *([§5.2](protocol/RFC-0.3-FOLDERS.md))* | **Yes and yes.** `d` is the `Uuid` verbatim; across all 50 production channels every `d` is a lowercase v4 uuid and every message `h` resolves to one. A reader that is a member of *nothing* reads all 50 `39000`s, because open visibility is a second route into the accessible set alongside membership. |
+| **Does the relay's key rotate?** *(was RFC 0.3 §12.3, now [§5.3](protocol/RFC-0.4-WORKSPACE.md))* | **No, and it is not designed to.** The `keys: [{ current: true, id: "relay-v1", … }]` that suggested otherwise is not relay identity — it sits inside NIP-11's `push` object and is the NIP-PL push-executor descriptor, whose `id` defaults to the literal string `relay-v1`. No rotation exists in the fork or in upstream's extra 625 commits, the key is bound once at boot, and three subsystems already depend on it being stable. Every relay-signed event on production, back to 2026-08-07, has one author. |
+| **Is `39000`'s `d` exactly the channel uuid, and can a non-member read a *listed* channel's `39000`?** *([§5.2](protocol/RFC-0.4-WORKSPACE.md))* | **Yes and yes.** `d` is the `Uuid` verbatim; across all 50 production channels every `d` is a lowercase v4 uuid and every message `h` resolves to one. A reader that is a member of *nothing* reads all 50 `39000`s, because open visibility is a second route into the accessible set alongside membership. |
 
 Two things the probes turned up that the RFC did not ask for, both recorded in §5.2:
 
@@ -435,7 +462,7 @@ Two things the probes turned up that the RFC did not ask for, both recorded in �
 | question | answer |
 | --- | --- |
 | does global discovery fix the unreachable-record problem? | **No — 13 before, 13 after.** 12 had a *deleted* parent record, 1 never had an `a` tag, all 13 sat in folders the reader could already see. The real fix was discovering issues directly (SHI-7), which took coverage to **0 of 97** |
-| what breaks when a record's name becomes world-readable? | Nothing mechanically, and the exposure is narrower than it looked — an open channel's member roster was *already* world-readable on the same rule. Two things broke **silently**: a lookup keyed on the channel tag reported "no access" for a global record, and the read-one-container methods stopped seeing it. Both are RFC 0.3 §4.2 material now |
+| what breaks when a record's name becomes world-readable? | Nothing mechanically, and the exposure is narrower than it looked — an open channel's member roster was *already* world-readable on the same rule. Two things broke **silently**: a lookup keyed on the channel tag reported "no access" for a global record, and the read-one-container methods stopped seeing it. Both are RFC 0.4 §4.2 material now |
 | how does a fold cope with two shapes coexisting? | Three fallbacks, not one, because the tags move independently. `h` beats `buzz-channel` when both are present; an empty `description` tag beats leftover `.content`. Conformance passing with the fixture untouched is the evidence it costs nothing |
 | how much work is it, really? | The client change was half a day and four files. **The relay change was one line and took longer to land than the whole client change** — merge, image build, and a manual deploy the relay has no timer for |
 
@@ -445,8 +472,8 @@ That is rule 3 applied and paid off: the small version was built, and it moved t
 
 ### What the decision then consists of
 
-1. Accept or amend RFC 0.3, with the §5.2 and §5.3 answers in hand, REW-11 and REW-10 both built, and their failure shapes written into §4.2. Nothing is waiting on more evidence — this is now a reading session and a decision, not an investigation.
-2. Decide RFC 0.3 §10.1 — upstream proposal or private fork implementation. Its own stated trigger is the first line of folder command/state code, so this is the same moment.
+1. Accept or amend RFC 0.4, with the §5.2 and §5.3 answers in hand, REW-11 and REW-10 both built, and their failure shapes written into §4.2. Nothing is waiting on more evidence — this is now a reading session and a decision, not an investigation.
+2. Decide RFC 0.4 §10.1 — upstream proposal or private fork implementation. Its own stated trigger is the first line of folder command/state code, so this is the same moment. **The other half of its trigger has already fired** — upstream shipped `kind:30621` in the catch-up, which is the forge-layer shape §10.1 was waiting to see.
 3. Only then does folder implementation get tickets.
 
 ## Open items
@@ -457,11 +484,12 @@ Per rule 2, these are held deliberately rather than forgotten.
 
 | work | why not yet | what unblocks it |
 | --- | --- | --- |
-| **Folder implementation** (RFC 0.3 §4) | the RFC is a draft, kind numbers are deliberately unassigned, and the upstream-versus-fork decision is deferred | RFC 0.3 accepted + §10.1 decided |
-| **The upstream NIP proposal** (RFC 0.3 §10.1/10.2) | deferred on purpose — hard to reason about now, easier after Ship's rewrite and after we see whether upstream ships their forge layer | reaching the first line of folder command/state code, which is the latest responsible moment |
-| **Peek's `topic = channel` → `topic = file` migration** (RFC 0.3 §11.1) | depends on folders existing. Plausibly larger than the Ship rewrite | folders shipped; sequence after the Ship rewrite has proven the shared foundation |
-| **Component anchoring** (RFC 0.3 §6) | the least settled part of the RFC — needs a real editor to choose against | Leaf existing enough to test one option |
+| **Folder implementation** (RFC 0.4 §4) | the RFC is a draft, kind numbers are deliberately unassigned, and the upstream-versus-fork decision is deferred | RFC 0.4 accepted + §10.1 decided |
+| **The upstream NIP proposal** (RFC 0.4 §10.1/10.2) | deferred on purpose — hard to reason about now, easier after Ship's rewrite and after we see whether upstream ships their forge layer | reaching the first line of folder command/state code, which is the latest responsible moment |
+| **Peek's `topic = channel` → `topic = file` migration** (RFC 0.4 §11.1) | depends on folders existing. Plausibly larger than the Ship rewrite | folders shipped; sequence after the Ship rewrite has proven the shared foundation |
+| ~~**Component anchoring** (RFC 0.4 §6)~~ | **Unfrozen 2026-08-28 by SHA-9, and now filed.** 0.3 said it needed a real editor and that Leaf could not start until §6 was answered — a deadlock that held. It breaks because **a block is a component**, and Ship's description fields already carry block structure in 85% of production records. §6 is answered in Ship at one-tenth of Leaf's scale, and Leaf then starts with an answer | — |
 | **Live project-panel updates** *(new, small)* | found while building PEE-2. The Ship project panel polls on a 30s timer because `liveProjection` routes only message-shaped kinds — so a project or issue record changing in Ship reaches Peek eventually rather than instantly. The socket already delivers those events: the subscription is kindless, so nothing new is asked of the relay. Routing `30850`/`30851` into a panel refresh would close it | nothing — it is filed here only because it is smaller than a ticket and nobody has decided it is worth one |
+| **The intelligence layer** — per-app AI harnesses deriving "memories" from raw events, and cross-app agent-invoked actions | **Parked deliberately, 2026-08-28 (SHA-9).** Designing it now means designing against **zero** implementations — no app has a harness yet, which is worse than SHA-7's single-consumer problem. The one piece that looked ready to measure is the least settled: Peek's highlights are an experiment, not a settled feature. **They must not be published to `kind:9802` while the model is unsettled** — 9802 is in the regular range, so it is append-only and every event written in a shape you later change is permanent. [SPEC §12.1](protocol/SPEC.md)'s test puts an experiment in layer 2 (`kind:30078`, replaceable, with a versioned `d` that exists precisely so a schema can change without a migration) or leaves it in the app's own database. Two seams are taken now because they are fields rather than designs, and retrofitting a field across published manifests is a migration: an action's machine-facing `description`, and its `effect` (`safe`/`writes`/`destructive`) — see RFC 0.4 §13.4 | **The trigger is SPEC §12.1's first question flipping**: the first time a second app's harness needs to read another app's memories. Until then it is one app's private state, needs no protocol, and the storage test already says where it lives |
 | ~~Buzz upstream catch-up~~ | **now filed** as CAT-1…8. Two-speed: the survey is read-only and should happen soon; the merge and deploy wait for CAT-3's answer | — |
 
 Two items that *were* here are now filed: the Ship rewrite (REW-1…11) and the Buzz catch-up (CAT-1…8). The folder decision has its own section above rather than a row here, because it is the one that unblocks the most.
