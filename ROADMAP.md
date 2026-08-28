@@ -46,7 +46,7 @@ Plus **OTH-3**, an `estiva-docs` tooling defect.
 
 | do | why now |
 | --- | --- |
-| **SHA-10** — accept or amend RFC 0.4 | Every ticket in Projection layer, Rich text and Conversation standard derives from it. It is a reading session and a decision, not an investigation — nothing is waiting on more evidence. Carries **§10.1** (upstream vs fork) with it, whose trigger has fired |
+| ~~**SHA-10**~~ — accept RFC 0.4 | **Done 2026-08-28.** [RFC 0.4](protocol/RFC-0.4-WORKSPACE.md) is accepted, with one amendment: a consumer MUST ignore a slot it does not implement and still render the rest. **§10.1 was deliberately left open** — its trigger has fired but its *latest* responsible moment has not |
 | **RIC-1** — decide the content format | The single widest gate. Blocks the rest of Rich text, the block model, §6 anchoring, and therefore **Leaf**. Also blocks PRO-8 |
 | **DMS-2** — probe DM open and send | Hours of work that decides the *shape* of nine other tickets. A cheap probe that can invalidate a plan must never sit behind that plan |
 | **SHA-11** — ADR 0002 amendment | Records what makes an in-app implementation extractable. PRO-1 cites it, and it is the rule three projects are built under |
@@ -118,9 +118,9 @@ Every real dependency, and nothing else. If a pair is not here, they are indepen
 
 | decision | ticket | note |
 | --- | --- | --- |
-| **Accept or amend RFC 0.4** | SHA-10 | Widest blast radius. Also the moment for §10.1 |
+| ~~**Accept or amend RFC 0.4**~~ | SHA-10 | **Accepted 2026-08-28.** Settles the containment model, the projection vocabulary and the two content models. Settles none of §12 — the open questions survive acceptance, four of them with tickets |
 | **Which content format** | RIC-1 | Three candidates, none free. **487 published events cannot move** whichever wins, so every candidate needs an `alsoRead`-shaped compatibility story |
-| **Upstream proposal or fork** | RFC 0.4 §10.1 | Trigger **fired** — upstream shipped `kind:30621`, global-only, single-writer. Latest responsible moment is the first line of folder command/state code |
+| **Upstream proposal or fork** | RFC 0.4 §10.1 | Trigger **fired** — upstream shipped `kind:30621`, global-only, single-writer. Latest responsible moment is the first line of folder command/state code. **Now the only thing between the accepted design and folder tickets**, since §12.1 makes the kind numbers its tail. Left open at acceptance on purpose: the trigger firing makes it *easier*, not yet *forced* |
 | **The reaction horizon** | CON-1 | Currently decided by an undocumented constant of 100 |
 | Who may register a widget type | RFC 0.4 §13.3 | No longer *blocking* — the fallback chain means an unknown widget always renders |
 | What happens to Convex-only DMs | DMS-7 | The relay's ±15 minute drift window means republished history cannot carry original timestamps, so migration is not free |
@@ -134,7 +134,7 @@ Held deliberately rather than forgotten.
 
 | work | why not yet | what unblocks it |
 | --- | --- | --- |
-| **Folder implementation** (RFC 0.4 §4) | the RFC is a draft and kind numbers are deliberately unassigned | RFC 0.4 accepted + §10.1 decided |
+| **Folder implementation** (RFC 0.4 §4) | the design is now accepted, but the kind numbers are deliberately unassigned and §12.1 says they should be allocated upstream *if* this goes upstream — so the numbers are the tail of §10.1 rather than a separate decision | **§10.1 decided.** That is now the only thing between here and folder tickets |
 | **The upstream NIP proposal** (RFC 0.4 §10.1/10.2) | deferred on purpose, though its trigger has now fired | the first line of folder command/state code |
 | **Peek's `topic = channel` → `topic = file` migration** (RFC 0.4 §11.1) | depends on folders existing. Plausibly larger than the Ship rewrite | folders shipped; sequence after the third app has proven the foundation |
 | **The intelligence layer** — per-app AI harnesses deriving "memories" from raw events, and cross-app agent-invoked actions | Designing it now means designing against **zero** implementations — no app has a harness, which is worse than SHA-7's single-consumer problem. The one piece that looked ready to measure is the least settled: Peek's highlights are an experiment. **They must not be published to `kind:9802` while the model is unsettled** — 9802 is in the regular range, so it is append-only and any shape later changed is permanent. [SPEC §12.1](protocol/SPEC.md)'s test puts an experiment in the replaceable layer (`kind:30078`, versioned `d`) or leaves it in the app's database. Two seams are taken now because they are fields rather than designs: an action's `description` and `effect` (RFC 0.4 §13.4) | **SPEC §12.1's first question flipping** — the first time a second app's harness needs to read another app's memories |
@@ -163,7 +163,7 @@ Two documents sit under all of it:
 | document | what it settles |
 | --- | --- |
 | [ADR 0001](decisions/0001-relay-canonical-by-default.md) | **accepted** — relay-canonical by default; a database is a per-feature exception; Estiva ID excluded |
-| [RFC 0.4](protocol/RFC-0.4-WORKSPACE.md) | **draft** — supersedes 0.3. Containment (§1–§12), the projection layer (§13), messages vs rich text (§14), the third-app checklist (§15) |
+| [RFC 0.4](protocol/RFC-0.4-WORKSPACE.md) | **accepted 2026-08-28** — supersedes 0.3. Containment (§1–§12), the projection layer (§13), messages vs rich text (§14), the third-app checklist (§15). Acceptance settles the design and settles none of §12's open questions; SPEC absorbs each part as it is implemented, so it keeps describing a protocol that exists |
 
 Failure shapes worth reading before building anything: [SILENT-FAILURES.md](operations/SILENT-FAILURES.md).
 
