@@ -65,7 +65,7 @@ The remaining ~35 are unstarted. **All four Gate 1 tickets are done**, CRO-2 and
 | DMs on Nostr (DM channels) | DMS-1…11 | Move Peek's DMs off Convex and onto the relay. |
 | Shared foundation packages | SHA-1…7 | Four packages plus a scaffold, so app four is cheap. |
 | Rewrite Ship with shared foundation | REW-1…11 | Ship on React/Vite/Tailwind, and the second consumer that makes the packages extractable. |
-| Catch up the Buzz fork | CAT-1…11 | 625 commits behind upstream. The survey is cheap; the deploy is not. CAT-9 is done, and it added a *ninth* fork commit which is a **deletion** — the kind a merge silently undoes |
+| Catch up the Buzz fork | ~~CAT-1…11~~ ✔ | **Done 2026-08-28.** 702 commits merged and deployed; every ticket closed. Left behind: a marker tag and an ancestry-repair commit, because a squash-merged PR hid the merge from `git` |
 | Agent / Steer | AGE-1…6 | The CLI, MCP server and Claude Code plugin. Filed separately because a defect there is invisible to `ship.estiva.app` and the agent has constraints the apps do not — **AGE-6 is an instance of exactly that**: the MCP server had been answering every session's issue listing 13 issues short, and `ship.estiva.app` was fine |
 
 Two architecture documents sit under all of it. Read both if you are picking this up cold:
@@ -73,7 +73,7 @@ Two architecture documents sit under all of it. Read both if you are picking thi
 | document | what it settles |
 | --- | --- |
 | [ADR 0001](decisions/0001-relay-canonical-by-default.md) | **accepted** — relay-canonical by default; a database is a per-feature exception; Estiva ID excluded |
-| [RFC 0.3](protocol/RFC-0.3-FOLDERS.md) | **draft, and now decidable** — both questions that could have invalidated it are answered (§5.2, §5.3), and REW-11 rehearsed §4.2 at one-tenth the scale. §10.1 (upstream versus fork) can still legitimately wait |
+| [RFC 0.3](protocol/RFC-0.3-FOLDERS.md) | **draft, and now decidable** — both questions that could have invalidated it are answered (§5.2, §5.3), and REW-11 rehearsed §4.2 at one-tenth the scale. §10.1 (upstream versus fork) is **now decidable too**: the catch-up showed upstream shipped its own project kind, `30621`, parameterized-replaceable and **global-only**, with members as `a` tags. That was §10.1's stated trigger — "see whether upstream ships their forge layer" |
 
 RFC 0.3 is a *draft*, and per rule 2 above nothing is filed against its undecided parts. What it changes about already-filed work is in §"RFC 0.3 implications" below.
 
@@ -336,13 +336,23 @@ Gate 2 ✔ CLOSED ─────┬─> D. Foundation       SHA-3 ✔ built →
   (@estiva-app on     └─> E. Ship rewrite     REW-2 → 6,7 → 8 → 9
    public npm)                                (REW-1,3,4,5 merged; SHA-4 lands in REW-2)
 
-no gate ─────────────┬─> F. Buzz catch-up    CAT-1,2,3 → CAT-4 → 5 → 6 → 7 → 8
+no gate ─────────────┬─> F. Buzz catch-up    ✔ COMPLETE (CAT-1…8, 11)
                      └─> REW-10, REW-11      independent of the rewrite (see Start now)
 ```
 
 A through F touch different code and no gate remains, both being closed. They can run concurrently with different people.
 
-**Track F is deliberately two-speed.** CAT-1/2/3 are read-only and should happen soon. CAT-4 onward waits for a reason — deploying 625 commits of relay change against the database Peek and Ship both depend on is not something to do because the number is annoying. CAT-3's answer is what makes that trigger legible.
+**Track F is complete as of 2026-08-28.** It ran two-speed as designed: the read-only survey first, then the deploy once CAT-3's migration audit made the risk legible. The audit is what unblocked it — the answer was "additive, ~235 ms, nothing destructive", measured against a restored copy of production.
+
+What it cost, measured rather than estimated: **~303 ms** of migration on the real database (rehearsal predicted ~235 ms) and **13.71 s** of downtime (predicted 13–15 s). Boot is dominated by the git object-store conformance probe at ~6.7 s, not by migrations — so a slow MinIO, not a big schema, is what would stall a future deploy.
+
+Three things the survey found that were worth more than the catch-up itself:
+
+- **A live production panic.** A reaction to an event with no `h` tag panicked the ingest worker *after* inserting the row. CAT-9 made that reachable by allowing global project records; production held 11 of them with 0 reactions taken. Upstream's fix came in with the merge.
+- **A semantic conflict that compiled into something wrong.** The fork widened `enforce_relay_membership`; upstream added two new endpoints calling the old signature. Both auto-merged with no marker and the tree did not build — and the easy resolution would have silently reverted the NIP-OA commits across every gated path.
+- **`max_limit` halved, 10000 → 1000.** The only client-visible change, and the clients still ask for `limit: 2000` — filed as **SHA-8**, because a page ceiling belongs in `@estiva-app/protocol` rather than duplicated at four call sites.
+
+**One trap for the next catch-up: do not squash-merge it.** PR #12 was squashed, which collapsed a real merge commit into a single parent and left `git merge-base` stale — so `git` reported 710 behind while the tree was level. Repaired with an ancestry-only `-s ours` merge pinned at `69096c9a8` (zero file changes), plus a tag `upstream-merged/69096c9a8`. Measure the next gap normally; it now reads correctly.
 
 ### The programme splits cleanly in two
 
@@ -496,6 +506,20 @@ Added 2026-08-25 with PEE-5, and it closes the oldest open question in this list
 
 ---
 
+Added 2026-08-28 with the Buzz catch-up (track F), all measured against production or a restored copy of it rather than inferred:
+
+**The relay now advertises `max_limit: 1000`, down from `10000`** — read from NIP-11 before and after the deploy, and the reason CAT-1 flagged it was reading upstream's source, not the wire. The effective historical query ceiling halved with it, 2000 → 1000. Headroom per kind on the day: `kind:9` 314, `kind:1851` 280, `kind:30851` 119, all against 1000. `supported_nips` gained **43**.
+
+**All 34 migrations apply to a production-shaped restore**, and the ten new ones total ~235 ms there and ~303 ms on production itself. Nothing destructive; 1324 events and 61 channels preserved through the rehearsal. Migrations run at startup **only when `BUZZ_AUTO_MIGRATE` is set** — production has it, but a rehearsal that forgets it logs `Skipping database migrations…`, starts anyway, and proves nothing.
+
+**Five fail-closed startup gates, not three.** Beyond the migration guard and the replica-fence floor: a community-deletion serving fence, a **channel roster fence** (migration 0032's, verified on 64 live rosters), and a **git object-store conformance probe that requires a reachable S3 backend**. All abort before the relay listens, so a deploy missing MinIO presents as a relay that never comes up rather than a degraded one — and that probe is ~6.7 s of a ~7 s boot.
+
+**Every Estiva kind is accepted by the caught-up relay**, asked one at a time on a relay built from the merge: `9007, 1111, 31989, 31990, 30850, 30851, 1851, 9101, 9802, 30840, 30841`. CAT-9's asymmetry holds in both directions — `30850` without an `h` **accepted**, `30851` and `1851` without an `h` **rejected**.
+
+**`kind:30078` rows now exist** (3, Peek's `estiva-peek:stars:v1` app-private storage). They were 0 hours earlier the same day. None carries the ambiguous `d`/`t` cardinality the NIP-RS migration guard looks for, and that guard is inert above schema version 7 regardless — but CAT-3's "we have none" premise expired within a day, which is worth remembering before CRO lands more.
+
+**Not verified:** that `~/estiva-backups` restores. The backup does cover the relay's Postgres (`buzz.sql`), but it is encrypted to an age key held in a password manager, so this remains the one open "hope rather than fact" — and it matters more now the schema has moved 24 → 34.
+
 ## Appendix — all 68 programme tickets
 
 **Peek: Real-time Ship→Peek updates** — PEE-1 topic refetch · PEE-2 project panel re-resolve · PEE-3 profile cache TTL · PEE-4 grant 22242 · PEE-5 WS client + NIP-42 · PEE-6 per-channel subscriptions · PEE-7 route events into the projection · PEE-8 wire useTopicView · PEE-9 connection state · PEE-10 surface read failures · PEE-11 subscribe outside topics
@@ -508,6 +532,6 @@ Added 2026-08-25 with PEE-5, and it closes the oldest open question in this list
 
 **Rewrite Ship with shared foundation** — REW-1 shape and scaffold · REW-2 auth via `@estiva-app/identity` · REW-3 projects views · REW-4 issue views · REW-5 writes · REW-6 keep the poll · REW-7 parity checklist · REW-8 cut over · REW-9 remove the old app · REW-10 NIP-22 comments · REW-11 global project record
 
-**Catch up the Buzz fork** — CAT-1 survey the gap · CAT-2 collisions and conflict surface · CAT-3 migration audit · CAT-4 merge into `nfb-demo-kinds` · CAT-5 probe the kinds · CAT-6 rehearse migrations on a throwaway · CAT-7 deploy and verify by image id · CAT-8 exercise Peek, Ship and the agent · ~~CAT-9 let a project record omit `h`~~ ✔ · ~~CAT-10 Buzz drops a verified NIP-OA owner~~ ✔ · CAT-11 the widened timestamp window aborts at COMMIT *(in progress)* — **CAT-10 and CAT-11 are relay bugs, not sequence steps**; they live here because there is no Buzz bugs project
+**Catch up the Buzz fork** — **all done 2026-08-28.** ~~CAT-1 survey the gap~~ · ~~CAT-2 collisions and conflict surface~~ · ~~CAT-3 migration audit~~ · ~~CAT-4 merge into `nfb-demo-kinds`~~ · ~~CAT-5 probe the kinds~~ · ~~CAT-6 rehearse migrations on a production-shaped restore~~ · ~~CAT-7 deploy and verify by image id~~ · ~~CAT-8 exercise Peek, Ship and the agent~~ · ~~CAT-9 let a project record omit `h`~~ · ~~CAT-10 Buzz drops a verified NIP-OA owner~~ · ~~CAT-11 the widened timestamp window aborts at COMMIT~~ — CAT-10 and CAT-11 were relay bugs rather than sequence steps; they lived here because there is no Buzz bugs project
 
 **Agent / Steer** — AGE-1 stale committed plugin bundle · AGE-2 the agent's signing ceiling *(in progress)* · AGE-3 let the agent edit its own message · AGE-4, AGE-5 cancelled test tickets, and they stay: nobody can delete an issue the agent authored · AGE-6 the MCP server runs a parked branch
