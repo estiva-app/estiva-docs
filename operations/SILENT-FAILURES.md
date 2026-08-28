@@ -27,9 +27,38 @@ Postgres row, `origin/main`, the bytes.
 | Signing succeeded, publish failed | The relay's kind allowlist rejects at ingest — *after* signing | `npm run probe` in `~/estiva-ship` |
 | `HTTP 200` from `POST /events` | `{"accepted":false,"message":"duplicate: …"}`. **The status code is not the answer** | Read the `accepted` field |
 | The kind is registered and `/sign` signed it, and the relay still says no | A *second* list. `requires_h_channel_scope` (`ingest.rs`) names kinds that must carry an `h`; being on the kind allowlist says nothing about it. Also a `200` with `accepted:false` | Publish the exact shape and read `accepted` |
-| Old messages never appear on the relay | The relay rejects `created_at` outside ~±15 min of its clock | Send a new message |
+| Old messages never appear on the relay | The relay rejects `created_at` outside ±`BUZZ_MAX_TIMESTAMP_DRIFT_SECS` (default 900 s) of its clock | Send a new message |
+| You widened `BUZZ_MAX_TIMESTAMP_DRIFT_SECS` for an import and it still fails, with `500 internal server error` | **Widening only helps global kinds.** Migration 0021 arms a commit-time floor of 960 s on every writer-pool connection, so anything carrying an `h` tag is accepted at ingest and then **aborted at COMMIT**. Measured 2026-08-27 at ±2 years: a 120-day-old `kind:30851` refused with a 500, a 120-day-old global event accepted and readable | Relay log says `below the replica-fence floor`. Since CAT-11 the relay also warns about it at startup. See *Importing history* below |
 | Profile edits reach nobody | `RELAY_BRIDGE_URL` empty → publishing off. `COMMUNITY_HOST` mismatched → Buzz **silently discards** the `kind:0` | `estiva-doctor.sh` |
 | Every relay request fails after the app loads fine | The relay does not name the app's origin in `BUZZ_CORS_ORIGINS` | Check `/opt/buzz/.env`, restart the relay |
+
+## Importing history that predates the relay
+
+`BUZZ_MAX_TIMESTAMP_DRIFT_SECS` is **not** the answer for channel-scoped
+history, and the relay will tell you so at startup. The floor exists to keep
+the replica fence honest: once a read replica has replayed past a sampled
+writer LSN, no transaction may later commit an `events` row older than
+`clock_timestamp() - 960 s`. Widening the ingest window does not move that
+floor, so the write is taken and then dropped at COMMIT.
+
+**What works, per migration 0021's own header:**
+
+| Kind of history | Route |
+| --- | --- |
+| Global events — `channel_id IS NULL`, e.g. profiles, discovery snapshots | Widen `BUZZ_MAX_TIMESTAMP_DRIFT_SECS`, import, set it back. This is the one case the knob was actually good for |
+| Channel-scoped events — anything with an `h` tag: messages, issues, changes, comments | **Not through the relay.** Import on a connection *outside* the relay's writer pool (so the `buzz.created_at_floor` GUC is unset and the trigger is a no-op), and hold the replica breaker closed from before the transaction begins until its WAL is replayed on the replica |
+
+Two things that make this safe rather than merely possible:
+
+- The guard is armed **per session** by the writer pool's `after_connect`. A
+  psql session the relay did not open has no `buzz.created_at_floor` set, and
+  the trigger returns early. That is the intended escape hatch, not a loophole.
+- `session_replication_role = replica` (what `pg_restore` uses) likewise
+  bypasses triggers, and is likewise a breaker-closed operation.
+
+Do **not** widen the floor constant to make an import work. It is subtracted by
+the replica fence, so the two uses must never diverge — changing it means
+re-examining that proof, which is a different piece of work.
 
 ## Deploying
 
