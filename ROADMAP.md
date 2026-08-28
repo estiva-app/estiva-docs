@@ -63,10 +63,10 @@ The remaining ~35 are unstarted. **All four Gate 1 tickets are done**, CRO-2 and
 | Peek: Real-time Ship→Peek updates | PEE-1…11 | Peek reads the relay once per mount and never again. Make it live, and make stale state explain itself. |
 | Cross-app read state | CRO-1…11 | Read/unread becomes a property of the person, not the app. Read it in Ship, it is read in Peek. |
 | DMs on Nostr (DM channels) | DMS-1…11 | Move Peek's DMs off Convex and onto the relay. |
-| Shared foundation packages | SHA-1…6 | Four packages plus a scaffold, so app four is cheap. |
+| Shared foundation packages | SHA-1…7 | Four packages plus a scaffold, so app four is cheap. |
 | Rewrite Ship with shared foundation | REW-1…11 | Ship on React/Vite/Tailwind, and the second consumer that makes the packages extractable. |
-| Catch up the Buzz fork | CAT-1…9 | 625 commits behind upstream. The survey is cheap; the deploy is not. CAT-9 is done, and it added a *ninth* fork commit which is a **deletion** — the kind a merge silently undoes |
-| Agent / Steer | AGE-1…2 | *(new)* The CLI, MCP server and Claude Code plugin. Filed separately because a defect there is invisible to `ship.estiva.app` and the agent has constraints the apps do not |
+| Catch up the Buzz fork | CAT-1…11 | 625 commits behind upstream. The survey is cheap; the deploy is not. CAT-9 is done, and it added a *ninth* fork commit which is a **deletion** — the kind a merge silently undoes |
+| Agent / Steer | AGE-1…6 | The CLI, MCP server and Claude Code plugin. Filed separately because a defect there is invisible to `ship.estiva.app` and the agent has constraints the apps do not — **AGE-6 is an instance of exactly that**: the MCP server had been answering every session's issue listing 13 issues short, and `ship.estiva.app` was fine |
 
 Two architecture documents sit under all of it. Read both if you are picking this up cold:
 
@@ -496,7 +496,7 @@ Added 2026-08-25 with PEE-5, and it closes the oldest open question in this list
 
 ---
 
-## Appendix — all 59 tickets
+## Appendix — all 68 programme tickets
 
 **Peek: Real-time Ship→Peek updates** — PEE-1 topic refetch · PEE-2 project panel re-resolve · PEE-3 profile cache TTL · PEE-4 grant 22242 · PEE-5 WS client + NIP-42 · PEE-6 per-channel subscriptions · PEE-7 route events into the projection · PEE-8 wire useTopicView · PEE-9 connection state · PEE-10 surface read failures · PEE-11 subscribe outside topics
 
@@ -508,4 +508,6 @@ Added 2026-08-25 with PEE-5, and it closes the oldest open question in this list
 
 **Rewrite Ship with shared foundation** — REW-1 shape and scaffold · REW-2 auth via `@estiva-app/identity` · REW-3 projects views · REW-4 issue views · REW-5 writes · REW-6 keep the poll · REW-7 parity checklist · REW-8 cut over · REW-9 remove the old app · REW-10 NIP-22 comments · REW-11 global project record
 
-**Catch up the Buzz fork** — CAT-1 survey the gap · CAT-2 collisions and conflict surface · CAT-3 migration audit · CAT-4 merge into `nfb-demo-kinds` · CAT-5 probe the kinds · CAT-6 rehearse migrations on a throwaway · CAT-7 deploy and verify by image id · CAT-8 exercise Peek, Ship and the agent
+**Catch up the Buzz fork** — CAT-1 survey the gap · CAT-2 collisions and conflict surface · CAT-3 migration audit · CAT-4 merge into `nfb-demo-kinds` · CAT-5 probe the kinds · CAT-6 rehearse migrations on a throwaway · CAT-7 deploy and verify by image id · CAT-8 exercise Peek, Ship and the agent · ~~CAT-9 let a project record omit `h`~~ ✔ · ~~CAT-10 Buzz drops a verified NIP-OA owner~~ ✔ · CAT-11 the widened timestamp window aborts at COMMIT *(in progress)* — **CAT-10 and CAT-11 are relay bugs, not sequence steps**; they live here because there is no Buzz bugs project
+
+**Agent / Steer** — AGE-1 stale committed plugin bundle · AGE-2 the agent's signing ceiling *(in progress)* · AGE-3 let the agent edit its own message · AGE-4, AGE-5 cancelled test tickets, and they stay: nobody can delete an issue the agent authored · AGE-6 the MCP server runs a parked branch
