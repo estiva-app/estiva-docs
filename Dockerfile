@@ -26,9 +26,14 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 
+# This list and site/nav.mjs must agree: nav decides what is published, and a
+# page whose directory is not copied here fails the image build with ENOENT.
+# Loud rather than silent, which is the right way round — but add the directory
+# here whenever you add a section to nav.
 COPY site ./site
 COPY README.md ./README.md
 COPY protocol ./protocol
+COPY design ./design
 COPY local-dev ./local-dev
 COPY repos ./repos
 
