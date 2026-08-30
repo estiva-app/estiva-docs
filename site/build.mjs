@@ -16,7 +16,19 @@ import { NAV, PAGES, SITE, BY_FILE, INTERNAL } from './nav.mjs'
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const OUT = join(ROOT, 'dist')
 
-const md = new MarkdownIt({ html: false, linkify: true, typographer: false })
+/*
+  `html: true` so a page can carry a wireframe.
+
+  Every document rendered here is authored in this repo and reviewed in a PR —
+  there is no user-submitted content and no remote source, which is the case the
+  `false` default protects against. The design guide needs inline markup to show
+  a layout rather than describe one, and a guide that cannot show anything is
+  the failure mode it exists to prevent.
+
+  Styles for those blocks are scoped under `.dg-*` in `styles.css`, so a diagram
+  cannot restyle the page around it.
+*/
+const md = new MarkdownIt({ html: true, linkify: true, typographer: false })
   .use(anchor, {
     permalink: anchor.permalink.linkInsideHeader({ symbol: '#', placement: 'after' }),
     level: [2, 3],
