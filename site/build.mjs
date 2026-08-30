@@ -235,6 +235,25 @@ mkdirSync(OUT, { recursive: true })
 const index = []
 
 PAGES.forEach((p, i) => {
+  /*
+    A nav entry naming a file that is not here is almost always the Dockerfile
+    rather than a typo: the image copies an allowlist of directories, so adding
+    a nav section without adding its directory builds fine locally — where the
+    whole repo is present — and fails only in the image. Say that, rather than
+    letting a raw ENOENT stack trace stand in for it.
+  */
+  if (!existsSync(join(ROOT, p.file))) {
+    console.error(`
+  Missing source for a published page:
+
+    ${p.file}   (nav slug: ${p.slug})
+
+  If this file exists in the repo, the image is not copying its directory —
+  add it to the COPY list in the Dockerfile, next to protocol/ and design/.
+  Otherwise the entry in site/nav.mjs is wrong.
+`)
+    process.exit(1)
+  }
   const source = readFileSync(join(ROOT, p.file), 'utf8')
   const body = wrapTables(renderMarkdown(stripLeadingH1(source), p.file))
   const html = page({
