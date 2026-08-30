@@ -47,6 +47,12 @@ export const NAV = [
     ],
   },
   {
+    section: 'Design',
+    items: [
+      { file: 'design/DESIGNING-ACROSS-APPS.md', slug: 'designing-across-apps', title: 'Designing across apps' },
+    ],
+  },
+  {
     section: 'Building on it',
     items: [
       { file: 'local-dev/RUNNING.md', slug: 'running', title: 'Running locally' },
