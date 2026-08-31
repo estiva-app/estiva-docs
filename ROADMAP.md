@@ -28,7 +28,7 @@ Last updated 2026-08-28. Not published to the docs site (`site/nav.mjs` is opt-i
 | **Projection layer** | 8 / 8 | Render and act on another app's objects. *Mostly already built — this is extraction and extension* |
 | **Cross-app read state** | 7 / 11 | Read/unread becomes a property of the person, not the app |
 | **Shared foundation packages** | 6 / 11 | The packages a third app installs |
-| **Peek's Intelligence** | 6 / 6 | Cmd+K: every action an app declares, offered where the conversation is. *MS1 already built — see below* |
+| **Intelligence in Peek** | 6 / 6 | Cmd+K: every action an app declares, offered where the conversation is. *MS1 already built — see below* |
 | **Ship: Feedback & Bugs** | 5 / 10 | |
 | **Peek: Feedback & Bugs** | 5 / 15 | |
 | **Conversation standard** | 3 / 3 | Comments the third app adopts rather than rebuilds |
@@ -83,7 +83,7 @@ CON-3 (independent)
 
 The only real contact between the chains is **CON's package**, which is not complete until read state exists — unread is what a third-party builder most wants and least wants to build.
 
-### Where Peek's Intelligence sits
+### Where Intelligence in Peek sits
 
 **Not on the critical path to Leaf, and the best thing that isn't.**
 
@@ -115,7 +115,7 @@ Every real dependency, and nothing else. If a pair is not here, they are indepen
 | PRO-6 | **PRO-2** | A Topic projection needs the `list` slot |
 | PRO-6 | **PRO-11** | A message and a conversation are identified by event id, not address, and projections are address-only (RFC 0.4 §13.6). Found while writing RFC 0.5, and **invisible from the direction currently in production** — every Ship object is addressable, so the layer works today and cannot work reciprocally |
 | PRO-7 | **PRO-1, PRO-6** | Needs the extracted runtime *and* something of Peek's to render |
-| Peek's Intelligence, all of MS2 | **PRO-4**, **PRO-1**'s publish path | The launcher's forms are drawn and publish nothing — *"the projection runtime plugs into one function"*. PRO-4 owns rendering a declared action; Intelligence owns what Peek does with it |
+| Intelligence in Peek, all of MS2 | **PRO-4**, **PRO-1**'s publish path | The launcher's forms are drawn and publish nothing — *"the projection runtime plugs into one function"*. PRO-4 owns rendering a declared action; Intelligence owns what Peek does with it |
 | publishing the interop package | **PRO-7** | SHA-7's lesson: never publish a layer with one consumer that has never pushed back |
 | PRO-8 | **RIC-1** | A plain-text summary can only be derived once the format is specified. *The interim fix — stop declaring `truncate` on a structured field — is a one-line manifest change and needs nothing* |
 | the rest of Rich text | **RIC-1** | Filed deliberately thin under rule 2 |
