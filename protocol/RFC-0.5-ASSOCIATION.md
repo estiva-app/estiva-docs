@@ -3,6 +3,10 @@
 - **Status:** draft, not accepted
 - **Date:** 2026-08-31
 - **Builds on:** [RFC 0.4](RFC-0.4-WORKSPACE.md), which is accepted and unchanged by this document
+- **Supersedes:** *nothing.* A higher number here does not retire 0.4 — see the
+  note in its header. Containment and projection are still specified there; this
+  document covers how files **relate** and how they are **addressed**
+
 
 RFC 0.4 settled *containment* (what holds what) and *projection* (how one app renders another's objects). It left one thing unspecified that turns out to carry most of the product weight: **how two files in different apps relate to each other.**
 

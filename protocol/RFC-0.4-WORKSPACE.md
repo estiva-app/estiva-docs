@@ -3,6 +3,20 @@
 - **Status:** accepted
 - **Date:** 2026-08-28 (SHA-10). Written 2026-08-23 as RFC 0.3, revised 2026-08-24, superseded by this version 2026-08-28
 - **Supersedes:** [RFC 0.3](RFC-0.3-FOLDERS.md), now a pointer stub
+- **Superseded by:** *nothing.* [RFC 0.5](RFC-0.5-ASSOCIATION.md) has a higher
+  number and does **not** replace this document — it builds on it and says so.
+  **This is the current specification of containment and projection.**
+
+> **The numbers are not a version sequence, and the sequence misleads.** 0.3→0.4
+> *was* supersession, so a reader who has seen that reasonably concludes 0.5
+> replaces 0.4. It does not: each RFC after 0.4 takes a *topic* the previous one
+> left open, and 0.4 stays accepted and current for everything in it. Somebody
+> acted on the other reading, which is why this line exists rather than the
+> relationship being left to the 0.5 header alone.
+>
+> A change to containment or projection belongs **here**. A change to how files
+> relate, or to what a link looks like, belongs in 0.5.
+
 
 **What acceptance settles.** The containment model of §4–§8 — folder state is relay-maintained, visibility is structural rather than a tag, a folder's `d` is always an opaque uuid, a file is anything with an address, a conversation is NIP-22 `kind:1111` anchored to one, and a huddle needs no new concept. The projection vocabulary of §13 — slots closed and extended with `image`, `list` and `body`; widgets open with a fallback chain that terminates in a closed type; object-creating actions rendered as forms; two machine-facing fields on an action. That messages and rich text are **two models sharing only an inline layer** (§14). And that §6 is unfrozen, answered in Ship's description field rather than waiting for Leaf.
 
