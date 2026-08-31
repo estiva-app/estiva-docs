@@ -494,6 +494,18 @@ Leaf remains the app that will stress anchoring hardest — a document editor re
 
 ## 13. The projection layer
 
+> **The subsections are not in numeric order, and two things caused it.** §13.5
+> sits after §13.7 because later material was appended rather than inserted, per
+> the convention that keeps cross-references resolving. And §13.8 was briefly
+> numbered §13.6 — two PRs appended to this section on the same day without
+> seeing each other, so *two different sections* carried that number and live
+> citations resolved to whichever a reader found first. §13.6 is the
+> addressability one; §13.8 is what building `list` and `stage` taught.
+>
+> The convention only works when everyone appending can see what else is in
+> flight. When two are, the second to merge should renumber rather than collide.
+
+
 **New in 0.4, and mostly already built.** This section describes a mechanism running in production between Ship and Peek, generalises it, and names the four things that stop a third app using it.
 
 ### 13.1 What exists
@@ -505,7 +517,7 @@ An app that owns objects publishes a NIP-89 `kind:31990` manifest declaring, in 
 | `records` | how to fold this app's change events into current truth — the change kind, its tag names, the ordering rule, and what "hidden" means |
 | `projections` | per kind: a widget type and a set of **slots**, each sourced from a tag, a top-level field, or a folded field |
 | `actions` | what another app may *do*, as an event to publish — not an API to call |
-| `vocabularies` | enumerated values as `{value, label, colour, stage}`, colour being semantic (`neutral`/`blue`/`green`/`muted`) and never a hex code, and `stage` (`open`/`started`/`done`/`dropped`) saying what the status *means* rather than what it is called — see §13.6 |
+| `vocabularies` | enumerated values as `{value, label, colour, stage}`, colour being semantic (`neutral`/`blue`/`green`/`muted`) and never a hex code, and `stage` (`open`/`started`/`done`/`dropped`) saying what the status *means* rather than what it is called — see §13.8 |
 
 The governing principle, already stated in [SPEC §7](SPEC.md) and unchanged here:
 
@@ -540,7 +552,7 @@ The two vocabularies get different policies, because they are different kinds of
 | `status` | a value from a declared vocabulary |
 | `meta` | one or more secondary values, each optionally a person (`as: "pubkey"`) |
 | `image` | *new* — an avatar, thumbnail or cover, as a URL |
-| `list` | *new* — child objects, declared as `{children: {kind, via, limit}}` where `via` is the tag **on the child** naming this object. The consumer resolves each and renders it with its own projection. See §13.6 |
+| `list` | *new* — child objects, declared as `{children: {kind, via, limit}}` where `via` is the tag **on the child** naming this object. The consumer resolves each and renders it with its own projection. See §13.8 |
 | `body` | *new* — structured content per §14, for objects whose body is the point |
 
 **A consumer MUST ignore a slot it does not implement, and MUST still render the rest.** *Amended at acceptance, 2026-08-28.* "Unknown is unrenderable by definition" reads as though the case cannot arise. It arises constantly: the set is closed but it **grows**, and producers and consumers upgrade at different times — so between this document and the last consumer shipping `list`, every manifest declaring one is read by something that has never heard of it. That is the same staggered-upgrade condition the widget chain exists for, and slots have no chain.
@@ -642,7 +654,7 @@ something the substrate cannot do.
 - a **Topic** wants a `list` slot, which is the slot the pattern was missing
 - a Message rendered in Ship is, in itself, the unified cross-app comment experience §14 and the conversation package are aiming at
 
-### 13.6 What building `list` and `stage` taught — added 2026-08-31
+### 13.8 What building `list` and `stage` taught — added 2026-08-31
 
 **Amendment, from PRO-2.** §13.2 named two limits — a scalar-only slot set, and
 the flagship layout bypassing the pattern — and §13.3 answered the first by
