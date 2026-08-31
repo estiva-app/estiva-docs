@@ -283,6 +283,28 @@ A thread belongs to whatever anyone in it referenced, at any point. A thread
 that mentions an object halfway through is from then on about that object, and
 the **whole** thread attaches, not only the message carrying the reference.
 
+**That rule is only defensible because attachment has two strengths, and an app
+MUST present them separately** (added 2026-08-31):
+
+| | in the data | presented as |
+| --- | --- | --- |
+| **a comment** | uppercase `A` at the thread root — the thread *is* about this object | the object's own discussion |
+| **a mention** | the address referenced inside a message | *Mentioned in*, secondary and collapsed |
+
+A twenty-message thread that names an issue on message twenty-one is a mention,
+not a comment. Merged into one list it would put an unrelated discussion inside
+the issue's conversation, which is why the rule above reads as surprising until
+the two are split.
+
+Message content is immutable, so **an accidental mention attaches permanently**
+and cannot be withdrawn. That is acceptable for the secondary section and would
+not be for the primary one — a second reason the two must not merge.
+
+An app MAY offer a mention as a *suggestion* to associate two files. It MUST NOT
+create the association automatically: mentions arrive retroactively and by
+accident, and a shared record must not reorganise itself because somebody typed
+a reference. See [RFC 0.5](RFC-0.5-ASSOCIATION.md).
+
 `kind:9` messages MUST carry `ts` for the same reason change events do — two
 messages in one second read back in the wrong order, which in a conversation is
 not a subtle bug.

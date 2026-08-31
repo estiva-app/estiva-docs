@@ -119,6 +119,7 @@ Every real dependency, and nothing else. If a pair is not here, they are indepen
 | decision | ticket | note |
 | --- | --- | --- |
 | ~~**Accept or amend RFC 0.4**~~ | SHA-10 | **Accepted 2026-08-28.** Settles the containment model, the projection vocabulary and the two content models. Settles none of §12 — the open questions survive acceptance, four of them with tickets |
+| **Does a facet merge comments** | RFC 0.5 §3 | **Yes** — decided 2026-08-31. Ordered by time, origin unlabelled. The competing integration merges by *copying*; every limitation it documents follows from the copy, and a read-time union has none of them |
 | **Which content format** | RIC-1 | Three candidates, none free. **487 published events cannot move** whichever wins, so every candidate needs an `alsoRead`-shaped compatibility story |
 | **Upstream proposal or fork** | RFC 0.4 §10.1 | Trigger **fired** — upstream shipped `kind:30621`, global-only, single-writer. Latest responsible moment is the first line of folder command/state code. **Now the only thing between the accepted design and folder tickets**, since §12.1 makes the kind numbers its tail. Left open at acceptance on purpose: the trigger firing makes it *easier*, not yet *forced* |
 | **The reaction horizon** | CON-1 | Currently decided by an undocumented constant of 100 |
@@ -163,6 +164,7 @@ Two documents sit under all of it:
 | document | what it settles |
 | --- | --- |
 | [ADR 0001](decisions/0001-relay-canonical-by-default.md) | **accepted** — relay-canonical by default; a database is a per-feature exception; Estiva ID excluded |
+| [RFC 0.5](protocol/RFC-0.5-ASSOCIATION.md) | **draft** — how files in different apps relate. Three tiers (none / basic / facet), facets as an n-member set declared by a file's own author, and the invariant that a facet may not merge conversations across an access boundary. Written because RFC 0.4 lets a Folder hold several files of one kind, so **the container can no longer be the relationship** |
 | [RFC 0.4](protocol/RFC-0.4-WORKSPACE.md) | **accepted 2026-08-28** — supersedes 0.3. Containment (§1–§12), the projection layer (§13), messages vs rich text (§14), the third-app checklist (§15). Acceptance settles the design and settles none of §12's open questions; SPEC absorbs each part as it is implemented, so it keeps describing a protocol that exists |
 
 Failure shapes worth reading before building anything: [SILENT-FAILURES.md](operations/SILENT-FAILURES.md).

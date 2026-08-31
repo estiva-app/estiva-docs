@@ -586,6 +586,52 @@ These are **fields, not a design.** The intelligence layer they anticipate is de
 
 **An action is an event to publish, never an endpoint to call.** The consumer signs and publishes; the owning app has no server in the loop and cannot enforce anything. That is a property, not a gap: it is what lets a consumer act while the owner is offline. Its consequence is that **validation is an honour system**, and a consumer that skips the manifest's own vocabulary check is the one putting junk in a shared record.
 
+### 13.6 Not every object has an address — amended 2026-08-31
+
+**Two of the objects this suite needs to render are identified by event id, not
+by address**, and the projection layer as specified handles only addresses.
+
+| object | identified by |
+| --- | --- |
+| Ship project, Ship issue, Leaf document, a Folder | address — `naddr` |
+| Peek topic | address — `naddr` (the relay's `39000`) |
+| **a conversation** | **the root event's id** — `nevent` |
+| **a message** | **its own event id** — `nevent` |
+| a block inside a document | a component address (§6) |
+
+`projections` is keyed by kind and resolved from an `naddr`; Ship's manifest
+declares its `web` template as `naddr` outright. So a manifest **cannot today
+declare how a message should be rendered**, and a consumer holding a `nevent`
+has nothing to look up.
+
+NIP-22 already spans both — uppercase `E` names an event root where `A` names an
+address — so the wire format is not the obstacle. What is missing is that a
+projection cannot be declared for an event-identified object, and a `web`
+template cannot be built for one.
+
+**This blocks the reciprocal direction specifically.** Ship's objects are all
+addressable, so the layer works today in the direction it was built for. Peek
+publishing a Topic *and a Message* — the second consumer §13.5 requires — needs
+this first. It is small, and it is invisible from the direction currently in
+production, which is why it is recorded here rather than discovered mid-ticket.
+
+### 13.7 Transclusion is this layer pointed at a block
+
+**Sharing content between documents needs no new mechanism.** A synced block —
+the same passage appearing in two documents, updating in both — is a widget
+whose object is a *block* rather than a file, using the component address of §6.
+
+Two halves with different costs, and they should not be confused:
+
+- **Reading it is free** once blocks are addressable: document B holds a
+  reference to a block in document A and renders it through A's projection.
+- **Editing it from B is an action on a foreign object** (§13.4), so it needs
+  whatever authorization A requires. Nothing new, but not free.
+
+Two objects cannot share bytes; one references the other. So there is always a
+home and a reference, and a design that pretends otherwise is describing
+something the substrate cannot do.
+
 ### 13.5 The second consumer, and why this must not ship without one
 
 `@estiva-app/protocol` gained the live relay socket as a single implementation with a single caller, and [SHA-7](../ROADMAP.md) exists to pay for it. This layer is at the same risk and larger: every line of the consumer runtime today lives in one app, and no second consumer has ever pushed back on its API.
