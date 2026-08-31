@@ -28,6 +28,7 @@ Last updated 2026-08-28. Not published to the docs site (`site/nav.mjs` is opt-i
 | **Projection layer** | 8 / 8 | Render and act on another app's objects. *Mostly already built — this is extraction and extension* |
 | **Cross-app read state** | 7 / 11 | Read/unread becomes a property of the person, not the app |
 | **Shared foundation packages** | 6 / 11 | The packages a third app installs |
+| **Peek's Intelligence** | 6 / 6 | Cmd+K: every action an app declares, offered where the conversation is. *MS1 already built — see below* |
 | **Ship: Feedback & Bugs** | 5 / 10 | |
 | **Peek: Feedback & Bugs** | 5 / 15 | |
 | **Conversation standard** | 3 / 3 | Comments the third app adopts rather than rebuilds |
@@ -82,6 +83,22 @@ CON-3 (independent)
 
 The only real contact between the chains is **CON's package**, which is not complete until read state exists — unread is what a third-party builder most wants and least wants to build.
 
+### Where Peek's Intelligence sits
+
+**Not on the critical path to Leaf, and the best thing that isn't.**
+
+It is the only project whose **MS1 is already built** — Katerina's launcher prototype draws every object-creating action from a manifest declaration, with the end state in Storybook. So its marginal cost is the lowest in the programme, and it starts the moment PRO-4 lands.
+
+Three things argue for taking it early once unblocked:
+
+- **It is the demo.** The stated business goals are recruiting and a grant, and *"Cmd+K → create the issue → it appears in the thread as a live widget"* is the cross-app moment that reads as unusual. PRO-10 exists to record exactly this.
+- **It is a second consumer of the action half**, the way PRO-7 is of the rendering half. Two different halves, both needed before the interop package is published.
+- **The team feels it daily** — deciding in Peek and filing in Ship is what this workspace does all day.
+
+One thing argues for not rushing it: **nothing waits on it.** RIC-1 gates the block model, §6 and therefore Leaf; this gates nothing. So it goes *after* the things that unblock others, and *before* anything that merely accumulates.
+
+**MS3 — the on-device prefill — is sequenced by when a demo needs to impress, not by dependency.** It is Chrome-desktop-only and can never be more than an enhancement, so it should never block MS2 shipping.
+
 ### Bugs and tooling, independent of everything
 
 PEE-1, 6, 7, 12, 13 · SHI-1, 2, 3, 4, 10 · AGE-3 · OTH-3. None blocks or is blocked by the above. **SHI-4 (issue refs are not unique) is worth doing sooner than its size suggests** — it is why every `ship` command must be addressed by `30851:<pubkey>:<d>` rather than by ref.
@@ -98,6 +115,7 @@ Every real dependency, and nothing else. If a pair is not here, they are indepen
 | PRO-6 | **PRO-2** | A Topic projection needs the `list` slot |
 | PRO-6 | **PRO-11** | A message and a conversation are identified by event id, not address, and projections are address-only (RFC 0.4 §13.6). Found while writing RFC 0.5, and **invisible from the direction currently in production** — every Ship object is addressable, so the layer works today and cannot work reciprocally |
 | PRO-7 | **PRO-1, PRO-6** | Needs the extracted runtime *and* something of Peek's to render |
+| Peek's Intelligence, all of MS2 | **PRO-4**, **PRO-1**'s publish path | The launcher's forms are drawn and publish nothing — *"the projection runtime plugs into one function"*. PRO-4 owns rendering a declared action; Intelligence owns what Peek does with it |
 | publishing the interop package | **PRO-7** | SHA-7's lesson: never publish a layer with one consumer that has never pushed back |
 | PRO-8 | **RIC-1** | A plain-text summary can only be derived once the format is specified. *The interim fix — stop declaring `truncate` on a structured field — is a one-line manifest change and needs nothing* |
 | the rest of Rich text | **RIC-1** | Filed deliberately thin under rule 2 |
