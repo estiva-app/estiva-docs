@@ -187,8 +187,14 @@ Two documents sit under all of it:
 | document | what it settles |
 | --- | --- |
 | [ADR 0001](decisions/0001-relay-canonical-by-default.md) | **accepted** — relay-canonical by default; a database is a per-feature exception; Estiva ID excluded |
+> **The RFC numbers are not a version sequence.** 0.3→0.4 was supersession;
+> everything after 0.4 is not. Each takes a *topic* the previous left open, and
+> the earlier document stays current for what it covers. Containment and
+> projection are RFC 0.4; association and addressing are RFC 0.5. Somebody has
+> already edited the wrong one on this reasoning.
+
 | [RFC 0.5](protocol/RFC-0.5-ASSOCIATION.md) | **draft** — how files in different apps relate. Three tiers (none / basic / facet), facets as an n-member set declared by a file's own author, and the invariant that a facet may not merge conversations across an access boundary. Written because RFC 0.4 lets a Folder hold several files of one kind, so **the container can no longer be the relationship**. §7 adds **addressing** — what a link looks like — because people copy the address bar rather than a button, which makes an app's URL wire-visible and therefore protocol |
-| [RFC 0.4](protocol/RFC-0.4-WORKSPACE.md) | **accepted 2026-08-28** — supersedes 0.3. Containment (§1–§12), the projection layer (§13), messages vs rich text (§14), the third-app checklist (§15). Acceptance settles the design and settles none of §12's open questions; SPEC absorbs each part as it is implemented, so it keeps describing a protocol that exists |
+| [RFC 0.4](protocol/RFC-0.4-WORKSPACE.md) | **accepted 2026-08-28, and current** — supersedes 0.3, and is **not** superseded by 0.5 despite the lower number. Containment (§1–§12), the projection layer (§13), messages vs rich text (§14), the third-app checklist (§15). Acceptance settles the design and settles none of §12's open questions; SPEC absorbs each part as it is implemented, so it keeps describing a protocol that exists |
 
 Failure shapes worth reading before building anything: [SILENT-FAILURES.md](operations/SILENT-FAILURES.md).
 
