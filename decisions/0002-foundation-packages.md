@@ -478,8 +478,138 @@ either way.
 
 ## 9. Related
 
+> **One section follows this one**, despite Related reading as the end. §10 is
+> new (SHA-11) and is numbered *after* the existing material so that every
+> cross-reference into §1–§9 keeps resolving. [RFC 0.4](../protocol/RFC-0.4-WORKSPACE.md)
+> §12 and [SPEC](../protocol/SPEC.md) carry the same quirk for the same reason.
+
 - SHA-1 — this ADR's ticket. SHA-2…6 are what it unblocks
 - [`0001-relay-canonical-by-default.md`](0001-relay-canonical-by-default.md) §8 —
   the README amendment about sharing packages but never interpretation
 - b990b57 in `estiva-ship` — the agent's move out, and the reasoning §2 argues with
 - `~/estiva-foundation/README.md` — the release runbook and the exact publish commands
+- SHA-11 — §10's ticket, added 2026-08-31
+
+---
+
+## 10. Decision 5 — what makes an in-app implementation extractable
+
+**Added 2026-08-31 (SHA-11).** §1–§9 decided where packages live, how they are
+built, how they publish and who owns a break. They assume a package already
+exists. This section is about the code *before* that — the period when a shared
+implementation is still inside one app, which is where three of the programme's
+next projects will spend most of their time.
+
+### The rule, and why it is not "extract early"
+
+**Functionality lands in a real app first and is packaged afterwards.**
+
+Extraction with no consumer produces a package shaped like nothing. That is
+SHA-7's outstanding bill: `createLiveRelay` went into `@estiva-app/protocol` as
+a single implementation with a single caller, and no second consumer ever
+pushed back on its API. §5 names an owner for a breaking change; it cannot name
+one for an interface nobody has argued with.
+
+But *"we will extract it later"* is precisely how `liveTopics.ts` became a
+ticket. An intention held only in someone's head is not a plan, and by the time
+the extraction is attempted the app has grown into every seam that was left
+open. **So the intention has to be checkable while the code is being written**,
+by someone reviewing a diff, without knowing whether extraction is imminent.
+
+### The four constraints
+
+Each one names the failure it prevents. A file that satisfies all four can be
+moved by `git mv`; a file that fails one cannot be moved at all until it is
+fixed.
+
+1. **No imports from the app's data layer, store or config.** The dependency
+   runs one way. *Prevents:* a module that needs the app's fixtures, directory
+   or auth to run, and therefore cannot leave the building.
+
+2. **Every environment touch is an injected parameter** — query function,
+   signer, clock. Never a module-level global. *Prevents:* a singleton, a
+   `window`, or a credential provider baked into module scope, each of which
+   makes the module untestable without the environment it assumes and
+   un-instantiable twice.
+
+3. **Its tests run with no app.** If a test needs a deployment or a browser, the
+   package cannot carry that test — and **untested code does not travel**.
+   *Prevents:* an extraction that arrives in a second consumer with its safety
+   net left behind in the first.
+
+4. **Put it where it is going.** *Prevents:* the slowest failure of the four. A
+   path that lies about what a file is, is how a thing quietly grows app-shaped
+   — nothing breaks, and every later reader infers the wrong dependency
+   direction from the directory name.
+
+Constraints 1–3 are enforceable by a reviewer reading imports. Constraint 4 is
+the one that needs deciding up front, because moving a file later is the change
+nobody schedules.
+
+### Three worked examples, all currently in the tree
+
+Verified against `peek` `origin/main`, 2026-08-31.
+
+| file | 1 imports | 2 injected | 3 tests alone | 4 path | verdict |
+| --- | --- | --- | --- | --- | --- |
+| `convex/nostr/projection.ts` | ✅ | ✅ | ✅ | ❌ | extractable today; only the path is wrong |
+| `src/lib/textParsing.ts` | ❌ | — | — | ✅ | cannot leave the building |
+| `src/nostr/liveTopics.ts` | ❌ | ❌ | — | ✅ | the bill SHA-7 is paying |
+
+**`projection.ts` — the shape to copy.** 1,312 lines, and its entire import
+list is two lines, both `@estiva-app/protocol`. Environment arrives as a
+`QueryFn` type declared in the file itself: *"everything here takes a `query`
+function rather than reaching for one. `foreign.ts` supplies the authenticated
+bridge; a test supplies its own."* Its test file imports vitest, the module, and
+a protocol type — nothing else, so it runs with neither Convex nor a browser.
+
+It fails only constraint 4, and does so loudly: it sits under `convex/` while
+its own header says *"Nothing in this file knows what Linear-lite is."*
+
+> **Quote it accurately.** This header is widely cited in the programme as
+> *"takes a query function and knows nothing about Convex"* — including in
+> [RFC 0.4](../protocol/RFC-0.4-WORKSPACE.md) §15.2 and on PRO-1. That sentence
+> is not in the file. The two real sentences are the ones above, and they say
+> something slightly stronger: the file is ignorant of *the app it renders*, not
+> merely of its own backend.
+
+**`textParsing.ts` — constraint 1, failed three times over.** Its first three
+lines import `PEOPLE`, `TOPICS` and `APP_FILES`/`DOCUMENT_FILES` from `@/data/`.
+The parser needs Peek's own fixture directory to run. Note the direction of the
+mistake: the logic is generic, and only its *inputs* are app-bound — which is
+the version of this failure that looks harmless in review.
+
+**`liveTopics.ts` — constraint 2, and constraint 1 as well.** `let instance:
+Instance | null = null` at module scope; `window.navigator.onLine`; and
+`validToken` imported from `@/auth/estivaId`, which is the app's credential
+provider. The roadmap records this one as failing constraint 2; it fails 1 too,
+and the pairing is typical — a module-level singleton is usually holding
+something it reached for rather than received.
+
+### What this section does not decide
+
+- **When to extract.** That is per-project, and the answer is generally "after a
+  second consumer has pushed back" — see §5 and SHA-7. This section governs how
+  the code is written in the meantime, not the timing.
+- **What goes in a package versus what stays in the app.** A package boundary is
+  a design question; this is a hygiene rule that makes either answer cheap.
+- **Whether a fold may live in a package.** It may, above `@estiva-app/protocol`,
+  which deliberately contains none. That is a protocol-layering question, not an
+  extractability one.
+
+### Consequences
+
+**Good:** an extraction becomes a `git mv` plus a `package.json`, which is a
+reviewable change rather than a project. The four constraints are cheap while
+writing and expensive to retrofit, and the asymmetry is the whole argument.
+
+**Costs, accepted:**
+
+- **Constraint 2 makes some code more verbose** than reaching for a global, and
+  the verbosity lands on the app that has not yet asked for a package.
+- **Constraint 4 forces a placement decision early**, sometimes before anyone
+  knows whether the thing will be shared. The failure it prevents is silent, so
+  it will occasionally be paid for nothing.
+- **None of the four is machine-checked.** They are review discipline, and a
+  lint rule for constraint 1 would be worth having if this is violated twice.
+
