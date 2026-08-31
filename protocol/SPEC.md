@@ -441,7 +441,7 @@ different times. **A consumer MUST ignore a slot it does not implement and MUST
 still render the rest**; a producer MUST NOT put information only in a slot
 added after `title`, `subtitle`, `status` and `meta`.
 
-Widgets are `card`, `row`, `table`, `stat`. The consumer owns the layout.
+Widgets are `card`, `row`, `table`, `stat` — and a manifest may declare others, as a chain terminating in one of those. See §7.5. The consumer owns the layout.
 
 ### 7.3 Actions
 
@@ -512,6 +512,59 @@ system, and this is one app reading another's self-description.
 should draw. Whether that becomes a counter, a progress bar or nothing is the
 consumer's decision. An owner that could specify that would be designing another
 app's UI, which is the same objection that rules out iframes (§7).
+
+---
+
+### 7.5 Widgets: a closed floor, an open vocabulary
+
+*Added 2026-08-31. Numbered after the existing subsections rather than beside
+§7.2 where it belongs topically, so that every cross-reference into §7.1–§7.4
+keeps resolving.*
+
+A **slot** is semantic — a consumer must know what `title` *means* to render it
+at all — so an unknown slot name is unrenderable by definition and the set is
+closed. A **widget** is a layout hint, so an unknown one can degrade honestly.
+The two therefore get opposite policies.
+
+`card`, `row`, `table` and `stat` are closed: every consumer implements them.
+Beyond that, **a manifest MAY declare any widget name, and MUST declare it as an
+ordered chain terminating in a closed type**:
+
+```jsonc
+"widget": ["message", "card"]   // a message if you know it, otherwise a card
+```
+
+A bare string is the older form and is a chain of one, so it MUST itself be a
+closed type.
+
+**A consumer MUST walk the whole chain**, not only its first entry, and render
+the first type it implements.
+
+**A producer MUST NOT publish a chain ending in a type this document does not
+close.** `["profile"]` is not publishable; `["profile", "card"]` is.
+
+Those are the same rule from opposite sides and both are required, because they
+fail differently. A consumer that stops at the first entry renders nothing for a
+widget it has not heard of. A producer that does not terminate its chain makes a
+**conformant** consumer render nothing, having done exactly what it was told —
+and that failure appears in somebody else's app, caused by a manifest they do
+not control, with nothing to report it.
+
+**Why neither pure option.** A closed set is provably too small on day one: "a
+card with its children underneath" is not any of the four, and every addition
+becomes a lockstep deployment across every consumer. A bare open set makes the
+fallback the risk — an object that is present but blank is indistinguishable
+from one the reader may not be allowed to see, and reports *"that app is
+broken"* about an app behaving correctly. The terminal type makes that outcome
+impossible rather than merely unlikely.
+
+This is the same shape as `tag: ["name", "title"]` (§7.2) and `emits.alsoRead`
+(§7.3), and exists for the reason all three do: **published events are immutable
+and consumers upgrade at different times.**
+
+A widget names a *kind of thing to draw*, never how to draw it. The consumer
+owns the layout throughout — an owner that could specify it would be designing
+another app's product, which is the objection that rules out iframes.
 
 ---
 
