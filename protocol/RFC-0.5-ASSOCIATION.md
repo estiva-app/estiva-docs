@@ -56,7 +56,7 @@ A facet set has *n* members and one identity. It is not a graph of pairwise link
 
 Pairwise forces a choice between two bad answers. **Transitive** means one careless link silently merges three conversations and the chain has no bound. **Non-transitive** means a three-way relationship is a triangle maintained by hand, which drifts the moment one edge is forgotten.
 
-A set has neither problem, and RFC 0.4 §7's Leaf case — document, topic and project as one thing — is an ordinary three-member set rather than a special case.
+A set has neither problem, and the three-way case — a Leaf document, a Peek topic and a Ship project as one thing (§9, example G) — is an ordinary three-member set rather than a special case.
 
 ### 3.3 A facet set is not a Folder
 
