@@ -126,7 +126,135 @@ Two consequences, and the first is a property worth keeping:
 
 **One operational note:** an identity without `kind:5` — the agent, today — can only ever archive. Anything it creates as a facet member is permanent.
 
-## 7. Deliberately deferred
+## 7. Addressing: what a link looks like
+
+Association (§2–§3) says which files relate. This says how a person *gets to*
+one, which turned out to be a protocol question rather than a per-app choice.
+
+### 7.1 The scenario that decides it
+
+**People copy the address bar.** Not a "Copy reference" button — the URL of the
+page they are looking at. Any design that only works when somebody uses the
+right affordance is a design for the case that does not happen.
+
+So the URL an app puts in the address bar has to be resolvable by another app.
+That makes it wire-visible under [SPEC §10](SPEC.md)'s test — two apps can
+disagree about it and a user sees the difference — and therefore something this
+document should settle rather than each app.
+
+### 7.2 The grammar
+
+```
+https://<app>.estiva.app/<type>s                        a directory of that kind
+https://<app>.estiva.app/<type>/<slug>-<d>              one object
+```
+
+```
+ship.estiva.app/projects
+ship.estiva.app/project/peek-intelligence-9c69f247-be6a-4ae7-9703-71cb971f5f93
+peek.estiva.app/topic/design-review-925897ad-796e-4bc6-999c-ca19df26c4aa
+```
+
+Three properties, in the order they matter:
+
+**The `d` is the whole identity, and it is not truncated.** A consumer resolves
+`{kinds: [<type>], "#d": ["<uuid>"]}` — one query, no index, no service to keep
+alive. The worst failure is a link that does not expand; never one that cannot
+be resolved at all.
+
+**The kind comes from the path segment**, which is why `<type>` is part of the
+grammar rather than decoration. `/project/` means `30850` to the app serving it.
+
+**The slug is decorative and load-bearing for humans only.** Renaming the object
+changes the slug and the link still resolves, which is the property that keeps
+old links working. A consumer MUST ignore everything before the final uuid.
+
+### 7.3 Why not the naddr, which is the obvious first answer
+
+An `naddr` is bech32 over `(kind, pubkey, d, relay hints)` **plus a checksum
+computed across the whole string.** Two consequences, and both are fatal to
+using it — or a slice of it — as a URL suffix:
+
+- **A slice of it means nothing.** The tail is checksum bytes, not the `d`. You
+  cannot resolve from it without a suffix→object index, which is a service that
+  can go down and take every link with it.
+- **It is not stable for one object.** Relay hints are part of the encoding, so
+  the same object encoded with a hint and without produces two different naddrs.
+  Both are live in this workspace today: Ship's `referenceFor` passes a hint and
+  the projection runtime's `buildObject` passes none.
+
+The full naddr in a URL would be self-contained but carries a 32-byte pubkey for
+no benefit — §7.4 removes the need for it.
+
+### 7.4 The pubkey does not belong in the URL
+
+An addressable object is `(kind, pubkey, d)`, so dropping the pubkey looks
+lossy. It is not, because **`d` is a v4 uuid** ([RFC 0.4](RFC-0.4-WORKSPACE.md)
+§4.3) and a uuid does not collide.
+
+Measured on production, 2026-08-31:
+
+| kind | events | distinct `d` | non-uuid `d` | `(kind, d)` shared by more than one author |
+| --- | --- | --- | --- | --- |
+| `30850` Project | 15 | 15 | 0 | **0** |
+| `30851` Issue | 156 | 156 | 0 | **0** |
+| `39000` Topic | 64 | 64 | 0 | **0** |
+
+So a `#d` query returns exactly one object, and the URL is 36 characters shorter
+than it would otherwise be.
+
+**This adds a second reason to a rule that already exists, and the rule is now
+load-bearing in a new place.** §4.3 requires a uuid `d` so that a rename cannot
+change an address. Addressing now depends on it for *uniqueness*: an app that
+used a readable `d` — the obvious thing to reach for when writing a slug — would
+not fail loudly, it would collide with another app's object and resolve to the
+wrong one. The MUST stays; what changes is that violating it now has a second,
+quieter failure.
+
+### 7.5 A consumer resolves an app it has never met
+
+An app declares the URL shapes it uses in its manifest, alongside the `web`
+template that says how to *open* an object:
+
+```jsonc
+"web": "https://ship.estiva.app/project/<slug>-<d>",
+"urls": [
+  "https://ship.estiva.app/project/<slug>-<d>",
+  "https://ship.estiva.app/issue/<slug>-<d>"
+]
+```
+
+`web` is outbound — given an object, build a link. `urls` is inbound — given a
+link, recover the object. They are usually the same strings and are separate
+fields because they answer different questions, and because an app that changes
+its routes still has to read the links it published under the old ones.
+
+**A consumer matches a pasted URL against the patterns from every published
+`kind:31990`.** Those are global and queryable ([SPEC §7](SPEC.md)), so this
+works for an app the consumer has never heard of, with no per-app integration,
+no central registry and no server. It is §13.1's inversion again: the owner
+declares, the consumer decides.
+
+A URL matching no published pattern renders as a plain link. That is the honest
+outcome — it is a link, and nothing claims otherwise.
+
+### 7.6 What this requires, and what it does not solve
+
+**Paths, not hashes.** Ship uses hash routing because it is served as static
+files with `try_files … =404`; a real path 404s on reload. Path URLs need an
+`index.html` fallback in each app's nginx config. This is small and it is
+infrastructure, so it is named rather than assumed.
+
+**Peek has no object URLs at all.** No routing, no per-topic path: selecting a
+topic does not change the address bar. Everything above is unreachable for Peek
+until it has them, which makes it the prerequisite rather than a later polish.
+
+**Messages still have no URL.** A `kind:9` has no `d`, so it has no address and
+no place in this grammar — the same gap [RFC 0.4](RFC-0.4-WORKSPACE.md) §13.6
+records for projections. Linking to a message needs the `nevent` form and is
+deliberately not solved here.
+
+## 8. Deliberately deferred
 
 Per the roadmap's rule 2, with triggers rather than guesses.
 
@@ -136,7 +264,7 @@ Per the roadmap's rule 2, with triggers rather than guesses.
 | **Enforcing §4 at the relay** | a read rule makes cross-boundary facets unrepresentable today, and a Buzz change is expensive to land | the same trigger |
 | **Whether a merged view labels which facet a comment was written against** | the default is not to, following the design guide; the exception is facets with differing access, which §4 currently forbids | §4 being relaxed |
 
-## 8. Worked examples
+## 9. Worked examples
 
 **Illustrative, not evidence.** These are worked cases for reasoning about the design, in the way a specification uses examples. They are not reports of things that happened and must not be cited as demand.
 
