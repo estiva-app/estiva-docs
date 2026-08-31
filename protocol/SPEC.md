@@ -384,6 +384,22 @@ exactly one source:
 | `{"field": "content"}` | a top-level event field |
 | `{"fold": "status", "default": "todo"}` | a field produced by folding change events |
 | `{"fold": "lead", "tag": "lead"}` | folded, **seeded** from a root tag |
+| `{"children": {"kind": 30851, "via": "a", "limit": 200}}` | child objects, found by the tag **on the child** that names this one |
+
+**`children` is the only source that does not read the root event.** The others
+answer *"what does this event say?"*; it answers *"what points at it?"* The
+inversion is forced by replaceability: an addressable record is replaceable only
+by its author, so a parent cannot maintain a tag listing children other people
+created. The link lives on the child, written by the child's own author.
+
+A consumer resolves each child through *that child's own projection*, which is
+what makes "a card with its children underneath" compose instead of being a
+special case. **Recursion depth is the consumer's budget and MUST NOT be
+declared in the manifest** — the app at risk of a render loop is the one drawing
+it, and a producer able to set that number could hang any consumer that trusted
+it. `limit` is the producer's hint about how many children are worth fetching;
+a consumer applying it MUST apply it to what it renders and not to what it
+counts, or a total silently changes with the render budget.
 
 Three rules learned from writing a consumer rather than from reading a spec:
 
@@ -395,6 +411,13 @@ Three rules learned from writing a consumer rather than from reading a spec:
    first time somebody reassigns; fold alone loses the creation value.
 3. `as: "pubkey"` marks a slot whose value is a pubkey, so the consumer resolves
    it through `kind:0` rather than printing hex.
+
+Slots are `title` (required), `subtitle`, `status`, `meta`, `image`, `list` and
+`body`. The set is closed — a slot is semantic, so a consumer must know what it
+*means* to render it — but it **grows**, and producers and consumers upgrade at
+different times. **A consumer MUST ignore a slot it does not implement and MUST
+still render the rest**; a producer MUST NOT put information only in a slot
+added after `title`, `subtitle`, `status` and `meta`.
 
 Widgets are `card`, `row`, `table`, `stat`. The consumer owns the layout.
 
@@ -441,9 +464,32 @@ written for, and Peek implements it as `commentKindsOf`.
 ### 7.4 Vocabularies
 
 An app publishing objects with enumerated fields MUST publish the vocabulary
-verbatim in the manifest, as `{value, label, colour}` where `colour` is a
+verbatim in the manifest, as `{value, label, colour, stage}` where `colour` is a
 semantic name (`neutral`, `blue`, `green`, `muted`) and never a hex code. The
 consumer picks the actual colour, so the object looks native in each app.
+
+**`stage` says what a status *means*** — `open`, `started`, `done` or `dropped`
+— as distinct from what it is called or how it is drawn. Without it a consumer
+reporting progress has to infer meaning from the label, and the only way to do
+that is a list of words in the consumer, which fails for the next app that
+spells its statuses differently: its objects render, its progress reads as zero,
+and nothing reports an error.
+
+`dropped` is the value nothing can infer. A cancelled item is neither
+outstanding nor progress — counted as open it holds a finished container below
+its total for ever, counted as done it claims work that was abandoned — and only
+the owning app knows which of its statuses have that shape.
+
+`stage` is OPTIONAL, because a manifest published before it existed cannot be
+given one. A consumer MUST treat its absence as *"this app does not say"*, which
+is a different fact from *"not progress"*, and MUST treat a value outside the
+four as absent rather than as a fifth stage — validation here is an honour
+system, and this is one app reading another's self-description.
+
+**What `stage` does not do:** it says what a status means, never what a consumer
+should draw. Whether that becomes a counter, a progress bar or nothing is the
+consumer's decision. An owner that could specify that would be designing another
+app's UI, which is the same objection that rules out iframes (§7).
 
 ---
 
