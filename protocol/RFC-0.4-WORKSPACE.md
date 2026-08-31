@@ -225,7 +225,9 @@ Both facts this section asked to verify were checked against production on 2026-
 
 **A non-member can read an open channel's `39000`.** The read path is `get_accessible_channel_ids` (`buzz-db/src/channel.rs:638`), and its whole body is *channels where this pubkey is an active member* `UNION` *every channel with `visibility = 'open'`*. Membership is one of two routes in; open visibility is the other.
 
-Measured end to end with two identities: the Ship agent key (`b38fd268…`) appears in **none** of the 50 `kind:39002` rosters on production — it is a member of nothing — and it reads all 50 `kind:39000`, all 50 `kind:39001` and all 50 `kind:39002`. The channels belong to other people, 42 of the 50 to `f3a38fa6…`. A direct address read, `{"kinds":[39000],"#d":["925897ad-…"]}`, returns the event with its `d` intact. So a listed folder can show its topics to non-members, and §4.2's first property holds for topics.
+Measured end to end with two identities: the Ship agent key (`b38fd268…`) appears in **none** of the 50 `kind:39002` rosters on production — it is a member of no *channel* — and it reads all 50 `kind:39000`, all 50 `kind:39001` and all 50 `kind:39002`.
+
+> **Sharpened 2026-08-31.** "A member of nothing" means *no channel*, not *nothing at all*. The agent key is a known relay identity, and that is a prerequisite this measurement did not isolate: a freshly generated key is refused with `relay_membership_required` before visibility is consulted, so the `UNION` above is reached only by a reader the relay already knows. Found while resolving production Folders through the manifest for PRO-2, by trying to do it with a throwaway key. The channels belong to other people, 42 of the 50 to `f3a38fa6…`. A direct address read, `{"kinds":[39000],"#d":["925897ad-…"]}`, returns the event with its `d` intact. So a listed folder can show its topics to non-members, and §4.2's first property holds for topics.
 
 Two consequences worth stating, because both are disclosures rather than conveniences:
 
@@ -470,7 +472,7 @@ Leaf remains the app that will stress anchoring hardest — a document editor re
 ### Answered, recorded so they are not re-opened
 
 - **Is a topic addressable, and is `39000`'s `d` the channel uuid** — yes, and yes exactly. Measured on production. §5.2.
-- **Can a non-member read a listed channel's `39000`** — yes. Open visibility is a second route into the accessible set alongside membership, and a reader who is a member of nothing reads all 50 of production's channels. §5.2.
+- **Can a non-member read a listed channel's `39000`** — yes. Open visibility is a second route into the accessible set alongside *channel* membership, and a reader who is a member of no channel reads all 50 of production's channels. **Relay membership is still required underneath**: a freshly generated key that the relay does not know is refused with `relay_membership_required` before visibility is consulted at all (measured 2026-08-31, while resolving production Folders for PRO-2). The two are easy to conflate because §5.2's measurement used an identity that had one and not the other. §5.2.
 - **Does the relay's signing key rotate** *(was §12.3)* — no, and it is not designed to. The `keys`/`current`/`relay-v1` evidence was the NIP-PL push-executor descriptor, not relay identity. Recorded with the failure mode a hand-rolled rotation would cause. §5.3.
 - **Private folder privacy** — existence may be known; name, people and contents must not be readable. §4.2.
 - **Slug versus uuid for `d`** — always uuid. §4.3.
@@ -503,7 +505,7 @@ An app that owns objects publishes a NIP-89 `kind:31990` manifest declaring, in 
 | `records` | how to fold this app's change events into current truth — the change kind, its tag names, the ordering rule, and what "hidden" means |
 | `projections` | per kind: a widget type and a set of **slots**, each sourced from a tag, a top-level field, or a folded field |
 | `actions` | what another app may *do*, as an event to publish — not an API to call |
-| `vocabularies` | enumerated values as `{value, label, colour}`, colour being semantic (`neutral`/`blue`/`green`/`muted`) and never a hex code |
+| `vocabularies` | enumerated values as `{value, label, colour, stage}`, colour being semantic (`neutral`/`blue`/`green`/`muted`) and never a hex code, and `stage` (`open`/`started`/`done`/`dropped`) saying what the status *means* rather than what it is called — see §13.6 |
 
 The governing principle, already stated in [SPEC §7](SPEC.md) and unchanged here:
 
@@ -538,7 +540,7 @@ The two vocabularies get different policies, because they are different kinds of
 | `status` | a value from a declared vocabulary |
 | `meta` | one or more secondary values, each optionally a person (`as: "pubkey"`) |
 | `image` | *new* — an avatar, thumbnail or cover, as a URL |
-| `list` | *new* — child objects by address, so the consumer resolves and renders them with their own projections |
+| `list` | *new* — child objects, declared as `{children: {kind, via, limit}}` where `via` is the tag **on the child** naming this object. The consumer resolves each and renders it with its own projection. See §13.6 |
 | `body` | *new* — structured content per §14, for objects whose body is the point |
 
 **A consumer MUST ignore a slot it does not implement, and MUST still render the rest.** *Amended at acceptance, 2026-08-28.* "Unknown is unrenderable by definition" reads as though the case cannot arise. It arises constantly: the set is closed but it **grows**, and producers and consumers upgrade at different times — so between this document and the last consumer shipping `list`, every manifest declaring one is read by something that has never heard of it. That is the same staggered-upgrade condition the widget chain exists for, and slots have no chain.
@@ -593,6 +595,63 @@ These are **fields, not a design.** The intelligence layer they anticipate is de
 - a **Message** is neither `card` nor `row` nor `table` nor `stat`, so it is the first real use of the fallback chain
 - a **Topic** wants a `list` slot, which is the slot the pattern was missing
 - a Message rendered in Ship is, in itself, the unified cross-app comment experience §14 and the conversation package are aiming at
+
+### 13.6 What building `list` and `stage` taught — added 2026-08-31
+
+**Amendment, from PRO-2.** §13.2 named two limits — a scalar-only slot set, and
+the flagship layout bypassing the pattern — and §13.3 answered the first by
+adding `list`. Implementing it surfaced three things the design had not settled,
+each of which is now normative above.
+
+**1. `list` is not a field. It is a query, and it runs backwards.**
+
+Every other slot source reads the root event. `list` reads the *children*, found
+by a tag they carry naming their parent. That inversion is forced rather than
+chosen: an addressable record is replaceable only by its author, so a parent
+cannot maintain a list of children other people created — REW-11 established
+that republishing to add one stamps a `created_at` the relay will not backdate.
+The declaration is therefore `{children: {kind, via, limit}}`, deliberately not
+spelled `tag`, because a reader who confuses the two writes the query in the
+wrong direction and gets an **empty list rather than an error**.
+
+**2. Recursion depth belongs to the consumer, and the manifest must not carry
+it.** A child rendered through its own projection may declare a `list` too, so
+resolution is recursive and something must stop it. §13.4 says validation is an
+honour system; the same logic settles this. The app at risk of the render loop
+is the one drawing it, and a producer able to set the consumer's recursion
+budget could hang it. `limit` — how many children are worth fetching — is the
+producer's, and a consumer must apply it to what it **renders**, never to what
+it **counts**, or a total changes silently with the render budget.
+
+**3. A vocabulary that says how to draw a status and not what it means pushes
+the meaning into the consumer, where it becomes a list of English words.**
+
+This is the one that generalises furthest, and it was found by reading what a
+consumer had already been driven to. Peek decided open-versus-done with a
+hardcoded set — `'in progress'`, `'doing'`, `'in review'` — matched against
+lowercased labels, and its own comment conceded the cost: *"an app whose
+statuses are spelled differently shows an empty section until its values are
+added here. That is the failure worth having."*
+
+For a layer that exists to make the third app cheap (§15), it is not the failure
+worth having. The third app ships, its words are not in the set, its objects
+render, and its progress reads as zero with nothing reporting an error — §13.3's
+PEE-10 failure one level up, where present-but-wrong is worse than absent
+because nothing looks broken.
+
+So `stage` (§13.1) moves the fact to the app that owns it. **The boundary it
+must not cross is the one §13.1 draws for everything else:** `stage` says what a
+status *means*, never what a consumer should *draw*. Counter, progress bar or
+nothing stays the consumer's call — an owner that could specify that would be
+designing another app's UI, which is the objection that rules out iframes.
+
+**What this did not fix.** §13.2's second limit is only half answered. The
+flagship layout no longer *infers* its containment — Peek read it from the
+`add-issue` action's `toAddressOf: "self"`, deducing a read relationship from a
+write declaration — but the panel that draws it is still ordinary consumer code
+rather than a generic widget. That is the right place for it: what was
+app-specific was the resolution, and it is gone.
+
 
 ---
 
@@ -677,7 +736,9 @@ Three candidates, and the choice is not free in any direction:
 
 ### 15.2 What they must still build themselves, and should not have to
 
-- **Rendering another app's objects.** The consumer runtime exists, works, and lives inside one app (`peek-app/convex/nostr/projection.ts`) at a path that says Convex while its own header says it knows nothing about Convex.
+- **Rendering another app's objects.** The consumer runtime exists, works, and still lives inside one app — but at `peek-app/interop/`, a directory that is a peer of `src/` and `convex/` rather than inside either (PRO-1, 2026-08-31). It moved by `git mv` with no content change, because it already satisfied every constraint in [ADR 0002](../decisions/0002-foundation-packages.md) §10 except the one about where it sat. It becomes `@estiva-app/interop` once a second consumer has pushed back on it (PRO-7, PRO-9).
+
+  *Corrected 2026-08-31:* this sentence used to say the file's header "says it knows nothing about Convex". **That sentence is not in the file**, and the paraphrase propagated from here into tickets. The header's actual claim is stronger — that everything in it *"takes a `query` function rather than reaching for one"* and that *"Nothing in this file knows what Linear-lite is"*: ignorance of the app being rendered, not of its own backend.
 - **Comments.** An HR specialist wants people commenting on candidates. They do not want to implement threading, reactions, edit, delete and unread. Today they would build all of it, and it would be the fifth independent implementation of a model that is specified in three places and complete in one.
 - **Rich text.** Every app has description fields. Today that means choosing a dialect nobody wrote down.
 
@@ -690,7 +751,7 @@ Functionality lands in a real app first and is packaged afterwards — extractio
 3. **Its tests run with no app.** If a test needs a deployment or a browser, the package cannot carry that test, and untested code does not travel.
 4. **Put it where it is going.** A path that lies about what a file is, is how a thing quietly grows app-shaped.
 
-The two outcomes already in the tree show the difference: `projection.ts` takes a query function and is extractable today; `textParsing.ts` imports the app's own people and topic fixtures and cannot leave the building.
+The two outcomes already in the tree show the difference: `projection.ts` takes a query function and was extractable today — and has since been extracted, by `git mv`, exactly as that predicts; `textParsing.ts` imports the app's own people, topic *and file* fixtures and cannot leave the building.
 
 ### 15.4 A package may be the standard without being the protocol
 

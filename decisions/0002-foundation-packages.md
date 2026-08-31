@@ -552,7 +552,7 @@ Verified against `peek` `origin/main`, 2026-08-31.
 
 | file | 1 imports | 2 injected | 3 tests alone | 4 path | verdict |
 | --- | --- | --- | --- | --- | --- |
-| `convex/nostr/projection.ts` | ✅ | ✅ | ✅ | ❌ | extractable today; only the path is wrong |
+| `convex/nostr/projection.ts` | ✅ | ✅ | ✅ | ❌ | extractable today; only the path is wrong — **and extracted the next day, see below** |
 | `src/lib/textParsing.ts` | ❌ | — | — | ✅ | cannot leave the building |
 | `src/nostr/liveTopics.ts` | ❌ | ❌ | — | ✅ | the bill SHA-7 is paying |
 
@@ -572,6 +572,18 @@ its own header says *"Nothing in this file knows what Linear-lite is."*
 > is not in the file. The two real sentences are the ones above, and they say
 > something slightly stronger: the file is ignorant of *the app it renders*, not
 > merely of its own backend.
+
+**The prediction held, and it is worth recording that it did.** §10 claims a
+file passing 1–3 can be moved by `git mv` and one failing any of them cannot be
+moved at all. PRO-1 moved `projection.ts` to `interop/` the day after this
+section was written, and the diff was `{convex/nostr => interop}/projection.ts |
+0` — a pure rename, no content change. Two things surfaced that the constraints
+had not: **no Convex function had ever imported it**, yet codegen listed it in
+the deployed function surface; and constraint 3 was *untested* rather than
+satisfied, because the repository's vitest default is jsdom, so the file ran
+with a browser it did not need. Pinning `// @vitest-environment node` turned
+constraint 3 from an assertion into a measurement — 39 tests, `environment 0ms`,
+against 79s of jsdom setup for the suite around it.
 
 **`textParsing.ts` — constraint 1, failed three times over.** Its first three
 lines import `PEOPLE`, `TOPICS` and `APP_FILES`/`DOCUMENT_FILES` from `@/data/`.
