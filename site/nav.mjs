@@ -106,6 +106,8 @@ export const INTERNAL = new Set([
   // 0.3 is a pointer stub and follows whatever 0.4 does.
   'protocol/RFC-0.3-FOLDERS.md',
   'protocol/RFC-0.4-WORKSPACE.md',
+  // 0.5 is a draft and cites ticket ids and production measurements, same as 0.4.
+  'protocol/RFC-0.5-ASSOCIATION.md',
 ])
 
 /**

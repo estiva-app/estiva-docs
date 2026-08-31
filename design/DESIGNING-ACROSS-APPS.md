@@ -1,6 +1,6 @@
 # Designing across apps
 
-Five situations where one piece of work lives in more than one app at once —
+Six situations where one piece of work lives in more than one app at once —
 what the person is trying to do, what breaks, and the states you have to draw.
 
 Most design systems assume one app owns its screen. Here, a screen routinely
@@ -223,7 +223,55 @@ conversation, and with the context carried over.
   <p><strong>Never silently pick a destination.</strong> Creating something in another app on someone's behalf, somewhere they did not look, is the fastest way to make a shared workspace feel untrustworthy. Show where it will go, before it goes.</p>
 </div>
 
-## 5. Is any of this new?
+## 5. The same thing, seen from two apps
+
+A project in the tracker and a topic in the chat app are, to the people using
+them, one piece of work. The discussion should be one discussion — not two that
+have to be reconciled by whoever reads both.
+
+<div class="dg-call">
+  <span class="dg-l">The call</span>
+  <p><strong>Merge the comments, and do not label where each was written.</strong> Order by time. The person is reading a conversation, not an audit log of which app was open — and labelling turns an invisible seam into a visible one, which is scenario 1's rule again.</p>
+</div>
+
+The competing product does this by **copying**: a chat reply becomes a tracker
+comment, a second record of the same sentence. Every limitation it ships follows
+from that — a bot has to be invited to private channels, direct messages are
+unsupported, attachments are lost in transit, and the two copies can disagree.
+**Here there is no copy.** One comment, two views. That difference is worth
+protecting in the design: anything that reintroduces a second record
+reintroduces the whole list.
+
+### Two states that only exist because of this
+
+<figure class="dg">
+  <div class="dg-states">
+    <div class="dg-st"><div class="dg-sl">Merged view</div><div class="dg-stx">Comments from both, in time order, unlabelled</div></div>
+    <div class="dg-st dg-st--bad"><div class="dg-sl">Link removed</div><div class="dg-stx">Half the threads leave the page — say so, never silently</div></div>
+    <div class="dg-st dg-st--bad"><div class="dg-sl">Subject deleted</div><div class="dg-stx">The card goes; every comment stays and still belongs to its author</div></div>
+  </div>
+  <figcaption>Unlinking splits the list of threads. It never splits a thread — a reply follows the conversation it belongs to, not the app it was typed in.</figcaption>
+</figure>
+
+- **Unlinking is not destructive, and must not look destructive.** Threads
+  redistribute; nothing is lost. But content leaving the page while somebody
+  reads it needs to be announced, the way any changed-since-load state does.
+- **Deleting one side keeps the conversation.** The subject's card disappears
+  and the comments remain, because they were written by other people and are
+  theirs. A design that removes them is deleting somebody else's words to tidy
+  up a card.
+
+### The rule that makes this safe
+
+**Two things may only be shown as one when they are equally readable.** Merging
+a private conversation into a public-looking page does not leak it to outsiders
+— they still cannot fetch it — but it misleads the one person who *can* see
+both into answering privately in what looks like a public place.
+
+That is the failure to design against: not disclosure, but somebody being given
+the wrong idea of who is listening.
+
+## 6. Is any of this new?
 
 You read it in one app. It should not be bold in the other one, or on your
 laptop after you read it on your phone.
