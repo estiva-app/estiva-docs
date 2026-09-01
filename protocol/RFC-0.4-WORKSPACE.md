@@ -612,7 +612,7 @@ These are **fields, not a design.** The intelligence layer they anticipate is de
 
 **An action is an event to publish, never an endpoint to call.** The consumer signs and publishes; the owning app has no server in the loop and cannot enforce anything. That is a property, not a gap: it is what lets a consumer act while the owner is offline. Its consequence is that **validation is an honour system**, and a consumer that skips the manifest's own vocabulary check is the one putting junk in a shared record.
 
-### 13.6 Not every object has an address — amended 2026-08-31
+### 13.6 Not every object has an address — resolved 2026-09-01
 
 **Two of the objects this suite needs to render are identified by event id, not
 by address**, and the projection layer as specified handles only addresses.
@@ -625,21 +625,51 @@ by address**, and the projection layer as specified handles only addresses.
 | **a message** | **its own event id** — `nevent` |
 | a block inside a document | a component address (§6) |
 
-`projections` is keyed by kind and resolved from an `naddr`; Ship's manifest
-declares its `web` template as `naddr` outright. So a manifest **cannot today
-declare how a message should be rendered**, and a consumer holding a `nevent`
-has nothing to look up.
+NIP-22 already spanned both — uppercase `E` names an event root where `A` names
+an address — so the wire format was never the obstacle. What was missing is that
+`projections` is keyed by kind and *resolved from an `naddr`*, and that a `web`
+template could not be built for an object with no address. A consumer holding an
+`nevent` had nothing to look up.
 
-NIP-22 already spans both — uppercase `E` names an event root where `A` names an
-address — so the wire format is not the obstacle. What is missing is that a
-projection cannot be declared for an event-identified object, and a `web`
-template cannot be built for one.
+**Resolved by PRO-11, and it turned out to reach one layer lower than expected.**
 
-**This blocks the reciprocal direction specifically.** Ship's objects are all
-addressable, so the layer works today in the direction it was built for. Peek
-publishing a Topic *and a Message* — the second consumer §13.5 requires — needs
-this first. It is small, and it is invisible from the direction currently in
-production, which is why it is recorded here rather than discovered mid-ticket.
+There was no `nevent` support anywhere in the suite — not in the runtime, not in
+`@estiva-app/protocol`. A consumer cannot resolve a reference format that does
+not exist, so the format came first.
+
+| | |
+| --- | --- |
+| `@estiva-app/protocol` **0.3.0** | `encodeNevent` / `decodeNevent` / `EventPointer` |
+| `@estiva-app/interop` **0.2.0** | `resolveForeignEvent`, and `<bech32>` substituted with whichever form the object has |
+| Peek's manifest | one `web` tag per NIP-19 entity type — `naddr` for a Topic, `nevent` for a Message |
+
+**A projection for an event-identified object is thinner, and the manifest does
+not need to say so.** A regular event is immutable and has no folded state, so
+`records` does not apply to it; it cannot be the target of an `a` tag, so it has
+no comments addressed to it and **no actions**. A consumer discovers all of that
+from the object rather than from a declaration — which is why no new manifest
+field was needed, and why the earlier note asking the manifest to "say which
+halves are meaningful" turned out to be solving a problem that does not exist.
+
+**One `web` tag cannot serve both shapes**, and that is the part that would have
+been missed by reasoning alone. NIP-89 types each template by entity, and an app
+owning both an addressable and a non-addressable object needs one of each — a
+consumer holding a message and finding only an `naddr` template has nothing to
+substitute, so it renders the object and silently offers no way to open it.
+
+Verified against production on a real message: resolved from a bare event id,
+with no address, no `naddr`, `ref` equal to the event id, and a working
+`nevent`-substituted link.
+
+**Two things this does not settle**, both filed rather than implied:
+
+- **A link that opens.** Peek has no routing at all, so the template it now
+  publishes points at a route nothing serves. The manifest is correct and the
+  app has not caught up.
+- **A reply as a declared action.** PRO-6 could not declare one because the
+  action vocabulary names a parent by *address* and a reply names an *event id*.
+  That is still true, and is now the narrower gap it always was: `emits` needs
+  an event-id form, not a rethink.
 
 ### 13.7 Transclusion is this layer pointed at a block
 

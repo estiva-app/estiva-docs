@@ -113,7 +113,6 @@ Every real dependency, and nothing else. If a pair is not here, they are indepen
 | --- | --- | --- |
 | PRO-2 … PRO-8 | **SHA-10** | They implement RFC 0.4 §13. If it is amended, they change |
 | PRO-6 | **PRO-2** | A Topic projection needs the `list` slot |
-| PRO-6 | **PRO-11** | A message and a conversation are identified by event id, not address, and projections are address-only (RFC 0.4 §13.6). Found while writing RFC 0.5, and **invisible from the direction currently in production** — every Ship object is addressable, so the layer works today and cannot work reciprocally |
 | PRO-7 | **PRO-1, PRO-6** | Needs the extracted runtime *and* something of Peek's to render |
 | Intelligence in Peek, all of MS2 | **PRO-4**, **PRO-1**'s publish path | The launcher's forms are drawn and publish nothing — *"the projection runtime plugs into one function"*. PRO-4 owns rendering a declared action; Intelligence owns what Peek does with it |
 | publishing the interop package | **PRO-7** | SHA-7's lesson: never publish a layer with one consumer that has never pushed back |
