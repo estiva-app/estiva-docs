@@ -20,22 +20,21 @@ Last updated 2026-09-01. Not published to the docs site (`site/nav.mjs` is opt-i
 
 ## Where things stand
 
-**52 open of 116**, across ten active projects. Five projects are archived — `ship projects` reports how many it hid rather than silently dropping them (AGE-7).
+**53 open of 120**, across eleven active projects. Four projects are archived — `ship projects` reports how many it hid rather than silently dropping them (AGE-7).
 
 | project | open | what it is |
 | --- | --- | --- |
 | **DMs on Nostr** | 10 / 11 | Move Peek's DMs off Convex onto the relay. Gated on one cheap probe |
 | **Projection layer** | 7 / 13 | Render and act on another app's objects. *Mostly already built — this is extraction and extension* |
-| **Cross-app read state** | 4 / 13 | Read/unread becomes a property of the person, not the app |
+| **Cross-app read state** | 3 / 13 | Read/unread becomes a property of the person, not the app |
 | **Shared foundation packages** | 7 / 17 | The packages a third app installs |
 | **Intelligence in Peek** | 6 / 6 | Cmd+K: every action an app declares, offered where the conversation is. *MS1 already built — see below* |
 | **Ship: Feedback & Bugs** | 5 / 13 | |
 | **Peek: Feedback & Bugs** | 1 / 16 | |
 | **Conversation standard** | 8 / 8 | Comments the third app adopts rather than rebuilds |
 | **Rich text and blocks** | 3 / 3 | *Thin on purpose — see the format decision below* |
+| **Other** | 2 / 4 | `estiva-docs` tooling and one-offs belonging to no track. Unarchived 2026-09-01 — it was hidden while holding open issues |
 | **Agent / Steer** | 1 / 16 | The CLI, MCP server and Claude Code plugin |
-
-Plus **OTH-3**, an `estiva-docs` tooling defect.
 
 **Both gates are closed.** Gate 1 (Estiva ID capabilities) closed 2026-08-25; Gate 2 (where packages live and how they publish, [ADR 0002](decisions/0002-foundation-packages.md)) closed 2026-08-27. **Nothing in the programme is gate-blocked any more.**
 
@@ -101,7 +100,7 @@ One thing argues for not rushing it: **nothing waits on it.** RIC-1 gates the bl
 
 ### Bugs and tooling, independent of everything
 
-PEE-7 · SHI-1, 2, 3, 4, 12 · AGE-3 · OTH-3. None blocks or is blocked by the above. (`PEE-1`–`PEE-6` are **Intelligence in Peek** tickets rather than bugs — one prefix serves both projects, which is SHI-4 in miniature.) **SHI-4 (issue refs are not unique) is worth doing sooner than its size suggests** — it is why every `ship` command must be addressed by `30851:<pubkey>:<d>` rather than by ref.
+PEE-7 · SHI-1, 2, 3, 4, 12 · AGE-3 · OTH-3, 4. None blocks or is blocked by the above. (`PEE-1`–`PEE-6` are **Intelligence in Peek** tickets rather than bugs — one prefix serves both projects, which is SHI-4 in miniature.) **SHI-4 (issue refs are not unique) is worth doing sooner than its size suggests** — it is why every `ship` command must be addressed by `30851:<pubkey>:<d>` rather than by ref.
 
 ---
 
