@@ -588,6 +588,47 @@ another app's product, which is the objection that rules out iframes.
 
 ---
 
+### 7.6 Not every object has an address
+
+*Added 2026-09-01. Numbered after §7.5 for the same reason it was — every
+cross-reference into §7.1–§7.5 keeps resolving.*
+
+A projection MAY be declared for a kind that is **not addressable**, and a
+consumer MUST be able to resolve one.
+
+| the object is | identified by | resolved from |
+| --- | --- | --- |
+| replaceable — has a `d` | `kind:pubkey:d` | `naddr` |
+| regular — has no `d` | its event id | `nevent` |
+
+A `kind:9` message is the case in hand: it carries no `d`, so no address exists
+for it and an address-keyed resolver cannot see it at all. NIP-22 already spans
+both — uppercase `E` names an event root where `A` names an address — so the
+wire format was never the obstacle.
+
+**A projection for a regular event is thinner, and nothing declares that it is.**
+The object is immutable and has no folded state, so `records` does not apply; it
+cannot be the target of an `a` tag, so it has no comments addressed to it and
+**no actions**. A consumer discovers each of those from the object rather than
+from a field, which is why no manifest change was needed to support it.
+
+**`web` is typed per NIP-19 entity, and an app owning both shapes MUST publish
+one template for each.**
+
+```jsonc
+["web", "https://example.app/#/o/<bech32>", "naddr"]
+["web", "https://example.app/#/o/<bech32>", "nevent"]
+```
+
+Both may point at the same route — the entity type tells the *consumer* what it
+is holding, not the app what to do. **Publishing only the `naddr` form is the
+failure worth naming**: a consumer holding a regular event finds no template it
+can use, has nothing to substitute for `<bech32>`, and renders the object while
+silently offering no way to open it. Nothing errors, and the omission is
+invisible from an app whose objects are all addressable.
+
+---
+
 ## 8. Registering a kind
 
 Three separate gates must open before a kind is usable, and **each refuses in a
