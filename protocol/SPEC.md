@@ -371,16 +371,36 @@ another app may **do** to it. This section adds both.
 
 An app that publishes objects other apps should render MUST publish a
 `kind:31990` handler information event whose `content` is a JSON document with
-`records` and `projections`.
+`projections`, and with `records` **if and only if it has change events**.
 
 `31989` / `31990` MUST be global — not scoped to any Folder. Discovery has to
 work before you are a member of anything.
 
 ### 7.1 `records` — how to fold this app's objects
 
-A consumer cannot fold without being told how. Leaving it to convention means
-every consumer invents its own rule and they disagree the first time two changes
-land in one second — the common case, not the rare one.
+**OPTIONAL, and this section used to say otherwise.** An app with no change
+events needs no rule for folding them, and such an app exists: nothing of Peek's
+folds — a topic's name is a tag the relay wrote, and a message is immutable.
+
+A consumer **MUST** render a projection that declares no `records`, treating
+every `fold` slot as absent and falling through to its `default`. It MUST NOT
+refuse the projection. Refusing renders the object as *nothing*, which §7.5's
+argument covers exactly: a blank object is indistinguishable from one the reader
+may not be allowed to see, and reports *"that app is broken"* about an app that
+published a correct manifest.
+
+> **This was wrong in the reference implementation first, and in the same
+> direction.** Both resolvers required `records` and returned null for the whole
+> projection. It survived because Ship was the only app that had ever published
+> a manifest and Ship folds — so the requirement was never exercised against an
+> app that does not. Fixed in the runtime during PRO-6; corrected here because
+> **the specification is what a stranger implements from**, and a stranger
+> following the old text would have built the same failure.
+
+When an app *does* have change events, it MUST declare this. A consumer cannot
+fold without being told how, and leaving it to convention means every consumer
+invents its own rule — they disagree the first time two changes land in one
+second, which is the common case rather than the rare one.
 
 ```json
 "records": {
