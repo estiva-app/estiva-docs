@@ -2,7 +2,7 @@
 
 **Working reference. Living document.** [Estiva Ship](https://ship.estiva.app) is the source of truth for ticket detail; this is the map between them — what depends on what, what can run in parallel, and what is deliberately still undecided.
 
-Last updated 2026-08-28. Not published to the docs site (`site/nav.mjs` is opt-in) because it changes often and carries operational detail.
+Last updated 2026-09-01. Not published to the docs site (`site/nav.mjs` is opt-in) because it changes often and carries operational detail.
 
 **Everything here serves one goal: making the third major app cheap enough to build.** Leaf is that app ([ADR 0001](decisions/0001-relay-canonical-by-default.md)). When a piece of work is hard to prioritise, that is the question to ask of it.
 
@@ -20,20 +20,20 @@ Last updated 2026-08-28. Not published to the docs site (`site/nav.mjs` is opt-i
 
 ## Where things stand
 
-**48 open of 129**, across nine active projects. Five completed projects are archived — `ship projects` reports how many it hid rather than silently dropping them (AGE-7).
+**52 open of 116**, across ten active projects. Five projects are archived — `ship projects` reports how many it hid rather than silently dropping them (AGE-7).
 
 | project | open | what it is |
 | --- | --- | --- |
 | **DMs on Nostr** | 10 / 11 | Move Peek's DMs off Convex onto the relay. Gated on one cheap probe |
-| **Projection layer** | 8 / 8 | Render and act on another app's objects. *Mostly already built — this is extraction and extension* |
-| **Cross-app read state** | 7 / 11 | Read/unread becomes a property of the person, not the app |
-| **Shared foundation packages** | 6 / 11 | The packages a third app installs |
+| **Projection layer** | 7 / 13 | Render and act on another app's objects. *Mostly already built — this is extraction and extension* |
+| **Cross-app read state** | 4 / 13 | Read/unread becomes a property of the person, not the app |
+| **Shared foundation packages** | 7 / 17 | The packages a third app installs |
 | **Intelligence in Peek** | 6 / 6 | Cmd+K: every action an app declares, offered where the conversation is. *MS1 already built — see below* |
-| **Ship: Feedback & Bugs** | 5 / 10 | |
-| **Peek: Feedback & Bugs** | 5 / 15 | |
-| **Conversation standard** | 3 / 3 | Comments the third app adopts rather than rebuilds |
-| **Rich text and blocks** | 2 / 2 | *Thin on purpose — see the format decision below* |
-| **Agent / Steer** | 1 / 7 | The CLI, MCP server and Claude Code plugin |
+| **Ship: Feedback & Bugs** | 5 / 13 | |
+| **Peek: Feedback & Bugs** | 1 / 16 | |
+| **Conversation standard** | 8 / 8 | Comments the third app adopts rather than rebuilds |
+| **Rich text and blocks** | 3 / 3 | *Thin on purpose — see the format decision below* |
+| **Agent / Steer** | 1 / 16 | The CLI, MCP server and Claude Code plugin |
 
 Plus **OTH-3**, an `estiva-docs` tooling defect.
 
@@ -101,7 +101,7 @@ One thing argues for not rushing it: **nothing waits on it.** RIC-1 gates the bl
 
 ### Bugs and tooling, independent of everything
 
-PEE-1, 6, 7, 12, 13 · SHI-1, 2, 3, 4, 10 · AGE-3 · OTH-3. None blocks or is blocked by the above. **SHI-4 (issue refs are not unique) is worth doing sooner than its size suggests** — it is why every `ship` command must be addressed by `30851:<pubkey>:<d>` rather than by ref.
+PEE-7 · SHI-1, 2, 3, 4, 12 · AGE-3 · OTH-3. None blocks or is blocked by the above. (`PEE-1`–`PEE-6` are **Intelligence in Peek** tickets rather than bugs — one prefix serves both projects, which is SHI-4 in miniature.) **SHI-4 (issue refs are not unique) is worth doing sooner than its size suggests** — it is why every `ship` command must be addressed by `30851:<pubkey>:<d>` rather than by ref.
 
 ---
 
