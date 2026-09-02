@@ -431,7 +431,7 @@ What that touches:
 - the sidebar, which is the visible payoff and the smallest part
 - the `@/api` data seam, since a topic stops being the unit of subscription
 - **PEE-6**, which subscribes one WebSocket REQ per channel. Fewer channels and more anchored threads changes *what* to subscribe to, though not how
-- **CRO-3**, which keys read contexts on `h:<folder-uuid>`. Conversation read state stays keyed on the channel so that survives, but a *folder*-level frontier is a new context and the namespace should be reserved now rather than discovered later
+- **CRO-3**, which settled the read-context grammar. It did **not** land as `h:<folder-uuid>`, as this bullet assumed while it was open: [SPEC §11.1](SPEC.md) keys a container on the **bare channel uuid**, because NIP-RS grandfathers exactly that and a prefixed variant would be a second convention for the same object. Conversation read state is therefore keyed on the channel and survives this RFC untouched. A *folder*-level frontier is still a new context, and §11.1 now reserves `folder:<folder-address>` for it rather than leaving it to be discovered later
 - every topic that already exists, each of which is a channel with no folder — see §12
 - Convex's `topics` table, which stops being the source of truth for what a topic *is*
 
