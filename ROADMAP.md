@@ -44,14 +44,16 @@ They used to be here, one `open / total` per row, and they drifted in both direc
 
 ## What to do next
 
-### First — four cheap things that unblock or de-risk the rest
+### First — the cheap things that unblock or de-risk the rest
+
+**Three of the four are done, and only DMS-2 is left.** The struck rows stay because rule 3 is why they are readable at all.
 
 | do | why now |
 | --- | --- |
 | ~~**SHA-10**~~ — accept RFC 0.4 | **Done 2026-08-28.** [RFC 0.4](protocol/RFC-0.4-WORKSPACE.md) is accepted, with one amendment: a consumer MUST ignore a slot it does not implement and still render the rest. **§10.1 was deliberately left open** — its trigger has fired but its *latest* responsible moment has not |
-| **RIC-1** — decide the content format | The single widest gate. Blocks the rest of Rich text, the block model, §6 anchoring, and therefore **Leaf**. Also blocks PRO-8 |
+| ~~**RIC-1**~~ — decide the content format | **Done 2026-09-02.** [SPEC §13](protocol/SPEC.md) takes RFC 0.4 §14.5's split: messages stay marker text, a rich text field becomes a JSON block document, one inline vocabulary shared by both in `@estiva-app/protocol`. It was the widest gate, and closing it filed the four tickets rule 2 had been holding back — RIC-4, 5, 6, 7. **The corpus was re-measured at 731 bodies, not 487** |
 | **DMS-2** — probe DM open and send | Hours of work that decides the *shape* of nine other tickets. A cheap probe that can invalidate a plan must never sit behind that plan |
-| **SHA-11** — ADR 0002 amendment | Records what makes an in-app implementation extractable. PRO-1 cites it, and it is the rule three projects are built under |
+| ~~**SHA-11**~~ — ADR 0002 amendment | **Done 2026-08-31**, as [ADR 0002](decisions/0002-foundation-packages.md) §10. Cite that rather than restating the four constraints, so there is one copy to amend |
 
 ### Then — two long chains that barely touch
 
@@ -60,13 +62,14 @@ They share no gate and can run concurrently with different people.
 **Chain 1 — the third app's foundation.** This is the critical path to Leaf.
 
 ```
-SHA-2 (platform) ─→ SHA-6 (scaffold) ─→ SHA-7 (socket plumbing lands in platform)
+SHA-2 (platform) ─→ SHA-6 (scaffold) ─→ SHA-7 (socket plumbing lands in platform)   none started
 
 PRO-1 (extract runtime) ─→ PRO-2 (slots) ─┬─→ PRO-3, PRO-4, PRO-5
                                           └─→ PRO-6 (Peek publishes) ─→ PRO-7 (Ship renders)
-                                                                             └─→ publish the package
+                                                                             └─→ PRO-9 (publish the package)
+    all of it done except PRO-2 and PRO-9, both in progress
 
-RIC-1 ─→ block model ─→ §6 anchoring in Ship's description field ─→ Leaf can start
+RIC-1 (done) ─→ RIC-5 (block model) ─→ RIC-7 (§6 anchoring in Ship's description) ─→ Leaf can start
 ```
 
 **Chain 2 — Peek's data model.**
@@ -88,7 +91,7 @@ The only real contact between the chains is **CON's package**, which is not comp
 
 **Not on the critical path to Leaf, and the best thing that isn't.**
 
-It is the only project whose **MS1 is already built** — Katerina's launcher prototype draws every object-creating action from a manifest declaration, with the end state in Storybook. So its marginal cost is the lowest in the programme, and it starts the moment PRO-4 lands.
+It is the only project whose **MS1 is already built** — Katerina's launcher prototype draws every object-creating action from a manifest declaration, with the end state in Storybook. So its marginal cost is the lowest in the programme, and **PRO-4 landed 2026-09-02, so it starts now.**
 
 Three things argue for taking it early once unblocked:
 
@@ -96,7 +99,7 @@ Three things argue for taking it early once unblocked:
 - **It is a second consumer of the action half**, the way PRO-7 is of the rendering half. Two different halves, both needed before the interop package is published.
 - **The team feels it daily** — deciding in Peek and filing in Ship is what this workspace does all day.
 
-One thing argues for not rushing it: **nothing waits on it.** RIC-1 gates the block model, §6 and therefore Leaf; this gates nothing. So it goes *after* the things that unblock others, and *before* anything that merely accumulates.
+One thing argues for not rushing it: **nothing waits on it.** RIC-5 gates §6 and therefore Leaf; this gates nothing. So it goes *after* the things that unblock others, and *before* anything that merely accumulates.
 
 **MS3 — the on-device prefill — is sequenced by when a demo needs to impress, not by dependency.** It is Chrome-desktop-only and can never be more than an enhancement, so it should never block MS2 shipping.
 
@@ -115,18 +118,17 @@ Every real dependency, and nothing else. If a pair is not here, they are indepen
 | PRO-2 … PRO-8 | **SHA-10** | They implement RFC 0.4 §13. If it is amended, they change |
 | PRO-6 | **PRO-2** | A Topic projection needs the `list` slot |
 | PRO-7 | **PRO-1, PRO-6** | Needs the extracted runtime *and* something of Peek's to render |
-| Intelligence in Peek, all of MS2 | **PRO-4**, **PRO-1**'s publish path | The launcher's forms are drawn and publish nothing — *"the projection runtime plugs into one function"*. PRO-4 owns rendering a declared action; Intelligence owns what Peek does with it |
+| ~~Intelligence in Peek, all of MS2~~ | ~~**PRO-4**, **PRO-1**'s publish path~~ | **Unblocked 2026-09-02** — PRO-1 done 08-31, PRO-4 done 09-02. The forms are no longer inert: `CommandLauncher.submitAction` resolves the manifest from the addressed parent, publishes through `applyAction`, and surfaces the runtime's own refusal text. Verified by a person creating a Ship issue from Peek's launcher, which is in the Intelligence project as an untitled-ref row |
 | publishing the interop package | **PRO-7** | SHA-7's lesson: never publish a layer with one consumer that has never pushed back |
-| PRO-8 | **RIC-1** | A plain-text summary can only be derived once the format is specified. *The interim fix — stop declaring `truncate` on a structured field — is a one-line manifest change and needs nothing* |
-| the rest of Rich text | **RIC-1** | Filed deliberately thin under rule 2 |
-| §6 component anchoring | **RIC-1** → block model | A block *is* a component |
+| ~~PRO-8~~ | ~~**RIC-1**~~ | **Done 2026-08-31, without the format.** And the interim fix was not the one written here: removing the `truncate` is not enough, because `{ field: 'content' }` with no cap projects the whole blob. The `subtitle` slot was dropped outright, which §13.3 makes safe by obliging a consumer to ignore what it cannot use |
+| RIC-6, RIC-7 | **RIC-5** | The block model is the thing they are both written against. RIC-7 additionally needs RIC-5 to persist block ids |
+| §6 component anchoring | **RIC-5** | A block *is* a component, so the block model is the answer. It is RIC-7 |
 | **Leaf starting** | §6 answered | RFC 0.4 §11.3. It is answered in Ship, at one-tenth of Leaf's scale |
 | CRO-10 | *(nothing)* | **Every prerequisite is done** — CRO-5, PEE-8 and CRO-11. It is parked by choice, not blocked: four of its five measurements need a browser profiler against a real workspace, and the client-side fold it would measure does not exist yet |
 | all DM code | **DMS-2** | Verifies the assumption the whole track's independence rests on: that `kind:41010` is accepted over the HTTP bridge. If it is not, track C needs the WebSocket path and changes shape |
 | DMS-8 | CRO-3 *(done)* | Do it last in the DM track regardless — it uses the read-context convention |
 | the conversation package | **CON-2** | CON-2 is the second consumer that shows which parts of Peek's model are the model. **The read-state half is no longer a blocker** — CRO shipped, and Ship's unread surface (CRO-13) is the reference implementation to copy |
 | SHA-7 | **SHA-2** | `@estiva-app/platform` is where the per-tab / credential / online plumbing belongs. It does not exist yet |
-| PRO-1 | cites **SHA-11** | Not blocking — but the rule should be written before three projects are built under it |
 
 **No longer blocking, and worth knowing:** REW is complete, so **CRO-8 is now cheaper than when it was filed** — it said "if the rewrite is underway it belongs there", and there is now one Ship app rather than two. SHA-4's package is published and consumed by both apps; what remains is verification, not integration. SHA-7 was "after REW-8", which has happened.
 
@@ -139,7 +141,7 @@ Every real dependency, and nothing else. If a pair is not here, they are indepen
 | ~~**Accept or amend RFC 0.4**~~ | SHA-10 | **Accepted 2026-08-28.** Settles the containment model, the projection vocabulary and the two content models. Settles none of §12 — the open questions survive acceptance, four of them with tickets |
 | **Accept or amend RFC 0.5** | SHA-13 | Gates every association and facet ticket, the same way SHA-10 gated the projection work. Cheaper than 0.4's was — 0.5 needs no new kind and no Buzz change, because a facet is a tag on a file its own author signs |
 | **Does a facet merge comments** | RFC 0.5 §3 | **Yes** — decided 2026-08-31. Ordered by time, origin unlabelled. The competing integration merges by *copying*; every limitation it documents follows from the copy, and a read-time union has none of them |
-| **Which content format** | RIC-1 | Three candidates, none free. **487 published events cannot move** whichever wins, so every candidate needs an `alsoRead`-shaped compatibility story |
+| ~~**Which content format**~~ | RIC-1 | **Decided 2026-09-02** — [SPEC §13](protocol/SPEC.md). Two models, one shared inline vocabulary. The compatibility story is `alsoRead`-shaped and **permanent rather than a closing window**: the corpus re-measured at **731 bodies** on the day of the decision, up from 487 five days earlier, and the growth is itself the argument for a permanent reader |
 | **Upstream proposal or fork** | RFC 0.4 §10.1 | Trigger **fired** — upstream shipped `kind:30621`, global-only, single-writer. Latest responsible moment is the first line of folder command/state code. **Now the only thing between the accepted design and folder tickets**, since §12.1 makes the kind numbers its tail. Left open at acceptance on purpose: the trigger firing makes it *easier*, not yet *forced* |
 | **The reaction horizon** | CON-1 | Currently decided by an undocumented constant of 100 |
 | Who may register a widget type | RFC 0.4 §13.3 | No longer *blocking* — the fallback chain means an unknown widget always renders |
