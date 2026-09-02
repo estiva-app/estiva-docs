@@ -69,6 +69,7 @@ re-examining that proof, which is a different piece of work.
 | Relay is healthy | Buzz has **no update timer**. A healthy relay serving last month's image is exactly what this produces. Compare the running image id to `:nfb`, not health |
 | The relay-image CI run is green | The image exists in the registry; nothing pulled it. A probe run seconds after a successful build still got the pre-change behaviour. **A build is not a deploy** — the only check that separates them from outside the box is publishing the shape and reading `accepted` |
 | PR reports **merged**, content never reached `main` | It was stacked on a branch that merged first, so the merge landed in a branch nothing feeds from. Never stack on a branch about to merge |
+| Merged, CI green, and the old bundle is still serving | Peek's deploy sets `concurrency: cancel-in-progress: true`, so a merge **88 seconds later cancelled the deploy** (2026-09-02). Usually self-healing, because the superseding run deploys a superset — but a cancelled *last* run leaves `main` undeployed with nothing red anywhere. `gh run list --workflow deploy.yml --branch main` shows it; a cancelled run is not a failure to chase, an un-superseded one is |
 
 ## Reading logs and state
 
