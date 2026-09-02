@@ -426,6 +426,7 @@ exactly one source:
 | `{"field": "content"}` | a top-level event field |
 | `{"fold": "status", "default": "todo"}` | a field produced by folding change events |
 | `{"fold": "lead", "tag": "lead"}` | folded, **seeded** from a root tag |
+| `{"fold": "description", "field": "content"}` | folded, **seeded** from the event body |
 | `{"children": {"kind": 30851, "via": "a", "limit": 200}}` | child objects, found by the tag **on the child** that names this one |
 
 **`children` is the only source that does not read the root event.** The others
@@ -451,11 +452,26 @@ Three rules learned from writing a consumer rather than from reading a spec:
 2. A slot MAY be **both** `fold` and `tag`. A project lead starts as a tag on
    the root and is later overridden by change events. Tag alone goes stale the
    first time somebody reassigns; fold alone loses the creation value.
+
+   A fold MAY equally be seeded from `field: "content"`, and MAY name both: the
+   chain is **fold, then tag, then content, then `default`**. A description is
+   where this matters, because `content` is where an app puts a body — Ship
+   reads an issue's as `fields.description?.value ?? event.content` and a
+   project's as the same with a `description` tag in between, and neither could
+   be declared until the content seed existed. The seed tag reports no content
+   format (§13.4); a tag is a scalar even when standing in for a body.
 3. `as: "pubkey"` marks a slot whose value is a pubkey, so the consumer resolves
    it through `kind:0` rather than printing hex.
 
 Slots are `title` (required), `subtitle`, `status`, `meta`, `image`, `list` and
-`body`. The set is closed — a slot is semantic, so a consumer must know what it
+`body` — which holds structured content, in one of the models §13 specifies. A
+consumer rendering `body` MUST establish which model by §13.4's rule and MUST
+NOT read one as the other; rendering it as plain text is always available
+(§13.5). `truncate` MUST NOT be applied to it, for the reason §13.5 gives about
+constructing output from a parsed model: a slice of a block document is not a
+block document, and a consumer cannot tell that what it drew is wrong.
+
+The set is closed — a slot is semantic, so a consumer must know what it
 *means* to render it — but it **grows**, and producers and consumers upgrade at
 different times. **A consumer MUST ignore a slot it does not implement and MUST
 still render the rest**; a producer MUST NOT put information only in a slot
