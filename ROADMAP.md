@@ -2,7 +2,7 @@
 
 **Working reference. Living document.** [Estiva Ship](https://ship.estiva.app) is the source of truth for ticket detail; this is the map between them — what depends on what, what can run in parallel, and what is deliberately still undecided.
 
-Last updated 2026-09-01. Not published to the docs site (`site/nav.mjs` is opt-in) because it changes often and carries operational detail.
+Last updated 2026-09-02. Not published to the docs site (`site/nav.mjs` is opt-in) because it changes often and carries operational detail.
 
 **Everything here serves one goal: making the third major app cheap enough to build.** Leaf is that app ([ADR 0001](decisions/0001-relay-canonical-by-default.md)). When a piece of work is hard to prioritise, that is the question to ask of it.
 
@@ -20,17 +20,17 @@ Last updated 2026-09-01. Not published to the docs site (`site/nav.mjs` is opt-i
 
 ## Where things stand
 
-**53 open of 120**, across eleven active projects. Four projects are archived — `ship projects` reports how many it hid rather than silently dropping them (AGE-7).
+**54 open of 125**, across eleven active projects. Four projects are archived — `ship projects` reports how many it hid rather than silently dropping them (AGE-7).
 
 | project | open | what it is |
 | --- | --- | --- |
 | **DMs on Nostr** | 10 / 11 | Move Peek's DMs off Convex onto the relay. Gated on one cheap probe |
-| **Projection layer** | 7 / 13 | Render and act on another app's objects. *Mostly already built — this is extraction and extension* |
-| **Cross-app read state** | 3 / 13 | Read/unread becomes a property of the person, not the app |
-| **Shared foundation packages** | 7 / 17 | The packages a third app installs |
-| **Intelligence in Peek** | 6 / 6 | Cmd+K: every action an app declares, offered where the conversation is. *MS1 already built — see below* |
+| **Projection layer** | 6 / 13 | Render and act on another app's objects. *Mostly already built — this is extraction and extension* |
+| **Cross-app read state** | 1 / 14 | Read/unread becomes a property of the person, not the app. **Shipped and verified against production** — the one open ticket is CRO-10, a parked spike. See [READ-STATE.md](operations/READ-STATE.md) |
+| **Shared foundation packages** | 9 / 19 | The packages a third app installs |
+| **Intelligence in Peek** | 7 / 7 | Cmd+K: every action an app declares, offered where the conversation is. *MS1 already built — see below* |
 | **Ship: Feedback & Bugs** | 5 / 13 | |
-| **Peek: Feedback & Bugs** | 1 / 16 | |
+| **Peek: Feedback & Bugs** | 2 / 17 | |
 | **Conversation standard** | 8 / 8 | Comments the third app adopts rather than rebuilds |
 | **Rich text and blocks** | 3 / 3 | *Thin on purpose — see the format decision below* |
 | **Other** | 2 / 4 | `estiva-docs` tooling and one-offs belonging to no track. Unarchived 2026-09-01 — it was hidden while holding open issues |
@@ -70,8 +70,8 @@ RIC-1 ─→ block model ─→ §6 anchoring in Ship's description field ─→
 **Chain 2 — Peek's data model.**
 
 ```
-CRO-4 ─→ CRO-5 ─→ CRO-6 ─→ CRO-7 ─→ CRO-8 ─→ CRO-9
-              └─→ CRO-10 (the Convex decision)
+CRO-4 ─→ CRO-5 ─→ CRO-6 ─→ CRO-7 ─→ CRO-8 ─→ CRO-9        all done
+              └─→ CRO-10 (the Convex decision)               unblocked, parked
 
 DMS-2 ─→ DMS-3, DMS-4 ─→ DMS-5, DMS-6 ─→ DMS-7 ─→ DMS-9, DMS-10, DMS-11
                                                         └─→ DMS-8 (last)
@@ -119,11 +119,10 @@ Every real dependency, and nothing else. If a pair is not here, they are indepen
 | the rest of Rich text | **RIC-1** | Filed deliberately thin under rule 2 |
 | §6 component anchoring | **RIC-1** → block model | A block *is* a component |
 | **Leaf starting** | §6 answered | RFC 0.4 §11.3. It is answered in Ship, at one-tenth of Leaf's scale |
-| CRO-7 | **CRO-6** | NIP-RS's horizon defaults to 7 days and absence of a context means "unread", so cutting over before the cache exists makes every quiet container read as unread |
-| CRO-10 | **CRO-5** | Needs read state on the protocol. Its other two prerequisites (PEE-8, CRO-11) are done |
+| CRO-10 | *(nothing)* | **Every prerequisite is done** — CRO-5, PEE-8 and CRO-11. It is parked by choice, not blocked: four of its five measurements need a browser profiler against a real workspace, and the client-side fold it would measure does not exist yet |
 | all DM code | **DMS-2** | Verifies the assumption the whole track's independence rests on: that `kind:41010` is accepted over the HTTP bridge. If it is not, track C needs the WebSocket path and changes shape |
 | DMS-8 | CRO-3 *(done)* | Do it last in the DM track regardless — it uses the read-context convention |
-| the conversation package | **CON-2**, then **CRO** | CON-2 is the second consumer that shows which parts of Peek's model are the model. Unread joins when read state lands |
+| the conversation package | **CON-2** | CON-2 is the second consumer that shows which parts of Peek's model are the model. **The read-state half is no longer a blocker** — CRO shipped, and Ship's unread surface (CRO-13) is the reference implementation to copy |
 | SHA-7 | **SHA-2** | `@estiva-app/platform` is where the per-tab / credential / online plumbing belongs. It does not exist yet |
 | PRO-1 | cites **SHA-11** | Not blocking — but the rule should be written before three projects are built under it |
 
@@ -179,6 +178,7 @@ Detail lives in the linked documents; this is the index. Rule 3 is why these lin
 | **SHA-9** — the research | Two of its four topics were **already built**; RFC 0.3 listed one as an unsolved gap. The inventory was stale, not the system. See RFC 0.4 §13 |
 | **RFC 0.5** — the association brainstorm | **A relay-signed object cannot declare anything**, so symmetric linking is impossible and the effect has to be one-sided-declaration / two-sided-effect. That turned out to *solve* authorization rather than complicate it — you may only declare on a file you can sign — which is why the hard permission question could be deferred instead of guessed. Also: working two edge cases before writing changed the text twice |
 | **AGE-7** | A listing that filters must say what it filtered. `ship projects` now reports its archived count instead of silently returning nine |
+| **Cross-app read state** (13 of 14) | **Seven defects, none caught by review or a green suite** — every one in the seam between correct code and whatever was meant to invoke it: a hook exported and never mounted, a 5s poll into a rate limit, a rate-limited decrypt read as an empty slot, five flush paths that rescheduled nothing, two slot-bloat bugs, and a debug panel with no button. That is why both apps now ship `window.__readState()`. Also: **observing read state changes it** — opening a topic to look at an indicator advances the container and clears what you were measuring, which cost three of four attempts at CRO-9. [READ-STATE.md](operations/READ-STATE.md) |
 
 Two documents sit under all of it:
 
