@@ -80,6 +80,8 @@ re-examining that proof, which is a different piece of work.
 | Convex dashboard shows no arguments | It never shows arguments for successful calls. Absence is not evidence |
 | `git checkout -b foo origin/main` | A **failed fetch is quiet**. `origin/main` stayed where it was and the branch was cut from a stale commit |
 | Local export shows zero attachments | The local Convex backend's export **omits `_storage`**. Check `convex data _storage` |
+| A `search` filter came back with rows | A relay that **ignores** an unknown `search` field answers with everything of that kind — identically to one that honours it. "Search returned results" is not evidence. Pair every search with a nonsense token that must return **zero** |
+| Search finds a word but nothing as you type it | The relay's NIP-50 index matches **whole tokens**. `"Cla"` → 0 rows where `"Claude"` → 2, measured on production 2026-09-02 (`peek/scripts/probe-nip50-search.ts`). `supported_nips` advertising 50 says nothing about matching rules |
 
 ## Tooling
 
