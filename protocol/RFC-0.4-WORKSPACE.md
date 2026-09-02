@@ -1092,11 +1092,57 @@ What that yields, in order of how much it matters:
 
 1. The grant type, and a short TTL for what it mints — seconds to minutes, not
    the session's.
-2. **Who may exchange for whom.** A per-app `allowed_audiences`, default deny, in
-   the same spirit as `allowed_kinds` and for the same reason: a ceiling that is
-   too wide is invisible until it is abused.
+2. **A list on the receiving app of the kinds it accepts delegated writes for**,
+   defaulting to empty. See below.
 3. Nothing in the audit trail. `audit_events.actor_client_id` already exists, so
    the model already anticipates an actor distinct from the subject.
+
+#### Decided: no consent, no app-pair allowlist, one list on the receiver — 2026-09-02
+
+**No per-person consent.** An administrator decides which apps are installed in
+a workspace, and that *is* the trust decision. Asking a person to approve
+"Peek may act through Ship" adds a dialogue nobody can evaluate, about a pairing
+somebody already vetted.
+
+**No allowlist of who may delegate to whom.** It was proposed and rejected:
+between two apps an administrator has installed, *"why may Peek do this and not
+that other app?"* has no principled answer, and an N×N matrix grows worse with
+every app added.
+
+**But delegation cannot be unrestricted, and the reason is concrete.** Each app
+has a kind ceiling, and those ceilings differ deliberately. Peek is allowed to
+sign `30851` — Ship's Issue, because Ship declares an action that creates one —
+and deliberately *not* `30850`, Ship's Project, because Ship declares no action
+that creates a project. There is a test asserting that absence.
+
+With unrestricted exchange, that is decoration. Any app obtains a token
+addressed to the app with the widest ceiling and signs through it, so **every
+app's limits collapse into the widest app's limits.** The ceilings this
+ecosystem has maintained one incident at a time would stop meaning anything.
+
+So the constraint goes on the **receiving** app, not between pairs:
+
+> An app declares the kinds it accepts delegated writes for. Any installed app
+> may ask. None may ask for more than the receiver has agreed to accept.
+
+One list, owned by the app that bears the consequence, in the same shape as the
+`allowed_kinds` it already declares. Ship would list `30851` and not `30850` —
+the kinds it publishes on someone's behalf, which is exactly the set its manifest
+declares as submitted actions.
+
+Every installed app is equal under it, which is what makes it answerable: the
+limit is not *"we trust Peek more than you"* but *"Ship accepts issues and does
+not accept projects, from anyone."*
+
+**Default empty.** An app that never intended to receive writes from elsewhere
+must not begin accepting them the day a second app is installed. The same
+argument `allowed_kinds` makes: a ceiling that is too wide stays invisible until
+it is abused.
+
+**This also settles how narrow a delegated token is**, which was the second open
+question. The token can do only what the receiver's list permits, so there is no
+separate scope vocabulary to design — the narrowing already has an owner and a
+place to live.
 
 **The simpler alternative, recorded rather than dismissed.** Ship's endpoint
 could return the finished event *unsigned*, and Peek could sign and publish it.
@@ -1118,16 +1164,10 @@ this section.
 
 #### What must be decided before this is accepted
 
-1. **Whether the person consents per app pair, or an allowlist is the policy.**
-   Both apps are first-party in one workspace today, so an admin-set
-   `allowed_audiences` is proportionate; a third-party app in the same workspace
-   is the case that changes the answer.
-2. **Whether `scope` narrows to one action or one kind.** Per action is more
-   precise and makes the manifest and the token agree; per kind is what `/sign`
-   already enforces and needs no new vocabulary.
-3. **What a consumer does when a submission fails.** A published event either
-   reaches the relay or does not. A submission can be refused with a reason, and
-   that reason is another app's prose appearing in this app's interface.
+**One thing left: what a consumer does when a submission fails.** A published
+event either reaches the relay or does not. A submission can be refused with a
+reason, and that reason is another app's prose appearing in this app's
+interface — which is a question about what a person reads, not about the wire.
 
 #### Decided: per action, not per app — 2026-09-02
 
