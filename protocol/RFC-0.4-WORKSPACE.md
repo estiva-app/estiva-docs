@@ -611,7 +611,7 @@ Conformance is checkable in both directions: a producer's chain must terminate i
 
 These are **fields, not a design.** The intelligence layer they anticipate is deliberately outside this RFC (see the roadmap's "not filed, and why"). They are included because adding a field now costs nothing and adding one after three apps have published manifests is a migration — the same argument `alsoRead` makes one level down.
 
-**An action is an event to publish, never an endpoint to call.** The consumer signs and publishes; the owning app has no server in the loop and cannot enforce anything. That is a property, not a gap: it is what lets a consumer act while the owner is offline. Its consequence is that **validation is an honour system**, and a consumer that skips the manifest's own vocabulary check is the one putting junk in a shared record.
+**An action is an event to publish, never an endpoint to call.** *(Revisited in §13.10, which proposes a second style alongside this one. The sentence is still true of everything built to date.)* The consumer signs and publishes; the owning app has no server in the loop and cannot enforce anything. That is a property, not a gap: it is what lets a consumer act while the owner is offline. Its consequence is that **validation is an honour system**, and a consumer that skips the manifest's own vocabulary check is the one putting junk in a shared record.
 
 ### 13.6 Not every object has an address — resolved 2026-09-01
 
@@ -962,3 +962,116 @@ manifest *says* which properties are owner-derived. A consumer cannot tell "you
 may not set this, it is coming" from "this is simply absent", so it renders a
 blank either way — and an agent filling a form from context has nothing to stop
 it inventing one. See the roadmap.
+
+### 13.10 Two ways to invoke an action — proposed 2026-09-02, **not accepted**
+
+**This section proposes an amendment to §13.4 and does not describe anything
+built.** It is written down because the question arrived from the product side
+with a better framing than the engineering side had, and because the answer
+changes what a manifest is.
+
+#### The question
+
+Today a consumer *builds* the event an action describes: it reads `emits`, lays
+out the tags, validates against the declared vocabulary, and publishes. The
+owning app is not in the loop.
+
+The alternative is that the manifest declares **one endpoint per action** —
+`saveIssue(title, description)` — and the owning app does the rest: derives what
+it derives, enforces what it enforces, and publishes.
+
+#### What the second style fixes
+
+Everything §13.9 works around, and several things nothing currently addresses.
+
+| | consumer publishes | owner publishes |
+| --- | --- | --- |
+| a value only the owner can compute | arrives blank, completed later (§13.9) | never leaves the owner |
+| validation against the declared vocabulary | honour system (§13.4) | enforced |
+| invariants across several objects | not expressible | ordinary code |
+| side effects — notify, index, webhook | none possible | ordinary code |
+| what a third-party builder implements | tag layouts, fold rules, `d` generation | a form and a POST |
+| Estiva ID's per-app kind ceiling | the union of every kind any app it acts on declares | each app signs only its own |
+
+That last row is not theoretical. Peek's ceiling has been raised four times —
+`1851`, `9101`, `9002`, `30851` — each time after an action shipped, worked
+everywhere it was checked, and failed at `/sign`. Under the second style Peek
+would never sign a Ship kind at all.
+
+#### It does not contradict §13.4's reason, which is the test
+
+§13.4 rules out endpoints and gives its reason: *"it is what lets a consumer act
+while the owner is offline."* That property is worth keeping, and the amendment
+keeps it — by making the style a **per-action declaration** rather than a
+replacement.
+
+| style | needs | gives |
+| --- | --- | --- |
+| **published by the consumer** | nothing but the relay | works with the owner offline; owner has no backend |
+| **submitted to the owner** | the owner reachable | enforcement, derived values, one place for the logic |
+
+An app with real invariants declares the second for the actions that need it. An
+app with no backend at all — which the scaffold produces, per
+[ADR 0001](../decisions/0001-relay-canonical-by-default.md) — declares the first
+and still works. A comment can stay a published event in the same manifest whose
+issue creation is a submission.
+
+**A consumer that does not understand how an action is invoked MUST NOT offer
+it.** Drawing a control that cannot be completed is the failure mode this whole
+section exists to avoid, and it is the same rule §13.3 applies to widgets.
+
+#### The open question: whose key signs
+
+This is the part to decide, and it is not an engineering detail.
+
+| signs | *"who filed this?"* | the relay's permission check |
+| --- | --- | --- |
+| the person, via Estiva ID | proven by the signature | works — the relay sees the person's key |
+| the owning app's service identity | the app **asserts** it was the person | checks the app, not the person |
+
+The second row's cost is one sentence: **it turns "Ana filed this" from something
+the signature proves into something the app claims.** Anyone may write a name
+into a tag; only a key can prove one. This ecosystem's premise is that the
+signature *is* the record — Ship shows "by Ana" on every change on exactly that
+basis.
+
+The third column is the less obvious cost. The relay decides who may write into
+a Folder by looking at the signing key. If the owning app's identity signs, the
+relay is checking *that app's* membership, and the app must re-implement the
+check it displaced. An app that gets it slightly wrong lets anyone who can reach
+its endpoint write anywhere it can.
+
+Service identities are not exotic here — Estiva ID already issues them, and the
+agent uses one. The question is not whether they exist but which objects they
+should author.
+
+**A starting position, offered rather than settled:** the person's key where the
+object has a *who* — an issue, a comment, a status change — and a service
+identity where the object is genuinely the app's own, such as a generated index
+or a digest. Which implies the manifest may need to declare that too, and
+whether that third declaration earns its place is itself open.
+
+Signing as the person from another app needs a delegation Estiva ID does not
+have today: Peek would be asking Ship to act for a person, and Ship would need to
+prove the person asked. Handing over an access token is not that.
+
+#### What this makes moot
+
+An earlier line of thinking gave the manifest a *per-field* derivation endpoint —
+ask the owner for the next display key, then publish the event yourself. It is
+strictly worse than this and worth recording as rejected: it needs one endpoint
+per derived field, it still races (the answer is stale before the write), and it
+leaves validation and invariants unaddressed. It was a workaround for not having
+this section.
+
+#### What must be decided before this is accepted
+
+1. **Whose key**, and whether the manifest declares it per action.
+2. **Delegation** — how an owner proves the person asked, without holding their
+   credential.
+3. **Whether the two styles are per action or per app.** Per action is proposed
+   here; per app is simpler to implement and cannot express "comment freely,
+   create through me".
+4. **What a consumer does when a submission fails.** A published event either
+   reaches the relay or does not. A submission can be refused with a reason, and
+   that reason is another app's prose appearing in this app's interface.
