@@ -1089,6 +1089,14 @@ published text rendering unchanged:
 2. an opening marker MUST NOT follow an alphanumeric and a closing marker MUST NOT
    precede one — `2*3*4` is literal.
 
+**Rule 2 does not apply to the code marker.** It resolves an ambiguity only the
+asymmetric prose markers have: `*` is also multiplication and a glob, `_` is also
+part of an identifier. A backtick has no such second meaning, and applying the
+fence to it leaves `` `main`s `` literal — a code span followed by a plural or a
+possessive, which is ordinary English. Measured 2026-09-02: **8 such spans in 6
+published messages, and zero cases where the opening side needed the fence.**
+CommonMark draws the same line. Rule 1 still applies to code.
+
 A reader MUST render an unmatched marker literally, and MUST NOT infer any
 construct not listed above. In particular `###` and deeper, tables, setext
 headings, images and reference-style links are **not** in this dialect and MUST
