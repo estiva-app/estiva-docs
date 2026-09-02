@@ -1069,9 +1069,27 @@ this section.
 1. **Whose key**, and whether the manifest declares it per action.
 2. **Delegation** — how an owner proves the person asked, without holding their
    credential.
-3. **Whether the two styles are per action or per app.** Per action is proposed
-   here; per app is simpler to implement and cannot express "comment freely,
-   create through me".
-4. **What a consumer does when a submission fails.** A published event either
+3. **What a consumer does when a submission fails.** A published event either
    reaches the relay or does not. A submission can be refused with a reason, and
    that reason is another app's prose appearing in this app's interface.
+
+#### Decided: per action, not per app — 2026-09-02
+
+Recorded here so it is not re-opened. Per app is simpler to implement, and it
+was rejected for what it cannot express.
+
+An app's actions are not uniform. Ship's `comment` emits a `kind:1111` scoped to
+an address: no derived value, no invariant, nothing the owner knows that the
+consumer does not. Ship's `add-issue` has all three. Under a per-app choice one
+of those two has to be wrong — either commenting is routed through a backend it
+never needed, or issue creation stays a guess.
+
+The cost lands hardest on exactly the app this layer is for. A small app with one
+action that needs enforcement would have to stand up a service for all of them
+or none, and [ADR 0001](../decisions/0001-relay-canonical-by-default.md)'s
+scaffold produces an app with no backend at all. Per action lets that app grow a
+backend for the one action that earns it and leave the rest alone.
+
+It also keeps degradation honest. When the owner is unreachable, a consumer can
+still comment — it simply cannot create. Per app, one unreachable service takes
+every action with it, including the ones that never needed it.
