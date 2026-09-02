@@ -30,7 +30,7 @@ They used to be here, one `open / total` per row, and they drifted in both direc
 | **Projection layer** | Render and act on another app's objects. *Mostly already built — this is extraction and extension* |
 | **Cross-app read state** | Read/unread becomes a property of the person, not the app. **Shipped and verified against production** — what is left is CRO-10, a parked spike. See [READ-STATE.md](operations/READ-STATE.md) |
 | **Shared foundation packages** | The packages a third app installs |
-| **Intelligence in Peek** | Cmd+K: every action an app declares, offered where the conversation is. *MS1 already built — see below* |
+| **Intelligence in Peek** | Cmd+K: every action an app declares, offered where the conversation is. **Built and deployed** — what is left is verification, see below |
 | **Ship: Feedback & Bugs** | |
 | **Peek: Feedback & Bugs** | |
 | **Conversation standard** | Comments the third app adopts rather than rebuilds |
@@ -89,19 +89,23 @@ The only real contact between the chains is **CON's package**, which is not comp
 
 ### Where Intelligence in Peek sits
 
-**Not on the critical path to Leaf, and the best thing that isn't.**
+**Built and deployed on 2026-09-02, the day PRO-4 unblocked it.** MS2 and MS3 both shipped: the launcher publishes, leaves the new object's reference in the composer, finds topics, people and messages, changes an object the thread already refers to, and prefills a create form from the conversation using an on-device model.
 
-It is the only project whose **MS1 is already built** — Katerina's launcher prototype draws every object-creating action from a manifest declaration, with the end state in Storybook. So its marginal cost is the lowest in the programme, and **PRO-4 landed 2026-09-02, so it starts now.**
+**What remains is verification, not building.** Four of the six tickets are deployed and unproven, because the last leg of each needs a signed-in browser: passkey sign-in is not scriptable against production without enrolling an orphan credential in a real account. Ship carries which is which — do not infer it from here.
 
-Three things argue for taking it early once unblocked:
+It was the cheapest thing in the programme and it turned out cheaper than that: its **MS1 was already built** (Katerina's launcher prototype drew every object-creating action from a manifest declaration), and two more halves turned out to exist already. `ForeignObjectWidget` was already applying field-setting actions in a thread, so PEE-3 was only ever about reaching the same object from Cmd+K without hunting up the thread; and `MessageBody` already rendered a `nostr:naddr…` reference, so PEE-2 was one half of a round trip rather than two.
+
+Three things argued for taking it early, and all three held:
 
 - **It is the demo.** The stated business goals are recruiting and a grant, and *"Cmd+K → create the issue → it appears in the thread as a live widget"* is the cross-app moment that reads as unusual. PRO-10 exists to record exactly this.
 - **It is a second consumer of the action half**, the way PRO-7 is of the rendering half. Two different halves, both needed before the interop package is published.
 - **The team feels it daily** — deciding in Peek and filing in Ship is what this workspace does all day.
 
-One thing argues for not rushing it: **nothing waits on it.** RIC-5 gates §6 and therefore Leaf; this gates nothing. So it goes *after* the things that unblock others, and *before* anything that merely accumulates.
+**What it taught, and what to read before building on it:** the relay's NIP-50 search matches **whole tokens** — `"Cla"` finds nothing where `"Claude"` finds two — which is why the launcher matches topics and people locally and leaves only messages to the relay. Measured before the UI was designed, which is the only reason the design is shaped for it. Both that and the way an ignored `search` field is indistinguishable from an honoured one are in [SILENT-FAILURES.md](operations/SILENT-FAILURES.md).
 
-**MS3 — the on-device prefill — is sequenced by when a demo needs to impress, not by dependency.** It is Chrome-desktop-only and can never be more than an enhancement, so it should never block MS2 shipping.
+**MS3 did not wait for a demo after all.** It was sequenced by when a demo needs to impress rather than by dependency, and shipped alongside MS2 because it was small: a manifest action's declaration is already a JSON Schema and Chrome's Prompt API takes one as its constraint, so no mapping layer was needed. It stays Chrome-desktop-only and can never be more than an enhancement — and the model is never asked for a parent or a pubkey, since the first would pick a destination silently and the second invents a key the relay would accept.
+
+This narrowed a standing product decision rather than ignoring it: Peek's *"no AI features"* rule (2026-07-08) now reads **on-device only**, with cloud still an open question rather than an implementation.
 
 ### Bugs and tooling, independent of everything
 
