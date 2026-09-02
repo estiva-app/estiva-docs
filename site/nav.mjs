@@ -120,9 +120,11 @@ export const INTERNAL = new Set([
  * Maps a repo-relative markdown path to its published slug, so cross-document
  * links keep working on the site.
  *
- * A link to a file that is NOT published must not silently 404. `build.mjs`
- * turns those into plain text with a marker, and `check.mjs` fails the build if
- * a published page links to an unpublished one — otherwise the split above
- * leaks as a trail of dead links pointing at documents nobody outside can read.
+ * A link to a file that is NOT published must not silently 404, and `build.mjs`
+ * enforces that in the render pass — there is no separate checker, and a
+ * `check.mjs` naming this rule has never existed. A link to something in
+ * INTERNAL becomes plain text with a marker; a link to something in neither
+ * list fails the build. Otherwise the split above leaks as a trail of dead
+ * links pointing at documents nobody outside can read.
  */
 export const BY_FILE = new Map(PAGES.map((p) => [p.file, p]))
