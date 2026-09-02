@@ -864,3 +864,62 @@ The commenting package is intended to become the default that essentially every 
 **The package is the reference implementation. The specification is the standard.** Both, in that order.
 
 Note also that a genuinely drop-in comments package is not complete until read state exists — unread is one of the things the HR builder most wants and least wants to build, and it is the *Cross-app read state* project. The wire and rendering halves can land first; the unread half joins when that project does.
+
+### 13.9 A property the owner derives cannot live on the root — added 2026-09-02
+
+**Found the first time something other than the owning app created one of its
+objects.** PRO-4 let Peek draw Ship's `add-issue` as a form and publish the
+issue. It worked, and the issue appeared in Ship with the right title, the right
+project and the default status — and no display key, a dash where every other
+row has `PRO-14`.
+
+Nothing was broken. The manifest declares `add-issue` with one property,
+`title`, and that is correct: a Ship ref is the project title's first three
+letters plus a count of that project's issues, so a consumer cannot compute one.
+It cannot see the siblings, and Ship's own note says two people creating at once
+collide anyway.
+
+**The owner cannot fill it in afterwards either, and that is the part that
+generalises.** A NIP-33 address is `(kind, pubkey, d)`, so the root event
+belongs permanently to whoever signed it. The owning app cannot rewrite an event
+it did not author — not by policy but by construction.
+
+> **Anything the owner derives must live in the change stream, never on the
+> root.**
+
+The rule is forced rather than chosen, and it applies to every owner-derived
+property: a sequence number, a slug that must be unique, a rank, an assignment
+from a rota. Each is computed from context the creator cannot see, and each can
+only reach the object as a change.
+
+**Ship already followed this everywhere except one field**, which is why the gap
+went unseen. An issue's `status` and `assignee` are folded and arrive normally;
+`title` is folded and seeded from a root tag, so a rename by someone else has
+somewhere to live. `ref` alone read the root and nothing else — and nobody
+noticed, because Ship created every issue that had ever existed. Measured on
+production when it surfaced: **168 of 170 issues carried a ref**, and the one
+that did not was the one Peek made.
+
+**The mechanism already exists.** [SPEC §7.2](SPEC.md) has the slot source for
+exactly this shape:
+
+| Source | Meaning |
+| --- | --- |
+| `{"fold": "lead", "tag": "lead"}` | folded, **seeded** from a root tag |
+
+Seeded by whoever created the object, overridden by the owner later. Ship's
+project `lead` was already declared that way. Making `ref` match it needed no
+new mechanism, no manifest field and no protocol change — the fix was to stop
+being the exception.
+
+**What a consumer may set is exactly `input.properties`; everything else is the
+owner's to complete.** A manifest author should read that as a design
+constraint, not a convention: putting a derived value on the root does not fail
+until a second app creates one of your objects, and then it fails permanently
+and silently, for that object, for ever.
+
+**One thing this does not settle**, filed rather than implied: nothing in the
+manifest *says* which properties are owner-derived. A consumer cannot tell "you
+may not set this, it is coming" from "this is simply absent", so it renders a
+blank either way — and an agent filling a form from context has nothing to stop
+it inventing one. See the roadmap.
