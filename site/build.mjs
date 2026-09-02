@@ -34,21 +34,9 @@ const md = new MarkdownIt({ html: true, linkify: true, typographer: false })
     level: [2, 3],
   })
 
-/** Collected while rendering, reported by check.mjs. */
+/** Collected while rendering, reported at the end of this file. */
 export const problems = []
 
-/**
- * Rewrite a link written for the repo into one that works on the site.
- *
- * Three cases, and the third is the one that matters:
- *   - external / anchor-only → untouched
- *   - points at a published doc → its slug
- *   - points at an UNPUBLISHED doc → recorded as a problem
- *
- * The last case is not rewritten to a 404. A published page linking to a page
- * nobody outside can read is a leak of the private set, one dead link at a
- * time, so the build refuses rather than papering over it.
- */
 /** Repo-relative path a link points at, with directories resolved to README. */
 function linkTarget(href, fromFile) {
   const [path] = href.split('#')
@@ -62,6 +50,20 @@ function linkTarget(href, fromFile) {
   return target
 }
 
+/**
+ * Rewrite a link written for the repo into one that works on the site.
+ *
+ * Four cases, and the last is the one that matters:
+ *   - external / anchor-only → untouched
+ *   - points at a published doc → its slug
+ *   - points at a doc listed in INTERNAL → caller marks it as plain text
+ *   - points at a doc in NEITHER list → recorded as a problem
+ *
+ * The last case is not rewritten to a 404. A published page linking to a page
+ * nobody outside can read is a leak of the private set, one dead link at a
+ * time, so the build refuses rather than papering over it — see the end of
+ * this file, which is where that refusal lives. There is no separate checker.
+ */
 function rewriteLink(href, fromFile) {
   if (/^(https?:|mailto:|#)/.test(href)) return href
 
