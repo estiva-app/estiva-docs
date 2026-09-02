@@ -58,7 +58,7 @@ The last line is the point of the note. Everything else is context.
 
 ## What was actually verified
 
-Against production, not a fixture, under CRO-9:
+Against production, not a fixture — CRO-9, and the last row under CRO-13:
 
 | | |
 | --- | --- |
@@ -68,6 +68,7 @@ Against production, not a fixture, under CRO-9:
 | Reading a container | ✅ clears its top-level messages, newer replies stay unread |
 | Second browser profile | ✅ converged, and appeared as a distinct slot |
 | Monotonicity | ✅ nothing went backwards across repeated runs |
+| A container never read | ✅ no divider, and one appears as soon as it has been read |
 
 One check was **dropped**: no container has a marker older than the 90-day
 horizon, so there is nothing to test the aged-out path against. Synthesising one
@@ -88,7 +89,15 @@ does not happen.
 
 **Absence means unread** (SPEC §11.6), and Ship deliberately does not honour it:
 a container with no marker shows no divider, so Ship's years of history did not
-light up. That is a decision, not a bug.
+light up. That is a decision, not a bug, and it is the one behaviour here you
+cannot see by using the apps normally — everything you have read is read.
+
+To watch it, you need a container whose marker is genuinely absent, which is
+rarer than it sounds: **a Peek topic you create yourself will not do**, because
+creating it navigates you into it and the dwell fires. Find one with
+`__readState.marker('<container-uuid>')` returning `absent`, put a message in
+it, and look. Confirmed that way on 2026-09-02 against a Ship project that had
+never been opened.
 
 **A slot is what one installation read.** Not the union. Three separate bugs came
 from a convenient superset being in scope and getting published — ship#62,
