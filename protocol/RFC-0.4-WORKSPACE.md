@@ -475,7 +475,7 @@ Leaf remains the app that will stress anchoring hardest — a document editor re
 
 **New in 0.4:**
 
-7. **Which content format** (§14.5). Three candidates, and 487 published events that cannot move whichever is chosen. §14.5 recommends a split — marker dialect for messages, structured blocks for rich text — but recommending is not deciding, and the `alsoRead`-shaped compatibility story has to be written either way.
+7. ~~**Which content format** (§14.5).~~ **Decided 2026-09-02 (RIC-1), and moved to the answered list below.** The recommended split was taken. It is normative in [SPEC §13](SPEC.md); §14.5 keeps the reasoning and records what it costs.
 
 8. **Who may add a widget type** (§13.3). The fallback chain means an unknown widget always renders, so this is no longer *blocking*. It is still unanswered: does a new widget name need to be registered anywhere, or does the vocabulary converge by use and get written down afterwards? The second is this programme's usual answer, and it needs somebody to actually do the writing down.
 
@@ -500,6 +500,7 @@ Leaf remains the app that will stress anchoring hardest — a document editor re
 - **Does upstream ship a forge layer, and in what shape** — yes: `kind:30621`, parameterized-replaceable, **global-only**, single-writer, members as `a` tags. This was §10.1's stated trigger and it has fired. §10.
 - **Is inline rendering of a foreign object still a gap** — no. It shipped between Ship and Peek before 0.3 was written, and 0.3's inventory was stale rather than the system being incomplete. §9, §13.1.
 - **Are a message and a rich text field one content model** — no, two, and the production corpus already shows two dialects. They share only their inline layer. §14.
+- **Which content format** — the split §14.5 recommended: marker text for messages, a JSON block document for rich text, one shared inline vocabulary. Decided 2026-09-02 (RIC-1) and specified in [SPEC §13](SPEC.md), against a corpus re-measured at **731** published bodies — 487 was five days stale, which is itself part of the answer. §14.5.
 - **Must §6 wait for Leaf** — no. A block is a component, and Ship's description field is a test bed that exists today. §6, §11.3.
 - **Closed or open widget vocabulary** — neither alone: slots closed, widgets open with a fallback chain terminating in a closed type. §13.3.
 - **Does the intelligence/memory layer belong in this RFC** — no. Deliberately excluded, with its trigger recorded in the roadmap: the first time a second app's harness needs to read another app's memories, which is [SPEC §12.1](SPEC.md)'s first question flipping. Peek's highlights are an experiment and are **not** to be published to an append-only kind while the model is unsettled.
@@ -820,6 +821,44 @@ Three candidates, and the choice is not free in any direction:
 **Whatever is chosen, the 487 existing events do not move.** They are non-replaceable or replaceable-only-by-author, and REW-11 established that rewriting stamps a `created_at` the relay will not backdate. So every candidate needs an `alsoRead`-shaped answer: a declaration of what the old form was, and a reader that handles both permanently. The migration is not a window that closes — it is the steady state.
 
 **A reasonable split, and the one this RFC recommends:** the message model takes (1), because its corpus is large, its needs are modest, and its content is immutable anyway. The rich text model takes (3), because blocks are the point and anchoring needs them. The inline layer is shared between them, which is what keeps a message and a paragraph feeling like the same product.
+
+#### Decided — 2026-09-02, RIC-1
+
+**The split was taken as recommended**, and is normative in [SPEC §13](SPEC.md):
+(1) for messages, (3) for rich text, one shared inline vocabulary in
+`@estiva-app/protocol`. Three things the re-measurement changed or sharpened:
+
+- **The corpus is 731 published bodies, not 487** — and the gap is five days of
+  drift, not a counting error. It also found a producer class §14.2 missed
+  entirely: **26 description edits carried as the `value` tag of a `kind:1851`**,
+  which are as unmovable as any root and were never in the total.
+- **Nothing in the message corpus reaches past the marker dialect except code.**
+  Of 548 message bodies, 200 carry a backtick span and **zero** carry a table,
+  fence or markdown link without also carrying one. So candidate (1) needed
+  exactly one addition to cover its corpus, not a re-think — and that addition is
+  the thing Miky asked for on 2026-08-21.
+- **The heaviest producer is a program.** Agents wrote 322 of 548 messages and
+  198 of the 200 code spans; the two humans wrote 224 messages between them with
+  2 code spans. Which means the format's primary author has no editor, and a
+  design that assumes a composer serialises it is designing for the minority
+  case.
+
+**What it costs**, stated rather than implied:
+
+- **Two models is two of everything below the inline layer** — two parsers, two
+  renderers, two sets of tests, permanently. That is the price of the split, and
+  it is not recovered later.
+- **19 tables and 20 fences in root descriptions** are marker text under §13.4's
+  rule and stay literal until an author re-edits that description into blocks.
+  There is no batch fix; re-editing is the only path, and for a description
+  nobody edits again there is no path at all.
+- **Tables in messages never render.** 14 exist. §13.2 excludes them on purpose —
+  the message model has no block layer — so they are permanently literal.
+- **`content` becomes opaque for rich text.** A reader that does not parse JSON
+  gets a blob where it used to get readable text. That is the cost of (3) and it
+  was known; block addressability is what is bought with it.
+- **The fallback never expires.** Every reader carries the marker-text path
+  forever, for both models. This is the steady state, not a migration.
 
 ---
 

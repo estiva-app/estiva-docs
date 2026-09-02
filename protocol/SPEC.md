@@ -995,3 +995,188 @@ below it: a blob is not a table, whatever any of these say.
 
 An app that genuinely needs more than 64 KiB of app-private state has outgrown
 layer 2 rather than found a limit to raise — see the layer-3 test in §12.1.
+
+---
+
+## 13. Content: messages and rich text
+
+*Added 2026-09-02 (RIC-1). Nothing in §1–§12 specified content formatting. A grep
+of this document for markdown, rich text or formatting returned nothing, while
+731 published bodies already carried it — so what existed was not a lenient
+standard, it was three private ones.*
+
+> **This section is not uniformly descriptive, unlike the rest of this document.**
+> §13.2 describes what three producers already write and two renderers already
+> read, measured. §13.1's `code` mark and `nostr:` reference, and the whole of
+> §13.3, are **specified ahead of an implementation** — no app writes a block
+> document today. The reasoning, the alternatives and what the choice costs are
+> in [RFC 0.4 §14.5](RFC-0.4-WORKSPACE.md).
+
+**There are two content models and they are independent.** A message is an event:
+its content is fixed the moment it is signed. A rich text field is a field on an
+object: it is replaced when the object is. Building one mechanism for both
+produces something that serves neither.
+
+| | message | rich text field |
+| --- | --- | --- |
+| carried in | `content` of a `kind:9` or `kind:1111` | `content` of a root event, or the `value` tag of a change |
+| lifetime | immutable; an edit is another event | replaced with its object |
+| wire form | **marker text** (§13.2) | **a JSON block document** (§13.3) |
+| inline vocabulary | §13.1 | §13.1 |
+| addressable sub-unit | the message | **the block** |
+| attachments | appended below, as `imeta` tags | placed inline, as a block |
+| reactions, threading | yes | no |
+
+The two share the inline vocabulary of §13.1 and nothing else. An app MUST NOT
+read a message body as a block document, and MUST NOT read a block document as
+marker text.
+
+### 13.1 The inline vocabulary
+
+Six marks, and they mean the same thing in both models. An app MUST NOT extend
+this set privately: this is wire-visible content, so by §10's test — *would the
+relay notice if two apps disagreed?* — the vocabulary belongs to the protocol and
+its parser and serialiser belong in `@estiva-app/protocol`.
+
+| mark | in a message (§13.2) | in a block document (§13.3) |
+| --- | --- | --- |
+| bold | `**text**` | `{"type":"bold"}` |
+| italic | `*text*` | `{"type":"italic"}` |
+| underline | `__text__` | `{"type":"underline"}` |
+| code | `` `text` `` | `{"type":"code"}` |
+| link | `[label](url)` | `{"type":"link","attrs":{"href":…}}` |
+| reference | `nostr:npub…` / `nostr:naddr…` | `{"type":"reference","attrs":{"uri":…}}` |
+
+Bold, italic and underline MAY combine on one run. `code` MUST NOT combine with
+any other mark, and its content MUST NOT be parsed for further marks.
+
+A **reference** is NIP-27: a `nostr:` URI naming a pubkey, an event or an
+address. It is the only specified way to write a mention, because it is the only
+form that is resolvable by an app that does not hold the writer's directory and
+that survives a rename. A message that mentions a person MUST also carry the
+corresponding `p` tag; the tags say who was mentioned, the URI says where in the
+text. A reader that cannot resolve a reference MUST render the URI's own label
+or its shortened form, never blank.
+
+A link's `href` MUST use the `http`, `https`, `mailto` or `nostr` scheme. A
+reader MUST refuse any other scheme and render the link as text.
+
+### 13.2 Message content: the marker dialect
+
+A message body is plain UTF-8 text. Structure comes from line prefixes and paired
+inline markers. **This is the form already on the wire** — it is specified here
+rather than replaced, because 548 published messages are written in it and none
+of them can be rewritten.
+
+**Line prefixes.** At the start of a line, each requiring its trailing space:
+
+| prefix | block |
+| --- | --- |
+| `# `, `## ` | heading, level 1 and 2 |
+| `> ` | quote |
+| `- `, `• ` | bullet item |
+| `1. ` | numbered item |
+| ```` ``` ```` | fenced code, optionally followed by a language name; closed by a line of ```` ``` ```` |
+
+**Inline markers.** `**bold**`, `*italic*`, `***bold italic***`, `__underline__`,
+`` `code` ``, `[label](url)`, and a bare `nostr:` URI.
+
+**Two rules decide whether a marker is a marker**, and they are what keep already
+published text rendering unchanged:
+
+1. the text between a marker pair MUST NOT begin or end with whitespace — `** x**`
+   is literal;
+2. an opening marker MUST NOT follow an alphanumeric and a closing marker MUST NOT
+   precede one — `2*3*4` is literal.
+
+A reader MUST render an unmatched marker literally, and MUST NOT infer any
+construct not listed above. In particular `###` and deeper, tables, setext
+headings, images and reference-style links are **not** in this dialect and MUST
+render as the characters they are.
+
+`code` and fenced code are the only additions this section makes to what three
+producers were already writing. They are additions rather than a new dialect
+because backticks are the single most common construct in the message corpus and
+no renderer has ever handled them (§13.4).
+
+### 13.3 Rich text content: a block document
+
+A rich text field is a JSON document:
+
+```jsonc
+{
+  "type": "doc",
+  "content": [
+    { "type": "paragraph", "id": "b1", "content": [ { "type": "text", "text": "Hello" } ] },
+    { "type": "codeBlock", "id": "b2", "attrs": { "language": "ts" }, "content": [ … ] }
+  ]
+}
+```
+
+**Every block MUST carry an `id` that is unique within the document**, and an
+implementation MUST keep a block's id stable across every edit that does not
+replace the block. The id is what makes a block addressable: a reference to one
+paragraph is the object's address plus a block id, which is what §6 anchoring
+binds to and the reason this model is JSON rather than text.
+
+Block types: `paragraph`, `heading` (`attrs.level` 1–3), `bulletList`,
+`orderedList`, `listItem`, `blockquote`, `codeBlock` (`attrs.language`), `table`,
+`horizontalRule`, `attachment`, and `widget` — which names a widget from §7.5 and
+follows that section's fallback chain.
+
+A block's inline content is an array of `{"type":"text","text":…,"marks":[…]}`
+nodes using §13.1's vocabulary. A reader encountering an unknown block type MUST
+render that block's inline text rather than dropping it, and MUST NOT drop the
+block silently.
+
+The document is JSON in `content`, so §12.3's 256 KiB ingest cap applies to its
+serialised form.
+
+### 13.4 Reading what is already published
+
+Measured against production on **2026-09-02**:
+
+| corpus | bodies | carrying structure | not covered by §13.2 |
+| --- | --- | --- | --- |
+| messages (`kind:9`, `kind:1111`) | 548 | 261 (48%) | 0 |
+| root descriptions (`kind:30850`, `kind:30851`) | 157 | 135 (86%) | 19 tables, 20 fences |
+| description changes (`kind:1851`) | 26 | 21 (81%) | 5 tables |
+| **total** | **731** | **417** | |
+
+**None of them move.** Roots are replaceable by their author alone; messages and
+changes are not replaceable at all; and REW-11 established that rewriting stamps a
+`created_at` the relay will not backdate. The corpus was 487 bodies five days
+before this section was written, so it also grows — the set that must keep
+working is not a fixed backlog to clear.
+
+**The rule: the absence of a declaration is a declaration.**
+
+- An event whose body is a block document MUST carry a
+  `["content-format", "estiva-blocks-1"]` tag.
+- A reader MUST treat a body with no `content-format` tag as §13.2 marker text —
+  **in both models, permanently.** This is not a migration window.
+- A reader MUST NOT decide the format by inspecting the body. A legacy
+  description that happens to begin with `{` is marker text, because it carries
+  no tag.
+- A writer MUST NOT rewrite a published body in order to add the tag.
+
+**The format is per event, not per object.** A description created as marker text
+and later edited into blocks is a root with no tag and a change with one; the
+fold takes the change's value, tag and all. An app MUST read the tag from the
+event it took the value from, never from the object's root.
+
+This is `emits.alsoRead` (§7.3) one level down and exists for the same reason:
+published events are immutable and consumers upgrade at different times. It is
+the third application of that pattern, after `alsoRead` itself and §7.2's
+`tag: ["name", "title"]`.
+
+### 13.5 Rendering, which is where the safety lives
+
+A body is untrusted text written by other people in other apps. A reader MUST
+build its output by constructing nodes from the parsed model, and MUST NOT
+produce markup from the body by string interpolation — not for the marker
+dialect, not for a block document, and not for a fenced block's contents.
+
+An app MAY render any body as plain text. Doing so is conformant: what this
+section forbids is *interpreting* a body as markup, not declining to format it.
+
