@@ -1020,9 +1020,12 @@ issue creation is a submission.
 it.** Drawing a control that cannot be completed is the failure mode this whole
 section exists to avoid, and it is the same rule §13.3 applies to widgets.
 
-#### The open question: whose key signs
+#### Decided: the person's key signs — 2026-09-02
 
-This is the part to decide, and it is not an engineering detail.
+Recorded with the reasoning, and the delegation it requires is specified below.
+
+The alternative was the owning app's service identity. It is rejected because of
+what it costs, not because it is hard.
 
 | signs | *"who filed this?"* | the relay's permission check |
 | --- | --- | --- |
@@ -1045,15 +1048,64 @@ Service identities are not exotic here — Estiva ID already issues them, and th
 agent uses one. The question is not whether they exist but which objects they
 should author.
 
-**A starting position, offered rather than settled:** the person's key where the
-object has a *who* — an issue, a comment, a status change — and a service
-identity where the object is genuinely the app's own, such as a generated index
-or a digest. Which implies the manifest may need to declare that too, and
-whether that third declaration earns its place is itself open.
+A service identity is still the honest author where an object is genuinely the
+app's own — a generated index, a nightly digest. Nothing here forbids that; it
+is simply not what an action invoked by a person produces.
 
-Signing as the person from another app needs a delegation Estiva ID does not
-have today: Peek would be asking Ship to act for a person, and Ship would need to
-prove the person asked. Handing over an access token is not that.
+#### The delegation, and why the mechanism is already half-built
+
+Estiva ID issues a JWT whose **`sub` is the person's pubkey** and whose **`aud`
+is the app**, and `/sign` reads `aud` to select which signing policy applies. So
+"let Ship act for this person" is not a new concept — it is **a second token
+with the same `sub` and a different `aud`**, which is
+[OAuth 2.0 Token Exchange (RFC 8693)](https://www.rfc-editor.org/rfc/rfc8693).
+Both halves exist; there is simply no grant that produces one.
+
+```
+POST /token
+  grant_type     = urn:ietf:params:oauth:grant-type:token-exchange
+  subject_token  = <the token Peek already holds for this person>
+  audience       = estiva-ship
+  scope          = action:add-issue        (optional, narrows further)
+
+  -> a token with sub = the same pubkey, aud = estiva-ship, short-lived
+```
+
+Peek hands **that** to Ship's endpoint — never its own. Ship calls `/sign` with
+it; `/sign` reads `aud: estiva-ship`, applies Ship's kind ceiling, and signs with
+the person's key, because it *"always sets `pubkey` from the authenticated
+user's key — a caller does not choose whose signature it gets."* Ship publishes.
+
+What that yields, in order of how much it matters:
+
+- **The event is signed by the person.** Attribution is proven rather than
+  asserted, and the relay's membership check works unchanged, because the key it
+  inspects is the person's.
+- **Peek never signs a Ship kind.** The ceiling that has been raised four times
+  — `1851`, `9101`, `9002`, `30851` — stops growing, because each app signs only
+  what it owns. This is the clearest evidence the design is right: a recurring
+  failure disappears rather than being caught earlier.
+- **No credential is handed over.** The exchanged token is audience-restricted to
+  one app and can be narrowed to one action.
+
+**What Estiva ID must add**
+
+1. The grant type, and a short TTL for what it mints — seconds to minutes, not
+   the session's.
+2. **Who may exchange for whom.** A per-app `allowed_audiences`, default deny, in
+   the same spirit as `allowed_kinds` and for the same reason: a ceiling that is
+   too wide is invisible until it is abused.
+3. Nothing in the audit trail. `audit_events.actor_client_id` already exists, so
+   the model already anticipates an actor distinct from the subject.
+
+**The simpler alternative, recorded rather than dismissed.** Ship's endpoint
+could return the finished event *unsigned*, and Peek could sign and publish it.
+That needs no change to Estiva ID at all. It is weaker in three ways: Peek still
+needs the kind in its ceiling, Ship cannot actually enforce anything because Peek
+may alter the event before signing it, and Ship never learns whether what it
+prepared was published — so any side effect has to be reconciled later. It is
+the right fallback for an owner with no backend to speak of, and it is not what
+an app with invariants should use.
 
 #### What this makes moot
 
@@ -1066,9 +1118,13 @@ this section.
 
 #### What must be decided before this is accepted
 
-1. **Whose key**, and whether the manifest declares it per action.
-2. **Delegation** — how an owner proves the person asked, without holding their
-   credential.
+1. **Whether the person consents per app pair, or an allowlist is the policy.**
+   Both apps are first-party in one workspace today, so an admin-set
+   `allowed_audiences` is proportionate; a third-party app in the same workspace
+   is the case that changes the answer.
+2. **Whether `scope` narrows to one action or one kind.** Per action is more
+   precise and makes the manifest and the token agree; per kind is what `/sign`
+   already enforces and needs no new vocabulary.
 3. **What a consumer does when a submission fails.** A published event either
    reaches the relay or does not. A submission can be refused with a reason, and
    that reason is another app's prose appearing in this app's interface.
