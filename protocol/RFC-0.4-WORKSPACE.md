@@ -463,7 +463,7 @@ Leaf remains the app that will stress anchoring hardest — a document editor re
 
 1. **Kind numbers — deliberately unassigned.** A folder needs a command kind and a relay-signed state kind. Buzz's convention is `9xxx` for commands and `39xxx` for state, but those ranges are NIP-29's, and Estiva's own block (`30850`–`30899`) has no convention for relay-signed state. **If this goes upstream as a NIP (§10.1) the numbers should be allocated there, not squatted here first.** Whichever way it goes, run the allocation check NIP-MP modelled — the upstream NIPs table, nostrbook.dev, and our own registry — and remember both external registries are advisory rather than authoritative.
 
-2. **Component anchoring** (§6). ~~Needs a real editor to choose against.~~ **Unfrozen in 0.4.** The three candidate approaches are unchanged and still differ in fragility, but the test bed is Ship's description field rather than Leaf, so this is now work rather than a question waiting on an app that does not exist. See §6 and §11.3.
+2. ~~**Component anchoring** (§6).~~ **Answered 2026-09-02 (RIC-7)** and moved to the answered list below. An anchor is the object's address plus a §13.3 block id, specified in [SPEC §13.6](SPEC.md).
 
 3. **What happens to Peek's existing topics.** They are channels with no folder. Do they gain membership retroactively, who decides which folder, and what happens to one nobody claims?
 
@@ -502,6 +502,7 @@ Leaf remains the app that will stress anchoring hardest — a document editor re
 - **Are a message and a rich text field one content model** — no, two, and the production corpus already shows two dialects. They share only their inline layer. §14.
 - **Which content format** — the split §14.5 recommended: marker text for messages, a JSON block document for rich text, one shared inline vocabulary. Decided 2026-09-02 (RIC-1) and specified in [SPEC §13](SPEC.md), against a corpus re-measured at **731** published bodies — 487 was five days stale, which is itself part of the answer. §14.5.
 - **Must §6 wait for Leaf** — no. A block is a component, and Ship's description field is a test bed that exists today. §6, §11.3.
+- **How a comment anchors to a component** *(was §12's question 2, frozen in 0.3)* — the object's address plus the block id §13.3 requires, carried in a `block` tag on the comment. The hard half was never the happy path: an anchor outlives what it points at, so [SPEC §13.6](SPEC.md) makes a reader distinguish *detached* from *unanchored* rather than letting a deleted paragraph quietly turn a remark about it into a remark about the whole object. RIC-7.
 - **Closed or open widget vocabulary** — neither alone: slots closed, widgets open with a fallback chain terminating in a closed type. §13.3.
 - **Does the intelligence/memory layer belong in this RFC** — no. Deliberately excluded, with its trigger recorded in the roadmap: the first time a second app's harness needs to read another app's memories, which is [SPEC §12.1](SPEC.md)'s first question flipping. Peek's highlights are an experiment and are **not** to be published to an append-only kind while the model is unsettled.
 
