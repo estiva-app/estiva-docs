@@ -20,21 +20,23 @@ Last updated 2026-09-02. Not published to the docs site (`site/nav.mjs` is opt-i
 
 ## Where things stand
 
-**54 open of 125**, across eleven active projects. Four projects are archived — `ship projects` reports how many it hid rather than silently dropping them (AGE-7).
+The active projects, and what each one is *for*. **The counts are deliberately not here** — ask Ship, which is the only place they can be right: `ship issues --project "…"` for what is open, `ship projects` for the total and for how many archived projects a listing hid (AGE-7).
 
-| project | open | what it is |
-| --- | --- | --- |
-| **DMs on Nostr** | 10 / 11 | Move Peek's DMs off Convex onto the relay. Gated on one cheap probe |
-| **Projection layer** | 6 / 13 | Render and act on another app's objects. *Mostly already built — this is extraction and extension* |
-| **Cross-app read state** | 1 / 14 | Read/unread becomes a property of the person, not the app. **Shipped and verified against production** — the one open ticket is CRO-10, a parked spike. See [READ-STATE.md](operations/READ-STATE.md) |
-| **Shared foundation packages** | 9 / 19 | The packages a third app installs |
-| **Intelligence in Peek** | 7 / 7 | Cmd+K: every action an app declares, offered where the conversation is. *MS1 already built — see below* |
-| **Ship: Feedback & Bugs** | 5 / 13 | |
-| **Peek: Feedback & Bugs** | 2 / 17 | |
-| **Conversation standard** | 8 / 8 | Comments the third app adopts rather than rebuilds |
-| **Rich text and blocks** | 3 / 3 | *Thin on purpose — see the format decision below* |
-| **Other** | 2 / 4 | `estiva-docs` tooling and one-offs belonging to no track. Unarchived 2026-09-01 — it was hidden while holding open issues |
-| **Agent / Steer** | 1 / 16 | The CLI, MCP server and Claude Code plugin |
+They used to be here, one `open / total` per row, and they drifted in both directions between hand-refreshes — at one point the header disagreed with the very table beneath it. Please do not add them back (OTH-4).
+
+| project | what it is |
+| --- | --- |
+| **DMs on Nostr** | Move Peek's DMs off Convex onto the relay. Gated on one cheap probe |
+| **Projection layer** | Render and act on another app's objects. *Mostly already built — this is extraction and extension* |
+| **Cross-app read state** | Read/unread becomes a property of the person, not the app. **Shipped and verified against production** — what is left is CRO-10, a parked spike. See [READ-STATE.md](operations/READ-STATE.md) |
+| **Shared foundation packages** | The packages a third app installs |
+| **Intelligence in Peek** | Cmd+K: every action an app declares, offered where the conversation is. *MS1 already built — see below* |
+| **Ship: Feedback & Bugs** | |
+| **Peek: Feedback & Bugs** | |
+| **Conversation standard** | Comments the third app adopts rather than rebuilds |
+| **Rich text and blocks** | *Thin on purpose — see the format decision below* |
+| **Other** | `estiva-docs` tooling and one-offs belonging to no track. Unarchived 2026-09-01 — it was hidden while holding open issues |
+| **Agent / Steer** | The CLI, MCP server and Claude Code plugin |
 
 **Both gates are closed.** Gate 1 (Estiva ID capabilities) closed 2026-08-25; Gate 2 (where packages live and how they publish, [ADR 0002](decisions/0002-foundation-packages.md)) closed 2026-08-27. **Nothing in the programme is gate-blocked any more.**
 
@@ -178,7 +180,7 @@ Detail lives in the linked documents; this is the index. Rule 3 is why these lin
 | **SHA-9** — the research | Two of its four topics were **already built**; RFC 0.3 listed one as an unsolved gap. The inventory was stale, not the system. See RFC 0.4 §13 |
 | **RFC 0.5** — the association brainstorm | **A relay-signed object cannot declare anything**, so symmetric linking is impossible and the effect has to be one-sided-declaration / two-sided-effect. That turned out to *solve* authorization rather than complicate it — you may only declare on a file you can sign — which is why the hard permission question could be deferred instead of guessed. Also: working two edge cases before writing changed the text twice |
 | **AGE-7** | A listing that filters must say what it filtered. `ship projects` now reports its archived count instead of silently returning nine |
-| **Cross-app read state** (13 of 14) | **Seven defects, none caught by review or a green suite** — every one in the seam between correct code and whatever was meant to invoke it: a hook exported and never mounted, a 5s poll into a rate limit, a rate-limited decrypt read as an empty slot, five flush paths that rescheduled nothing, two slot-bloat bugs, and a debug panel with no button. That is why both apps now ship `window.__readState()`. Also: **observing read state changes it** — opening a topic to look at an indicator advances the container and clears what you were measuring, which cost three of four attempts at CRO-9. [READ-STATE.md](operations/READ-STATE.md) |
+| **Cross-app read state** | **Seven defects, none caught by review or a green suite** — every one in the seam between correct code and whatever was meant to invoke it: a hook exported and never mounted, a 5s poll into a rate limit, a rate-limited decrypt read as an empty slot, five flush paths that rescheduled nothing, two slot-bloat bugs, and a debug panel with no button. That is why both apps now ship `window.__readState()`. Also: **observing read state changes it** — opening a topic to look at an indicator advances the container and clears what you were measuring, which cost three of four attempts at CRO-9. [READ-STATE.md](operations/READ-STATE.md) |
 
 Two documents sit under all of it:
 
