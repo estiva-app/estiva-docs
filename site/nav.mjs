@@ -18,8 +18,8 @@
  *                                 levers. None of this belongs on a public host
  *   operations/SILENT-FAILURES.md internal debugging lore naming container
  *                                 names and paths on the box
- *   operations/READ-STATE-CUTOVER.md  a runbook with a rollback window and a
- *                                 devtools diagnostic; internal by the same test
+ *   operations/READ-STATE.md      what shipped, what to watch, and the way back;
+ *                                 names a deployed table and a devtools diagnostic
  *
  * Both stay in the repo, which is where the people who need them already are.
  */
@@ -83,7 +83,7 @@ export const INTERNAL = new Set([
   // A cutover runbook: what people are told, the day-one checks, and the
   // rollback window. Names the deployed Convex table and a devtools diagnostic,
   // and is only meaningful for the weeks around the change.
-  'operations/READ-STATE-CUTOVER.md',
+  'operations/READ-STATE.md',
   // The site's own runbook — it names the box, its SSH account and the pull
   // token. Publishing the instructions for the gate alongside the gate would
   // be its own kind of funny.

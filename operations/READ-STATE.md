@@ -1,0 +1,135 @@
+# Read state follows the person — what shipped, and what to watch
+
+**CRO-12.** What people are told, what to check, and the way back.
+
+Updated 2026-09-02. **There was no cutover day**, and that is the main thing this
+document says differently from its first draft.
+
+---
+
+## What happened, and why there was nothing to switch on
+
+CRO-7 was written expecting two render paths — Convex-native unread, and unread
+derived from the merged relay state — with a day when one replaced the other.
+
+That day never came, because CRO-6 did not build a second path. It fed the merge
+into the store the UI already read: `applyRelayReadState` writes into
+`readState`, and `unread.summary` reads `readState` through `watermarks()`. The
+same table. So Peek began rendering merged read state the moment CRO-6 deployed,
+with no flag and no switch.
+
+**Do not "finish the cutover" later.** The obvious remaining move — removing the
+direct Convex write so the relay is the sole writer — is a regression. It would
+cost the instant dot-clears-on-read feedback and gain nothing: the cache is the
+union of local writes and the merge, which is what the merged state *is*.
+
+---
+
+## The note to send
+
+Present tense, because it is already true. Send it once; there is no date to
+coordinate with.
+
+> **Unread follows you around now.**
+>
+> Read a conversation in Peek and it stops being unread in Ship, and on your
+> other devices. Same the other way. It used to be per-app, which is why the
+> same thing could look unread in one place and read in another.
+>
+> Two things worth knowing:
+>
+> - **There is no "mark as unread."** The protocol cannot express it — a read
+>   marker only ever moves forward. If you want to come back to something, star
+>   it or leave yourself a note.
+> - **Reading a thread is not reading the conversation.** Opening one reply
+>   thread clears that thread. The conversation stays unread until you have been
+>   in it. That is deliberate.
+>
+> In Ship it shows as a **"new since you last read this"** divider inside a
+> conversation, rather than dots in the lists.
+>
+> If something looks wrong — particularly anything showing as **read when you
+> have not read it** — say so, and say which app and roughly when. That
+> direction is the one we cannot see from here.
+
+The last line is the point of the note. Everything else is context.
+
+---
+
+## What was actually verified
+
+Against production, not a fixture, under CRO-9:
+
+| | |
+| --- | --- |
+| Read in Ship → clears in Peek | ✅ isolated to the `thread:` grain, container provably untouched |
+| Read in Peek → clears in Ship | ✅ the divider disappeared without a reload |
+| Reading one thread | ✅ clears that thread only; the container stays unread |
+| Reading a container | ✅ clears its top-level messages, newer replies stay unread |
+| Second browser profile | ✅ converged, and appeared as a distinct slot |
+| Monotonicity | ✅ nothing went backwards across repeated runs |
+
+One check was **dropped**: no container has a marker older than the 90-day
+horizon, so there is nothing to test the aged-out path against. Synthesising one
+would be an irreversible write to real read state, and the behaviour is covered
+by CRO-6's tests including a control. The premise was also narrower than
+believed — see below.
+
+---
+
+## Things that are easy to get wrong later
+
+**The horizon bounds an event's `created_at`, not the age of its markers.** A
+live installation republishes its slot on every read, so that slot is fetched and
+carries markers of any age — measured at 1022 days. The horizon only drops
+installations that have **stopped publishing**. Peek's cache is justified by that
+narrower case, not by "a container read three weeks ago reads as unread", which
+does not happen.
+
+**Absence means unread** (SPEC §11.6), and Ship deliberately does not honour it:
+a container with no marker shows no divider, so Ship's years of history did not
+light up. That is a decision, not a bug.
+
+**A slot is what one installation read.** Not the union. Three separate bugs came
+from a convenient superset being in scope and getting published — ship#62,
+ship#66, peek#103. If a slot's context count looks like "everything this person
+has ever read", something is re-absorbing.
+
+---
+
+## The way back
+
+**A code revert, with no data migration.** Convex `readState` is written by
+`useMarkRead` on every read and by `applyRelayReadState` on every merge, so its
+rows are current at all times. Nothing needs restoring.
+
+**Do not drop the `readState` table or its fields** to tidy up. Removing a field
+from a Convex validator fails the *entire* push for every row that still carries
+it, at deploy time — not at `tsc -b`, not in the suite. If something must go:
+ship a sweep, run it, confirm zero, then remove.
+
+There is no rollback *window* to state, because there was no cutover to roll
+back. What would be reverted is CRO-6, and it has been live and verified since
+2026-09-01.
+
+---
+
+## How to look at it when something seems wrong
+
+Both apps expose the same diagnostic in the browser console:
+
+```
+__readState()                    the queue, the cache, and whether the read path has run
+__readState.flush()              publish now instead of waiting on the debounce
+__readState.marker('<context>')  one context's merged value, as a date
+```
+
+`hasRun: false` means nothing on the read path has executed — that was a real
+bug three tickets running. `pending` non-empty with a named `lastAttempt` means a
+marker was recorded and has not reached the relay, and the outcome says which
+gate stopped it.
+
+**Do not judge this from the UI alone.** A cleared indicator is not proof a
+marker moved: opening a topic in Peek to look at one advances the container,
+which clears the replies under it. Three attempts at CRO-9 cleared an indicator
+for the wrong reason before that was understood.
