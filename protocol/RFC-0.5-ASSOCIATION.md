@@ -250,12 +250,28 @@ An app declares the URL shapes it uses in its manifest, alongside the `web`
 template that says how to *open* an object:
 
 ```jsonc
-"web": "https://ship.estiva.app/project/<slug>-<d>",
-"urls": [
-  "https://ship.estiva.app/project/<slug>-<d>",
-  "https://ship.estiva.app/issue/<slug>-<d>"
-]
+["web",  "https://ship.estiva.app/o/<bech32>", "naddr"]
+["urls", "https://ship.estiva.app/project/<slug>-<d>", "30850"]
+["urls", "https://ship.estiva.app/issue/<slug>-<d>",   "30851"]
+["urls", "https://ship.estiva.app/#/issue/<d>",        "30851"]
 ```
+
+*Amended at implementation.* This was drafted as manifest **content**; it is a
+**tag** on the `kind:31990` event, beside `web`, because that is where NIP-89
+puts the outbound half and a consumer reads both from the same place.
+
+**The third element is the kind**, and it is what makes this work for an app the
+consumer has never met. §7.2 says the kind comes from the path segment — true of
+the app *serving* the URL, and useless to a consumer, which has never heard of
+"issue". An app MAY omit it and a consumer then falls back to the kinds the
+manifest declares it handles, which is sound only because §7.4's measurement
+holds; naming it is cheaper and says what was meant.
+
+**The last line is not clutter.** Ship served fragment routes until SHI-16 and
+still declares them, so links already sitting in other people's messages resolve
+rather than rendering as plain text for ever. That is the same argument as
+`emits.alsoRead`, one layer up: an app that changes its routes still has to read
+what it already published.
 
 `web` is outbound — given an object, build a link. `urls` is inbound — given a
 link, recover the object. They are usually the same strings and are separate
@@ -273,10 +289,17 @@ outcome — it is a link, and nothing claims otherwise.
 
 ### 7.6 What this requires, and what it does not solve
 
-**Paths, not hashes.** Ship uses hash routing because it is served as static
+**Paths, not hashes.** Ship used hash routing because it is served as static
 files with `try_files … =404`; a real path 404s on reload. Path URLs need an
 `index.html` fallback in each app's nginx config. This is small and it is
 infrastructure, so it is named rather than assumed.
+
+*Done, 2026-09-03 (SHI-16).* Ship serves `/project/<slug>-<d>` and
+`/issue/<slug>-<d>`, the fallback is in `deploy/nginx.conf`, and a deep path
+returns 200 on reload rather than 404. Links published under the old hash shape
+still resolve, and are declared in `urls` so consumers resolve them too. **Both
+apps now implement §7**, which is what moved this section from a proposal to a
+description.
 
 **Peek is the reference implementation.** *Corrected at acceptance.* This read
 "Peek has no object URLs at all… the prerequisite rather than a later polish",
