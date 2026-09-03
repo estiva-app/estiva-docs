@@ -1,6 +1,11 @@
 # RFC 0.5 — Association: how files in different apps relate
 
-- **Status:** draft, not accepted
+- **Status:** draft — **§7 (Addressing) accepted 2026-09-03**, §1–§6 still draft
+
+  §7 is separable and was accepted on its own: it answers *how is a file
+  addressed*, which the rest of this document does not depend on, and it is the
+  only part with an implementation. Peek has served §7.2's grammar since PEE-14.
+  The association tiers are a larger question and stay open.
 - **Date:** 2026-08-31
 - **Builds on:** [RFC 0.4](RFC-0.4-WORKSPACE.md), which is accepted and unchanged by this document
 - **Supersedes:** *nothing.* A higher number here does not retire 0.4 — see the
@@ -171,7 +176,16 @@ grammar rather than decoration. `/project/` means `30850` to the app serving it.
 
 **The slug is decorative and load-bearing for humans only.** Renaming the object
 changes the slug and the link still resolves, which is the property that keeps
-old links working. A consumer MUST ignore everything before the final uuid.
+old links working. A consumer MUST ignore **the slug** — that is, everything
+between the `<type>` segment and the final uuid.
+
+*Amended at acceptance.* This read "MUST ignore everything before the final
+uuid", which contradicts the paragraph above it: the host and the `<type>`
+segment are exactly what select the app and the kind, and a consumer that
+ignored them would resolve `evil.example.com/issue/<uuid>` as a Ship issue. The
+sentence meant the slug. It is worth being exact, because the parser a reader
+writes from the loose wording is the insecure one, and §7.5's matching depends
+on the host being significant.
 
 ### 7.3 Why not the naddr, which is the obvious first answer
 
@@ -204,8 +218,23 @@ Measured on production, 2026-08-31:
 | `30851` Issue | 156 | 156 | 0 | **0** |
 | `39000` Topic | 64 | 64 | 0 | **0** |
 
+Re-measured 2026-09-03, at acceptance, with the corpus 25% larger:
+
+| kind | events | distinct `d` | non-uuid `d` | `(kind, d)` shared by more than one author |
+| --- | --- | --- | --- | --- |
+| `30850` Project | 15 | 15 | 0 | **0** |
+| `30851` Issue | **195** | 195 | 0 | **0** |
+| `39000` Topic | 70 | 70 | 0 | **0** |
+
 So a `#d` query returns exactly one object, and the URL is 36 characters shorter
-than it would otherwise be.
+than it would otherwise be. Verified directly rather than inferred:
+`{kinds: [30851], "#d": ["<uuid>"]}` against production returns one event.
+
+**One property beyond what this section claims**, measured at the same time and
+worth recording because it bounds the damage from a malformed link: **no `d` is
+reused under two different kinds** — 0 across all 280 records. So a link whose
+`<type>` segment is wrong resolves to nothing rather than to a different
+object.
 
 **This adds a second reason to a rule that already exists, and the rule is now
 load-bearing in a new place.** §4.3 requires a uuid `d` so that a rename cannot
@@ -249,14 +278,33 @@ files with `try_files … =404`; a real path 404s on reload. Path URLs need an
 `index.html` fallback in each app's nginx config. This is small and it is
 infrastructure, so it is named rather than assumed.
 
-**Peek has no object URLs at all.** No routing, no per-topic path: selecting a
-topic does not change the address bar. Everything above is unreachable for Peek
-until it has them, which makes it the prerequisite rather than a later polish.
+**Peek is the reference implementation.** *Corrected at acceptance.* This read
+"Peek has no object URLs at all… the prerequisite rather than a later polish",
+which was true when it was written and is not now: PEE-14 shipped
+`/topic/<slug>-<channel-uuid>`, which is §7.2's grammar, with the Peek-private
+`/topics/<id>` links redirecting to it once the topic resolves.
 
-**Messages still have no URL.** A `kind:9` has no `d`, so it has no address and
-no place in this grammar — the same gap [RFC 0.4](RFC-0.4-WORKSPACE.md) §13.6
-records for projections. Linking to a message needs the `nevent` form and is
-deliberately not solved here.
+That changes this document's standing more than any other correction here. §7 is
+not an unimplemented proposal — half of it is deployed, and the deployed half is
+what the grammar was checked against. What remains is Ship, whose blocker is the
+nginx fallback named above rather than anything in this section.
+
+**A message is addressed by `nevent`, outside this grammar.** A `kind:9` has no
+`d`, so it has no address and no place in §7.2 — the same gap
+[RFC 0.4](RFC-0.4-WORKSPACE.md) §13.6 records for projections.
+
+*Amended at acceptance.* This read "deliberately not solved here", which
+understated what exists: Peek's manifest already declares an `nevent` `web`
+template beside its `naddr` one, and `/o/<nevent>` already resolves. So there is
+a working answer and it is simply not §7.2's — a message is named by its event
+id because nothing else can name it.
+
+Recorded rather than deferred because the distinction now carries product
+weight: linking to a message is the thing people ask for, and "not solved" reads
+as *unknown* when the answer is *deliberately a different shape*. What is still
+open is the affordance — Peek has no way to copy a message link — and whether a
+bech32 `nevent` belongs in a shareable URL at all, given §7.3's argument against
+bech32 in URLs generally.
 
 ## 8. Deliberately deferred
 
