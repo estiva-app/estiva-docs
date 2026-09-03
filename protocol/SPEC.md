@@ -643,6 +643,42 @@ can use, has nothing to substitute for `<bech32>`, and renders the object while
 silently offering no way to open it. Nothing errors, and the omission is
 invisible from an app whose objects are all addressable.
 
+### 7.7 `urls` — recovering an object from a link somebody pasted
+
+`web` is **outbound**: given an object, build a link that opens it. `urls` is
+**inbound**: given a link, recover which object it names. An app MAY declare the
+URL shapes it serves, and a consumer matches a pasted link against the shapes
+from every published `kind:31990`.
+
+```jsonc
+["urls", "https://example.app/issue/<slug>-<d>", "30851"]
+["urls", "https://example.app/#/issue/<d>", "30851"]
+```
+
+They are separate fields because they answer different questions, and because an
+app that changes its routes still has to read the links it published under the
+old ones — which is why the second line above exists in the example rather than
+being tidied away. [RFC 0.5 §7](RFC-0.5-ASSOCIATION.md) specifies the grammar
+and the reasoning; this section is the manifest surface.
+
+**The third element is the kind, and it is what makes this work for a stranger.**
+§7.2 says the kind comes from the path segment — but `/issue/` means `30851`
+only to the app serving it, and a consumer has never heard of "issue". An app
+MAY omit it, in which case a consumer falls back to the kinds the manifest
+declares it handles; that is sound only because a `d` is a v4 uuid and is not
+reused across kinds, so naming the kind is cheaper and clearer.
+
+**A consumer MUST match the host and the `<type>` segment, and MUST ignore only
+the slug.** Matching the trailing uuid alone resolves any site's URL as this
+app's object, which is a way of rendering an attacker's chosen content inside
+someone's conversation. A link matching no published shape MUST render as an
+ordinary link — it is one, and nothing should claim otherwise.
+
+**This is the projection layer's inversion applied to links**: the owner says
+what its URLs look like, the consumer decides whether to draw a widget. No
+central registry, no per-app integration, and no service that can go down and
+take every published link with it.
+
 ---
 
 ## 8. Registering a kind
