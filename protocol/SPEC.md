@@ -1204,3 +1204,67 @@ dialect, not for a block document, and not for a fenced block's contents.
 An app MAY render any body as plain text. Doing so is conformant: what this
 section forbids is *interpreting* a body as markup, not declining to format it.
 
+
+### 13.6 Anchoring a comment to one block
+
+*Added 2026-09-02 (RIC-7). This is the answer to RFC 0.4 §6, and the reason
+§13.3 requires a block id at all.*
+
+A comment MAY name a single block of the object it addresses, by carrying that
+block's id in a `block` tag:
+
+```jsonc
+{
+  "kind": 1111,
+  "tags": [
+    ["A", "30851:<pubkey>:<d>"], ["K", "30851"], ["P", "<pubkey>"],
+    ["a", "30851:<pubkey>:<d>"], ["k", "30851"], ["p", "<pubkey>"],
+    ["block", "8373a025427f"],
+    ["h", "<folder>"]
+  ],
+  "content": "this table is out of date"
+}
+```
+
+The address says which object; the `block` tag says which part of it. The id is
+§13.3's — unique within the document and stable across every edit that does not
+replace the block.
+
+**A `block` tag is meaningful only against a block document.** Marker text has
+no addressable sub-unit (§13.1), so an anchor on an object whose body is marker
+text does not resolve and never will. That is not a defect to repair: it is what
+"two content models" means, and it is why §13.3 is JSON.
+
+#### Four states, and a reader MUST tell them apart
+
+Resolving an anchor has four outcomes, and **collapsing any two of them is the
+failure this section exists to prevent**:
+
+| | when | what a reader owes the person |
+| --- | --- | --- |
+| **unanchored** | no `block` tag | nothing — it is a comment about the whole object |
+| **resolved** | the tag names a block that is present | show what it points at |
+| **unaddressable** | the body is not a block document | say the comment refers to a part of something that has no parts |
+| **detached** | the tag names a block that is gone | **say so** |
+
+**A reader MUST NOT render a detached anchor as if the comment were
+unanchored.** The two look identical on screen and mean opposite things: one is
+a remark about the object, the other is a remark about a paragraph somebody has
+since deleted. A reader that cannot tell them apart silently converts the second
+into the first, and nothing reports it.
+
+This is the same discipline §7.5 applies to an unknown widget and §13.3 to an
+unknown block type, for the same reason each time: **an absence that renders as
+an ordinary presence is indistinguishable from correctness.**
+
+#### An anchor is expected to break
+
+A block can be deleted, split, or merged by somebody who never saw the comment,
+and a description is replaced wholesale on every edit. An implementation
+reconstructing blocks from text carries a further limit — a block that is moved
+*and* edited in one save may not be recognisable as the same block at all.
+
+So **detachment is a normal state, not an error condition.** An implementation
+MUST NOT delete a comment whose anchor no longer resolves, and MUST NOT rewrite
+the comment to drop its `block` tag: the tag is the record of what the author
+was looking at, and it is still true that they were looking at it.
