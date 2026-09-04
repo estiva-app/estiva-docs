@@ -605,12 +605,38 @@ Conformance is checkable in both directions: a producer's chain must terminate i
 
 **Two optional fields exist for that second caller, and nothing more.**
 
-| field | for |
-| --- | --- |
-| `description` | prose aimed at a machine, distinct from `label`, which is a button caption |
-| `effect` | `safe` \| `writes` \| `destructive` — whether invoking without confirmation is acceptable |
+| field | for | read by |
+| --- | --- | --- |
+| `description` | prose aimed at a machine, distinct from `label`, which is a button caption | a caller choosing *between* actions |
+| `effect` | `safe` \| `writes` \| `destructive` — whether invoking without confirmation is acceptable | a consumer deciding whether it may |
 
-These are **fields, not a design.** The intelligence layer they anticipate is deliberately outside this RFC (see the roadmap's "not filed, and why"). They are included because adding a field now costs nothing and adding one after three apps have published manifests is a migration — the same argument `alsoRead` makes one level down.
+These were **fields, not a design.** They are included because adding a field now costs nothing and adding one after three apps have published manifests is a migration — the same argument `alsoRead` makes one level down. The intelligence layer they anticipated is deliberately outside this RFC (see the roadmap's "Not filed, and why").
+
+**That caller now exists, and the fields turned out to be exactly what it needs.** Peek's launcher selects an action from an open conversation by matching on `description` across every manifest it can resolve, and excludes an action from being proposed by reading `effect`. Taking the two seams early paid; what follows is what nobody was told.
+
+#### 13.4.1 Who reads these, and what happens when they are wrong
+
+**`description` is not shown to anyone.** It is the entire basis on which a caller decides that *this* action, out of every action every reachable app declares, is the one the conversation calls for. `label` is a caption the caller already has.
+
+| | |
+| --- | --- |
+| bad | `"description": "Add issue"` |
+| good | `"description": "File a new issue under a project, with a title and an optional description, for work somebody has agreed to do."` |
+
+The bad one is the label restated, and it is bad for a reason worth stating plainly: **it is a caption competing against sentences.** A caller weighing it against another app's three explanatory clauses picks the other app.
+
+**Nothing fails.** This is the property that makes the field dangerous to get wrong and is why it is spelled out here rather than left to be inferred:
+
+- the manifest is valid, and resolution accepts it
+- every consumer renders the action, and a person can still press the button
+- a caller choosing between actions simply never chooses this one
+- there is no error, no warning and no log
+
+An app author has no way to discover this from their own app. `actionProblems()` in `@estiva-app/interop` is exported so it can be checked before signing — a description that restates its label, or is short enough to be a caption, is reported with what to write instead. It is advisory: nothing in resolution calls it, because a weak description is a worse match rather than an invalid manifest.
+
+**`effect` is gated on, not displayed**, and its absence is not neutral. Absent, unrecognised, and published-before-the-field-existed all mean *unknown*, and unknown is read cautiously in both directions — a consumer offering only `safe` actions will not offer an action that never said, and one avoiding `destructive` ones may. A misspelling is the worst case: an unrecognised value is dropped rather than passed through, so `"write"` for `"writes"` publishes an action that silently declares nothing.
+
+**Whether a `description` is any good is the producer's responsibility and no consumer can check it.** Forty characters of nonsense passes any rule worth writing. This section is the only place that says who the audience is; an author who reads only the field table will write for a screen.
 
 **An action is an event to publish, never an endpoint to call.** *(Revisited in §13.10, which proposes a second style alongside this one. The sentence is still true of everything built to date.)* The consumer signs and publishes; the owning app has no server in the loop and cannot enforce anything. That is a property, not a gap: it is what lets a consumer act while the owner is offline. Its consequence is that **validation is an honour system**, and a consumer that skips the manifest's own vocabulary check is the one putting junk in a shared record.
 
