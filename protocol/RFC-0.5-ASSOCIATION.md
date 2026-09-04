@@ -136,15 +136,27 @@ So the real comparison is not *keep the clean authorization model or break it*. 
 
 Once the principle is conceded either way, option 4 is better on every remaining axis: the set has an address, so it can be linked to, named and versioned where a bare uuid has nowhere to put a name; removal is one edit rather than §3.1's *withdrawing every standing declaration* across records owned by several people; and there is one membership model rather than a permanent split between members that tag themselves and members that get named.
 
-Its cost is an inbox problem option 1 does not have — anyone may assert membership for objects they own none of — which makes §8's deferred *who may create a facet* urgent. One rule closes it:
+Its cost is an inbox problem option 1 does not have — anyone may assert membership for objects they own none of — which makes §8's deferred *who may create a facet* urgent.
 
-> **A facet set record is honoured only if its author can sign at least one member.**
+**Upstream has already solved this, for the same shape, and their rule is better than the obvious one.** Buzz's NIP-MP defines `kind:30621`, an addressable record grouping NIP-34 repositories by coordinate, and reaches option 4 by the same route this section did:
 
-That restores §3.1's property in the form that mattered — nobody speaks for a set they have no stake in — while keeping named membership for everything else. Example J still passes: the chat app owns the topic and names the position.
+> *Per-repository tags cannot express cross-owner grouping. If membership lived in each `kind:30617`, a project spanning Alice's and Bob's repositories would require both Alice and Bob to publish a tag naming the group. Alice cannot enroll Bob's repository; she cannot sign for his key.*
+
+Its answer to the inbox problem is **not** a restriction on who may publish one. It is a per-member read rule, which NIP-MP calls *claim authority*: anyone may publish a project naming anyone's repository, and it renders — cross-owner grouping works, which is the point of the kind. What an unauthorized grouping cannot do is **change what the member's own surface looks like**; the repository still renders as its own card as well. *"A signed assertion silently becoming control over another owner's discovery surface"* is the failure the rule exists to prevent.
+
+Adopted here, per member rather than per set:
+
+> **Anyone may publish a facet set naming any object. A member's own view merges a set's conversations only when the set's signer is authorized by that member** — the member's author, or someone the member's own record names as able to write it.
+
+That is strictly better than restricting who may create a set. A rule like *the author must be able to sign at least one member* would still let somebody who owns one member bind every other object in the set unilaterally, while blocking a legitimate third-party grouping outright. Reading authority from each member's own content gives §3.1's property back exactly where it mattered — **nobody's grouping rewrites your object's conversation without your record saying so** — and leaves the grouping itself visible to whoever wants it.
+
+Example J still passes: the chat app owns the topic and names the position, the grouping renders, and the HR tool writes nothing. The position's own surface merges the topic's conversation only if the position's record says the chat app may write it, which is the honest answer to a claim its owner never made.
 
 **What it costs, stated rather than minimised.** It is a new kind, which is a Buzz change, and *"no new kind and no Buzz change"* was the claim that made accepting this document cheap. Two things make that smaller than it first reads: a facet-set record is a plain addressable record rather than relay-maintained state — closer to Ship's `kind:30850`, which §10.1's research found was *"one line to change"*, than to the folder command and state kinds it warns will not be; and if the folder kinds go upstream (FOL-1), adding this one to that proposal is marginal rather than a second ask.
 
-**Still to decide, and deliberately not decided here:** the kind number, which is FOL-1's tail; the tag names; and whether a member may opt *out* of a set it was named into, which §8 can keep deferring until somebody wants it.
+**Still to decide, and deliberately not decided here:** the kind number, which is FOL-1's tail; the tag names; and how a member's record says who may write it — NIP-34 has a `maintainers` tag doing this job, and Estiva's records have no equivalent, so the authorized set reduces to the author until one exists.
+
+**Worth reading before implementing:** NIP-MP's fold, which is ten numbered steps and a table of required cases. Several are not obvious and each is a branch somebody would otherwise find in production — a member that resolves to nothing must render as explicitly unavailable rather than be dropped, because *"silence makes a project look smaller than its author declared"*; hiding a grouping must never hide its members; and one authorized claim among several is enough. The facet equivalents are the same shape.
 
 ## 4. The invariant: facets may not cross an access boundary
 
