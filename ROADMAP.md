@@ -2,7 +2,7 @@
 
 **Working reference. Living document.** [Estiva Ship](https://ship.estiva.app) is the source of truth for ticket detail; this is the map between them — what depends on what, what can run in parallel, and what is deliberately still undecided.
 
-Last updated 2026-09-02. Not published to the docs site (`site/nav.mjs` is opt-in) because it changes often and carries operational detail.
+Last updated 2026-09-04. Not published to the docs site (`site/nav.mjs` is opt-in) because it changes often and carries operational detail.
 
 **Everything here serves one goal: making the third major app cheap enough to build.** Leaf is that app ([ADR 0001](decisions/0001-relay-canonical-by-default.md)). When a piece of work is hard to prioritise, that is the question to ask of it.
 
@@ -12,7 +12,9 @@ Last updated 2026-09-02. Not published to the docs site (`site/nav.mjs` is opt-i
 
 1. **Aim for high-level architectural clarity.** Know the shape before building the parts. [ADR 0001](decisions/0001-relay-canonical-by-default.md) and [RFC 0.4](protocol/RFC-0.4-WORKSPACE.md) exist for that.
 
-2. **Do not force a decision that does not need making yet.** Where something is risky or genuinely unclear, name it, name the *latest responsible moment* to decide, and move on. A deferred decision with a trigger is a plan. A guessed decision is debt with interest. **In practice: if a piece of work needs a decision we have deliberately deferred, it does not get tickets yet.** Filing implementation tickets against an undecided design produces a backlog that looks like progress and is not.
+2. **Do not force a decision that does not need making yet.** Where something is risky or genuinely unclear, name it, name the *latest responsible moment* to decide, and move on. A deferred decision with a trigger is a plan. A guessed decision is debt with interest. **In practice: if a piece of work needs a decision we have deliberately deferred, it does not get *implementation* tickets yet.** Filing those against an undecided design produces a backlog that looks like progress and is not.
+
+   **Amended 2026-09-04 — work we know is coming gets a placeholder.** The rule as written was self-concealing: nothing is filed against an undecided part, so the blocked work exists only in this document's *Not filed, and why* table, and the cost of continuing to defer never appears anywhere anyone looks day to day. A placeholder is not an implementation ticket. It carries **the open options, what has already been measured, and what would decide it**, and says outright that it is not ready to build. The test is whether somebody reading Ship alone would know the work exists. The **Folders and facets** project is the first of these.
 
 3. **Learn as you go, and fold what you learn back into the architecture.** Not optional tidying — it is where the architecture comes from. Every substantial finding in this programme came from having built the previous piece, not from planning harder. The first thing to do when a project finishes is say what it taught; see [§Finished](#finished--and-what-each-one-taught).
 
@@ -35,6 +37,7 @@ They used to be here, one `open / total` per row, and they drifted in both direc
 | **Peek: Feedback & Bugs** | |
 | **Conversation standard** | Comments the third app adopts rather than rebuilds |
 | **Rich text and blocks** | *Thin on purpose — see the format decision below* |
+| **Folders and facets** | A Folder holds several files; a facet says two files are the same thing. **Placeholders only** — blocked on FOL-1 (§10.1) and SHA-13. Created 2026-09-04 under rule 2's amendment |
 | **Other** | `estiva-docs` tooling and one-offs belonging to no track. Unarchived 2026-09-01 — it was hidden while holding open issues |
 | **Agent / Steer** | The CLI, MCP server and Claude Code plugin |
 
@@ -109,6 +112,24 @@ Three things argued for taking it early, and all three held:
 
 This narrowed a standing product decision rather than ignoring it: Peek's *"no AI features"* rule (2026-07-08) now reads **on-device only**, with cloud still an open question rather than an implementation.
 
+### The folder and facet decisions, sequenced
+
+**Reviewed 2026-09-04, and it is time.** Three things get bundled under this heading and only the third is expensive, which is most of why the bundle kept getting postponed as one.
+
+| | what it is | cost |
+| --- | --- | --- |
+| **SHA-13** | Accept or amend RFC 0.5 §1–§6 | a reading session |
+| **FOL-1** | Upstream NIP proposal, or fork | a conversation |
+| **FOL-2, FOL-3** | The Folder implementation, and Peek's topic migration | the build. §11.1: probably larger than the Ship rewrite |
+
+**Do SHA-13 first, and do it soon.** It is in progress with only §7 accepted, it is cheap by its own description — no new kind and no Buzz change, because a facet is a tag on a file its own author signs — and, the part that makes this easy, **it does not depend on the Folder rework at all.** It is also now blocking something concrete rather than hypothetical: see the association row in *Not filed*.
+
+**Then FOL-1**, which is a decision rather than code and the only gate on folder tickets existing. Deciding it commits nobody to building anything.
+
+**FOL-3 stays last**, for the reason in its row: it is the only one that invalidates published data.
+
+**What made this a real question rather than a tidy-up** is in the *What a Folder is* row above. The programme has started paying for the deferral in other tracks, which is different from the deferral merely being old.
+
 ### Bugs and tooling, independent of everything
 
 PEE-7 · SHI-1, 2, 3, 4, 12 · AGE-3 · OTH-3, 4. None blocks or is blocked by the above. (`PEE-1`–`PEE-6` are **Intelligence in Peek** tickets rather than bugs — one prefix serves both projects, which is SHI-4 in miniature.) **SHI-4 (issue refs are not unique) is worth doing sooner than its size suggests** — it is why every `ship` command must be addressed by `30851:<pubkey>:<d>` rather than by ref.
@@ -148,7 +169,8 @@ Every real dependency, and nothing else. If a pair is not here, they are indepen
 | **Accept or amend RFC 0.5** | SHA-13 | Gates every association and facet ticket, the same way SHA-10 gated the projection work. Cheaper than 0.4's was — 0.5 needs no new kind and no Buzz change, because a facet is a tag on a file its own author signs |
 | **Does a facet merge comments** | RFC 0.5 §3 | **Yes** — decided 2026-08-31. Ordered by time, origin unlabelled. The competing integration merges by *copying*; every limitation it documents follows from the copy, and a read-time union has none of them |
 | ~~**Which content format**~~ | RIC-1 | **Decided 2026-09-02** — [SPEC §13](protocol/SPEC.md). Two models, one shared inline vocabulary. The compatibility story is `alsoRead`-shaped and **permanent rather than a closing window**: the corpus re-measured at **731 bodies** on the day of the decision, up from 487 five days earlier, and the growth is itself the argument for a permanent reader |
-| **Upstream proposal or fork** | RFC 0.4 §10.1 | Trigger **fired** — upstream shipped `kind:30621`, global-only, single-writer. Latest responsible moment is the first line of folder command/state code. **Now the only thing between the accepted design and folder tickets**, since §12.1 makes the kind numbers its tail. Left open at acceptance on purpose: the trigger firing makes it *easier*, not yet *forced* |
+| **Upstream proposal or fork** | **FOL-1** (RFC 0.4 §10.1) | Trigger **fired** — upstream shipped `kind:30621`, global-only, single-writer. **Now the only thing between the accepted design and folder tickets**, since §12.1 makes the kind numbers its tail. Its latest responsible moment — *the first line of folder command or state code, because that is where you either squat numbers or propose them* — is about **kind numbers** and has not arrived. See the row below for the one that has |
+| **What a Folder is** | **FOL-2, FOL-3** | **A second latest-responsible-moment, never named, and it fired 2026-09-04.** `records.folder: "identifier"` was designed against today's model — a Peek topic *is* its Folder — published as interop 0.13.0 and withdrawn in 0.14.0 within the hour on reading [RFC 0.5](protocol/RFC-0.5-ASSOCIATION.md) §1. Nothing was lost only because no manifest had declared it. The container model starts deciding things in other tracks long before any folder code exists, so *when must we know what a Folder is* is a separate question from *when must the kind numbers be allocated*, and it comes first |
 | **The reaction horizon** | CON-1 | Currently decided by an undocumented constant of 100 |
 | Who may register a widget type | RFC 0.4 §13.3 | No longer *blocking* — the fallback chain means an unknown widget always renders |
 | What happens to Convex-only DMs | DMS-7 | The relay's ±15 minute drift window means republished history cannot carry original timestamps, so migration is not free |
@@ -162,11 +184,11 @@ Held deliberately rather than forgotten.
 
 | work | why not yet | what unblocks it |
 | --- | --- | --- |
-| **Folder implementation** (RFC 0.4 §4) | the design is now accepted, but the kind numbers are deliberately unassigned and §12.1 says they should be allocated upstream *if* this goes upstream — so the numbers are the tail of §10.1 rather than a separate decision | **§10.1 decided.** That is now the only thing between here and folder tickets |
-| **The upstream NIP proposal** (RFC 0.4 §10.1/10.2) | deferred on purpose, though its trigger has now fired | the first line of folder command/state code |
-| **Association and facets** (RFC 0.5 §2, §3) | the RFC is a draft, and per rule 2 nothing is filed against its undecided parts. What is *decided* — the three tiers, facets as a tag its own author signs, the access-compatibility invariant — produced two tickets that do not depend on the rest: PRO-11 and CON-7 | **RFC 0.5 accepted** (SHA-13) |
+| ~~**Folder implementation** (RFC 0.4 §4)~~ **— now FOL-2** | the design is accepted; the kind numbers are the tail of §10.1 rather than a separate decision. Still not ready to build, but no longer invisible: it is a placeholder carrying what §4 settles and what REW-11 measured | **FOL-1 decided.** That is the only thing between here and real folder tickets |
+| ~~**The upstream NIP proposal** (RFC 0.4 §10.1/10.2)~~ **— now FOL-1** | deferred on purpose; the trigger fired when upstream shipped `kind:30621` | its own latest responsible moment, the first line of folder command/state code. Bring it forward if anything else needs the numbers sooner |
+| **Association and facets** (RFC 0.5 §2, §3) | the RFC is a draft, and per rule 2 nothing is filed against its undecided parts. What is *decided* — the three tiers, facets as a tag its own author signs, the access-compatibility invariant — produced two tickets that do not depend on the rest: PRO-11 and CON-7. **A third is now waiting on it:** PRO-18 concluded that a create-action should be able to declare an association or a facet on the object it was invoked on, and §3.1 puts that declaration on the created record because it is the one member you can sign | **RFC 0.5 accepted** (SHA-13). **It does not wait for folders** — §4's invariant is enforced today as a read rule, *honour a facet only when its members share a Folder*, which holds with one topic per Folder. Facets can ship first |
 | ~~**The URL grammar** (RFC 0.5 §7)~~ **— done 2026-09-03** | was gated on the RFC being a draft, per rule 2. §7 was accepted on its own (estiva-docs#64) with three amendments: §7.2 contradicted itself about what a consumer may ignore, and the loose reading resolves any host's URL as your object; "Peek has no object URLs" had stopped being true; and the message gap is a stated boundary rather than an unknown. §1–§6 stay draft, which is why SHA-13 is still open | **Delivered.** Ship serves §7.2 paths with the nginx fallback (SHI-16), both apps declare `urls`, and a pasted link renders as the object it names (PRO-15). Verified on production, not on the merges |
-| **Peek's `topic = channel` → `topic = file` migration** (RFC 0.4 §11.1) | depends on folders existing. Plausibly larger than the Ship rewrite | folders shipped; sequence after the third app has proven the foundation |
+| ~~**Peek's `topic = channel` → `topic = file` migration** (RFC 0.4 §11.1)~~ **— now FOL-3** | depends on folders existing. Plausibly larger than the Ship rewrite, and **the only item in that project that invalidates published data rather than code** — no migration exists, so both wire shapes coexist permanently | folders shipped. *"After the third app has proven the foundation"* is weaker than when it was written — the foundation was proven by the **second** app: interop is published, both apps consume it, and objects render live in both directions. The data-migration argument is the one still standing, and it is why FOL-3 is last |
 | **The intelligence layer** — per-app AI harnesses deriving "memories" from raw events, and cross-app agent-invoked actions | **The zero-implementations objection is spent.** It said designing this now means designing against **zero** implementations, worse than SHA-7's single-consumer problem — and Intelligence in Peek has since produced one: a model reading a thread the viewer can already read, on-device, and prefilling an action drawn from a manifest. The `INT` track extends it. What the objection was protecting still holds, and it is the *persistence*, not the reasoning: The one piece that looked ready to measure is the least settled: Peek's highlights are an experiment. **They must not be published to `kind:9802` while the model is unsettled** — 9802 is in the regular range, so it is append-only and any shape later changed is permanent. [SPEC §12.1](protocol/SPEC.md)'s test puts an experiment in the replaceable layer (`kind:30078`, versioned `d`) or leaves it in the app's database. Two seams are taken now because they are fields rather than designs: an action's `description` and `effect` (RFC 0.4 §13.4) — and those two turned out to be exactly what an agent matches on, so taking them early paid. **Two platform findings for anyone building on the Prompt API**, both measured 2026-09-02: a build with speculative decoding refuses `responseConstraint` outright while *requiring* explicit sampling options for the same reason, so a schema cannot be assumed to constrain anything; and Edge 154 exposes the interface and refuses to execute it, so the feature must degrade to nothing rather than to an error | **SPEC §12.1's first question flipping** — the first time a second app's harness needs to read another app's memories |
 | **Live project-panel updates** | found while building PEE-2. Ship's project panel polls on a 30s timer because `liveProjection` routes only message-shaped kinds. The socket already delivers `30850`/`30851` — the subscription is kindless — so routing them into a panel refresh would close it | nothing. Smaller than a ticket and nobody has decided it is worth one |
 
