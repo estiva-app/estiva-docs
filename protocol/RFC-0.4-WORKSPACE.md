@@ -396,13 +396,23 @@ Two paths. Propose this as a NIP to Buzz, or implement it privately in the fork.
 
 > **Amended in 0.4 — the trigger has fired.** The third bullet above said the decision gets easier once we see *"whether upstream ships their forge layer, and in what shape."* The Buzz catch-up answered it: upstream shipped `kind:30621`, a parameterized-replaceable project record, **global-only**, single-writer, with members as `a` tags. That is the same container concept at a narrower scope, and it settles the shape question this deferral was waiting on. The deferral has come due; it is now a decision to make rather than a decision to postpone. Nothing in §13, §14 or §15 waits on it.
 
-**The latest responsible moment is the first line of folder command or state code**, because that is the point where you either squat numbers or propose them. Everything before it is independent — the Ship alignment items, the shared foundation, the Peek real-time work, read state, DMs. So this can wait a long way without blocking anything, and it should.
+> **Decided 2026-09-04: fork.** The numbers are allocated in §12.1 rather than proposed. Three things settled it, and the first is upstream's own precedent.
+>
+> - **Upstream forked for exactly this class of thing.** `kind:30621` (NIP-MP) is a named grouping of repositories — the closest analogue to a folder upstream has — and they made it Buzz-specific by decision, after checking the registries and recording a collision-absorption policy. Their reason generalises: *interop rests on the standard member events*, which stay portable, so the container kind being custom costs outsiders nothing.
+> - **The thing we would be proposing is a thing upstream has scoped out.** NIP-MP's non-goals say it *"does not define shared or delegated project editing — a project is replaceable only by its own signer."* Multi-writer containers are §10.2's first item and §4.1's whole reason to exist. Proposing begins by asking upstream to reverse a non-goal they wrote down while shipping.
+> - **`kind:1621` shipped**, which was the last cheap input this deferral was waiting on (see below). It tells us upstream is building its forge layer on standard NIP-34 kinds and custom kinds only where the semantics are novel — the same rule this decision follows.
+>
+> **What the fork costs, accepted rather than argued away.** The paragraph above still stands: a Buzz change is needed either way, so forking buys the same work with none of the review, plus a permanent merge burden on a 625-commit gap. That is the price of not waiting on a process that would start by relitigating a stated non-goal. §10.2's list keeps its value — it is what to propose if the decision is ever revisited, and Estiva still holds the only working implementation of the tracker semantics either side needs.
+
+**The latest responsible moment was the first line of folder command or state code**, because that is the point where you either squat numbers or propose them. Everything before it is independent — the Ship alignment items, the shared foundation, the Peek real-time work, read state, DMs. So this can wait a long way without blocking anything, and it should.
 
 **What to do meanwhile, cheaply.** Three things, none of which commits to either path:
 
 1. ~~**Answer §5.2 and §12.3.**~~ **Done, 2026-08-24.** Both came back clean: the `d` is exactly the channel uuid, a non-member does read an open channel's `39000`, and the relay's signing key does not rotate — §12.3's evidence for rotation was a misread NIP-11 field. §5.2 and §5.3 carry the answers, and the topic-addressing model stands as written.
 2. ~~**Build REW-11**~~ — **done, 2026-08-24**, along with the relay change it needed (CAT-9) and the discovery fix it turned out *not* to be (SHI-7). See below.
-3. **Watch whether upstream ships `kind:1621` issues.** Their forge layer is `"📋 Designed"`; if it ships, its shape is data for this decision.
+3. ~~**Watch whether upstream ships `kind:1621` issues.**~~ **Checked 2026-09-04: shipped.** `KIND_GIT_ISSUE = 1621` is in `buzz-core`'s registry, the relay's ingest scope map, the DB feed queries, the SDK builder and the CLI. `VISION_PROJECTS.md` still says `"📋 Designed"`; the code disagrees and the code is what runs — read the registry, not the vision document.
+
+   **The shape, which is what this item was for.** An issue is a *regular* kind, so it is immutable: a title or body can never be edited, and status is four further kinds (`1630`–`1633`). It is scoped by `a` tags to a repository and explicitly **not** `h`-channel-scoped — *"git events use `a` tags (repo reference), not `h` tags (channel scope)"*. That is a materially different model from Estiva's addressable `30851` plus `1851` change events, and it is not a model this workspace can adopt: an immutable issue cannot carry a description somebody edits, which SPEC §13 now requires.
 
 **What item 2 taught, 2026-08-24.** REW-11 is complete — reader, relay change and writer — and verified against production: the record is served by an unscoped `kinds` query and **not** by an `#h` query for its own channel, while its issues still are. §4.2's central claim now has a working instance behind it at one-tenth the scale. Five things bear on the choice above:
 
@@ -461,7 +471,30 @@ Leaf remains the app that will stress anchoring hardest — a document editor re
 
 **Amended in 0.4.** Question 2 is no longer frozen (§6, §11.3). The rest stand, with what would close each.
 
-1. **Kind numbers — deliberately unassigned.** A folder needs a command kind and a relay-signed state kind. Buzz's convention is `9xxx` for commands and `39xxx` for state, but those ranges are NIP-29's, and Estiva's own block (`30850`–`30899`) has no convention for relay-signed state. **If this goes upstream as a NIP (§10.1) the numbers should be allocated there, not squatted here first.** Whichever way it goes, run the allocation check NIP-MP modelled — the upstream NIPs table, nostrbook.dev, and our own registry — and remember both external registries are advisory rather than authoritative.
+1. ~~**Kind numbers — deliberately unassigned.**~~ **Allocated 2026-09-04**, following §10.1's decision to fork.
+
+   | kind | name | signer | class | purpose |
+   | --- | --- | --- | --- | --- |
+   | `1852` | Folder command | user | regular | A client asks the relay to create a folder, or to change its contents, visibility or access |
+   | `30890` | Folder state | **relay** | addressable | The folder as the relay maintains it, addressed by `(relay pubkey, 30890, d)` |
+
+   **Reserved alongside them:** `1852`–`1859` for further folder commands, and `30890`–`30899` for relay-signed state inside Estiva's block. §4 names *a* command kind without enumerating the commands, so allocating one number and reserving the run is as far as this can honestly go — NIP-MP allocated one number for one fully specified event and this follows that.
+
+   **Not `9xxx`/`39xxx`, which this question used to suggest.** Those are NIP-29's and upstream actively assigns in them — `9000`–`9030` Group Control Events, `39000`–`39009` Group metadata events. Squatting there is the collision this check exists to avoid. Estiva already has two blocks nobody upstream has claimed, and the numbers stay inside them.
+
+   **`30890`–`30899` becomes the convention this question said was missing:** inside Estiva's block, a relay-signed state kind is `3089x`, and a user-signed record is not. A reader can tell the signer class from the number rather than from a document.
+
+   **The allocation check, run 2026-09-04.**
+
+   | registry | checked | result |
+   | --- | --- | --- |
+   | Upstream nostr NIPs kind table (`nostr-protocol/nips` `README.md`) | `1840`–`1899`, `30850`–`30899` | **Unassigned.** Both ranges are entirely free. The parse expands the table's range rows (`9000`-`9030`, `39000-9`) and was validated against known assignments — `0`, `1`, `1111`, `1621`, `9007`, `30617`, `39000` all resolve — because an absence from a parser that silently drops rows is worth nothing |
+   | nostrbook.dev (`https://nostrbook.dev/kinds/<n>`) | `1852`, `1859`, `30890`, `30899`, plus `1851`, `30850` in use today | **All HTTP 404** — no entry. Controls returned HTTP 200 for `0`, `1621` and `30617`, so the 404s distinguish *unregistered* from *unreachable* |
+   | Our own registry (`buzz-core/src/kind.rs`, upstream `main`) | full range | Nothing in `1840`–`1899` or `30840`–`30899`. Named constants near the ranges considered: `9035`, `9036`, `9040`–`9044`, and raw `9000`–`9022` in the relay's NIP-29 handling |
+
+   **Both external registries are advisory rather than authoritative** — neither reserves numbers, and an unregistered kind may be in use by a client nobody has seen. A future upstream assignment of either number is a collision absorbed the way NIP-MP absorbs its own: **interoperability rests on the standard events** — `1111` comments, NIP-19 addressing, NIP-89 manifests — not on the folder kinds. A third-party client sees the files and ignores the folder.
+
+   **One number already in use that is not a squat and stays.** Estiva writes `kind:9007`, which is NIP-29's Group Control range, because a Folder *is* a Buzz channel (§4.1) and `9007` is the create-channel command. That is using upstream's kind for upstream's purpose. `1851` and `30850`/`30851` are Estiva's own and are unassigned upstream, confirmed by the same check.
 
 2. ~~**Component anchoring** (§6).~~ **Answered 2026-09-02 (RIC-7)** and moved to the answered list below. An anchor is the object's address plus a §13.3 block id, specified in [SPEC §13.6](SPEC.md).
 
