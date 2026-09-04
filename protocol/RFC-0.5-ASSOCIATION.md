@@ -7,9 +7,11 @@
   only part with an implementation. Peek has served §7.2's grammar since PEE-14.
   The association tiers are a larger question and stay open.
 
-  **§1–§6 reviewed 2026-09-04 (SHA-13) and not yet accepted.** Two corrections
-  are made below — §3.1's constraint is temporary and said so nowhere, and
-  §6.2's operational note was factually wrong. **One thing blocks acceptance**
+  **§1–§6 reviewed 2026-09-04 (SHA-13) and not yet accepted.** Three
+  corrections are made below — §4's enforcement was stated over the Folder
+  rather than over the access boundary and contradicted §3.3, §3.1's constraint
+  is temporary and said so nowhere, and §6.2's operational note was factually
+  wrong. **One thing blocks acceptance**
   and is now §3.4: the document asserts a facet set has one identity and never
   specifies how that identity is written, and the mechanism it does specify
   cannot express one for a relay-signed member. Every way out has a cost, and
@@ -92,7 +94,11 @@ They are structurally similar — a named thing listing addresses under access r
 
 **A Folder holds files that belong together. A facet set holds files that are the same thing.**
 
+They answer different questions and should not constrain each other. **A Folder organises — it is where a file lives and how somebody navigates to it. A facet joins — it says two files are one thing.** Faceted files usually will share a Folder, because things that are the same thing usually are filed together; that is a tendency and must not become a rule.
+
 If the two ever merge, every Folder unions the conversations of everything inside it, which is precisely the container-is-the-relationship behaviour this document exists to replace.
+
+> **Amended 2026-09-04.** §4's enforcement contradicted this section in practice, by making every representable facet Folder-shaped. §4 now states its rule over the access boundary instead, which is what it was always a proxy for.
 
 ### 3.4 Open — how a set is identified on the wire
 
@@ -114,7 +120,7 @@ Neither is what §3.2 describes. A set with one identity needs that identity to 
 
 **Not decided here.** Option 1 is the cleanest and is unavailable for the one case that matters most today; option 4 is the most capable and is the most expensive. The choice is worth making deliberately, because a facet declaration is a tag on a published record and the shape is permanent once anything writes one.
 
-**A scoping consequence either way**, worth knowing before implementing: §4's read rule — *honour a facet only when its members share a Folder* — means the only facets representable today are between files already sharing a channel, which today means a Ship project paired with a Peek topic (§9, example F). That is enough to build and demonstrate the feature, and it is worth noticing that the enforcement mechanism is itself container-shaped, in a document written to stop the container being the relationship. It stops being narrow when a Folder holds several files.
+**A scoping note, now smaller than it was.** Under §4's original wording the only representable facets were between files already sharing a channel — a Ship project paired with a Peek topic (§9, example F) — which made the enforcement mechanism container-shaped in a document written to stop the container being the relationship. §4 has been restated over the access boundary, so any two files in equally readable channels may be faceted, which today is any two files at all. §3.4's question is unaffected either way: it is about how the set is written down, not about which sets are permitted.
 
 ## 4. The invariant: facets may not cross an access boundary
 
@@ -126,7 +132,17 @@ This is [RFC 0.4 §4.4](RFC-0.4-WORKSPACE.md) — *the relay must refuse a priva
 
 That is why it is enforced at write time rather than trusted to every reader's UI, now and in every app not yet written.
 
-**Enforced today as a read rule:** honour a facet only when its members share a Folder. That costs nothing and makes cross-boundary facets unrepresentable. It becomes a write-time relay rule when somebody genuinely needs a cross-Folder facet — see §7.
+**Enforced today as a read rule.** This said: *honour a facet only when its members share a Folder.* **Restated 2026-09-04, over the access boundary rather than over the Folder** — honour a facet only when its members are **equally readable**, which today means their **channels** are.
+
+Three reasons the original wording was wrong rather than merely coarse.
+
+- **It names the wrong noun.** [RFC 0.4 §4.2](RFC-0.4-WORKSPACE.md) is explicit that *"the channel stays and keeps doing access and conversation; the folder becomes a layer above it."* Access is a property of the channel. A rule about readability stated over Folders is a rule stated over the layer that does not carry the thing it is protecting.
+- **It is ambiguous in a way that can leak.** [§5.1](RFC-0.4-WORKSPACE.md) gives a file *one home, many references* — a file may be listed in a Folder that is not its home. Read as "listed in the same Folder", two members can share a Folder and live in different channels with different access, which is the exact failure this invariant exists to prevent. Read as "same home Folder" it is sound, and it is then just a longer way of saying *same channel*.
+- **It forbids everything and protects against nothing, here, today.** RFC 0.4 §4.2 records that **all 50 of production's channels are `open`**. Equally readable is therefore true of every pair of them, and the same-Folder rule refuses every cross-Folder facet in a workspace where no facet could collapse any context.
+
+**What a reader can actually evaluate.** Two open channels are equally readable and any client can see that. Where a channel is private a client may not be able to compare membership at all — it cannot read a channel it is not in — so that case falls back to *same channel* until the relay enforces the invariant at write time (§8). This is deliberately incremental: it unblocks every facet that is safe today without weakening the invariant by a single case.
+
+**The invariant itself is unchanged.** A facet set MUST NOT merge conversations that are not equally readable. What changed is that the enforcement no longer borrows a container's shape to express it — §3.3.
 
 ## 5. Comments, mentions, and what attaches to what
 
@@ -399,7 +415,7 @@ Per the roadmap's rule 2, with triggers rather than guesses.
 | deferred | why | trigger |
 | --- | --- | --- |
 | **Who may create a facet, beyond "you can sign the file"** | signing already gives a defensible rule at zero cost, and the invariant in §4 removes the risk that would make a permission model urgent | the first cross-boundary facet somebody actually wants, or the first complaint about an unwanted one. **§3.4's option 4 would force this early** — a separate set record has an author who speaks for objects they do not own |
-| **Enforcing §4 at the relay** | a read rule makes cross-boundary facets unrepresentable today, and a Buzz change is expensive to land | the same trigger |
+| **Enforcing §4 at the relay** | a read rule covers every case a client can evaluate — two open channels — and a Buzz change is expensive to land | **partially fired 2026-09-04**: cross-*Folder* facets are wanted now, and §4's restatement admits them without the relay. What still needs the relay is a facet whose members sit in channels a client cannot compare, which means the first private channel |
 | **Whether a merged view labels which facet a comment was written against** | the default is not to, following the design guide; the exception is facets with differing access, which §4 currently forbids | §4 being relaxed |
 
 ## 9. Worked examples
