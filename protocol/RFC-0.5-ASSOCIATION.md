@@ -11,12 +11,11 @@
   corrections are made below — §4's enforcement was stated over the Folder
   rather than over the access boundary and contradicted §3.3, §3.1's constraint
   is temporary and said so nowhere, and §6.2's operational note was factually
-  wrong. **One thing blocks acceptance**
-  and is now §3.4: the document asserts a facet set has one identity and never
-  specifies how that identity is written, and the mechanism it does specify
-  cannot express one for a relay-signed member. Every way out has a cost, and
-  one of them would break the "no new kind, no Buzz change" claim that makes
-  accepting this cheap.
+  wrong. **§3.4 is new and carries the one
+  open question**, with four candidates, a recommendation and the rule that
+  makes it safe: the document asserted a facet set has one identity and never
+  said where that identity is written. Accepting §3 means accepting §3.4's
+  answer, which costs a new kind.
 - **Date:** 2026-08-31
 - **Builds on:** [RFC 0.4](RFC-0.4-WORKSPACE.md), which is accepted and unchanged by this document
 - **Supersedes:** *nothing.* A higher number here does not retire 0.4 — see the
@@ -100,27 +99,52 @@ If the two ever merge, every Folder unions the conversations of everything insid
 
 > **Amended 2026-09-04.** §4's enforcement contradicted this section in practice, by making every representable facet Folder-shaped. §4 now states its rule over the access boundary instead, which is what it was always a proxy for.
 
-### 3.4 Open — how a set is identified on the wire
+### 3.4 How a set is identified on the wire
 
-**This is what blocks acceptance of §3** (SHA-13, 2026-09-04). §3.2 asserts *a facet set has n members and one identity*, §1's table says the mechanism is *a tag on the file*, and nothing anywhere says what that tag is or where the identity lives. The two statements are not obviously compatible.
+**This is the one thing §3 did not specify, and it is what acceptance waits on** (SHA-13, 2026-09-04). §3.2 asserts *a facet set has n members and one identity*, §1's table says the mechanism is *a tag on the file*, and nothing anywhere said what that tag is or where the identity lives. The two statements are not compatible as written.
 
-**The tension, stated plainly.** §3.1 says *a facet holds if any member declares it, and it binds every member's view.* §3.2 says the result is a set and explicitly not a transitive graph. A tag on one file can only name *other files*, and a reader given "A names B" and "B names C" must choose:
+**The tension, stated plainly.** §3.1 says *a facet holds if any member declares it, and it binds every member's view.* §3.2 says the result is a set and explicitly not a transitive graph. A tag on one file can only name *other files*, so a reader given "A names B" and "B names C" must choose:
 
-- close it transitively — every member sees the same thing, and §3.2's objection lands: one careless declaration merges three conversations, with no bound on the chain
-- do not close it — the set is different depending on which member you are looking at, and §3.1's *binds every member's view* is false
+- **close it transitively** — every member sees the same thing, and §3.2's objection lands: one careless declaration merges three conversations, with no bound on the chain. Worse than the modelling objection, computing the closure means iterative queries to unbounded depth against a relay
+- **do not close it** — the set differs by which member you are viewing, and §3.1's *binds every member's view* is false
 
-Neither is what §3.2 describes. A set with one identity needs that identity to be written down somewhere.
+Neither is what §3.2 describes. A set with one identity needs that identity written down.
 
-**Four ways out, and none is free.**
+#### The four candidates
 
-1. **A shared set id on each member** — `["facet", "<uuid>"]`, minted by whoever creates the set, resolved with one query (`{"#facet": ["<uuid>"]}`), no index and nothing to go down. Clean, non-transitive, symmetric — and **a relay-signed member can never carry the tag**, which is the case §3.1 says forced the whole design. Becomes available for topics once RFC 0.4 §11.1 lands.
-2. **An address list, closed transitively.** Works today for every member including relay-signed ones. Takes §3.2's rejected behaviour, in full.
-3. **An address list, one hop, not closed.** Works today; gives each member a different view, contradicting §3.1.
-4. **A separate replaceable facet-set record**, naming its members with `a` tags. One identity, non-transitive, symmetric, editable by its author, and it works for a relay-signed member because members are *named* rather than tagging. Two costs: it is **a new kind**, which is exactly the claim that makes accepting this document cheap — *no new kind and no Buzz change* — and its author speaks for objects they do not own, which §3.1's authorization argument was built to avoid.
+| | one identity | same view for every member | a member whose app knows nothing of facets | undoing it |
+| --- | --- | --- | --- | --- |
+| **1 · Shared set id** — `["facet","<uuid>"]` on each member | yes, by construction | yes — one query, `{"#facet": ["<uuid>"]}` | **no** — a member must tag itself, so its app must implement facets | remove your own tag |
+| **2 · Address list, closed transitively** | derived, never named | yes | yes | others' declarations still bind you |
+| **3 · Address list, one hop** | no | **no** | yes | your own tag |
+| **4 · A replaceable facet-set record** naming members with `a` tags | yes — the record's address | yes | yes — members are named, not tagging | one edit, by its author |
 
-**Not decided here.** Option 1 is the cleanest and is unavailable for the one case that matters most today; option 4 is the most capable and is the most expensive. The choice is worth making deliberately, because a facet declaration is a tag on a published record and the shape is permanent once anything writes one.
+**Option 3 is disqualified rather than costed.** It breaks §3.1 outright: viewing A gives `{A,B}` while viewing B gives `{A,B,C}`. It is listed because it is what a naive implementation produces by accident.
 
-**A scoping note, now smaller than it was.** Under §4's original wording the only representable facets were between files already sharing a channel — a Ship project paired with a Peek topic (§9, example F) — which made the enforcement mechanism container-shaped in a document written to stop the container being the relationship. §4 has been restated over the access boundary, so any two files in equally readable channels may be faceted, which today is any two files at all. §3.4's question is unaffected either way: it is about how the set is written down, not about which sets are permitted.
+#### Why the cheapest option is not the cheapest
+
+Option 1 is the most elegant on paper and has one problem: **a member must tag itself, so it cannot include an object whose app has never heard of facets.** Today that is a relay-signed `kind:39000` topic, which is the flagship case — a Ship project and a Peek topic as one thing. It is also §9's example J, the test this document sets itself: *an HR tool publishes a job position and writes no chat-app code… if this needs HR-side code about the chat app, the design is wrong.* Under option 1 the HR tool must implement facet tags to participate at all.
+
+Two ways out of that, and both cost more than they look:
+
+- **Wait for [RFC 0.4 §11.1](RFC-0.4-WORKSPACE.md)**, which makes a topic a file its app signs. That fixes the topic and not example J, and it puts facets behind the topic migration — the largest and last piece of the folder work.
+- **Let a member name another object into the set** — a second tag, `["facet-member","<uuid>","<address>"]`. This works today and fixes example J, and **it concedes the principle that made option 1 elegant.** §3.1's appeal is that *the declaration is the authorization*: you may only declare on a file you can sign, so nobody speaks for an object they do not own. Naming another object into a set is exactly speaking for an object you do not own.
+
+So the real comparison is not *keep the clean authorization model or break it*. It is **break it quietly and scattered across member records, or break it openly in one record.**
+
+#### Recommended — option 4, with one rule
+
+Once the principle is conceded either way, option 4 is better on every remaining axis: the set has an address, so it can be linked to, named and versioned where a bare uuid has nowhere to put a name; removal is one edit rather than §3.1's *withdrawing every standing declaration* across records owned by several people; and there is one membership model rather than a permanent split between members that tag themselves and members that get named.
+
+Its cost is an inbox problem option 1 does not have — anyone may assert membership for objects they own none of — which makes §8's deferred *who may create a facet* urgent. One rule closes it:
+
+> **A facet set record is honoured only if its author can sign at least one member.**
+
+That restores §3.1's property in the form that mattered — nobody speaks for a set they have no stake in — while keeping named membership for everything else. Example J still passes: the chat app owns the topic and names the position.
+
+**What it costs, stated rather than minimised.** It is a new kind, which is a Buzz change, and *"no new kind and no Buzz change"* was the claim that made accepting this document cheap. Two things make that smaller than it first reads: a facet-set record is a plain addressable record rather than relay-maintained state — closer to Ship's `kind:30850`, which §10.1's research found was *"one line to change"*, than to the folder command and state kinds it warns will not be; and if the folder kinds go upstream (FOL-1), adding this one to that proposal is marginal rather than a second ask.
+
+**Still to decide, and deliberately not decided here:** the kind number, which is FOL-1's tail; the tag names; and whether a member may opt *out* of a set it was named into, which §8 can keep deferring until somebody wants it.
 
 ## 4. The invariant: facets may not cross an access boundary
 
@@ -414,7 +438,7 @@ Per the roadmap's rule 2, with triggers rather than guesses.
 
 | deferred | why | trigger |
 | --- | --- | --- |
-| **Who may create a facet, beyond "you can sign the file"** | signing already gives a defensible rule at zero cost, and the invariant in §4 removes the risk that would make a permission model urgent | the first cross-boundary facet somebody actually wants, or the first complaint about an unwanted one. **§3.4's option 4 would force this early** — a separate set record has an author who speaks for objects they do not own |
+| ~~**Who may create a facet, beyond "you can sign the file"**~~ **— answered by §3.4** | signing gave a defensible rule at zero cost, and §4's invariant removed the risk that would make a permission model urgent | **no longer deferred.** §3.4's recommended shape has an author who names objects they do not own, so it carries its own rule: a set record is honoured only if its author can sign at least one member. What stays deferred is whether a named member may opt *out* |
 | **Enforcing §4 at the relay** | a read rule covers every case a client can evaluate — two open channels — and a Buzz change is expensive to land | **partially fired 2026-09-04**: cross-*Folder* facets are wanted now, and §4's restatement admits them without the relay. What still needs the relay is a facet whose members sit in channels a client cannot compare, which means the first private channel |
 | **Whether a merged view labels which facet a comment was written against** | the default is not to, following the design guide; the exception is facets with differing access, which §4 currently forbids | §4 being relaxed |
 
