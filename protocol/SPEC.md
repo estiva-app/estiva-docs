@@ -653,7 +653,14 @@ from every published `kind:31990`.
 ```jsonc
 ["urls", "https://example.app/issue/<slug>-<d>", "30851"]
 ["urls", "https://example.app/#/issue/<d>", "30851"]
+["urls", "https://example.app/message/<id>", "9"]
 ```
+
+**`<d>` and `<id>` are the two identities**, and the pattern says which it
+carries. `<d>` is an addressable object's identifier and resolves with
+`{"#d": […]}`; `<id>` is an event id — 64 hex, all of it — for a kind that has
+no `d`, and resolves with `{ids: […]}`. A consumer MUST read which from the
+declaration rather than from the value's shape.
 
 They are separate fields because they answer different questions, and because an
 app that changes its routes still has to read the links it published under the

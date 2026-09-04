@@ -312,22 +312,42 @@ not an unimplemented proposal — half of it is deployed, and the deployed half 
 what the grammar was checked against. What remains is Ship, whose blocker is the
 nginx fallback named above rather than anything in this section.
 
-**A message is addressed by `nevent`, outside this grammar.** A `kind:9` has no
-`d`, so it has no address and no place in §7.2 — the same gap
-[RFC 0.4](RFC-0.4-WORKSPACE.md) §13.6 records for projections.
+**A message is named by its event id, and that is an identity this grammar
+carries.** A `kind:9` has no `d`, so §7.2's `<d>` cannot name one. The path
+takes the event id instead:
 
-*Amended at acceptance.* This read "deliberately not solved here", which
-understated what exists: Peek's manifest already declares an `nevent` `web`
-template beside its `naddr` one, and `/o/<nevent>` already resolves. So there is
-a working answer and it is simply not §7.2's — a message is named by its event
-id because nothing else can name it.
+```
+https://<app>.estiva.app/<type>/<slug>-<id>          64 hex, an event id
+https://<app>.estiva.app/<type>/<slug>-<d>           36 chars, a uuid
+```
 
-Recorded rather than deferred because the distinction now carries product
-weight: linking to a message is the thing people ask for, and "not solved" reads
-as *unknown* when the answer is *deliberately a different shape*. What is still
-open is the affordance — Peek has no way to copy a message link — and whether a
-bech32 `nevent` belongs in a shareable URL at all, given §7.3's argument against
-bech32 in URLs generally.
+*Amended 2026-09-04, after PEE-17 needed a link to one.* This section twice said
+a message had **no place** in the grammar — first as "deliberately not solved
+here", then as "addressed by `nevent`, outside this grammar". Both were the same
+mistake in different words: an `nevent` is bech32, and putting bech32 in a URL is
+what §7.3 argues against. Its two objections apply to `nevent` exactly as they do
+to `naddr` — a slice of it is checksum bytes rather than the identity, and relay
+hints are part of the encoding, so one object has more than one spelling.
+
+**A raw event id has neither problem.** It is the whole identity of an event with
+no `d`, nothing optional is encoded into it, and it resolves with
+`{ids: ["<id>"]}` — one query, no index, which is the property §7.2 chose the
+bare uuid for in the first place. So the rule generalises rather than gaining an
+exception: **the identity goes in the path, unencoded, and everything before it
+is decoration.**
+
+**A manifest declares which identity a shape carries**, by writing `<id>` or
+`<d>` in the pattern (§7.5). A consumer reads it from the declaration rather than
+from the value: a uuid and a 64-character hex string are distinguishable today,
+and a consumer relying on that would be inferring an app's addressing model from
+a character class. `<id>` resolves with `ids`, `<d>` with `#d`.
+
+An id MUST be all 64 characters. A shorter run is a truncated id, and it either
+resolves to nothing or to something nobody intended.
+
+`web` is unaffected: it still names an `nevent` for a message, because it is
+handed to NIP-19 machinery rather than pasted by a person, and §7.3's objections
+are about URLs.
 
 ## 8. Deliberately deferred
 
