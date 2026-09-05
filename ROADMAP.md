@@ -56,6 +56,22 @@ They used to be here, one `open / total` per row, and they drifted in both direc
 
 ---
 
+## Demo target — 2026-09-10, with Katerina
+
+Two things on screen, and **neither needs a relay change**. That is the scope line, and it is the one worth defending.
+
+1. **Folders working as navigation, in Peek and Ship.**
+2. **Ship's conversation at Peek's level, and Conversations + Activity in both.**
+
+**Why no relay change.** A Folder *is* a Buzz channel today: Peek's topics are folders, a Ship project carries `buzz-channel`, its issues carry `h`. So *"everything in this folder"* is a query that works against production right now, across both apps' kinds, resolved through the projection layer already shipped. What FOL-2's new kinds buy is **multi-writer folder state** — a contents list several people may edit, and folder metadata. The demo needs the read side, which exists.
+
+**Explicitly out of scope for the demo**, and starting any of them puts it at risk:
+
+- **FOL-2's Buzz change.** Cheap to write, expensive to land, no update timer, and a green image build is not a deploy.
+- **FOL-5** `kind:30852`, and therefore **FOL-6 labels**. Labels matter when there are eighty teams; there are not yet.
+- **FOL-3.** Topics already are folders — that is what makes the demo possible without it.
+- **New nesting protocol (FOL-4).** Ship's project → issue nesting is data that already exists; the demo shows it rather than building it.
+
 ## What to do next
 
 Two tracks, and they meet at the end. Everything else in this document is either finished, blocked on one of them, or independent enough to pick up any time.
