@@ -7,15 +7,13 @@
   only part with an implementation. Peek has served §7.2's grammar since PEE-14.
   The association tiers are a larger question and stay open.
 
-  **§1–§6 reviewed 2026-09-04 (SHA-13) and not yet accepted.** Three
-  corrections are made below — §4's enforcement was stated over the Folder
-  rather than over the access boundary and contradicted §3.3, §3.1's constraint
-  is temporary and said so nowhere, and §6.2's operational note was factually
-  wrong. **§3.4 is new and carries the one
-  open question**, with four candidates, a recommendation and the rule that
-  makes it safe: the document asserted a facet set has one identity and never
-  said where that identity is written. Accepting §3 means accepting §3.4's
-  answer, which costs a new kind.
+  **§1–§6 accepted 2026-09-05**, reviewed under SHA-13 with three corrections
+  and one addition. The corrections: §4's enforcement was stated over the Folder
+  rather than over the access boundary and contradicted §3.3; §3.1's constraint
+  is temporary and said so nowhere; §6.2's operational note was factually wrong.
+  The addition is **§3.4**, which answers the question the document asserted and
+  never specified — where a set's identity is written — and allocates
+  `kind:30852` for it.
 - **Date:** 2026-08-31
 - **Builds on:** [RFC 0.4](RFC-0.4-WORKSPACE.md), which is accepted and unchanged by this document
 - **Supersedes:** *nothing.* A higher number here does not retire 0.4 — see the
@@ -132,7 +130,7 @@ Two ways out of that, and both cost more than they look:
 
 So the real comparison is not *keep the clean authorization model or break it*. It is **break it quietly and scattered across member records, or break it openly in one record.**
 
-#### Recommended — option 4, with one rule
+#### Decided 2026-09-05 — option 4, with one rule
 
 Once the principle is conceded either way, option 4 is better on every remaining axis: the set has an address, so it can be linked to, named and versioned where a bare uuid has nowhere to put a name; removal is one edit rather than §3.1's *withdrawing every standing declaration* across records owned by several people; and there is one membership model rather than a permanent split between members that tag themselves and members that get named.
 
@@ -154,7 +152,33 @@ Example J still passes: the chat app owns the topic and names the position, the 
 
 **What it costs, stated rather than minimised.** It is a new kind, which is a Buzz change, and *"no new kind and no Buzz change"* was the claim that made accepting this document cheap. Two things make that smaller than it first reads: a facet-set record is a plain addressable record rather than relay-maintained state — closer to Ship's `kind:30850`, which §10.1's research found was *"one line to change"*, than to the folder command and state kinds it warns will not be; and if the folder kinds go upstream (FOL-1), adding this one to that proposal is marginal rather than a second ask.
 
-**Still to decide, and deliberately not decided here:** the kind number, which is FOL-1's tail; the tag names; and how a member's record says who may write it — NIP-34 has a `maintainers` tag doing this job, and Estiva's records have no equivalent, so the authorized set reduces to the author until one exists.
+#### The kind
+
+`kind:30852` — a **Set**: an addressable record listing files that belong together, signed by whoever assembled it.
+
+| kind | name | signer | class | purpose |
+| --- | --- | --- | --- | --- |
+| `30852` | Set | user | addressable | A named group of files, addressed by `(pubkey, 30852, d)` |
+
+**One primitive, three readings.** The set declares its own role, and a reader does something different with each — which is [§1](#1-three-tiers-and-only-the-third-is-new-protocol)'s pattern, not a new one:
+
+- `facet` — the members are **the same thing**; merge their conversations (§3).
+- `label` — the members **belong together**; group them in navigation. This is what makes many flat teams usable.
+- `collection` — one file gathering others, for a panel (§2's basic association, given a name).
+
+**A role a reader does not recognise groups and never merges.** Merging is the only reading with a disclosure consequence, so it is the one an unknown value must never reach — the same fallback discipline the widget chain uses, and for the same reason.
+
+**Allocated in Estiva's own block**, following FOL-1's decision to fork and RFC 0.4 §12.1's convention: `3089x` is reserved for relay-signed state, and a Set is user-signed, so it sits with the other user-signed records.
+
+| registry | checked | result |
+| --- | --- | --- |
+| Upstream nostr NIPs kind table | `30850`–`30899` | Unassigned. Parse validated against seven known assignments before any absence was believed |
+| nostrbook.dev | `30852`, `30853` | HTTP 404 — no entry. Control: `30617` returns 200, so a 404 distinguishes *unregistered* from *unreachable* |
+| `buzz-core/src/kind.rs`, upstream `main` | `30840`–`30899` | Nothing assigned |
+
+Both external registries are advisory rather than authoritative. A future upstream assignment is absorbed the way NIP-MP absorbs its own: **interoperability rests on the member files**, which stay standard and readable by anything, not on the grouping.
+
+**Still to decide, and deliberately not decided here:** the tag names; and how a member's record says who may write it — NIP-34 has a `maintainers` tag doing this job, and Estiva's records have no equivalent, so the authorized set reduces to the author until one exists.
 
 **Worth reading before implementing:** NIP-MP's fold, which is ten numbered steps and a table of required cases. Several are not obvious and each is a branch somebody would otherwise find in production — a member that resolves to nothing must render as explicitly unavailable rather than be dropped, because *"silence makes a project look smaller than its author declared"*; hiding a grouping must never hide its members; and one authorized claim among several is enough. The facet equivalents are the same shape.
 

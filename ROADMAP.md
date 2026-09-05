@@ -68,7 +68,7 @@ This is the near-term centre. Each step unblocks the next.
 | --- | --- | --- |
 | **FOL-1** — decide upstream or fork | **decided 2026-09-04: fork**, awaiting merge | RFC 0.4 §12.1 allocates `1852` (folder command) and `30890` (folder state), reserving `1852`–`1859` and `3089x`. Upstream forked for the same class of thing and said why |
 | **FOL-2** — the folder implementation | placeholder, unblocked once FOL-1 merges | Needs a Buzz change: relay-maintained state, because a shared container cannot be a single-signer event. §10.1's research is the estimate — read the ingest path rather than estimating it, and remember a green image build is not a deploy |
-| **Labels** | not filed — needs the shape below | Shared, not personal (decided 2026-09-05). Flat teams mean *many* teams, so this is a prerequisite for the model being usable rather than a polish item |
+| **Labels** | unblocked 2026-09-05 — `kind:30852` with `role: label` | Shared, not personal. Flat teams mean *many* teams, so this is a prerequisite for the model being usable rather than a polish item |
 | **FOL-3** — Peek's topics become files | placeholder, last | **No data migration.** Every existing topic becomes a team, its existing messages become that team's general conversation, and new topics are files inside a team. Read state survives untouched, because CRO-3 keyed containers on the bare channel uuid |
 
 ### Track 2 — Conversations: two lists, in both apps
@@ -119,8 +119,8 @@ Open decisions first. Everything settled is in *Finished* or in the RFC it amend
 
 | decision | ticket | note |
 | --- | --- | --- |
-| **How a named group of files is written down** | RFC 0.5 §3.4 | **The last open protocol question**, and it sits under three features: labels, one team pointing at another team's files, and facets. A record listing its members is recommended, honoured for your file only if its signer is authorised by *your* file. It costs a new kind. Answering it once answers all three |
-| **Accept or amend RFC 0.5 §1–§6** | SHA-13 | Reviewed 2026-09-04 with three corrections. Not accepted: it waits on §3.4 |
+| ~~**How a named group of files is written down**~~ | RFC 0.5 §3.4 | **Decided 2026-09-05.** `kind:30852` Set — an addressable record listing its members, declaring a role of `facet`, `label` or `collection`. A role a reader does not recognise groups and never merges. Honoured for your file only when its signer is authorised by *your* file. One primitive under labels, cross-team references and facets |
+| ~~**Accept or amend RFC 0.5 §1–§6**~~ | SHA-13 | **Accepted 2026-09-05**, with three corrections and §3.4 |
 | **The reaction horizon** | CON-1 | Currently an undocumented constant of 100 |
 | **What happens to Convex-only DMs** | DMS-7 | The relay's ±15 minute drift window means republished history cannot carry original timestamps |
 | **What the product says about DM privacy** | DMS-11 | "Private" is accurate for membership-scoped; whether to say more is product and possibly legal |
