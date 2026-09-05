@@ -6,6 +6,16 @@
   addressed*, which the rest of this document does not depend on, and it is the
   only part with an implementation. Peek has served §7.2's grammar since PEE-14.
   The association tiers are a larger question and stay open.
+
+  **§1–§6 reviewed 2026-09-04 (SHA-13) and not yet accepted.** Three
+  corrections are made below — §4's enforcement was stated over the Folder
+  rather than over the access boundary and contradicted §3.3, §3.1's constraint
+  is temporary and said so nowhere, and §6.2's operational note was factually
+  wrong. **§3.4 is new and carries the one
+  open question**, with four candidates, a recommendation and the rule that
+  makes it safe: the document asserted a facet set has one identity and never
+  said where that identity is written. Accepting §3 means accepting §3.4's
+  answer, which costs a new kind.
 - **Date:** 2026-08-31
 - **Builds on:** [RFC 0.4](RFC-0.4-WORKSPACE.md), which is accepted and unchanged by this document
 - **Supersedes:** *nothing.* A higher number here does not retire 0.4 — see the
@@ -55,6 +65,16 @@ A **`kind:39000` Peek topic is signed by the relay**, so Peek cannot add a tag t
 
 So: **a facet holds if any member declares it**, and it binds every member's view.
 
+> **The constraint is temporary; the design should not be** — noted 2026-09-04.
+> A topic is relay-signed *because a topic is a channel*, and [RFC 0.4
+> §11.1](RFC-0.4-WORKSPACE.md) makes a topic a **file inside** a Folder, at
+> which point Peek signs it and symmetric declaration becomes possible. One
+> sidedness is still the right answer — it is simpler, and it makes the
+> declaration the authorization at no cost — but it must stand on that argument
+> rather than on impossibility, or it gets reopened the first time somebody
+> notices the premise expired. It also means the hardest case for §3.4 below is
+> the one that goes away first.
+
 The consequence is that the declaration is also the authorization. **You may only declare a facet on a file you can sign**, which means nobody can speak for an object they do not own — and no new permission model is required to get that.
 
 The residual risk is noise rather than disclosure: somebody may attach their object's conversation to yours without asking. Inside a shared access boundary (§4) they could already read all of it, so nothing is revealed. **This is deliberately deferred** — see §7.
@@ -73,7 +93,70 @@ They are structurally similar — a named thing listing addresses under access r
 
 **A Folder holds files that belong together. A facet set holds files that are the same thing.**
 
+They answer different questions and should not constrain each other. **A Folder organises — it is where a file lives and how somebody navigates to it. A facet joins — it says two files are one thing.** Faceted files usually will share a Folder, because things that are the same thing usually are filed together; that is a tendency and must not become a rule.
+
 If the two ever merge, every Folder unions the conversations of everything inside it, which is precisely the container-is-the-relationship behaviour this document exists to replace.
+
+> **Amended 2026-09-04.** §4's enforcement contradicted this section in practice, by making every representable facet Folder-shaped. §4 now states its rule over the access boundary instead, which is what it was always a proxy for.
+
+### 3.4 How a set is identified on the wire
+
+**This is the one thing §3 did not specify, and it is what acceptance waits on** (SHA-13, 2026-09-04). §3.2 asserts *a facet set has n members and one identity*, §1's table says the mechanism is *a tag on the file*, and nothing anywhere said what that tag is or where the identity lives. The two statements are not compatible as written.
+
+**The tension, stated plainly.** §3.1 says *a facet holds if any member declares it, and it binds every member's view.* §3.2 says the result is a set and explicitly not a transitive graph. A tag on one file can only name *other files*, so a reader given "A names B" and "B names C" must choose:
+
+- **close it transitively** — every member sees the same thing, and §3.2's objection lands: one careless declaration merges three conversations, with no bound on the chain. Worse than the modelling objection, computing the closure means iterative queries to unbounded depth against a relay
+- **do not close it** — the set differs by which member you are viewing, and §3.1's *binds every member's view* is false
+
+Neither is what §3.2 describes. A set with one identity needs that identity written down.
+
+#### The four candidates
+
+| | one identity | same view for every member | a member whose app knows nothing of facets | undoing it |
+| --- | --- | --- | --- | --- |
+| **1 · Shared set id** — `["facet","<uuid>"]` on each member | yes, by construction | yes — one query, `{"#facet": ["<uuid>"]}` | **no** — a member must tag itself, so its app must implement facets | remove your own tag |
+| **2 · Address list, closed transitively** | derived, never named | yes | yes | others' declarations still bind you |
+| **3 · Address list, one hop** | no | **no** | yes | your own tag |
+| **4 · A replaceable facet-set record** naming members with `a` tags | yes — the record's address | yes | yes — members are named, not tagging | one edit, by its author |
+
+**Option 3 is disqualified rather than costed.** It breaks §3.1 outright: viewing A gives `{A,B}` while viewing B gives `{A,B,C}`. It is listed because it is what a naive implementation produces by accident.
+
+#### Why the cheapest option is not the cheapest
+
+Option 1 is the most elegant on paper and has one problem: **a member must tag itself, so it cannot include an object whose app has never heard of facets.** Today that is a relay-signed `kind:39000` topic, which is the flagship case — a Ship project and a Peek topic as one thing. It is also §9's example J, the test this document sets itself: *an HR tool publishes a job position and writes no chat-app code… if this needs HR-side code about the chat app, the design is wrong.* Under option 1 the HR tool must implement facet tags to participate at all.
+
+Two ways out of that, and both cost more than they look:
+
+- **Wait for [RFC 0.4 §11.1](RFC-0.4-WORKSPACE.md)**, which makes a topic a file its app signs. That fixes the topic and not example J, and it puts facets behind the topic migration — the largest and last piece of the folder work.
+- **Let a member name another object into the set** — a second tag, `["facet-member","<uuid>","<address>"]`. This works today and fixes example J, and **it concedes the principle that made option 1 elegant.** §3.1's appeal is that *the declaration is the authorization*: you may only declare on a file you can sign, so nobody speaks for an object they do not own. Naming another object into a set is exactly speaking for an object you do not own.
+
+So the real comparison is not *keep the clean authorization model or break it*. It is **break it quietly and scattered across member records, or break it openly in one record.**
+
+#### Recommended — option 4, with one rule
+
+Once the principle is conceded either way, option 4 is better on every remaining axis: the set has an address, so it can be linked to, named and versioned where a bare uuid has nowhere to put a name; removal is one edit rather than §3.1's *withdrawing every standing declaration* across records owned by several people; and there is one membership model rather than a permanent split between members that tag themselves and members that get named.
+
+Its cost is an inbox problem option 1 does not have — anyone may assert membership for objects they own none of — which makes §8's deferred *who may create a facet* urgent.
+
+**Upstream has already solved this, for the same shape, and their rule is better than the obvious one.** Buzz's NIP-MP defines `kind:30621`, an addressable record grouping NIP-34 repositories by coordinate, and reaches option 4 by the same route this section did:
+
+> *Per-repository tags cannot express cross-owner grouping. If membership lived in each `kind:30617`, a project spanning Alice's and Bob's repositories would require both Alice and Bob to publish a tag naming the group. Alice cannot enroll Bob's repository; she cannot sign for his key.*
+
+Its answer to the inbox problem is **not** a restriction on who may publish one. It is a per-member read rule, which NIP-MP calls *claim authority*: anyone may publish a project naming anyone's repository, and it renders — cross-owner grouping works, which is the point of the kind. What an unauthorized grouping cannot do is **change what the member's own surface looks like**; the repository still renders as its own card as well. *"A signed assertion silently becoming control over another owner's discovery surface"* is the failure the rule exists to prevent.
+
+Adopted here, per member rather than per set:
+
+> **Anyone may publish a facet set naming any object. A member's own view merges a set's conversations only when the set's signer is authorized by that member** — the member's author, or someone the member's own record names as able to write it.
+
+That is strictly better than restricting who may create a set. A rule like *the author must be able to sign at least one member* would still let somebody who owns one member bind every other object in the set unilaterally, while blocking a legitimate third-party grouping outright. Reading authority from each member's own content gives §3.1's property back exactly where it mattered — **nobody's grouping rewrites your object's conversation without your record saying so** — and leaves the grouping itself visible to whoever wants it.
+
+Example J still passes: the chat app owns the topic and names the position, the grouping renders, and the HR tool writes nothing. The position's own surface merges the topic's conversation only if the position's record says the chat app may write it, which is the honest answer to a claim its owner never made.
+
+**What it costs, stated rather than minimised.** It is a new kind, which is a Buzz change, and *"no new kind and no Buzz change"* was the claim that made accepting this document cheap. Two things make that smaller than it first reads: a facet-set record is a plain addressable record rather than relay-maintained state — closer to Ship's `kind:30850`, which §10.1's research found was *"one line to change"*, than to the folder command and state kinds it warns will not be; and if the folder kinds go upstream (FOL-1), adding this one to that proposal is marginal rather than a second ask.
+
+**Still to decide, and deliberately not decided here:** the kind number, which is FOL-1's tail; the tag names; and how a member's record says who may write it — NIP-34 has a `maintainers` tag doing this job, and Estiva's records have no equivalent, so the authorized set reduces to the author until one exists.
+
+**Worth reading before implementing:** NIP-MP's fold, which is ten numbered steps and a table of required cases. Several are not obvious and each is a branch somebody would otherwise find in production — a member that resolves to nothing must render as explicitly unavailable rather than be dropped, because *"silence makes a project look smaller than its author declared"*; hiding a grouping must never hide its members; and one authorized claim among several is enough. The facet equivalents are the same shape.
 
 ## 4. The invariant: facets may not cross an access boundary
 
@@ -85,7 +168,17 @@ This is [RFC 0.4 §4.4](RFC-0.4-WORKSPACE.md) — *the relay must refuse a priva
 
 That is why it is enforced at write time rather than trusted to every reader's UI, now and in every app not yet written.
 
-**Enforced today as a read rule:** honour a facet only when its members share a Folder. That costs nothing and makes cross-boundary facets unrepresentable. It becomes a write-time relay rule when somebody genuinely needs a cross-Folder facet — see §7.
+**Enforced today as a read rule.** This said: *honour a facet only when its members share a Folder.* **Restated 2026-09-04, over the access boundary rather than over the Folder** — honour a facet only when its members are **equally readable**, which today means their **channels** are.
+
+Three reasons the original wording was wrong rather than merely coarse.
+
+- **It names the wrong noun.** [RFC 0.4 §4.2](RFC-0.4-WORKSPACE.md) is explicit that *"the channel stays and keeps doing access and conversation; the folder becomes a layer above it."* Access is a property of the channel. A rule about readability stated over Folders is a rule stated over the layer that does not carry the thing it is protecting.
+- **It is ambiguous in a way that can leak.** [§5.1](RFC-0.4-WORKSPACE.md) gives a file *one home, many references* — a file may be listed in a Folder that is not its home. Read as "listed in the same Folder", two members can share a Folder and live in different channels with different access, which is the exact failure this invariant exists to prevent. Read as "same home Folder" it is sound, and it is then just a longer way of saying *same channel*.
+- **It forbids everything and protects against nothing, here, today.** RFC 0.4 §4.2 records that **all 50 of production's channels are `open`**. Equally readable is therefore true of every pair of them, and the same-Folder rule refuses every cross-Folder facet in a workspace where no facet could collapse any context.
+
+**What a reader can actually evaluate.** Two open channels are equally readable and any client can see that. Where a channel is private a client may not be able to compare membership at all — it cannot read a channel it is not in — so that case falls back to *same channel* until the relay enforces the invariant at write time (§8). This is deliberately incremental: it unblocks every facet that is safe today without weakening the invariant by a single case.
+
+**The invariant itself is unchanged.** A facet set MUST NOT merge conversations that are not equally readable. What changed is that the enforcement no longer borrows a container's shape to express it — §3.3.
 
 ## 5. Comments, mentions, and what attaches to what
 
@@ -133,7 +226,9 @@ Two consequences, and the first is a property worth keeping:
 
 **Archive is not delete, and must not behave like it.** An archived member is hidden as an object; its conversation stays. Hiding the discussion when somebody tidies the subject is editing history by accident — and SPEC §6.5 already forbids offering the two as styles of one control.
 
-**One operational note:** an identity without `kind:5` — the agent, today — can only ever archive. Anything it creates as a facet member is permanent.
+**One operational note, corrected 2026-09-04.** This read: *an identity without `kind:5` — the agent, today — can only ever archive; anything it creates as a facet member is permanent.* **The premise was wrong.** The agent's `allowedKinds`, read from its Estiva ID token on 2026-08-30, are `[5, 9, 1111, 1851, 9007, 27235, 30850, 30851]` — `kind:5` is permitted, and a deletion from that identity was published, accepted and honoured, with the surrounding conversation still readable as a negative control.
+
+The conclusion survives for a different reason, which is the one to cite: **archive rather than delete**, because deleting a project record orphans its issues and NIP-09 deletion is a *request* to relays rather than a reversal. Nothing a facet member creates is permanent for want of a credential.
 
 ## 7. Addressing: what a link looks like
 
@@ -355,8 +450,8 @@ Per the roadmap's rule 2, with triggers rather than guesses.
 
 | deferred | why | trigger |
 | --- | --- | --- |
-| **Who may create a facet, beyond "you can sign the file"** | signing already gives a defensible rule at zero cost, and the invariant in §4 removes the risk that would make a permission model urgent | the first cross-boundary facet somebody actually wants, or the first complaint about an unwanted one |
-| **Enforcing §4 at the relay** | a read rule makes cross-boundary facets unrepresentable today, and a Buzz change is expensive to land | the same trigger |
+| ~~**Who may create a facet, beyond "you can sign the file"**~~ **— answered by §3.4** | signing gave a defensible rule at zero cost, and §4's invariant removed the risk that would make a permission model urgent | **no longer deferred.** §3.4's recommended shape has an author who names objects they do not own, so it carries its own rule: a set record is honoured only if its author can sign at least one member. What stays deferred is whether a named member may opt *out* |
+| **Enforcing §4 at the relay** | a read rule covers every case a client can evaluate — two open channels — and a Buzz change is expensive to land | **partially fired 2026-09-04**: cross-*Folder* facets are wanted now, and §4's restatement admits them without the relay. What still needs the relay is a facet whose members sit in channels a client cannot compare, which means the first private channel |
 | **Whether a merged view labels which facet a comment was written against** | the default is not to, following the design guide; the exception is facets with differing access, which §4 currently forbids | §4 being relaxed |
 
 ## 9. Worked examples
