@@ -9,6 +9,62 @@ costs and the one place it genuinely leaves a gap.
 
 ---
 
+## Reviewed 2026-09-05 — two things below are now wrong, and one unit is undecided
+
+Read this first. The document is otherwise current, and these three corrections
+are the parts that would send somebody in the wrong direction.
+
+**1. §3's "cut static components" was overtaken by what shipped.** This document
+says a heading is a line of Markdown and needs no address. [RFC 0.4](RFC-0.4-WORKSPACE.md)
+§6 then revived components *for anchoring only*, and RIC-5 answered it a third
+way: **a block document in JSON, where every block carries an id**, running in
+Ship's descriptions today with anchored comments on top of it (RIC-7). So §7's
+row *"comment on part of a file — git line-ranges, or revisit Components —
+open"* is **answered, and by neither of the options it lists.** Line ranges lost
+for the reason this document already gives — they are famously fragile across
+edits — and separate Component events lost to ids inside the content.
+
+That also removes the objection §3 raises. Block ids are not "an event per
+heading"; they are a field in the body, minted once and stable across edits.
+
+**2. Events and git are not competing, and the split is not primary/backup.**
+The line that matters:
+
+> **Events** carry a file's identity, properties and state. **Git** carries
+> content where concurrent edits must merge.
+
+Every file has a Nostr record regardless — that is what gives it an address to
+link to, a type, a projection other apps render it through, and a status
+somebody who is *not* the author can set. Git holds bytes underneath, for the
+one thing events genuinely cannot do: §2's own point, that a file edited by two
+people is two addresses under `(pubkey, kind, d)`.
+
+The test for a given file is *does more than one person edit this same text at
+once and need both edits kept?* A project description: no, so an event. A design
+document three people are writing: yes, so git.
+
+**3. The unit is undecided, and this document says both.** §5 of RFC 0.4 gives a
+doc the address `30617:<pk>:<repo-d>` — a **repository**. §7 below says folders
+are git **trees** and files are **blobs**. Those are different designs, and
+nothing chooses.
+
+**Proposed, not decided: one repo per team.** A team's Folder is one repository;
+files whose content wants history are paths inside it; files that do not stay as
+plain events. It makes §7's *"folders are git trees"* literally true, it costs
+one repo per team rather than one per file, and it lines up with the permission
+model §1 records — **channel role = repo role** — so a team's git permissions
+are already its channel's, with nothing to bridge.
+
+**The gap it needs, and this is a third sighting of the same gap.** A manifest
+can say a file's body is in the event's `content`. It cannot say *"the body is
+at this path in the team's repo."* That is the same shape as `target: "content"`
+in `@estiva-app/interop` 0.13.0, which declares where a value is written —
+and the same shape as the missing declaration behind labels and behind one team
+pointing at another team's files. Three features now want the manifest to say
+something it cannot.
+
+---
+
 ## 1. "Buzz is using git on Nostr" — confirmed, and further along than assumed
 
 Not patch-exchange-over-Nostr. **Real git hosting.**
