@@ -43,7 +43,9 @@ A file may name other files that belong beside it. A reader renders them in a pa
 
 **It is shared, not personal.** Pinning a project beside a topic is somebody organising the workspace for everyone, not setting a preference. A per-person version would be app-private storage ([SPEC §12](SPEC.md)) and is a different feature; this is not that.
 
-**It is a tag on a replaceable record, deliberately.** The alternative — a separate link event — cannot be taken back: `kind:5` is author-scoped, and this workspace already carries permanent artefacts created that way. A tag on a replaceable record can be edited away by the same person who added it.
+**It is a tag on a replaceable record, deliberately.** The alternative — a separate link event — is hard to take back: a `kind:5` is a request the relay accepts only from the event's author or that author's NIP-OA owner ([SPEC §6.5](SPEC.md), corrected 2026-09-06), so anyone else who wants the link gone has no move at all. A tag on a replaceable record can be edited away by the same person who added it.
+
+The conclusion is unchanged by that correction; the premise is narrower than it was written. This workspace does carry permanent artefacts created the other way.
 
 **It is not symmetric and does not need to be.** A topic naming a project says nothing about what the project names.
 

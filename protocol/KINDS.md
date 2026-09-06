@@ -32,7 +32,7 @@ nobody held the whole list.
 | --- | --- | --- |
 | `9` | Stream message | NIP-29 group message. A Topic message, a DM, and a Ship project conversation are all this |
 | `7` | Reaction | Emoji capped at 64 chars (`build_reaction`) |
-| `5` | Deletion | NIP-09. A *request* — author-scoped, relays may decline |
+| `5` | Deletion | NIP-09. A *request* — relays may decline. Accepted from the author **or** the author's NIP-OA owner, which no client can evaluate ([SPEC §6.5](SPEC.md)) |
 | `9007` | Folder (NIP-29 create group) | The container. See §3 |
 | `9101` | **Estiva assertion** | A statement *about* something in the channel rather than a message in it. `resolution` is the first and currently only subtype, named by the `t` tag. Estiva-specific |
 
