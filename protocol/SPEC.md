@@ -320,11 +320,66 @@ and available to anyone in the Folder.
 **Delete** is a NIP-09 `kind:5`, and three properties are normative:
 
 - It is a **request**. Relays MAY decline; copies held elsewhere are untouched.
-- It is **author-scoped**. A relay honours a deletion only from the pubkey that
-  signed the original. An app MUST therefore hide the control from non-authors
-  rather than offer one that silently fails.
+- It is **author-scoped, and the author is not only the signing pubkey** — see
+  the correction below.
 - It removes the **record**, not the work. Children are separate events with
   their own authors; they remain in the Folder.
+
+#### Corrected 2026-09-06: who a relay accepts a deletion from
+
+This section said a relay *"honours a deletion only from the pubkey that signed
+the original"*, and derived from it that **an app MUST hide the control from
+non-authors rather than offer one that silently fails.** The premise is wrong,
+so the rule does not follow. Both are withdrawn.
+
+What the reference relay enforces
+(`buzz-relay/src/handlers/side_effects.rs`, `validate_standard_deletion_event`)
+is author **or** the author's NIP-OA owner:
+
+```rust
+if target_pubkey_bytes != actor_bytes
+    && !state.db.is_agent_owner(tenant.community(), &target_pubkey_bytes, &actor_bytes).await?
+{
+    return Err(anyhow::anyhow!("must be event author"));
+}
+```
+
+The same test applies on both branches — an `a`-tag deletion of an addressable
+record, and an `e`-tag deletion of a regular event — so it covers objects and
+comments alike. And the actor is the **effective** author rather than the
+signing pubkey: `effective_message_author` resolves a relay-signed event to its
+`actor` or `p` tag, so even the narrow reading of "the pubkey that signed the
+original" was not the comparison being made.
+
+**No client can evaluate this predicate.** Ownership lives in
+`users.agent_owner_pubkey`, written from the NIP-OA attestation and read
+server-side only; no event carries it and no route returns it. The attestation
+runs one way — the identity service issues `owner_attestation` on the
+client-credentials grant, so an *agent* learns who owns it and a *human* never
+learns which agents they own.
+
+So the rule inverts:
+
+- An app **MUST NOT** hide a delete control behind an author comparison it
+  computes itself. The comparison is narrower than the relay's and cannot be
+  made correct client-side, so it withholds the control from people entitled to
+  use it.
+- An app **SHOULD** offer deletion and let the relay adjudicate, surfacing a
+  refusal in the words the relay gave. This is what archiving already does.
+- An app **MUST** still keep archive and delete as visibly different
+  affordances. That half of this section is unaffected.
+
+**Why this is not a technicality.** Agent-authored content is the common case,
+not an edge: measured on production 2026-09-06, **425 of 583 messages** were
+written by one agent identity. Under the withdrawn rule the person who owns that
+agent — the only party besides the agent itself the relay would accept — was the
+one guaranteed never to see the control. Ship found this as SHI-14 and removed
+its own author gate for exactly this reason; the specification had been saying
+the opposite ever since.
+
+**What stays true:** deletion is still a request, still refusable, and still
+narrow. It is not an ACL. Nobody may delete another person's work; the widening
+is one identity cleaning up after an agent it is answerable for.
 
 ### 6.6 Reactions
 
