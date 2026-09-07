@@ -2,7 +2,7 @@
 
 **Working reference. Living document.** [Estiva Ship](https://ship.estiva.app) is the source of truth for ticket detail; this is the map between them — what depends on what, what can run in parallel, and what is deliberately still undecided.
 
-Last updated 2026-09-05. Not published to the docs site (`site/nav.mjs` is opt-in) because it changes often and carries operational detail.
+Last updated 2026-09-07. Not published to the docs site (`site/nav.mjs` is opt-in) because it changes often and carries operational detail.
 
 **Everything here serves one goal: making the third major app cheap enough to build.** Leaf is that app ([ADR 0001](decisions/0001-relay-canonical-by-default.md)). When a piece of work is hard to prioritise, that is the question to ask of it.
 
@@ -61,7 +61,9 @@ They used to be here, one `open / total` per row, and they drifted in both direc
 Two things on screen, and **neither needs a relay change**. That is the scope line, and it is the one worth defending.
 
 1. **Folders working as navigation, in Peek and Ship.**
-2. **Ship's conversation at Peek's level, and Conversations + Activity in both.**
+2. ~~**Ship's conversation at Peek's level, and Conversations + Activity in both.**~~ **Done 2026-09-07** — see Track 2. Reactions, delete, edit and drafts in Ship; both lists in both apps. **One demo caveat**: Peek's Activity shows sub-file conversations only, because a topic has no address for a message to mention (CON-11).
+
+**One thing did change on the way, and it was not a relay change.** Editing a comment needed `kind:40003`, which Buzz has carried for longer than this programme has existed — but **no identity was allowed to sign it**, so it took an Estiva ID seed change and a re-seed rather than a relay deploy. Worth separating, because "needs a Buzz change" and "needs a grant" have very different costs and only one of them is the thing the scope line protects against.
 
 **Why no relay change.** A Folder *is* a Buzz channel today: Peek's topics are folders, a Ship project carries `buzz-channel`, its issues carry `h`. So *"everything in this folder"* is a query that works against production right now, across both apps' kinds, resolved through the projection layer already shipped. What FOL-2's new kinds buy is **multi-writer folder state** — a contents list several people may edit, and folder metadata. The demo needs the read side, which exists.
 
@@ -94,14 +96,24 @@ The model agreed 2026-09-05 replaces a growing list of "modes" with two:
 - **This file's conversation** — comments on the file, comments on its blocks, and comments on anything declared to be the same thing as it.
 - **Activity** — conversations on files *related* to it: its sub-files, and places it was mentioned.
 
-Identity merges; relation aggregates. Two of the four pieces are already filed.
+Identity merges; relation aggregates.
+
+**Built 2026-09-06/07.** Both lists exist in both apps, and Ship's conversation reached Peek's level on the way: reactions, deletion, editing and drafts, each built to a rule written down rather than to whichever app happened to have one.
 
 | do | state |
 | --- | --- |
-| **CON-7** — comments and mentions are two sections, not one list | filed. This *is* the model, filed before it had a name |
-| **RIC-12** — a file shows the conversations that mention it | filed. The other half of Activity |
-| **Sub-file roll-up into Activity** | not filed — waits on files nesting (FOL-2) |
-| **CON-5** — extract `@estiva-app/conversation` | filed, and should come *after* the two lists exist in both apps, so the package extracts a settled model rather than a guess |
+| **CON-7** — comments and mentions are two sections, not one list | **done.** This *is* the model, filed before it had a name |
+| **CON-9** — the two lists, both apps | **done.** Ship and Peek both draw them; a mention renders `subdued`, because a mention and a sub-file's thread do not carry the same trust (RFC 0.5 §5.1) |
+| **CON-1** — the reaction horizon | **done.** N is **100**, in [SPEC §6.6](protocol/SPEC.md) as a rule, and both apps' constants cite it rather than the reverse |
+| **CON-2** — Ship gets reactions | **done**, verified from the relay rather than either UI |
+| **CON-3** — delete, adjudicated by the relay | **done.** Neither app gates on an author check of its own |
+| **CON-10** — drafts | **done** in both apps |
+| **CON-4 / CON-8** — edit a comment | **model decided** (RFC 0.4 §7.2.1); Ship shipped, Peek in review |
+| **Sub-file roll-up into Activity** | **done for Ship**, which needed no new nesting — a project's issues already nest, so the roll-up shows data that exists. Peek's waits on FOL-3 |
+| **RIC-12** — a file shows the conversations that mention it | the other half of Activity, and the half **Peek cannot have yet** — see CON-11 below |
+| **CON-5** — extract `@estiva-app/conversation` | **now the last piece**, and correctly sequenced: the model it extracts is settled and has two consumers that pushed back on it |
+
+**One thing Track 2 handed to Track 1.** Peek's Activity carries sub-file conversations and **cannot carry mentions**, because a mention is an address written into a message body and *a Peek topic has no address*. The surface is built — `partitionByRelation` already splits by relation and labels each row — so making topics addressable turns a second relation on rather than starting one. That is **CON-11**, and it is a consumer of FOL-3 rather than a thing FOL-3 must design for.
 
 ### Ready now, and independent of both tracks
 
@@ -122,8 +134,9 @@ Live dependencies only. Resolved ones moved to *Finished*; if a pair is not here
 | **FOL-2** (folder implementation) | **FOL-1** | §12.1 makes the kind numbers the tail of that decision. Decided; awaiting merge |
 | **Labels**, and the sidebar being usable at all | **FOL-2** | Many flat teams is the model working as designed. Labels are what make it navigable |
 | **FOL-3** (topics become files) | **FOL-2** | And sequenced last regardless: it is the only piece touching what Peek already publishes |
-| **Sub-file roll-up into Activity** | **FOL-2** | Nothing to roll up until files nest |
-| **CON-5** (extract the package) | **CON-7**, **RIC-12** | Extract a settled model, not a guess. SHA-7's lesson: never publish a layer with one consumer that has never pushed back |
+| ~~**Sub-file roll-up into Activity**~~ | ~~**FOL-2**~~ | **Wrong, and shipped anyway 2026-09-06.** It assumed nothing nests until FOL-2 — but a Ship project's issues already do, so Ship's roll-up shows data that exists. Only *Peek's* waits, and on FOL-3 rather than FOL-2 |
+| **CON-11** (mentions in Peek's Activity) | **FOL-3** | A mention is an address written into a message body, and a Peek topic has no address — so the events cannot exist yet. The surface is built and takes a second relation |
+| **CON-5** (extract the package) | *(nothing)* | **Unblocked 2026-09-07.** CON-7 and CON-9 are done and the model has two consumers that pushed back on it, which is the condition SHA-7's lesson asks for |
 | **INT-9**'s remaining half | **PRO-18**'s container half | An action still cannot create a container. Now wants the folder model rather than a guess at one |
 | all DM code | **DMS-2** | Verifies that `kind:41010` is accepted over the HTTP bridge. If not, the track changes shape |
 | **Leaf starting** | *(nothing)* | §6 was answered in Ship (RIC-7). It is unblocked, and files nesting is what would make it cheap |
@@ -137,7 +150,7 @@ Open decisions first. Everything settled is in *Finished* or in the RFC it amend
 | --- | --- | --- |
 | ~~**How a named group of files is written down**~~ | RFC 0.5 §3.4 | **Decided 2026-09-05.** `kind:30852` Set — an addressable record listing its members, declaring a role of `facet`, `label` or `collection`. A role a reader does not recognise groups and never merges. Honoured for your file only when its signer is authorised by *your* file. One primitive under labels, cross-team references and facets |
 | ~~**Accept or amend RFC 0.5 §1–§6**~~ | SHA-13 | **Accepted 2026-09-05**, with three corrections and §3.4 |
-| **The reaction horizon** | CON-1 | Currently an undocumented constant of 100 |
+| ~~**The reaction horizon**~~ | CON-1 | **Decided 2026-09-07** — N is 100, in [SPEC §6.6](protocol/SPEC.md) as a rule rather than an observation, closing RFC 0.4 open question 10. The argument was interoperability, not performance: two apps with different N disagree about the count legitimately, and a reader cannot tell that from a bug |
 | **What happens to Convex-only DMs** | DMS-7 | The relay's ±15 minute drift window means republished history cannot carry original timestamps |
 | **What the product says about DM privacy** | DMS-11 | "Private" is accurate for membership-scoped; whether to say more is product and possibly legal |
 | **Disclosure copy** | RFC 0.4 §12.6 | Two moments, both real: granting access discloses all history, and *listing* a team discloses its roster. Sharper now that a Folder is called a team — "who is in this channel" is mild, "who is on this team" is org structure |
@@ -173,6 +186,7 @@ Rule 3 is why these survive the pruning: the lesson, not the history. Detail is 
 
 | shipped | what it taught |
 | --- | --- |
+| **Track 2** — Conversations (2026-09-06/07) | **Two apps agreeing needs a rule, not a convention.** Every defect here was two implementations each self-consistent: a reaction made in Ship discarded by Peek's import filter; a reply reaction that rendered, never left the browser, and had no persistence path despite one being built; a horizon each app picked for itself, where different values would make the two disagree about a count legitimately and unfixably. **And a withdrawn rule propagates**: SPEC §6.5 said deletion was author-scoped, it was not, and both apps plus `@estiva-app/protocol` had built controls to it — the wrong rule reached third-party adopters before anyone noticed |
 | **Cross-app read state** | **Seven defects, none caught by review or a green suite** — every one in the seam between correct code and whatever was meant to invoke it. Hence `window.__readState()` in both apps. And **observing read state changes it**: opening a topic to look at an indicator advances the container and clears what you were measuring. [READ-STATE.md](operations/READ-STATE.md) |
 | **Track A** — Peek real-time | **A two-window test of one account proves nothing.** Both windows share one deployment, so a reply arrives by reactivity alone. Verify a live path from a different identity |
 | **Track F** — Buzz catch-up · **REW-11 / CAT-9 / SHI-7** | A green image build is not a deploy, and the relay refuses in a shape that reads as success — `200 {"accepted": false}`. **Measure the defect a design change is justified by, before the change**: REW-11's was measured after and did not say what the ticket assumed. Do not squash-merge an upstream catch-up |
