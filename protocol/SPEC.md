@@ -396,18 +396,69 @@ displaying, then query for reactions pointing at those ids.
 The consequence is a horizon rather than a complete answer. A client fetching
 reactions for N targets has to choose N, and the choice is invisible to the
 person reading: reactions on older messages simply do not appear, and nothing
-reports that they were not asked for. The reference client's N is **100**.
+reports that they were not asked for. N is fixed at **100** — see below.
 
-Two rules follow:
+Three rules follow:
 
 - An app MUST NOT assume a channel or cursor query returns reactions.
 - An app that displays reaction counts MUST decide its own horizon deliberately,
-  and SHOULD state it where a reader can find it. An undocumented cap is
-  indistinguishable from "nobody reacted".
+  and MUST report when it truncates. An undocumented cap is indistinguishable
+  from "nobody reacted", which is the whole difficulty — a person cannot tell a
+  quiet message from an unasked question.
+- An app that reads reactions across **more than one id space** — messages and
+  thread replies are distinct spaces in at least one implementation — MUST share
+  one budget between them rather than concatenating two capped lists and
+  truncating the result. See the amendment below for why this is stated.
 
-**What the horizon SHOULD be is unsettled** and is open question 10 in
-[RFC 0.4](RFC-0.4-WORKSPACE.md). This section records the mechanism, not a
-guarantee.
+### The horizon is 100
+
+*Decided 2026-09-07, closing RFC 0.4 open question 10 (CON-1).* This section
+previously said the horizon was unsettled and recorded "the reference client's N
+is 100" as an observation rather than a rule.
+
+**N is 100, and an implementation SHOULD adopt it rather than choose its own.**
+
+The reasoning is the interoperability one rather than a performance one. A
+horizon is not a private tuning constant: two apps showing the same conversation
+with different N **disagree about the count, legitimately and unfixably**, and
+a reader has no way to tell that from a bug. The value matters much less than
+its being the same everywhere, which is why this is a number in the
+specification and not a recommendation to measure locally.
+
+100 was chosen from what production actually holds rather than from a round
+number (measured 2026-09-06/07 across the reference workspace):
+
+| surface | messages |
+| --- | --- |
+| busiest container | 77 |
+| median container | 9 |
+| busiest issue | 13 |
+| containers at or over 100 | 0 |
+
+So it covers every surface this workspace has, with room — which is the point of
+picking it *now*. The truncation report is what makes the boundary visible on
+the day something crosses it, and an app whose surfaces routinely exceed 100
+should raise the question here rather than quietly raise its own constant.
+
+**Where the two reference apps stand today**, stated because a rule nobody
+follows is a wish:
+
+| | horizon of 100 | reports truncation | shared budget |
+| --- | --- | --- | --- |
+| Ship | yes | yes — names the cap and how many were skipped | n/a, one id space |
+| Peek | yes | **no — truncates silently** | yes, since the amendment below |
+
+Peek's gap is the reason the second rule is a MUST rather than a SHOULD: it is
+the app where the cap can actually bite, because a container is where messages
+accumulate.
+
+**The shared-budget rule was found the hard way.** One implementation read
+reactions for messages and for thread replies, capped each list at N, then
+capped their concatenation at N again — which spends the whole budget on
+messages first. At 100 messages in a container, *every* reply target was
+dropped and every reaction on every reply silently disappeared for every
+reader. Concatenating two capped lists is not a horizon; it is one id space
+starving another.
 
 **Reactions attach to messages.** Whether they attach to anything else — a block
 inside a rich text field, an object — is a product question RFC 0.4 §7.2 answers
