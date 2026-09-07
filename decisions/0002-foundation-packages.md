@@ -55,6 +55,24 @@ which this section is paying.
 it — sign-in screens shipping real components would do it — because every auth
 change would then become a two-repo release. Worth watching during SHA-4.
 
+**Watched during SHA-4, and it did not fire (2026-09-07).**
+`@estiva-app/identity` ships the auth shell's *state machine* and its reason
+vocabulary and no components at all; each app renders the shell itself, because
+it is a full-page surface each will want its own of. That was a deliberate line
+held rather than a coincidence, and `check-identity.yml` now refuses
+`@estiva-app/ui` as a declared dependency as well as as an import — so folding
+`ui` back in stays a decision somebody makes rather than one a `package.json`
+edit makes quietly.
+
+**The same check no longer forbids `protocol`.** It read "no runtime
+dependencies at all" until SHA-4, which is stricter than this section: a package
+that may not depend on `protocol` cannot hold the `POST /sign` round trip, so
+that round trip and its `expectedPubkey` guard stayed duplicated across `ship`,
+`estiva-agent` and `peek` instead. What the check defends now is what was
+actually decided — no data layer, no UI, and nothing from outside
+`@estiva-app`, since a third-party dependency in the foundation is inherited by
+every app in the suite.
+
 **The objection, which is real.** b990b57 moved the agent out of Ship for a
 reason that appears to apply here verbatim:
 
