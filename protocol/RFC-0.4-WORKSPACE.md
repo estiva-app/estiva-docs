@@ -328,6 +328,36 @@ New in 0.4. A conversation is not only its messages, and the three things people
 
 **Edit is a new event, never a rewrite.** A `kind:9` and a `kind:1111` are both non-replaceable, so an edit cannot overwrite what it edits. Whatever an app shows as "edited" is a fold over two events, and two apps folding the same pair MAY legitimately show it differently — the fold is where apps are supposed to differ ([SPEC §10](SPEC.md)).
 
+#### 7.2.1 The edit model — decided 2026-09-07 (CON-4)
+
+*This section is the design. It moves into SPEC when both apps implement it, per the rule in the acceptance notes above — not before, or SPEC would document a protocol no app speaks.*
+
+**The mechanism already exists and nobody was using it.** Buzz has carried `kind:40003` (`KIND_STREAM_MESSAGE_EDIT`) since before this RFC, with validation and channel scoping already written. Peek has an edit control that publishes nothing — `editBody` patches its own database, so a human edit never leaves Peek and every other reader keeps the old text. Ship has no edit at all. So this is less a design than an agreement about something already built and unclaimed.
+
+**Wire shape.** Mirrors `build_edit` (`buzz-sdk/src/builders.rs`), which is what the relay validates against:
+
+| Kind | Tags | Content |
+| --- | --- | --- |
+| `40003` | `h` (the channel), `e` (the target event id), `ts` | the **new body**, in the target's own format |
+
+`h` is REQUIRED — `40003` is in the relay's `requires_h_channel_scope`, so an edit without one is refused with `accepted: false` while the kind is allowed and the signature is fine. The content cap is 64KB.
+
+**`ts` is new here and is the one addition to Buzz's shape.** `build_edit` emits `h` and `e` only, which leaves two edits published in the same second with no defined order — and unlike a change event, where last-write-wins per *field* limits the damage, two edits of one message that disagree resolve to whichever the reader happens to sort first. So an edit MUST carry `ts` in epoch milliseconds, under exactly the rule §6.2 already gives it: **a reader honours `ts` only when it agrees with `created_at` to the second, and ignores it otherwise.** An app that does not implement `ts` still folds correctly, at one-second resolution. Adding a tag Buzz's builder does not emit is safe in the direction that matters — the relay validates the kind, the `h` and the ownership, and ignores tags it has no rule for.
+
+**The fold.** The latest edit wins, ordered `ts` (when trusted), then `created_at`, then event `id` as a stable tiebreak — the same ordering as [SPEC §6.3](SPEC.md), deliberately, because a second ordering rule in the same protocol is a second thing to get wrong. An edit whose target the reader cannot see is held, not dropped: the target may arrive later, and a dropped edit cannot be recovered by a re-read.
+
+**What an edit may change is the body and nothing else.** Not the target's kind, not its channel, not its position in a thread, not its author. An edit that appears to say otherwise is folded for its content and ignored for the rest.
+
+**Who may edit is the relay's answer, not the app's.** `validate_edit_ownership` accepts the target's **effective** author or the NIP-OA owner of an authoring agent — and, on the author path, re-checks channel membership, so somebody removed from a private channel cannot go back and rewrite what they said while they were in it. As with deletion (§6.5, corrected 2026-09-06), **no client can evaluate that predicate**, so an app MUST NOT gate the control on an author comparison of its own. Offer it, attempt the write, and report the refusal in the relay's own words.
+
+*This corrects CON-4's own done-when*, which said "a non-author is not offered the control" — written before §6.5's correction and wrong for the same reason.
+
+**What a reader sees.** An app that renders an edited message MUST show the current text and MUST mark it as edited. Whether the earlier versions are reachable is a product decision and is deliberately left open: it is a different question for a comment on an issue than for a message in a chat, and the events are append-only either way, so an app that shows no history is hiding nothing that another app cannot show.
+
+**An app that does not implement `40003` shows the original text, and this is the interop cost worth stating.** An edit is a progressive enhancement: until both apps fold it, the same message reads differently in each, and neither is wrong. That is the ordinary condition of this protocol rather than a defect — but it means "edited in Peek" is not "edited everywhere" until Ship ships it too, which is why CON-4 covers both apps and not one.
+
+**The gate.** No identity could sign `40003` at all until [estiva-id#60](https://github.com/estiva-app/estiva-id/pull/60) — not Peek, not Ship, not the agent. Checked before any of this was built, which is the standing lesson from CON-2: a ceiling that arrives after the code refuses at the final publish, with the control already on screen.
+
 **Delete is a NIP-09 `kind:5` and inherits every property SPEC §6.5 already gives it** — a request, refusable, removing the record and not the work. One consequence deserves restating here because it has bitten this workspace repeatedly: **an identity that cannot sign `kind:5` publishes permanently.**
 
 *Amended 2026-09-06.* This paragraph continued *"and no other identity can clean up on its behalf. An app MUST hide a delete control from a non-author rather than offer one that silently fails."* Both clauses are withdrawn — see [SPEC §6.5](SPEC.md), which carries the correction and the relay source. The reference relay accepts a deletion from the author **or** the author's NIP-OA owner, so an agent's owner *can* clean up on its behalf; and no client can evaluate that predicate, so an app MUST NOT gate the control on an author check of its own. What survives is the first clause: an identity with no `kind:5` grant at all still publishes permanently as far as its own hand is concerned.
