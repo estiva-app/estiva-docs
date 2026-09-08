@@ -52,7 +52,7 @@ They used to be here, one `open / total` per row, and they drifted in both direc
 | **Other** | `estiva-docs` tooling and one-offs belonging to no track. Unarchived 2026-09-01 — it was hidden while holding open issues |
 | **Agent / Steer** | The CLI, MCP server and Claude Code plugin |
 | **Performance and efficiency** | What a read and a write actually cost, before Leaf is built on it. **PER-1 shipped 2026-09-08**: a Ship workspace read is 3 requests where it was 39, and the poll went back to 10 s |
-| **Live delivery** | Ship subscribes instead of polling, and the package a second app needs in order to. Created 2026-09-08 by centralising a socket that had a package half in *Shared foundation packages* and a Ship half in *Performance and efficiency* — **and a blocker in neither** |
+| **Live delivery** | Ship subscribes instead of polling, and the package a second app needs in order to. **Complete 2026-09-08**, all five issues: a change from another pubkey reaches Ship in under two seconds against a ten-second poll, and the poll now runs only while the socket is not live. Created the same day by centralising a socket that had a package half in *Shared foundation packages* and a Ship half in *Performance and efficiency* — and a blocker in neither, which is what the centralising found |
 
 **Both gates are closed.** Gate 1 (Estiva ID capabilities) closed 2026-08-25; Gate 2 (where packages live and how they publish, [ADR 0002](decisions/0002-foundation-packages.md)) closed 2026-08-27. **Nothing in the programme is gate-blocked any more.**
 
@@ -75,7 +75,7 @@ Two things on screen, and **neither needs a relay change**. That is the scope li
 - **FOL-5** `kind:30852`, and therefore **FOL-6 labels**. Labels matter when there are eighty teams; there are not yet.
 - **FOL-3.** Topics already are folders — that is what makes the demo possible without it.
 - **New nesting protocol (FOL-4).** Ship's project → issue nesting is data that already exists; the demo shows it rather than building it.
-- **Anything in Live delivery.** It needs no relay change either, but it does need an Estiva ID grant and a new package, and the first is the same shape as the `kind:40003` grant above — a seed change and a re-seed against production two days before a demo.
+- **Anything in Live delivery.** It needs no relay change either, but it does need an Estiva ID grant and a new package, and the first is the same shape as the `kind:40003` grant above — a seed change and a re-seed against production two days before a demo. *(Held, then done after the demo. The grant's re-seed did fail exactly as this predicted: it ran before the box had pulled, wrote the old values back, and exited 0.)*
 
 ## What to do next
 
@@ -143,10 +143,10 @@ Live dependencies only. Resolved ones moved to *Finished*; if a pair is not here
 | **INT-9**'s remaining half | **PRO-18**'s container half | An action still cannot create a container. Now wants the folder model rather than a guess at one |
 | all DM code | **DMS-2** | Verifies that `kind:41010` is accepted over the HTTP bridge. If not, the track changes shape |
 | **Leaf starting** | *(nothing)* | §6 was answered in Ship (RIC-7). It is unblocked, and files nesting is what would make it cheap |
-| **SHA-7** (extract the socket plumbing) | *(nothing)* | **Was SHA-2, and that was the wrong dependency.** `@estiva-app/platform` still does not exist — `packages/` is `hello`, `identity`, `interop`, `protocol` — but creating it is now part of SHA-7 rather than something it waits for. SHA-2 is the PWA export; whichever lands first creates the package |
-| **PER-3** (Ship's socket) | **LIV-2** (the grant) | Estiva ID refuses `estiva-ship` a `22242`, deliberately and with a test named after it. The relay refuses a `REQ` before auth, so nothing is provable end to end until this lands. The agent cannot substitute — its token has no `22242` either |
-| **PER-3** | **SHA-7** | Ship's adoption is what stresses an API no second consumer has argued with. The pair is the point; neither closes alone |
-| **PER-2** (incremental reads) | **PER-3** | Its answer falls out of how a pushed event reaches the fold, so deciding it first would be guessing |
+| ~~**SHA-7** (extract the socket plumbing)~~ | *(done)* | **Done 2026-09-08.** It created `@estiva-app/platform` 0.1.0 — which did not exist when this row was written, and which SHA-2's PWA export now adds to rather than creating. Refactored rather than moved: ADR 0002 §10 scored `liveTopics.ts` ❌ on two constraints, so `git mv` was never available |
+| ~~**PER-3** (Ship's socket)~~ | ~~**LIV-2** (the grant)~~ | **Both done 2026-09-08.** Estiva ID refused `estiva-ship` a `22242` deliberately, with a test named after it; the grant reversed that and is scoped to the workspace relay and no other. Proved by a signature the relay accepted rather than by a database row |
+| ~~**PER-3**~~ | ~~**SHA-7**~~ | **Both done.** The pair was the point and it paid: the second consumer did push back. `createChannelSubscriptions` is one REQ per channel, which a workspace read cannot afford against a budget that refuses the 51st unpaced REQ, so `watchFolders` was added. `live.ts` and `subscriptions.ts` are unchanged |
+| ~~**PER-2** (incremental reads)~~ | ~~**PER-3**~~ | **Decided no, 2026-09-08.** Its answer did fall out of how a pushed event reaches the fold: a debounced full re-read, which keeps deletions and re-links correct for free. What it implies for Leaf — where the decision stops applying — is recorded on the project |
 
 ## Decisions that gate work
 
@@ -159,7 +159,7 @@ Open decisions first. Everything settled is in *Finished* or in the RFC it amend
 | ~~**The reaction horizon**~~ | CON-1 | **Decided 2026-09-07** — N is 100, in [SPEC §6.6](protocol/SPEC.md) as a rule rather than an observation, closing RFC 0.4 open question 10. The argument was interoperability, not performance: two apps with different N disagree about the count legitimately, and a reader cannot tell that from a bug |
 | **What happens to Convex-only DMs** | DMS-7 | The relay's ±15 minute drift window means republished history cannot carry original timestamps |
 | **What the product says about DM privacy** | DMS-11 | "Private" is accurate for membership-scoped; whether to say more is product and possibly legal |
-| **How a pushed event reaches Ship's fold** | PER-3 | Trigger a debounced re-read, or merge incrementally. Recommendation is **trigger**: Ship's fold is correct *because* it sees everything at once, and merging turns a stateless client into one with a cache — losing deletions and re-links, which an incremental reader never re-asks for. PER-1 made a full re-read 3 requests, which is what makes the cheap answer affordable. Decides PER-2 as a by-product |
+| ~~**How a pushed event reaches Ship's fold**~~ | PER-3 | **Decided 2026-09-08: trigger**, and built that way. Was: trigger a debounced re-read, or merge incrementally: Ship's fold is correct *because* it sees everything at once, and merging turns a stateless client into one with a cache — losing deletions and re-links, which an incremental reader never re-asks for. PER-1 made a full re-read 3 requests, which is what makes the cheap answer affordable. Decides PER-2 as a by-product |
 | **Disclosure copy** | RFC 0.4 §12.6 | Two moments, both real: granting access discloses all history, and *listing* a team discloses its roster. Sharper now that a Folder is called a team — "who is in this channel" is mild, "who is on this team" is org structure |
 
 **Settled 2026-09-05**, in one sitting, and recorded here because the RFCs do not yet say so:
@@ -226,5 +226,5 @@ The short list. Everything else claimed in this programme has been read from a l
 
 - **Whether `kind:41010` is accepted over the HTTP bridge.** Estiva ID will *sign* one, which says nothing about ingest. This is DMS-2, and it gates ten tickets.
 - **The private-channel refusal.** That a non-member is refused a private channel's `39000` follows from reading the relay's `UNION`, not from measurement — production has no private channel to be refused from. RFC 0.4 §5.2. Closing it needs a private channel and a second relay-member identity. **This moved up the list on 2026-09-05:** the whole HR scenario rests on it, and so does the rule that a reference to something unreadable renders as nothing. Both are currently believed rather than measured.
-- **Whether `SIGN_RELAY_AUTH_ALLOWED_URLS` is non-empty in production.** Peek's socket works, and `estiva-peek`'s relay list is taken straight from that variable, so it must be — but that is an inference from a working feature, not a read. It matters because Gate 1's lesson is that a grant has two halves: LIV-2 could add `22242` to Ship, read as correct, and be refused for every relay there is.
+- ~~**Whether `SIGN_RELAY_AUTH_ALLOWED_URLS` is non-empty in production.**~~ **Read 2026-09-08: `wss://estiva.estiva.app`.** Non-empty, and exactly one relay — so the inference from Peek's working socket was right, and it also settled how to scope Ship, since mirroring Peek resolves to that one origin and nothing else. Gate 1's lesson still stands and was worth acting on: had it been empty, LIV-2 would have added `22242`, read as correct, and been refused for every relay there is.
 - **Whether one folder channel holds every file's conversation at scale.** RFC 0.4 open question 4. The catch-up left a production-shaped database to test against.
