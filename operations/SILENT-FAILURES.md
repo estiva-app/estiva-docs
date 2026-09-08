@@ -69,6 +69,7 @@ re-examining that proof, which is a different piece of work.
 | Re-seed ran and exited 0 | It ran **before** the new image was pulled, wrote the old values back, and exited 0. Order is **merge → wait for the pull → re-seed → verify** |
 | Relay is healthy | Buzz has **no update timer**. A healthy relay serving last month's image is exactly what this produces. Compare the running image id to `:nfb`, not health |
 | The relay-image CI run is green | The image exists in the registry; nothing pulled it. A probe run seconds after a successful build still got the pre-change behaviour. **A build is not a deploy** — the only check that separates them from outside the box is publishing the shape and reading `accepted` |
+| A package version is published, tagged and `latest` | **No app has it.** Peek and Ship declared `^0.1.1` and *locked* `0.1.1`, and `npm ci` installs the lock, not the caret. Two releases sat on the registry and in nobody's build. A foundation fix reaches a browser only after four steps, each invisible from the one before: merge, tag and confirm the registry, bump each consumer's **lockfile**, then deploy that consumer | `npm view <pkg> version` against the consumer's `package-lock.json` — never its `package.json` |
 | PR reports **merged**, content never reached `main` | It was stacked on a branch that merged first, so the merge landed in a branch nothing feeds from. Never stack on a branch about to merge |
 | Merged, CI green, and the old bundle is still serving | Peek's deploy sets `concurrency: cancel-in-progress: true`, so a merge **88 seconds later cancelled the deploy** (2026-09-02). Usually self-healing, because the superseding run deploys a superset — but a cancelled *last* run leaves `main` undeployed with nothing red anywhere. `gh run list --workflow deploy.yml --branch main` shows it; a cancelled run is not a failure to chase, an un-superseded one is |
 
@@ -87,11 +88,27 @@ re-examining that proof, which is a different piece of work.
 | A `search` filter came back with rows | A relay that **ignores** an unknown `search` field answers with everything of that kind — identically to one that honours it. "Search returned results" is not evidence. Pair every search with a nonsense token that must return **zero** |
 | Search finds a word but nothing as you type it | The relay's NIP-50 index matches **whole tokens**. `"Cla"` → 0 rows where `"Claude"` → 2, measured on production 2026-09-02 (`peek/scripts/probe-nip50-search.ts`). `supported_nips` advertising 50 says nothing about matching rules |
 
+## One list, two questions
+
+Two defects on 2026-09-08, in two codebases: a list built to answer one question
+was reused to answer a different one. Both read as intermittent or as
+working-as-designed, because a list that is *almost* right answers most of the
+time.
+
+**The test that separates them: would a correct answer differ per viewer, or per
+moment?** If the two questions disagree about that, one list cannot serve both.
+
+| What looked fine | What was actually wrong | How to check |
+| --- | --- | --- |
+| `/me/security-events` answered `[]`, and `audit_events` was full | It asked for the newest **50** rows for the person and *then* kept the seven rare actions it shows. Every `POST /sign` and `POST /token` writes a row, and both apps sign every message, reaction and read-state publish — so an active account's newest page is entirely app traffic. **Filter in the query, not on the page.** Reported as "I once or twice saw some logs but they disappear", which is the shape seen from outside: right after signing in the `session.create` is still inside the window | Count what the filter *rejected*. A full page of rejects means the empty answer is empty for the wrong reason |
+| A mention drew a truncated `npub…` for somebody the app plainly knows | `personByPubkey` resolved against the **suggestion** directory, which excludes the viewer (you do not `@` yourself) and identities seen only on the relay (no account here). Both correct for "who can I mention"; neither for "who does this key name" — and Peek already rendered those names as message authors, so the name was there and the resolver could not see it | Ask whether the answer should differ per viewer. A name does not. A suggestion list does |
+
 ## Tooling
 
 | What looked fine | What was actually wrong |
 | --- | --- |
 | A suite fails in a fresh worktree and implicates somebody else's merged PR | **`node_modules` copied from another worktree is a stale dependency tree.** Comparing lockfiles does not catch it — they match, and the *installed* tree is older than both. On 2026-09-07 this had me report Ship's `main` as red and name a peer's merged PR as the cause: the worktree held `@estiva-app/ui@0.7.0` where `main` asks for `^0.8.0`, and the failing assertion was about a Base UI behaviour only 0.8.0 has. Run `npm ci`, and before blaming anybody check the installed version of the package the assertion is about — `node -e "require('./node_modules/<pkg>/package.json').version"` |
+| A bundle carried a new package's fix and an old package's bug at once | **`web/` and the repo root are separate `package.json` files resolving `@estiva-app/*` independently.** Ship's `web/src/auth/*` imports by name and got `web/`'s `identity@0.1.1`; `web/src/api/store.ts` imports through `../../../lib/` and got the root's `0.2.0`. One bundle, two versions — so the author guard was live and the expiry clamp was not, and a merged PR of mine claimed otherwise. Bumping "the dependency" means bumping every tree that resolves it | Grep the **built bundle** for a string unique to the new version. Two lockfiles can each be internally consistent and still disagree; nothing compares them |
 | `curl -w '%{http_code}' … \|\| echo 000` | curl already prints `000` on failure *and* exits non-zero, so the fallback appends a second one. `"000000" != "000"` reads as success — this reported a dead relay as healthy |
 | A tmux window exists for a service | A run that died on an interactive prompt leaves the window there forever. Existence is not readiness |
 | `npx convex dev` appears to hang | `.env.local` names a cloud deployment, which beats `CONVEX_AGENT_MODE=anonymous`; it is sitting on an interactive prompt |
