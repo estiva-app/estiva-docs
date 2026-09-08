@@ -1,6 +1,6 @@
 # RFC 0.5 — Association: how files in different apps relate
 
-- **Status:** draft — **§7 (Addressing) accepted 2026-09-03**, §1–§6 still draft
+- **Status:** draft — **§7 (Addressing) accepted 2026-09-03**; **§3 (Facets) withdrawn 2026-09-08 in favour of §10**
 
   §7 is separable and was accepted on its own: it answers *how is a file
   addressed*, which the rest of this document does not depend on, and it is the
@@ -50,6 +50,16 @@ The conclusion is unchanged by that correction; the premise is narrower than it 
 **It is not symmetric and does not need to be.** A topic naming a project says nothing about what the project names.
 
 ## 3. Facets
+
+> **Withdrawn 2026-09-08. Superseded by [§10](#10-aspects-why-facets-were-never-needed).**
+>
+> Kept in full rather than deleted, because the reasoning below is what
+> produced §4, and §4 is what proves the mechanism unnecessary. A reader who
+> deletes this section loses the argument that retired it.
+>
+> Nothing implemented it. `kind:30852` (§3.4) was allocated and never published;
+> it is now free for labels ([RFC 0.4](RFC-0.4-WORKSPACE.md) §4, FOL-5/FOL-6),
+> which is a different use of the same "a named set of files" idea.
 
 A **facet set** is a group of files that are perspectives on one thing. A Ship project, a Peek topic and a Leaf document may all be facets of the same work.
 
@@ -494,12 +504,114 @@ Per the roadmap's rule 2, with triggers rather than guesses.
 
 **E · Suggested, not automatic.** A first message mentions a project. The app offers to pin it. Accepting writes D's tag (§5.3).
 
-**F · One conversation, two views.** A topic and a project are facets. A comment written in chat appears among the project's comments, ordered by time, unlabelled — and is still anchored to the topic. Nothing was copied (§3).
+**F · One conversation, two views.** *Rewritten 2026-09-08 — this was the case facets existed for, and it is why they are not needed.* There is no topic standing in for the project. The project is one file; Peek draws its conversation and Ship draws its properties. A comment written in Peek is a comment on the project, and appears in Ship because it is the same conversation, not a merged one (§10).
 
-**G · Three facets, one block.** A document, a topic and a project are one facet set. A comment on a paragraph of the document appears in all three views, still identified as being on that paragraph rather than flattened to the document (§3.2).
+**G · One file, three aspects, one block.** A file has a document, properties and a conversation. A comment anchored to a paragraph shows wherever that file's conversation is drawn — in Leaf beside the paragraph, in Peek and in Ship as a comment that names it — still identified as being on that paragraph rather than flattened to the file (§10.2).
 
-**H · The facet that must be refused.** Making a private huddle a facet of a public project would collapse context for the one person who can see both. Refused by §4.
+**H · The context collapse that must still be refused.** With no merge there is nothing to refuse *here* — but the risk did not vanish, it moved. Listing a file into a Folder whose readers are not the file's readers puts a private discussion in a public-feeling view for the one person who can see both. That is now governed where access lives: [RFC 0.4 §4.2](RFC-0.4-WORKSPACE.md) and §5.1's *one home, many references*. §4's reasoning survives its mechanism.
 
-**I · The subject is deleted.** A faceted project is deleted. The other views lose its card and keep every comment (§6.2).
+**I · The file is deleted.** A project is deleted. Its conversation is not copied anywhere, so there are no other views to keep it — the comments are anchored to a file that is gone, exactly as any file's are (§6.2, which now applies to one file rather than to a set).
 
-**J · The third app.** An HR tool publishes a job position and writes no chat-app code. Comments anchor to the position, the chat app groups them under the job title, and somebody later facets it with an existing topic. If this needs HR-side code about the chat app, the design is wrong.
+**J · The third app.** An HR tool publishes a job position and writes no chat-app code. Comments anchor to the position, and the chat app lists it in its Folder and draws its conversation under the job title — because that is what it does for every file, not because anyone paired anything. **The clause about later faceting it with a topic is gone, and its absence is the point:** under §10 there is nothing to pair. If this needs HR-side code about the chat app, the design is wrong.
+
+## 10. Aspects: why facets were never needed
+
+**Decided 2026-09-08.** Facets are withdrawn. Nothing replaces them, because the
+thing they were built to do turns out not to need a mechanism.
+
+### 10.1 The mistake, stated plainly
+
+A facet existed so that a Ship project and a Peek topic could be *"perspectives
+on one thing"* whose conversations merge. But they were only ever two things
+because **Peek could not render a project's conversation.** A topic was created
+to stand in for the project, and then a mechanism was needed to glue the stand-in
+back to the thing it stood for.
+
+Remove the limitation and the pairing has nothing to do. There is one file — the
+project — and Peek shows its conversation directly.
+
+**A facet was a workaround for a missing view, promoted to protocol.**
+
+### 10.2 The model
+
+A file has three parts, and each app renders the ones it owns:
+
+| part | what it is | who draws it |
+| --- | --- | --- |
+| **document** | the content of the file | Leaf |
+| **properties** | status, assignee, dates — what a *type* adds | Ship |
+| **conversation** | the discussion attached to it | Peek |
+
+An app shows every file in a Folder and renders **its own aspect** of each. Peek
+lists a Ship project beside a Peek topic and a Leaf document, and draws the
+conversation of all three. It does not render the document; that is Leaf's
+aspect, and a link takes you there.
+
+**A Peek topic is then a file whose document is empty.** It carries only the
+conversation every other file already has. That is not a special kind of thing —
+it is the degenerate case of the general one.
+
+### 10.3 Why this is not a smaller facet
+
+A facet merged *several files'* conversations into one view. Aspects merge
+nothing: there is **one file** and one conversation, shown by whichever app you
+happen to be in. No union, no ordering question, no read-time merge, and no rule
+about what happens when a member leaves the set — §6 stops applying rather than
+being reimplemented.
+
+### 10.4 §4 is what proves facets redundant
+
+The invariant already accepted in §4 is the argument, and it was in the document
+before this section was written:
+
+> **A facet set MUST NOT merge conversations that are not equally readable.**
+
+So a facet could only ever join files **inside one access boundary**. And inside
+one access boundary the two structures RFC 0.4 already has — a Folder that holds
+files, and a file that holds sub-files — express every relationship a facet
+could:
+
+- Two things that are *the same thing* are one file with several aspects.
+- Two things that are *related* are a file and its sub-file, or two files in one
+  Folder, which is §2's basic association.
+
+Facets were therefore redundant **given their own invariant**, not merely
+replaceable. That is the strongest form of this argument and it is worth stating
+in exactly those terms, because it means nothing was lost by withdrawing them.
+
+### 10.5 What this costs, and the one thing it requires
+
+Not free, and the cost is concentrated in one place: **a Peek topic must become
+an ordinary addressable file whose conversation is scoped to it.**
+
+Today a topic *is* a channel — a relay-signed `kind:39000` whose `d` is the
+channel uuid, with `kind:9` messages carrying `h` and no `a`. So a topic's
+conversation is *the container's* conversation. That is exactly why a topic
+cannot sit beside a project as a peer today, and it is
+[RFC 0.4 §11.1](RFC-0.4-WORKSPACE.md), which already warns the change is
+plausibly larger than the Ship rewrite.
+
+Everything else in §10 follows from work that already exists:
+
+- **A consumer can already find another app's conversation.** `commentKindsOf`
+  reads the comment kind off the owning app's manifest, so Peek does not need to
+  learn what Ship is to show a project's discussion.
+- **A Folder can already list files of any kind as peers.** Built and running:
+  `resolveFolderContents` in `@estiva-app/interop` 0.15.0, drawn in both apps.
+- **Following stays per-file** and needs no new kind — RFC 0.4 §4.6's private
+  `kind:30078` list, pointed at files as well as Folders.
+
+### 10.6 What is deliberately *not* concluded
+
+**"The type only adds properties" does not mean one file kind.** It is tempting
+to read §10.2 as arguing for a single `kind:file` with a `type` property. It does
+not, and that reading would be expensive to reverse: **NIP-89 ownership is keyed
+by kind** ([RFC 0.4 §13](RFC-0.4-WORKSPACE.md)), so one kind means one app owns
+every file and the projection layer has nothing left to resolve. Many kinds
+stays; §10.2 is a claim about what a person sees, not about the wire.
+
+**Whether a Topic survives as a distinct type is open.** If a topic is a document
+with no content, it may be a degenerate Leaf document rather than a kind of its
+own. Left open deliberately rather than settled here, because the answer depends
+on what Leaf turns out to be, and "almost the same as" is how two things stay
+nearly identical for ever.
