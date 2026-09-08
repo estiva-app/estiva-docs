@@ -572,7 +572,7 @@ Verified against `peek` `origin/main`, 2026-08-31.
 | --- | --- | --- | --- | --- | --- |
 | `convex/nostr/projection.ts` | ✅ | ✅ | ✅ | ❌ | extractable today; only the path is wrong — **and extracted the next day, see below** |
 | `src/lib/textParsing.ts` | ❌ | — | — | ✅ | cannot leave the building |
-| `src/nostr/liveTopics.ts` | ❌ | ❌ | — | ✅ | the bill SHA-7 is paying |
+| `src/nostr/liveTopics.ts` | ❌ | ❌ | — | ✅ | the bill SHA-7 is paying — **paid 2026-09-08, see below** |
 
 **`projection.ts` — the shape to copy.** 1,312 lines, and its entire import
 list is two lines, both `@estiva-app/protocol`. Environment arrives as a
@@ -591,9 +591,12 @@ its own header says *"Nothing in this file knows what Linear-lite is."*
 > something slightly stronger: the file is ignorant of *the app it renders*, not
 > merely of its own backend.
 
-**The prediction held, and it is worth recording that it did.** §10 claims a
-file passing 1–3 can be moved by `git mv` and one failing any of them cannot be
-moved at all. PRO-1 moved `projection.ts` to `interop/` the day after this
+**The prediction held twice.** §10 claims a file passing 1–3 can be moved by
+`git mv` and one failing any of them cannot be moved at all. The second
+confirmation is the negative case, which is the harder one to observe:
+`liveTopics.ts` failed 1 and 2, and SHA-7 could not move it — the extraction
+changed the module's shape entirely and left an adapter behind in Peek, which is
+the opposite of a rename. A `git mv` was never on the table, exactly as claimed. PRO-1 moved `projection.ts` to `interop/` the day after this
 section was written, and the diff was `{convex/nostr => interop}/projection.ts |
 0` — a pure rename, no content change. Two things surfaced that the constraints
 had not: **no Convex function had ever imported it**, yet codegen listed it in
@@ -615,6 +618,27 @@ Instance | null = null` at module scope; `window.navigator.onLine`; and
 provider. The roadmap records this one as failing constraint 2; it fails 1 too,
 and the pairing is typical — a module-level singleton is usually holding
 something it reached for rather than received.
+
+**Paid 2026-09-08 (SHA-7), and the shape of the fix is the interesting part.**
+The three failures came out in three different ways, and only one of them was a
+move. `window` became an injected `OnlineSource`, whose browser implementation
+takes its window as an argument. `validToken` became an injected
+`getCredential`. And the singleton did **not** move: `@estiva-app/platform`
+hands the app a *holder* and keeps no instance, because a module-level global
+inside a package shared by two apps is strictly worse than one inside a single
+app — every consumer would share it. A guard in the package's CI workflow greps
+`^(let|var) ` over `src/` to keep it that way.
+
+Two things the constraints did not predict, both worth having. Peek's
+`foreignActivity.ts` had *already* been written as a factory with its header
+citing this ticket, so part of the bill had been pre-paid by whoever wrote it —
+the intention being checkable while the code was written is exactly what §10
+argues for, and here it worked. And the second consumer forced an API addition
+rather than only an extraction: `createChannelSubscriptions` is one REQ per
+channel, which a workspace reader cannot afford, so `watchFolders` was added.
+Constraints 1–4 say whether code *can* leave the building; they say nothing
+about whether its interface is right, which is what §5 and the second-consumer
+rule are for.
 
 ### What this section does not decide
 

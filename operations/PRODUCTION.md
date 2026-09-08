@@ -7,12 +7,27 @@ behind the `estiva-prod` Cloudflare Tunnel.
 | --- | --- | --- | --- |
 | Buzz relay | `https://estiva.estiva.app` | — | **No — deploy by hand** |
 | Estiva ID | `https://id.estiva.app` | 8787 | Yes, `estiva-id-update.timer` |
-| Estiva Peek | `https://peek.estiva.app` | 8082 | Yes, `peek-update.timer` |
-| Estiva Ship | `https://ship.estiva.app` | 8081 | Yes, `ship-update.timer` |
+| Estiva Peek | `https://peek.estiva.app` | 8082 | Yes, `estiva-peek-update.timer` |
+| Estiva Ship | `https://ship.estiva.app` | 8081 | Yes, `estiva-ship-update.timer` |
 
 CI cannot SSH to the box — the firewall allows TCP 22 from one address — so
 deployment is pull-based: CI builds an image to `ghcr.io/estiva-app/<svc>`, a
 systemd timer on the box polls every 2 minutes and runs `update.sh`.
+
+**Every unit is prefixed `estiva-`**, including Peek's and Ship's, and this
+table said otherwise until 2026-09-08. It is worth more than a typo: a
+`systemctl is-active ship-update.timer` returns `inactive` for a unit that does
+not exist, and `systemctl list-unit-files "ship-update*"` says *"0 unit files
+listed"* — which reads as **"auto-deploy is broken"** rather than *"you asked
+about the wrong name"*. That cost a wrong conclusion, reported out loud, during
+PER-3's deploy. `systemctl list-timers --all | grep estiva` is the check that
+cannot be fooled this way, because it lists what exists rather than answering
+about what you named.
+
+Note also that the image repository is `ghcr.io/estiva-app/ship`, not
+`estiva-app/estiva-ship` — the same trap one layer down. `docker manifest
+inspect` on the wrong name returns nothing, and piping nothing to `sha256sum`
+yields `e3b0c442…`, the hash of the empty string, which looks like a digest.
 
 Peek additionally has a Convex backend. **Its Convex deployment is
 `honorable-guineapig-592`, which Convex labels a *Development* deployment.**
