@@ -59,6 +59,37 @@ docker compose exec -T postgres psql -U estiva_id -d estiva_id -tAc "select clie
 Deploy order is **merge → wait for the image pull → re-seed → verify**. A
 re-seed that runs before the pull writes the old values back and exits 0.
 
+### Only two of the five credentials are seeded at all
+
+`SEED_APPS` holds `estiva-peek` and `estiva-ship`. Production also has
+`claude-agent` — the CLI, the Desktop extension and the Claude Code plugin — and
+the self-service credentials `pc-0a4935` and `vscode-604525`, all three created
+outside the seed. **For those, a seed change is a no-op and re-seeding grants
+nothing.** Their `seed.test.ts` assertions are guarded with `if (agent)`, so a
+green suite says nothing about what they hold either.
+
+Granting one of them a kind is a `psql` update, written so a re-run is a no-op:
+
+```bash
+docker compose exec -T postgres psql -U estiva_id -d estiva_id <<'SQL'
+update app_credentials set allowed_kinds = allowed_kinds || 40003, updated_at = now()
+ where client_id = 'claude-agent' and not (40003 = any(allowed_kinds))
+returning client_id, allowed_kinds;
+SQL
+```
+
+Read every row before and after and compare them, not only the one being
+changed. **The unseeded three drift apart from each other silently**, and
+nothing reconciles them: AGE-3's first grant went to `claude-agent` alone, which
+would have left the same feature working in one surface of the agent and
+refused in the others until somebody hit it. Decide for all three in the same
+change, or write down why one is being left out.
+
+**A new ceiling arrives on the client's next `/token`**, not on a restart — it is
+read off the token response. A process holding an hour-long token keeps the old
+one until it renews, which is worth knowing before concluding a grant did not
+land.
+
 ## Gate 2 — the relay must know the kind
 
 Buzz keeps an explicit kind→scope allowlist. Unknown kinds are rejected at
