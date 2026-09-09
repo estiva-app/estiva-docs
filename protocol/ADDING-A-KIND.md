@@ -79,9 +79,11 @@ SQL
 ```
 
 Read every row before and after and compare them, not only the one being
-changed. And note the unseeded three drift apart from each other silently: 40003
-went to `claude-agent` and not to the other two, so the same feature works in
-one surface of the agent and is refused in the others.
+changed. **The unseeded three drift apart from each other silently**, and
+nothing reconciles them: AGE-3's first grant went to `claude-agent` alone, which
+would have left the same feature working in one surface of the agent and
+refused in the others until somebody hit it. Decide for all three in the same
+change, or write down why one is being left out.
 
 **A new ceiling arrives on the client's next `/token`**, not on a restart — it is
 read off the token response. A process holding an hour-long token keeps the old

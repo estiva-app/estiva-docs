@@ -109,10 +109,11 @@ changed — the point of the check is the rows you did not mean to touch.
 
 Two things that follow, both easy to miss:
 
-- **The three unseeded rows drift apart silently.** AGE-3 granted 40003 to
-  `claude-agent` and not to `pc-0a4935` or `vscode-604525`, so the same feature
-  works in one surface of the agent and is refused in the others. That is a
-  decision, but it has to be a deliberate one.
+- **The three unseeded rows drift apart silently**, and nothing reconciles
+  them. AGE-3's first grant went to `claude-agent` alone, which would have left
+  the same feature working in one surface of the agent and refused in the
+  others until somebody hit it. Decide for all three in the same change, or
+  write down why one is being left out.
 - **The new ceiling reaches a client on its next `/token`**, not on a restart.
   It is read from the token response, so nothing needs redeploying — but a
   process holding an hour-long token keeps the old one until it renews.
