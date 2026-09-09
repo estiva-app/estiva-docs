@@ -69,13 +69,53 @@ merge → wait for the image pull → re-seed if needed → verify the state
 The verify step is not optional. A production re-seed that ran **before** the
 new image had been pulled wrote the old values back and exited 0.
 
-`update.sh` runs `migrate`. It does **not** run `seed`. A seed-only change —
-which is what adding a kind to an app's ceiling is — deploys into the image and
-then does nothing. Re-seed by hand and check the row:
+`update.sh` runs `migrate`. It does **not** run `seed`. A seed-only change
+deploys into the image and then does nothing. Re-seed by hand and check the row:
 
 ```bash
 docker compose exec -T postgres psql -U estiva_id -d estiva_id -tAc "select client_id, allowed_kinds from app_credentials"
 ```
+
+### Adding a kind to a ceiling is a seed change for two rows and a psql change for three
+
+This used to say adding a kind to an app's ceiling *is* the seed-only case. It
+is, for `estiva-peek` and `estiva-ship` — and **those are the only two rows
+`SEED_APPS` holds**. Production has five:
+
+```
+claude-agent    the CLI, the Desktop extension and the Claude Code plugin
+estiva-peek     seeded
+estiva-ship     seeded
+pc-0a4935       a self-service credential
+vscode-604525   a self-service credential
+```
+
+The other three were created outside the seed, so **no seed change and no
+re-seed will ever touch them**, and a green `seed.test.ts` says nothing about
+what they hold — its `claude-agent` assertions are guarded with `if (agent)` and
+are no-ops. Granting one of those a kind is a `psql` update, written so a re-run
+is a no-op:
+
+```bash
+docker compose exec -T postgres psql -U estiva_id -d estiva_id <<'SQL'
+update app_credentials set allowed_kinds = allowed_kinds || 40003, updated_at = now()
+ where client_id = 'claude-agent' and not (40003 = any(allowed_kinds))
+returning client_id, allowed_kinds;
+SQL
+```
+
+Read **every** row before and after and compare the two, not just the one being
+changed — the point of the check is the rows you did not mean to touch.
+
+Two things that follow, both easy to miss:
+
+- **The three unseeded rows drift apart silently.** AGE-3 granted 40003 to
+  `claude-agent` and not to `pc-0a4935` or `vscode-604525`, so the same feature
+  works in one surface of the agent and is refused in the others. That is a
+  decision, but it has to be a deliberate one.
+- **The new ceiling reaches a client on its next `/token`**, not on a restart.
+  It is read from the token response, so nothing needs redeploying — but a
+  process holding an hour-long token keeps the old one until it renews.
 
 ---
 
