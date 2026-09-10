@@ -1172,10 +1172,15 @@ standard, it was three private ones.*
 
 > **This section is not uniformly descriptive, unlike the rest of this document.**
 > §13.2 describes what three producers already write and two renderers already
-> read, measured. §13.1's `code` mark and `nostr:` reference, and the whole of
-> §13.3, are **specified ahead of an implementation** — no app writes a block
-> document today. The reasoning, the alternatives and what the choice costs are
-> in [RFC 0.4 §14.5](RFC-0.4-WORKSPACE.md).
+> read, measured. §13.1's `code` mark and `nostr:` reference were specified
+> ahead of an implementation. The reasoning, the alternatives and what the
+> choice costs are in [RFC 0.4 §14.5](RFC-0.4-WORKSPACE.md).
+>
+> **§13.3 is no longer among them.** It said "no app writes a block document
+> today" until 2026-09-10; Ship has published issue and project descriptions as
+> `estiva-blocks-1` since RIC-14, and its browser test asserts the format tag on
+> the event. The `attachment` block below is the part still specified ahead of
+> its first producer.
 
 **There are two content models and they are independent.** A message is an event:
 its content is fixed the moment it is signed. A rich text field is a field on an
@@ -1296,6 +1301,60 @@ Block types: `paragraph`, `heading` (`attrs.level` 1–3), `bulletList`,
 `orderedList`, `listItem`, `blockquote`, `codeBlock` (`attrs.language`), `table`,
 `horizontalRule`, `attachment`, and `widget` — which names a widget from §7.5 and
 follows that section's fallback chain.
+
+#### The `attachment` block
+
+A file placed in the document. Its `attrs` are NIP-92's `imeta` fields, as a
+JSON object rather than a space-separated tag:
+
+```json
+{
+  "type": "attachment",
+  "id": "b3",
+  "attrs": {
+    "url": "https://relay.example/media/<sha256>.png",
+    "m": "image/png",
+    "x": "<sha256>",
+    "size": 27564,
+    "dim": "366x296",
+    "thumb": "https://relay.example/media/<sha256>.thumb.jpg",
+    "filename": "diagram.png"
+  }
+}
+```
+
+`url`, `m`, `x` and `size` are REQUIRED; `dim`, `thumb`, `alt` and `filename`
+are OPTIONAL and carry NIP-92's meanings. The same fields deliberately: one
+description of a file, carried two ways because the two content models differ,
+so a reader that can draw a message's attachment draws this one with the same
+code.
+
+`m` and `x` MUST be the values the **relay** reported when it stored the blob,
+never the client's own guess: the relay compares them against what it holds and
+refuses a message whose `imeta` disagrees, with nothing in the error to say
+which field was wrong. `x` is the blob's sha256, and it is also what a reader
+must name in the authorization it signs to fetch the bytes — media GET is
+authenticated, so an `<img src>` cannot load one.
+
+**A producer MUST also emit an `imeta` tag on the event carrying the document,
+naming the same blob.** The block is where the file *appears*; the tag is what
+the relay can check.
+
+Ingest verifies `imeta` **tags** and never parses `content`. The check is not
+gated on kind — any event carrying `imeta` tags is verified — so the tag earns a
+change event the same guarantee a message has: a document naming a blob the
+relay does not hold is refused outright, rather than published and rendering as
+a broken file for every reader. Without the tag there is no such check, and
+nothing would refuse it.
+
+A consumer MUST render the block from its `attrs` and MUST NOT require the tag
+to be present: it is the producer's obligation, a consumer cannot repair its
+absence, and refusing to draw a file that is plainly described would punish the
+reader for the writer's omission.
+
+A block whose `attrs` are missing a REQUIRED field is malformed: a consumer MUST
+render its inline content per the unknown-block rule below rather than drawing a
+broken file, exactly as it would for a type it does not know.
 
 A block's inline content is an array of `{"type":"text","text":…,"marks":[…]}`
 nodes using §13.1's vocabulary. A reader encountering an unknown block type MUST
