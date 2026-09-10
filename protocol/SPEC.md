@@ -583,6 +583,16 @@ different times. **A consumer MUST ignore a slot it does not implement and MUST
 still render the rest**; a producer MUST NOT put information only in a slot
 added after `title`, `subtitle`, `status` and `meta`.
 
+**`image` is reserved and has no producer.** No manifest in the ecosystem
+declares it and no addressable kind carries a value it could name — measured
+2026-09-02 and again 2026-09-10 (RATIONALE.md). It stays in the closed set
+because the slot is right the moment an object grows a cover or a thumbnail, and
+because removing it would change a published vocabulary for no gain. A consumer
+MAY therefore implement `image` last: there is nothing to render it against, and
+the absence is the ecosystem's rather than that consumer's. An object's *avatar*
+is not this slot — a person's picture is reached by declaring the slot holding
+their pubkey `as: "pubkey"`, which resolves through `kind:0`.
+
 Widgets are `card`, `row`, `table`, `stat` — and a manifest may declare others, as a chain terminating in one of those. See §7.5. The consumer owns the layout.
 
 ### 7.3 Actions

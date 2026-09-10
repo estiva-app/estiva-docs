@@ -104,6 +104,49 @@ which fields matter; the consuming app decides how they look. That inverts
 normal integration, where every consumer picks fields itself and each gets it
 wrong differently.
 
+### Why `image` is in the closed set with nothing producing it
+
+Every other slot was added because something already published a value for it.
+`image` was not. It was specified alongside `list` and `body` in RFC 0.4 as "an
+avatar, thumbnail or cover, as a URL", and nothing has ever filled it.
+
+Measured on production twice. First, the three published manifests
+(`kind:31990`) on 2026-09-10 — `estiva-peek`, `estiva-ship` and a probe.
+Between them they declare `title`, `subtitle`, `status`, `meta`, `list` and
+`body`. **`image` is the only slot in the closed set that nothing declares.**
+
+Second, scanning every tag name on the addressable kinds, for a value a
+manifest could point at even if none does yet:
+
+| kind | 2026-09-02 | 2026-09-10 | image-ish tags |
+|---|---|---|---|
+| `39000` Topic | 70 | 171 | 0 |
+| `30850` Project | 15 | 19 | 0 |
+| `30851` Issue | 100 | 269 | 0 |
+| `30840` File | — | 0 events | — |
+| `0` Profile | 7 | 7 | `picture`: 3, in content |
+
+Eight days and roughly two and a half times the objects later, the answer had
+not moved. The only image data in the workspace belongs to a **person**, and
+that path needs no slot: a slot declared `as: "pubkey"` resolves through
+`kind:0` and the consumer draws the avatar itself. Declaring `image` against a
+person's picture would be wrong twice — the value is not the object's, and it
+duplicates a rendering that already works.
+
+CON-12 looked like it would change this and does not. A message now carries an
+`imeta` with a relay-generated thumbnail — 6 of the newest 400 messages on
+2026-09-10, all 6 with a thumb — but a message is not one of the objects a
+widget renders, and the thumbnail belongs to an *attachment* rather than to the
+object. The plausible producer named when this was first measured was a File
+with a thumbnail; `kind:30840` has no events at all.
+
+**The slot stays, and the gap is written down rather than left to be inferred.**
+A closed set with one member nobody produces reads, to the next person, as a
+consumer that has fallen behind — and the first instinct is to implement it. An
+unproduced slot cannot be verified against anything, so implementing a consumer
+for it first would ship untested code and prove nothing. This paragraph is here
+so that reader stops instead.
+
 ## Why acting on another app's object means signing that app's kind
 
 An action on a Ship issue *is* a `kind:1851`. Peek does not choose the number —
