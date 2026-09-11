@@ -532,7 +532,7 @@ Leaf remains the app that will stress anchoring hardest — a document editor re
 
 2. ~~**Component anchoring** (§6).~~ **Answered 2026-09-02 (RIC-7)** and moved to the answered list below. An anchor is the object's address plus a §13.3 block id, specified in [SPEC §13.6](SPEC.md).
 
-3. **What happens to Peek's existing topics.** They are channels with no folder. Do they gain membership retroactively, who decides which folder, and what happens to one nobody claims?
+3. ~~**What happens to Peek's existing topics.**~~ **Answered 2026-09-11** and moved to the list below: nothing happens to them. Each existing channel becomes a team and its messages that team's general conversation; new topics are bare files inside a team ([RFC 0.5 §10.5, §10.7](RFC-0.5-ASSOCIATION.md)).
 
 4. **Does the folder's channel hold every file's conversation at scale?** One busy folder is one busy channel. Probably fine; worth knowing the ceiling before finding it.
 
@@ -571,6 +571,7 @@ Leaf remains the app that will stress anchoring hardest — a document editor re
 - **Must §6 wait for Leaf** — no. A block is a component, and Ship's description field is a test bed that exists today. §6, §11.3.
 - **How a comment anchors to a component** *(was §12's question 2, frozen in 0.3)* — the object's address plus the block id §13.3 requires, carried in a `block` tag on the comment. The hard half was never the happy path: an anchor outlives what it points at, so [SPEC §13.6](SPEC.md) makes a reader distinguish *detached* from *unanchored* rather than letting a deleted paragraph quietly turn a remark about it into a remark about the whole object. RIC-7.
 - **Closed or open widget vocabulary** — neither alone: slots closed, widgets open with a fallback chain terminating in a closed type. §13.3.
+- **What happens to Peek's existing topics** *(was question 3)* — nothing. No migration is available for a replaceable event, and none is needed: an existing channel becomes a team, its `kind:9` messages become that team's general conversation, and *new* topics are bare files inside a team whose messages are `kind:1111` comments on them. Both shapes coexist permanently, in every consumer. Decided 2026-09-11, [RFC 0.5 §10.5 and §10.7](RFC-0.5-ASSOCIATION.md).
 - **Does the intelligence/memory layer belong in this RFC** — no. Deliberately excluded, with its trigger recorded in the roadmap: the first time a second app's harness needs to read another app's memories, which is [SPEC §12.1](SPEC.md)'s first question flipping. Peek's highlights are an experiment and are **not** to be published to an append-only kind while the model is unsettled.
 
 ---
