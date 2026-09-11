@@ -114,6 +114,8 @@ export const INTERNAL = new Set([
   'protocol/RFC-0.4-WORKSPACE.md',
   // 0.5 is a draft and cites ticket ids and production measurements, same as 0.4.
   'protocol/RFC-0.5-ASSOCIATION.md',
+  // 0.6 likewise: a draft, and it cites production measurements by date.
+  'protocol/RFC-0.6-COMPOSITION.md',
 ])
 
 /**

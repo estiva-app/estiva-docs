@@ -48,6 +48,7 @@ They used to be here, one `open / total` per row, and they drifted in both direc
 | **Peek: Feedback & Bugs** | |
 | **Conversation standard** | Comments the third app adopts rather than rebuilds |
 | **Rich text and blocks** | *Thin on purpose — see the format decision below* |
+| **Composition** | A document that points at live content instead of copying it — a section of a plan quoted in a conversation, a table shared across documents, an issue rendered as a live widget. Designed 2026-09-11 in [RFC 0.6](protocol/RFC-0.6-COMPOSITION.md); gated on accepting it |
 | **Folders and facets** | Navigation — teams, files that nest, and labels. **The near-term centre of the programme.** Facets, meaning *two files are the same thing*, is parked inside it as a placeholder rather than worked on |
 | **Other** | `estiva-docs` tooling and one-offs belonging to no track. Unarchived 2026-09-01 — it was hidden while holding open issues |
 | **Agent / Steer** | The CLI, MCP server and Claude Code plugin |
@@ -156,6 +157,7 @@ Open decisions first. Everything settled is in *Finished* or in the RFC it amend
 | --- | --- | --- |
 | ~~**How a named group of files is written down**~~ | RFC 0.5 §3.4 | **Decided 2026-09-05.** `kind:30852` Set — an addressable record listing its members, declaring a role of `facet`, `label` or `collection`. A role a reader does not recognise groups and never merges. Honoured for your file only when its signer is authorised by *your* file. One primitive under labels, cross-team references and facets |
 | ~~**Accept or amend RFC 0.5 §1–§6**~~ | SHA-13 | **Accepted 2026-09-05**, with three corrections and §3.4 |
+| **Accept or amend RFC 0.6** | COM-1 | Gates the composition track the way SHA-10 gated projection. Cheaper than either predecessor: **no new kind, no Buzz change, nothing to migrate** — a pointer is an address that already exists ([SPEC §13.6](protocol/SPEC.md)) and the parts it names already have ids. What it settles is a vocabulary, and one conclusion has a closing window — see *Not filed* |
 | ~~**The reaction horizon**~~ | CON-1 | **Decided 2026-09-07** — N is 100, in [SPEC §6.6](protocol/SPEC.md) as a rule rather than an observation, closing RFC 0.4 open question 10. The argument was interoperability, not performance: two apps with different N disagree about the count legitimately, and a reader cannot tell that from a bug |
 | **What happens to Convex-only DMs** | DMS-7 | The relay's ±15 minute drift window means republished history cannot carry original timestamps |
 | **What the product says about DM privacy** | DMS-11 | "Private" is accurate for membership-scoped; whether to say more is product and possibly legal |
@@ -173,6 +175,12 @@ Open decisions first. Everything settled is in *Finished* or in the RFC it amend
 - **Following is a subscription, not a permission tier** — RFC 0.4 §4.6 as written, per-user and private. No read-only stakeholder tier.
 - **Open teams have public rosters, and that is desired.** Private teams hide theirs already.
 
+> **One decision in RFC 0.6 has a deadline rather than a blocker.** §3 concludes
+> that an attachment is a block and should keep the shape [SPEC §13.3](protocol/SPEC.md)
+> gave it on 2026-09-10. Production held **zero** `attachment` blocks when that was
+> written, so disagreeing is free now and expensive once people have attached files
+> to descriptions. Nothing else in 0.6 has a window — the rest is additive.
+
 ## Not filed, and why
 
 Held deliberately rather than forgotten. Most of what used to sit here is now the **Folders and facets** project — that is rule 2's amendment working.
@@ -185,7 +193,8 @@ Held deliberately rather than forgotten. Most of what used to sit here is now th
 | **Association and facets** (RFC 0.5 §2, §3) | parked deliberately 2026-09-05, split from folders. §2 basic association is nearly free and may come earlier if a panel needs it | §3.4, then a decision to unpark |
 | **The upstream NIP proposal** (RFC 0.4 §10.2) | **not happening** — FOL-1 chose fork | Kept as the list to propose if that is ever revisited |
 | **The intelligence layer** — cross-app agent-invoked actions, and per-app harnesses deriving memories from raw events | the zero-implementations objection is spent; what it protected still holds, and it is the **persistence**, not the reasoning. Peek's highlights are an experiment and must not be published to `kind:9802` while the model is unsettled — 9802 is append-only, so any shape later changed is permanent. [SPEC §12.1](protocol/SPEC.md) puts an experiment in the replaceable layer or in the app's database | SPEC §12.1's first question flipping — the first time a second app's harness needs another app's memories |
-| **Two orphaned kinds** — `30840 File`, `30841 Component` | published in `@estiva-app/protocol`, zero events in production, and the anchoring they were kept for was answered by block ids instead (RIC-5). Either they become the generic file type for things nobody has built an app for, or they are retired | a decision. Leaving two published unused kinds is the one option that is not defensible |
+| **Two orphaned kinds** — `30840 File`, `30841 Component` | published in `@estiva-app/protocol`, zero events in production, and the anchoring they were kept for was answered by block ids instead (RIC-5). Either they become the generic file type for things nobody has built an app for, or they are retired. **[RFC 0.6](protocol/RFC-0.6-COMPOSITION.md) §3 removes the last reason to keep them speculatively**: an attachment is a block, so a file needs no object, and the one remaining use — a Files view over every upload — is a product nobody has asked for | a decision. Leaving two published unused kinds is the one option that is not defensible |
+| **Composition beyond the pointer** (RFC 0.6 §6, §7) | the RFC is a draft, and per rule 2 nothing is filed against its undecided parts — sync write-back, promotion to a standalone object, and the cycle bound all wait on it. What is *already decided* needs no RFC: SPEC §13.6's `(object, block)` address is accepted and in production, so transcluding **one** block is buildable today, and that is COM-2 | **RFC 0.6 accepted** (COM-1) |
 
 ## Finished — and what each one taught
 
