@@ -205,9 +205,11 @@ Reference root events:
 | --- | --- | --- |
 | `30850` | Project | `d`, `title`, `h`, `[lead]` |
 | `30851` | Issue | `d`, `title`, `h`, `[a]`, `[ref]` |
+| `30840` | Bare file | `d`, `title`, `h`, `[a]` — §6.7 |
 
 `a` on an Issue is the parent project's address, `30850:<pubkey>:<d>`. `ref` is
-a display-only key such as `SHIP-12` and MUST NOT be used for addressing.
+a display-only key such as `SHIP-12` and MUST NOT be used for addressing. `a` on
+a bare file is the address of the file it sits under, **of any kind**.
 
 ### 6.2 Change events
 
@@ -464,6 +466,67 @@ starving another.
 inside a rich text field, an object — is a product question RFC 0.4 §7.2 answers
 in the negative for blocks, and it is not settled for objects.
 
+### 6.7 The bare file
+
+*Added 2026-09-11, from [RFC 0.5 §10.7](RFC-0.5-ASSOCIATION.md).*
+
+**A bare file is a file no app owns.** It has a document, a conversation, and no
+type-added properties. A Peek topic is one. So is any subject nobody has built a
+specialized app for — a job description in a workspace with no HR app. Typed
+kinds (a project, an issue) add properties on top of this shape; the bare file
+adds none, and that absence is why it is ownerless: NIP-89 keys ownership by
+kind, and an app that owned the bare file would own every subject nobody has an
+app for.
+
+**Shape.** `kind:30840`, addressable. Tag order is normative, as §6.1 says:
+
+| tag | | |
+| --- | --- | --- |
+| `d` | REQUIRED | an opaque uuid (RFC 0.4 §4.3), never a slug |
+| `title` | REQUIRED | seeds the `title` field; a rename is a change event |
+| `h` | REQUIRED | the team's channel. The relay says SHOULD; **this document says MUST**, for the reason the relay already gives for issues — several apps write these, and one forgetting the `h` puts an unreachable object in the shared space that nobody can unpublish |
+| `a` | at most one | the address of the file this one sits under, of any kind. Seeds the `parent` field; a move is a change event |
+
+`content` is a §13.3 block document, or empty. A topic that is only a
+conversation has nothing here; the day somebody writes a brief at the top, this
+is where it goes, and nothing about the file "converts".
+
+**Conversation.** `kind:1111` anchored at the file's address (§6.4), with the
+same `h` — the shape an issue's comments already have. Threads are NIP-22
+replies. Reactions, edits, deletions and drafts follow §6.5, §6.6 and RFC 0.4
+§7.2.1 unchanged. The team's general conversation stays `kind:9` in the
+channel: chat is talking *in* a room, a comment is talking *about* a file, and
+the line between them is the kind.
+
+**Changes.** `kind:1851` under §6.2, targeted by `a` at the file. Two fields are
+defined: `title` and `parent`, each seeded by the root tag of the same name and
+overridden by the change stream — the way an issue's `project` field works. A
+consumer MUST read `parent` before the `a` tag.
+
+**Projection.** A bare file has no `kind:31990`, and **a consumer MUST NOT let
+one claim it**. Its projection is this section: `title` from the tag with the
+`title` fold over it; `body` from `content`; the `comment` action emitting
+`kind:1111` at its address; widget `card`; a `list` of bare files beneath it.
+`@estiva-app/interop` carries exactly that and answers it before consulting
+NIP-89 at all. The test of a conformant consumer is that **with every manifest
+removed from the relay, a bare file still resolves, lists its comments and
+names its parent.** A `kind:31989` recommendation by the file's author MAY name
+an app to *open* it in; that is the only thing NIP-89 contributes to this kind,
+and it is not yet read.
+
+**Nesting.** A bare file may sit under a file of any kind, and a file of any
+kind may sit under a bare file, by the `a` tag above. The parent's owner does
+not declare this and does not need to: for every other kind `parentRef` is
+derived from the *parent's* declared child list; for a bare file it is the file
+naming its own parent. Both directions exist and a consumer reads both.
+Nesting organises and never grants access (RFC 0.4): a bare file's readers are
+its team's, at any depth.
+
+**No migration.** An existing Peek topic is a channel and stays one: it becomes
+a *team*, and its `kind:9` messages that team's general conversation. New
+topics are bare files inside a team. Both shapes coexist permanently in every
+consumer, which is the same rule §6.4 already states for comments.
+
 ---
 
 ## 7. Cross-app interoperability: the projection manifest
@@ -481,6 +544,12 @@ An app that publishes objects other apps should render MUST publish a
 
 `31989` / `31990` MUST be global — not scoped to any Folder. Discovery has to
 work before you are a member of anything.
+
+**One kind has no handler, by design, and it is not an error.** The bare file
+(§6.7) is owned by no app; its projection is written in this document and a
+consumer MUST resolve it from here rather than from the relay, ignoring any
+`31990` that lists it. A consumer that treats "no handler found" as "cannot
+render" will render a team's topics as nothing.
 
 ### 7.1 `records` — how to fold this app's objects
 
