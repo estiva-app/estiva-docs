@@ -584,6 +584,18 @@ in exactly those terms, because it means nothing was lost by withdrawing them.
 Not free, and the cost is concentrated in one place: **a Peek topic must become
 an ordinary addressable file whose conversation is scoped to it.**
 
+> **Decided 2026-09-11, the shape of that file and that conversation.** A topic
+> is a **bare file** (§10.7), and a message in a topic is a **`kind:1111`
+> comment on it** — `h` the team's channel, `a` the topic's address — which is
+> byte-for-byte the shape Ship's issue comments already have. The team's general
+> conversation stays `kind:9` in the channel: chat is talking *in* a room, a
+> comment is talking *about* a file, and the line between them is the kind. The
+> alternative — `kind:9` carrying an `a` tag — was rejected because it makes one
+> kind mean two things, told apart only by a tag's presence, and hands every
+> affordance (reaction, edit, delete, thread) a third case. **No migration**: an
+> existing channel becomes a team and its messages that team's general
+> conversation; new topics are files inside it.
+
 Today a topic *is* a channel — a relay-signed `kind:39000` whose `d` is the
 channel uuid, with `kind:9` messages carrying `h` and no `a`. So a topic's
 conversation is *the container's* conversation. That is exactly why a topic
@@ -610,8 +622,76 @@ by kind** ([RFC 0.4 §13](RFC-0.4-WORKSPACE.md)), so one kind means one app owns
 every file and the projection layer has nothing left to resolve. Many kinds
 stays; §10.2 is a claim about what a person sees, not about the wire.
 
-**Whether a Topic survives as a distinct type is open.** If a topic is a document
-with no content, it may be a degenerate Leaf document rather than a kind of its
-own. Left open deliberately rather than settled here, because the answer depends
-on what Leaf turns out to be, and "almost the same as" is how two things stay
-nearly identical for ever.
+~~**Whether a Topic survives as a distinct type is open.**~~ If a topic is a
+document with no content, it may be a degenerate Leaf document rather than a kind
+of its own. Left open deliberately rather than settled here, because the answer
+depends on what Leaf turns out to be, and "almost the same as" is how two things
+stay nearly identical for ever.
+
+> **Closed 2026-09-11 — it does not, and the answer did not need Leaf.** See
+> §10.7. The paragraph above it still stands: many kinds stays, because
+> specialized apps own theirs.
+
+### 10.7 Two kinds of app, and the bare file — decided 2026-09-11
+
+**An app is generic or specialized.** A specialized app owns kinds, renders every
+aspect of them, and its navigation lists only its own files. A generic app owns
+no kinds and renders *one aspect of every file in the workspace* — Peek the
+conversation, Leaf the document. Ship is specialized; an HR tool owning
+*candidate* and *job description* is specialized; Peek and Leaf are generic.
+
+Three things follow, and the third is the one that closes §10.6.
+
+**A specialized app gets conversation and editing without building either.** A
+candidate's discussion happens in Peek and its job description is edited in
+Leaf, and the HR app builds only what its properties need — pipeline stage,
+interviewer. RFC 0.4 §15's checklist is therefore shorter than it says: the
+third app builds its properties, not its comments.
+
+**Navigation is by kind; nesting is by intent.** Ship's tree lists folders and,
+inside them, projects and issues. But a foreign file somebody deliberately placed
+*under* a project or an issue — a Leaf document that is its technical
+documentation, a Peek topic that is a sub-discussion of it — appears on that
+file's detail as *Related*, whatever its kind. The placement was a person saying
+"this belongs here", and a specialized app may not ignore it. A generic app
+lists everything, because in Peek you can talk about any file and in Leaf you
+can edit any editable one; the folder tree is therefore one shared view, not a
+per-app one.
+
+**A subject no specialized app claims is a bare file**, and the generic apps
+handle it completely. A bare file is the generic file kind — `kind:30840`, which
+`@estiva-app/protocol` has carried unused — owned by no app: the fallback chain
+(RFC 0.4 §13.3) draws it, and each generic app renders its own aspect of it.
+Typed kinds add properties on top; a bare file adds none.
+
+**A Peek topic is a bare file.** Not its own kind: by the protocol's own rule
+(RFC 0.4 §10, from upstream) a custom kind is for what is genuinely novel, and a
+topic's only novelty is an absence — it has no body. Making it a type would
+re-create at creation time the problem this section exists to end: a person
+choosing "topic or page?" for one subject, and ending up with two things about
+it. Not a Leaf document either: §10.2 says the document aspect belongs to
+*every* file, so no single app should own the bare one — the same mistake as
+Peek owning it. So "new topic" in Peek and "new page" in Leaf make the same
+thing, a file's icon derives from its state (empty body, a chat icon; a body, a
+page icon), and when a topic wants a pinned brief somebody types one and nothing
+"converts". The cost is real and it is a rule rather than a type: channel-like
+behaviour (sort by last message, follow by default) versus page-like (sort by
+last edit) has to be a per-file setting or derived from content.
+
+**Highlights do not change this; they depend on it.** A highlight — what
+mattered in a conversation, for a person catching up and for an AI that should
+read the distilled memory rather than every event — is derived from the
+*conversation*, and every file has one. A design review on a project's
+description wants highlights as much as a topic does. So a highlight is
+addressed at the file, like a comment, and a generic app derives them for any
+file without knowing its kind. Which kind a highlight is *published as* is still
+open (the roadmap's note on `kind:9802` being append-only stands); where it
+hangs is not. A topic with no body may show its highlights where the body would
+be — a rendering rule, and when a body is written the highlights remain beside
+it as a third thing.
+
+**Manifests need one more field.** Today a manifest says which kinds an app owns.
+It must also say which *aspect* it renders for everyone else's — the
+conversation, the document — or a consumer cannot tell a generic app from a
+specialized one that happens to draw a card. That is the one protocol change
+this section asks for, and it is additive.
