@@ -158,13 +158,13 @@ push leases, stream message variants. **Do not read that file as a menu.** Most
 of it belongs to upstream Buzz features the Estiva suite does not ship, and
 picking a number out of it will produce an event no Estiva app renders.
 
-Two that are worth knowing exist because they were registered *for* NfB and
-then not used:
+Two that were registered *for* NfB and then not used — one of which now has a
+use:
 
 | Kind | Name | Status |
 | --- | --- | --- |
-| `30840` | File | Registered on `nfb-demo-kinds`. Not written by any shipping app |
-| `30841` | Component | Same. See `peek-app/docs/buzz-compat/FILES_ARCHITECTURE.md` |
+| `30840` | **Bare file** | **The file no app owns — SPEC §6.7, decided 2026-09-11.** A Peek topic is one. Registered on `nfb-demo-kinds` as `KIND_FILE`, `MessagesWrite`; `h` is SHOULD at ingest and MUST in SPEC. Granted to `estiva-peek` (estiva-id#66). Built by `buildBareFile` in `@estiva-app/protocol` 0.20.0; resolved without a manifest by `@estiva-app/interop` 0.19.0 |
+| `30841` | Component | Registered, unused, and **deprecated**: blocks carry ids (§13.3) and attachments are blocks (RFC 0.6 §3). COM-3 decides whether it is retired or repurposed |
 
 ---
 
