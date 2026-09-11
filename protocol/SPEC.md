@@ -1475,6 +1475,13 @@ This is the same discipline §7.5 applies to an unknown widget and §13.3 to an
 unknown block type, for the same reason each time: **an absence that renders as
 an ordinary presence is indistinguishable from correctness.**
 
+> **This address has a second use, still a draft.** `(object, block)` is also
+> what a *transclusion* needs — a document or a message showing a live part of
+> another object rather than a copy of it. [RFC 0.6](RFC-0.6-COMPOSITION.md)
+> generalises this section's grammar and its four states, and adds a fifth the
+> anchor case cannot reach: content the reader is not permitted to see. Nothing
+> in §13.6 changes if that is accepted; it becomes the degenerate case.
+
 #### An anchor is expected to break
 
 A block can be deleted, split, or merged by somebody who never saw the comment,
