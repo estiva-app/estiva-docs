@@ -513,9 +513,11 @@ one claim it**. Its projection is this section: `title` from the tag with the
 `@estiva-app/interop` carries exactly that and answers it before consulting
 NIP-89 at all. The test of a conformant consumer is that **with every manifest
 removed from the relay, a bare file still resolves, lists its comments and
-names its parent.** A `kind:31989` recommendation by the file's author MAY name
-an app to *open* it in; that is the only thing NIP-89 contributes to this kind,
-and it is not yet read.
+names its parent.** What NIP-89 contributes to this kind is only **where to
+open it**: a consumer takes the `web` template of the generic app declaring the
+`conversation` aspect (§7.8) — a link nobody owns still has somewhere to go. A
+`kind:31989` recommendation by the file's author MAY name a different app; that
+tie-break is not yet read.
 
 **Nesting.** A bare file may sit under a file of any kind, and a file of any
 kind may sit under a bare file, by the `a` tag above. The parent's owner does
@@ -873,6 +875,28 @@ ordinary link — it is one, and nothing should claim otherwise.
 what its URLs look like, the consumer decides whether to draw a widget. No
 central registry, no per-app integration, and no service that can go down and
 take every published link with it.
+
+### 7.8 `aspect` — what a generic app renders of everybody else's files
+
+The `k` tags say which kinds an app **owns**. A generic app (RFC 0.5 §10.7)
+owns none and renders one aspect of every file, so nothing above lets a
+consumer find it. It MAY declare that aspect in `content`:
+
+```jsonc
+{ "name": "Peek", "aspect": "conversation", "projections": {} }
+```
+
+`aspect` is one of `conversation` or `document`. A specialized app omits it.
+
+**This is how a bare file gets a link.** §6.7 gives it no handler, so no `web`
+template is its own. A consumer resolving one takes the `naddr` template from
+the manifest declaring `conversation` — newest first, among manifests that
+carry a `web` template — and derives the file's open URL from it; with no such
+manifest published, the file still resolves and simply has nowhere to open.
+`@estiva-app/interop` 0.20.0 does exactly that, and Peek publishes the field.
+
+A consumer MUST NOT read `aspect` as ownership: a manifest declaring it still
+claims no kind, and a `k` tag naming `30840` is ignored as §7 says.
 
 ---
 
