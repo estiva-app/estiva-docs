@@ -448,11 +448,14 @@ follows is a wish:
 | | horizon of 100 | reports truncation | shared budget |
 | --- | --- | --- | --- |
 | Ship | yes | yes — names the cap and how many were skipped | n/a, one id space |
-| Peek | yes | **no — truncates silently** | yes, since the amendment below |
+| Peek | yes | yes — one caption under the container, since PEE-21 | yes, since the amendment below |
 
-Peek's gap is the reason the second rule is a MUST rather than a SHOULD: it is
-the app where the cap can actually bite, because a container is where messages
-accumulate.
+Peek's cell was "no — truncates silently" until 2026-09-12 (peek#196), and that
+gap is why the second rule is a MUST rather than a SHOULD: Peek is the app where
+the cap can actually bite, because a container is where messages accumulate.
+Peek counts the omission where it truncates — in the sync, from the true totals
+rather than the capped lists — and records it on the container, so every reader
+sees the same number whichever of its two sync paths ran last.
 
 **The shared-budget rule was found the hard way.** One implementation read
 reactions for messages and for thread replies, capped each list at N, then
