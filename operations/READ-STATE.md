@@ -69,6 +69,12 @@ Against production, not a fixture — CRO-9, and the last row under CRO-13:
 | Second browser profile | ✅ converged, and appeared as a distinct slot |
 | Monotonicity | ✅ nothing went backwards across repeated runs |
 | A container never read | ✅ no divider, and one appears as soon as it has been read |
+| Reading one file, in either app | ✅ FOL-16, 2026-09-13: reading an issue in Ship then in Peek moved that issue's address only; a sibling issue (comment from a second identity) stayed `absent` in both, drew its dot in Peek's listing, and the Folder's channel marker did not move |
+
+The FOL-16 row was read with `__readState.marker(<address>)` in both apps,
+never by opening the sibling — and the sibling's dot in Peek is drawn under a
+project row, so it is only visible once that row is expanded. A `?file=` URL
+does not open a child's pane on a fresh load (FOL-17 covers peers only).
 
 One check was **dropped**: no container has a marker older than the 90-day
 horizon, so there is nothing to test the aged-out path against. Synthesising one
