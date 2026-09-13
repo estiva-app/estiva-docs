@@ -104,6 +104,17 @@ from a convenient superset being in scope and getting published — ship#62,
 ship#66, peek#103. If a slot's context count looks like "everything this person
 has ever read", something is re-absorbing.
 
+**A file's conversation has its own marker, and the channel's does not reach
+it** (FOL-16, SPEC §11.1–§11.3). Reading a team's chat in Peek, or a project's
+feed in Ship, advances the channel uuid and leaves every topic and issue in that
+Folder where it was; reading one topic advances `<its address>` and nothing
+else. So the check is `__readState.marker('<kind>:<pubkey>:<d>')` for the file
+you read *and* for its sibling — the first moves, the second stays `absent` —
+and the sibling's row keeps its dot without anyone opening it. A marker on the
+channel uuid moving when only a file was opened is the regression to look for;
+it is the one §11.2 was written against, and it was invisible while a channel
+held one topic.
+
 ---
 
 ## The way back

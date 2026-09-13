@@ -1037,12 +1037,21 @@ does not already work. This section fixes the identifiers for the Estiva suite.
 
 | grain | context id | format |
 | --- | --- | --- |
-| container | `<channel-uuid>` — **bare, no prefix** | lowercase UUID v4 |
+| channel | `<channel-uuid>` — **bare, no prefix** | lowercase UUID v4 |
+| file | `<file-address>` — **bare, no prefix** (FOL-16) | `<kind>:<pubkey>:<d>`, kind 30000–39999, pubkey 64-char lowercase hex, `d` verbatim |
 | thread | `thread:<root-event-id>` | 64-char lowercase hex |
 | message | `msg:<event-id>` | 64-char lowercase hex |
 | folder | `folder:<folder-address>` | **RESERVED, unspecified** — see §11.5 |
 
-**The container context is the bare channel uuid.** NIP-RS's grandfathered
+**A container context is the scope a message carries on the wire, verbatim.**
+The `h` tag scopes a message to a channel, and the channel uuid is the context.
+The `a` tag scopes a comment to a file (§6.4), and the file's address is the
+context. Neither is prefixed, neither is an application's own id for whatever it
+renders, and nothing has to be looked up to derive either — a reader holding
+the message holds its context. Prefixed forms name frontiers that are *not* a
+wire scope: `thread:` and `msg:` (NIP-RS's own), and the reserved `folder:`.
+
+**The channel context is the bare channel uuid.** NIP-RS's grandfathered
 clause states that "a bare channel identifier remains the channel context", and
 the reference clients write exactly that. An app MUST NOT prefix it. A prefixed
 variant would be a second convention for the same object on the same relay: one
@@ -1050,36 +1059,98 @@ app marks a container read and the other still shows it unread, and because
 NIP-RS blobs are grow-only, reconciling later means tolerating both keys
 permanently or migrating published blobs.
 
+**The file context is the bare address** (added 2026-09-13, FOL-16). One rule
+covers every kind of file — a Ship issue, a Ship project, a bare file (§7.8), a
+Leaf document — because every one of them is the target of the same `a` tag,
+and nothing about the rule is shaped by which app owns the file. Only an
+addressable kind has an address, so the kind is 30000–39999; a key that looks
+like an address outside that range is not a file context. The `d` segment is
+**case-sensitive and copied verbatim** — an app MUST NOT normalise it — and the
+whole key is subject to the 256-byte limit of §11.6.
+
 `thread:` and `msg:` are NIP-RS's own optional well-known schemes, adopted
 verbatim rather than replaced. A key beginning `thread:` or `msg:` whose
 remainder is not 64 lowercase hex characters is not a well-known context and
 MUST NOT be treated as one.
 
-The container grain is a **channel**, which is what messages carry in their `h`
-tag — not a Folder address and not an application's own id for whatever is
-rendered in it. One convention therefore covers a Peek topic, a Ship project and
-a DM channel without any app knowing about the others.
+#### Streams: which context a message answers to
+
+A channel's messages divide into **streams**, and a message answers to exactly
+the marker of the stream it is in:
+
+- a root with no `a` tag — a `kind:9`, the team's general conversation — is in
+  the **general stream**, whose marker is the channel uuid;
+- a root whose root-level `a` tag names a file — a `kind:1111` about that
+  file — is in that **file's stream**, whose marker is the file's address. A
+  root with two `a` tags is in both streams, and is unread in each until that
+  file has been read;
+- a reply is in its root's stream, under `thread:<root>`.
+
+A thread attaches to a file by *comment* — its root's own `a` tag — and never
+by *mention* (§6.4's weaker strength). A thread in the general stream that
+name-drops an issue halfway through stays in the general stream: mention is
+what a reader is shown alongside a file, not what the file's unread counts.
+
+This is why the channel uuid alone stopped being enough. It was one topic per
+channel, so "I have read this channel" named exactly one conversation. A Folder
+holds a team's general chat *and* several files' conversations in one channel,
+and a Ship project has always held its issues that way; a per-file marker is
+what says which of them you have read.
 
 ### 11.2 Write discipline
 
+An app advances **exactly the streams it is showing**, and nothing beside them:
+
+- Opening a file's conversation MUST advance only that file's address. It MUST
+  NOT advance the channel, any other file, or the folder.
+- Opening a channel's general conversation MUST advance only the channel uuid.
+  It MUST NOT advance any file in it.
+- A screen that shows both — Ship's project page draws the Folder's `kind:9`
+  chat and the project's own comments as one feed — advances both.
 - Marking a thread read MUST advance only `thread:<root>`.
 - Marking a message read MUST advance only `msg:<id>`.
-- Neither MUST advance the parent container context.
+- None of these MUST advance a parent it is not showing.
 
 Advancing the parent when a person reads one reply silently marks every later
-top-level message read. **This becomes load-bearing rather than tidy the moment
-one channel carries more than one file's conversations**: today a container holds
-one topic, so getting it wrong is invisible; a container holding five topics
-marks four of them read.
+top-level message read. **This became load-bearing the moment one channel
+carried more than one file's conversations**: while a container held one topic,
+getting it wrong was invisible; a container holding five topics marks four of
+them read. A listing is not a reading — a page that *lists* files, or rolls
+their activity up as titles, advances none of them.
 
 ### 11.3 Hierarchy at read time
 
-A container's frontier propagates down: `effective(thread:<root>)` is the later
-of the thread's own marker and the container's. Marking a container read clears
-threads whose events predate the frontier; replies newer than it stay unread
-until their own marker advances.
+A stream's frontier propagates down: `effective(thread:<root>)` is the later of
+the thread's own marker and **its stream's** — the channel uuid for a root in the
+general stream, the file's address for a root about that file. Marking a stream
+read clears threads whose events predate the frontier; replies newer than it
+stay unread until their own marker advances.
+
+**The channel's marker does not propagate into a file's stream.** That is the
+one place the hierarchy stops, and it is the whole point of the file grain:
+reading the team's chat says nothing about which of the team's topics you have
+read. The reserved `folder:` grain (§11.5) is the only key that would ever reach
+every stream in a Folder, and it is not specified.
 
 The hierarchy is applied **at read time**, never by writing extra keys.
+
+#### A team's indicator is the union — the product call
+
+A Folder's own indicator — the dot on a team in Peek — is **the union of its
+streams**: unread if its general conversation is unread, or any file in it is,
+or any Folder beneath it is. Each file row carries its own indicator alongside;
+the team's clears when the last of them does.
+
+Union rather than general-stream-only, for two reasons. Peek already rolls
+activity up this way — a huddle's new message raises its parent topic's dot,
+because a signal only visible once you have opened the parent is a signal you
+do not get. And a collapsed team must not be able to hide a topic that needs
+you. The cost is a dot that stays lit until every conversation under it is read,
+which is what every workspace tool does and what people expect of it.
+
+It is a **display rule, computed at read time from the markers above.** Nothing
+is written to express it, no key is needed for it, and it does not consume the
+reserved `folder:` grain.
 
 ### 11.4 Monotonic, and there is no mark-as-unread
 
@@ -1100,6 +1171,13 @@ It is reserved rather than specified because the folder model is still a draft.
 Reserving it costs a line; discovering the need later means either colliding with
 an identifier an app chose in the meantime, or migrating published blobs — and
 NIP-RS blobs are grow-only, so a bad context id is effectively permanent.
+
+The file grain (§11.1) does not take its place, and a Folder is not a special
+case of it. A Folder is a file, so a comment anchored at the Folder's *address*
+answers to that bare address like any other file's would; the Folder's *general*
+conversation answers to its channel uuid; and `folder:<address>` remains the
+name for the third thing, "everything under it at once". The union indicator of
+§11.3 is computed from the first two and needs no third.
 
 **No huddle context is standardised.** If huddles land as channels they get the
 container scheme for free. Nothing is reserved for them.
@@ -1139,6 +1217,13 @@ blobs are "best-effort recent activity hints bounded by a time horizon" and does
 not fix the value. A consequence that bites: absence of a context means unread,
 so a container last read before the horizon reads as unread unless the client
 keeps its own cache behind the protocol.
+
+The same choice arrives with every file grain a person has never opened, and
+it is the app's to make, as Ship made it for the divider (no marker, no
+divider) and Peek makes it for a Folder listing (no marker: unread only for
+activity inside the horizon, so a project's years of issues do not all light up
+on the first day while a topic started yesterday does). What an app MUST NOT do
+is write a marker to settle the question — that is a read it did not make.
 
 Superseded blobs at a NIP-RS coordinate are **hard-deleted** by the relay, and a
 watermark survives a NIP-09 deletion so an old signed blob cannot be
