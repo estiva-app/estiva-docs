@@ -276,10 +276,16 @@ Three stages. Each is independently valuable and independently reversible, and
 the order is chosen so the reversible things happen first.
 
 **Stage 1 — stop the mirror growing.** No new Convex table or field may mirror
-relay state; new state goes to layer 1 or layer 2. Land FOL-23, which already
-removes Convex `topics` as the source of truth. Delete `convex/identityProbe.ts`
-(29 lines, zero callers, its own header says to). This is policy plus scheduled
-work, and it needs no decision.
+relay state; new state goes to layer 1 or layer 2. Given that 7 of the 7 fields
+added in the last fortnight were mirrors, this rule is the highest-leverage
+zero-cost item on the list. Delete `convex/identityProbe.ts` (29 lines, zero
+callers, its own header says to).
+
+FOL-23 removes Convex `topics` as the source of truth and belongs in this stage,
+but it is **not runnable yet**: its own description waits on the tree, the route
+and the HQ migration, which are FOL-21, FOL-19 and FOL-22 — all Todo, with
+FOL-12 and FOL-14 still in progress. The policy half needs no decision and can
+start today; FOL-23 is queued behind the Folders work.
 
 **Stage 2 — move layer-2 state off Convex.** `stars`, `screenerItems` and
 `deskOpenWork` are the state ADR 0001 names as the ownership failure. The
@@ -315,6 +321,42 @@ the only home for something a person would reasonably expect to own.* Applied
 honestly, that rule removes most of what is in `convex/` today. What survives —
 the screener's indexes, and possibly a much smaller read-state safety net — earns
 its place by a shipped feature, which is exactly the test ADR 0001 sets.
+
+### What does not wait for DMs
+
+DMs are the slowest item in §6 and the whole DM track is untouched — DMS-2
+through DMS-11 are all Todo. But they block **one table of fifteen**
+(`dmConversations`) plus a DM branch inside five modules. They do not block the
+programme. Four things are available before any of that:
+
+1. **The Stage 1 policy**, above. Free, and it is what stops 7-of-7.
+2. **The read-state size bug (§5).** Entirely DM-free, and shaped as a
+   correctness fix rather than a migration. It is also the gate on ever
+   retiring the horizon cache: until the blob is measured, the cache's
+   justification cannot be falsified either way.
+3. **The topic half of `unread.summary`.** The query already returns four
+   separate arrays — `topics`/`urgentTopics` against `dms`/`urgentDms` — so the
+   Folder side can fold from the relay while DMs keep using Convex. FOL-18
+   computes that answer in 2 POSTs / 449 ms across 147 Folders. This attacks the
+   most expensive query in the tree without touching a DM.
+4. **The topic half of stars.** `starsList` is still the read source and the
+   relay blob is only a restore path (`src/api/internal/starred.tsx:52,104`);
+   flipping the read for `kind: 'topic'` entries finishes CRO-11 for that half.
+
+**Stars does not split cleanly, and that is worth knowing before starting it.**
+Starred *people* are keyed by `dmId` — a Convex id — and published as
+`people: [{ key: e.dmId }]`. `src/nostr/stars.ts` already says the quiet part:
+*"Neither half has a portable identifier today."* So the people half needs
+either DM channels on the relay (DMS-3 gives them a uuid) or a pubkey-based key
+first. Plan stars as two pieces, not one.
+
+**One thing that looks like a cheap win and is not.** `nostr.config.relayConfig`
+is 11 of the 67 Convex call sites in the UI — the single most frequent — and it
+carries no data, only the relay origin. But `convex/nostr/config.ts` is
+deliberate: the deploy builds both halves in one step so bundle and backend
+cannot disagree, and an unset origin means publishing is *silently off* rather
+than broken. Removing it early reintroduces exactly that drift. It is a
+consequence of Convex leaving, not a step toward it.
 
 ---
 
