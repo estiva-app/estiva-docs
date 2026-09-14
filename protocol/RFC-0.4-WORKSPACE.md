@@ -905,6 +905,8 @@ Two different dialects are in use in the same workspace, and **neither is writte
 
 NIP-27's inline `nostr:npub…` is the specified answer and is not currently used inside message bodies. Adopting it makes a mention self-describing — resolvable by any app, stable across renames — and it is additive: the `p` tags stay, and existing messages keep working unchanged because the old form is still parseable.
 
+> **Resolved 2026-09-14 (RIC-2), with one correction to the paragraph above.** The `p` tags did not exist: `buildMessage` accepted `mentions` and no app passed any, so 0 of 438 `kind:9` on production carried one. Ratified as SPEC §13.1 and shipped in four parts — protocol 0.12.0 (`encodeNpub`, the `reference` mark, `findNostrUris`), Peek reading the key (peek#139), Peek writing it (peek#140), Ship rendering it from its own pubkey-keyed directory (ship#94), and finally Peek emitting the `p` tag and letting `users.name` follow `kind:0` (peek#210 — a rename in Estiva ID had never reached anyone who had signed in to Peek, so a key would have resolved to a stale name there while Ship showed the current one). Verified on production: a `#p` filter finds the mention, and a rename in Estiva ID renames the old message in both apps after a reload.
+
 ### 14.5 A format decision, and the corpus it has to live with
 
 Three candidates, and the choice is not free in any direction:
