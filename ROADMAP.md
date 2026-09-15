@@ -2,7 +2,7 @@
 
 **Working reference. Living document.** [Estiva Ship](https://ship.estiva.app) is the source of truth for ticket detail; this is the map between them — what depends on what, what can run in parallel, and what is deliberately still undecided.
 
-Last updated 2026-09-14. Not published to the docs site (`site/nav.mjs` is opt-in) because it changes often and carries operational detail.
+Last updated 2026-09-15. Not published to the docs site (`site/nav.mjs` is opt-in) because it changes often and carries operational detail.
 
 **Everything here serves one goal: making the third major app cheap enough to build.** Leaf is that app ([ADR 0001](decisions/0001-relay-canonical-by-default.md)). When a piece of work is hard to prioritise, that is the question to ask of it.
 
@@ -56,7 +56,7 @@ They used to be here, one `open / total` per row, and they drifted in both direc
 | **Agent / Steer** | The CLI, MCP server and Claude Code plugin |
 | **Performance and efficiency** | What a read and a write actually cost, before Leaf is built on it. **PER-1 shipped 2026-09-08**: a Ship workspace read is 3 requests where it was 39, and the poll went back to 10 s |
 | **Live delivery** | Ship subscribes instead of polling, and the package a second app needs in order to. **Complete 2026-09-08**, all five issues: a change from another pubkey reaches Ship in under two seconds against a ten-second poll, and the poll now runs only while the socket is not live. Created the same day by centralising a socket that had a package half in *Shared foundation packages* and a Ship half in *Performance and efficiency* — and a blocker in neither, which is what the centralising found |
-| **Shrinking Convex** | Peek's Convex backend shrinks to what ADR 0001 says earns its place — **everything except the DMs**. Opened 2026-09-14 out of PER-5's research; this is the workstream the rest of this document called *Remove Convex*. Sequence and exclusions in [its own section](#shrinking-convex) below |
+| **Shrinking Convex** | Peek's Convex backend shrinks to what ADR 0001 says earns its place — **everything except the DMs**. Opened 2026-09-14 out of PER-5's research; this is the workstream the rest of this document called *Remove Convex*. **Prioritised and moved to In Progress on 2026-09-15**, when FOL-25 measured the mirror and found Convex is the *only* copy of 41 of nine topics' 175 messages and of every attachment. Sequence and exclusions in [its own section](#shrinking-convex) below |
 
 **Both gates are closed.** Gate 1 (Estiva ID capabilities) closed 2026-08-25; Gate 2 (where packages live and how they publish, [ADR 0002](decisions/0002-foundation-packages.md)) closed 2026-08-27. **Nothing in the programme is gate-blocked any more.**
 
@@ -120,16 +120,38 @@ The workstream this document has been calling *Remove Convex*, renamed by PER-5'
 
 **Scale, measured 2026-09-14.** Convex is **Peek-only** — no other repo in the suite has the dependency. Roughly **2,900 of Peek's 6,474 non-test Convex lines** maintain a copy of relay content; the genuinely app-private surface is about 1,000. In the preceding fortnight, **19 of 23** commits touching `convex/` also touched the relay path, and **all 7** schema fields added were mirrors of a relay field.
 
-**Why DMs are excluded.** They block one table of fifteen (`dmConversations`) plus a DM branch inside five modules — not the programme. The DM track is eleven tickets, all Todo, gated on DMS-2. DM-coupled work stays in *DMs on Nostr*.
+**Why DMs are excluded.** They block one table of fifteen (`dmConversations`) plus a DM branch inside five modules — not the programme. The DM track is eleven tickets, all Todo, gated on DMS-2. DM-coupled work stays in *DMs on Nostr*. So *zero messages in Convex* is the right end state and is **not reachable inside this project alone**; it needs *DMs on Nostr* finished too. This project gets every message that is not a DM.
+
+### The premise changed on 2026-09-15: it is divergence, not duplication
+
+PER-5's numbers above describe Convex as a **copy** of relay content. FOL-25 measured the copy and it is not one.
+
+Migrating nine topic channels to files left one file visibly missing its opening message. It had never been on the relay. Counted across all nine (`scripts/probe-fol25-convex-vs-relay.ts`, peek#226, read-only):
+
+| | |
+| --- | --- |
+| messages in Convex | 55 roots + 120 replies = **175** |
+| roots with no `nostrEventId` | **10**, carrying **30 replies** |
+| attachments mirrored to the relay | **0 of 4** |
+
+**41 of 175 messages, and every attachment, exist only in Convex.** Peek mirrors *some* `kind:9` and never an `imeta`. The mirror is partial, one-directional, and silent about what it drops — so for that content Convex is not a second copy, it is the only copy, and no page, probe or test says so. The two projection-drift bugs PER-5 cites are this same failure at a smaller scale.
+
+Two consequences, and they are why this project is now **In Progress** rather than Planned:
+
+1. **The cost of waiting is not line count, it is content.** Two stores that disagree cannot be reconciled by anyone reading either one, and the disagreement is invisible from both.
+2. **Every step that takes a reader off Convex now loses content unless the content is published first.** That step is **SHR-8**, filed 2026-09-15, and it gates FOL-23, FOL-26 and FOL-25's `delete` mode as well as MS4 here.
 
 ### Sequence
 
 | | what | state |
 | --- | --- | --- |
 | **MS1** | Stop the mirror growing — SHR-1 (the per-change rule) and SHR-2 (delete a 29-line module with zero callers) | **Ready now.** Neither waits on anything, and SHR-1 is what stops 7-of-7 recurring |
-| **MS2** | Measure what is unguarded — SHR-3, then SHR-4 | **SHR-3 needs Miky.** NIP-RS keeps read state unreadable by anyone but its owner, so no agent can fetch that blob |
-| **MS3** | Take the topic half off Convex — SHR-5 (the largest win) and SHR-6 | **Ready now.** Both split cleanly from the DM branch |
-| **MS4** | Decide the read path on numbers — CRO-10 | **Gated on MS2**, and needs re-scoping first |
+| **MS2** | Get the content onto the relay — **SHR-8** | **The largest item here, and the new gate.** Needs a census across every topic, an attachment publish path that does not exist today, and an author-key export only Miky can do — a message must be published by its author or the signature lies about who said it |
+| **MS3** | Measure what is unguarded — SHR-3, then SHR-4 | **SHR-3 needs Miky.** NIP-RS keeps read state unreadable by anyone but its owner, so no agent can fetch that blob |
+| **MS4** | Take the topic half off Convex — SHR-5 (the largest *code* win) and SHR-6 | **Gated on MS2.** Both split cleanly from the DM branch |
+| **MS5** | Decide the read path on numbers — CRO-10 | **Gated on MS3**, and needs re-scoping first |
+
+Republished messages will carry today's `created_at` and the true date in a tag. That is settled, not a choice: buzz floors `created_at` at 960 s for anything carrying an `h` (commit-time trigger, migration 0021), and the ingest drift check fires first with a `400`. FOL-25's copies already work this way.
 
 ### The one that is a possible live bug, not a cleanup
 
@@ -137,7 +159,7 @@ SHR-3/SHR-4 are not housekeeping. Read-state blobs are grow-only and Peek enforc
 
 ### Two things that look in scope and are not
 
-- **FOL-23** removes Convex `topics` as the source of truth, and is queued behind FOL-19, FOL-21 and FOL-22. It stays in *Folders*.
+- **FOL-23** removes Convex `topics` as the source of truth, and is queued behind FOL-19, FOL-21 and FOL-22 — and now behind SHR-8, which is the one cross-project gate this section creates. It stays in *Folders*.
 - **`nostr.config.relayConfig`** is 11 of the 67 Convex call sites in the UI — the most frequent — and carries only the relay origin. It is deliberate: the deploy builds bundle and backend in one step so they cannot disagree, and an unset origin means publishing is *silently off* rather than broken. Removing it early reintroduces that drift. It is a consequence of Convex leaving, not a step toward it.
 
 ### Where CRO-10 stands
