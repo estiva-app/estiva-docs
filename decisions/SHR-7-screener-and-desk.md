@@ -53,6 +53,12 @@ right seam for the *screener* and the wrong one for *open work*.
    split `src/nostr/stars.ts` already made in its header: *"Convex stops being
    where the stars are and becomes how they render."*
 
+7. **Asked afterwards: could Buzz do this, so Peek runs on one backend?** Four
+   of the Screener's five inputs are relay-native and two are *cheaper* than the
+   fold below — but the relay holds no per-viewer queue and no read cursor, so
+   the recommendation does not change. Rendering and membership do have relay
+   answers, which makes the surviving Convex smaller than §1 assumes. [§7](#7-could-the-relay-do-this-instead-and-remove-the-second-backend).
+
 **Not recommended and stated plainly:** the DM half of the *screener* stays in
 Convex, but **not because it meets one of the five**. It stays because its relay
 substrate does not exist — `dmConversations` has no relay representation at all
@@ -409,7 +415,61 @@ row counts, and the row counts are what this query adds.
 
 ---
 
-## 7. Two corrections, so they are not re-argued from memory
+## 7. Could the relay do this instead, and remove the second backend?
+
+Asked after the spike: if the Screener needs no Convex, does **Buzz** supply the
+pieces natively, so Peek could run on one backend? Established against buzz
+`origin/nfb-demo-kinds`.
+
+**Four of the five inputs in §1.3 are relay-native, and two are cheaper than the
+fold this document proposed.**
+
+| Rule | Relay answer | Reach |
+| --- | --- | --- |
+| Added to a channel | `kind:44100`, relay-signed, `p` = target, `h` = channel (`side_effects.rs:981-1060`) | `#p:[self]`; `/query`, `/count`, WS REQ. Another pubkey's returns 403 |
+| `@mentioned` | A server-side index — `event_mentions`, `(community_id, pubkey_hex, created_at)` (`buzz-db/src/lib.rs:96,176`) — exposed as `/query`'s `feed_types: ["mentions"]` (`bridge.rs:332,1147-1200`) | `/query` only, 100 rows (`feed.rs:29`) |
+| Participated in the thread | `kind:39005` summary, `{reply_count, descendant_count, last_reply_at, participants}` (`bridge.rs:636-648`) | `/query` only, opt-in `include_summaries` |
+| It got a message | `last_reply_at`, same overlay | as above |
+| Urgent | **none** — no urgency attribute exists on the relay | stays client-side; it is `!@` in the body |
+
+`39005.participants` answers the participation rule that `screener.ts:183-190`
+computes today by collecting **every reply in the thread**. So the relay makes
+this cheaper, not merely possible. Three limits bound it: `participants` is
+capped at **10, most recent first**, so it is a fast path and not a complete
+answer; the relay's mention index is `p`-tag based where `mentionsUser`
+substring-matches `@Name` (`screener.ts:30-32`), so untagged mentions are
+invisible to it; and `39005` and `feed_types` are **HTTP-bridge-only** — the WS
+`REQ` path parses via `nostr::Filter` and silently drops unknown fields, so
+neither streams.
+
+**What the relay will not do**, recorded so this is not re-opened as "move the
+Screener into Buzz":
+
+- **No server-side read cursor or unread state.** Only `kind:30078`, encrypted
+  to its owner. So *never opened* — the one input with no relay answer — stays a
+  client `COUNT` against your own cursor, which is SHR-5's job.
+- **`40901 KIND_CHANNEL_SUMMARY` is a declared constant with no producer and no
+  consumer.** "Computed fields" is aspirational; nothing emits it.
+- **The workflow engine is not a compute primitive.** `ActionDef` is a closed
+  enum of seven actions (`buzz-workflow/src/schema.rs:95-155`) with no "write
+  derived state". It can notify; it cannot project.
+- **`30622` is the near miss.** The relay maintaining a per-viewer hidden set
+  proves it *can* hold per-viewer derived state — but it is hard-coded for DM
+  hide state (`side_effects.rs:3742-3830`, two call sites). There is no general
+  per-viewer projection to register a Screener with.
+
+**So: yes for the inputs, no for the queue, and the recommendation in §1 is
+unchanged.** What changes is the residue. Rendering has a relay answer after all
+— NIP-29 `39000` carries `name`, `about` and `topic` (`side_effects.rs:1378-1450`)
+— as do membership (`39002`, channel-scoped so only members read it) and the
+person directory (`kind:0`, plus `GET /api/members`). The Convex that §1 assumed
+would survive *as rendering* is therefore smaller than §1 assumed. Sizing that
+residue is not this spike's job; it is PER-5 §7's stage 3, which now has a
+sharper question to ask than it had.
+
+---
+
+## 8. Two corrections, so they are not re-argued from memory
 
 1. **The `by_topic` index cited for these tables does not exist.** SHR-7's own
    description and PER-5 §3 both say PEE-6's de-duplication works "through
@@ -427,7 +487,7 @@ row counts, and the row counts are what this query adds.
 
 ---
 
-## 8. Related
+## 9. Related
 
 - ADR 0001 §3 — the three-layer rule and the five
 - PER-5 — `decisions/PER-5-convex-research.md`, §1, §3, §6.3, §7 stage 2
@@ -436,3 +496,5 @@ row counts, and the row counts are what this query adds.
   remains there is removing the Convex copy, not designing one
 - DMS-3 — the DM relay identity §4 waits on
 - PEE-6 — the de-duplication §2 re-reads
+- SHR-9 — open work onto the layer-2 blob, filed from §1's first recommendation
+- SHR-10 — the Screener as a fold, filed from the second, carrying §7's findings
