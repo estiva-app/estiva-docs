@@ -139,9 +139,16 @@ app's repo. Pointer stubs remain at the old paths so existing links resolve.
 - Layer 2 requires NIP-44 in Estiva ID, which did not exist when this was
   written.
 
-## 8. A claim in this repo's README that this ADR contradicts
+## 8. A claim in this repo's README that this ADR contradicted — amended
 
-`README.md` currently says:
+> **Done.** `edeed19` (#17, 2026-08-27) rewrote `README.md` to almost exactly
+> the wording proposed below. The sentence there now reads "there is no shared
+> database and no private channel between them", followed by a paragraph on
+> `@estiva-app/protocol` and the "share the wire format, never the
+> interpretation" distinction. This section is kept for the reasoning; there is
+> no action left in it.
+
+`README.md` said, when this ADR was written:
 
 > The apps interoperate through published Nostr events and NIP-89 manifests,
 > exactly as a third party's app would — there is **no shared database, no shared
@@ -152,7 +159,8 @@ wire format, identity, platform concerns and UI. The README's *intent* survives 
 apps still share no database and no private channel, and interop remains as
 genuine as a third party's — but the sentence as written becomes false.
 
-**Action:** amend the README to say what it means. Something closer to: apps
+**Action, carried out in `edeed19`:** amend the README to say what it means.
+Something closer to: apps
 share no database and no private channel, and interoperate exactly as a third
 party's app would; they may share libraries for speaking the protocol, because a
 second hand-written copy of an event-id hash is a divergence the relay notices
