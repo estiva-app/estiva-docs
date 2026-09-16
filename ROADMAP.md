@@ -149,7 +149,7 @@ Two consequences, and they are why this project is now **In Progress** rather th
 | --- | --- | --- |
 | **MS1** | Stop the mirror growing — SHR-1 (the per-change rule) and SHR-2 (delete a 29-line module with zero callers) | **Done 2026-09-16** (peek#229). The rule and the measurement are in `peek-app/CLAUDE.md` beside the Convex deployment section; the tick-box is in a new `.github/pull_request_template.md`. The split is deliberate: a template is rendered only for the web form and a bare `gh pr create`, never for `gh pr create --body`, so it is the reviewer's copy and `CLAUDE.md` is the author's. `convex/identityProbe.ts` is gone |
 | **MS2** | Get the content onto the relay — **SHR-8** | **The largest item here, and the new gate.** Needs a census across every topic, an attachment publish path that does not exist today, and an author-key export only Miky can do — a message must be published by its author or the signature lies about who said it |
-| **MS3** | Measure what is unguarded — SHR-3, then SHR-4 | **SHR-3 needs Miky.** NIP-RS keeps read state unreadable by anyone but its owner, so no agent can fetch that blob |
+| **MS3** | Measure what is unguarded — SHR-3, then SHR-4 | **SHR-3 done 2026-09-16** — 24,379 bytes, 37.2% of the ceiling, 287 contexts. It needed Miky (NIP-RS keeps read state unreadable by anyone but its owner) and it needed peek#231 first, because `__readState()` reported a context count and no bytes. **SHR-4 is unblocked and preventive**, and now has a measured key mix to size a cap against |
 | **MS4** | Take the topic half off Convex — SHR-5 (the largest *code* win) and SHR-6 | **Gated on MS2.** Both split cleanly from the DM branch |
 | **MS5** | Decide the read path on numbers — CRO-10 | **Gated on MS3**, and needs re-scoping first |
 
@@ -157,7 +157,15 @@ Republished messages will carry today's `created_at` and the true date in a tag.
 
 ### The one that is a possible live bug, not a cleanup
 
-SHR-3/SHR-4 are not housekeeping. Read-state blobs are grow-only and Peek enforces no byte cap on them: the binding limit is `POST /nip44/encrypt` refusing plaintext over **65,535 bytes**, and `readState.ts` checks neither that nor SPEC §11.6's figure — only `MAX_CONTEXTS = 10_000`, which at Peek's id shapes is **8–13× beyond reach**. Past the real ceiling, publishing fails with a `console.warn` and read markers quietly stop advancing. Nobody has read a production blob's size. That is the two-minute check that decides whether this is latent or live.
+SHR-3/SHR-4 are not housekeeping. Read-state blobs are grow-only and Peek enforces no byte cap on them: the binding limit is `POST /nip44/encrypt` refusing plaintext over **65,535 bytes**, and `readState.ts` checks neither that nor SPEC §11.6's figure — only `MAX_CONTEXTS = 10_000`, which at Peek's id shapes is **8–13× beyond reach**. Past the real ceiling, publishing fails with a `console.warn` and read markers quietly stop advancing.
+
+**Measured 2026-09-16 (SHR-3, Miky's slot on production): 24,379 bytes — 37.2% of the ceiling — across 287 contexts.** So it is **latent, not live**, and SHR-4 stays preventive. Three things the split settles that the estimate could not:
+
+- **`MAX_CONTEXTS = 10_000` can never fire.** Headroom is ~484 more `thread:` keys, so the blob is refused at **~771 contexts** — ~13× before the only cap `readState.ts` checks, confirming the 8–13× estimate at the top of its range. Peek's sole implemented guard is unreachable code.
+- **The cost model was weighted wrong.** `msg:` contexts are **0** in practice; `thread:` is 202 of 287 and ~70% of the bytes. File addresses are 14% of the keys but 20% of the bytes at ~107 each, and SHR-3's original cost table omitted them entirely.
+- **Convex's horizon cache holds 130 of the 287**, with the dual-run reporting 157 benign differences — exactly the gap — and 0 unpublished, 0 regressed. Under half the frontier, losing nothing. That is evidence for CRO-10 (MS5), and it is the first time the number has existed.
+
+The blob is grow-only, so the figure that decides SHR-4's urgency is the growth *rate*, which one snapshot cannot give. `window.__readState()` reports `blobBytes`, `blobPctOfCeiling` and `keySplit` since peek#231, so the re-read is one console line.
 
 ### Two things that look in scope and are not
 
