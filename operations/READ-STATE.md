@@ -145,7 +145,7 @@ back. What would be reverted is CRO-6, and it has been live and verified since
 Both apps expose the same diagnostic in the browser console:
 
 ```
-__readState()                    the queue, the cache, and whether the read path has run
+__readState()                    the queue, the cache, the size, and whether the read path has run
 __readState.flush()              publish now instead of waiting on the debounce
 __readState.marker('<context>')  one context's merged value, as a date
 ```
@@ -154,6 +154,33 @@ __readState.marker('<context>')  one context's merged value, as a date
 bug three tickets running. `pending` non-empty with a named `lastAttempt` means a
 marker was recorded and has not reached the relay, and the outcome says which
 gate stopped it.
+
+**The size half, and why a context count is not it** (SHR-3/SHR-4). The blob is
+grow-only and the binding limit is `POST /nip44/encrypt` refusing a plaintext
+over **65,535 bytes** — not `MAX_CONTEXTS`, which sits ~13× past reach and can
+never fire for a blob. The four context kinds cost 50 to 107 bytes, so
+`relayContexts` does not stand in for `blobBytes` in either direction:
+
+```
+__readState().blobBytes          the MERGED frontier serialized, in bytes
+__readState().blobPctOfCeiling   that against 65,535
+__readState().keySplit           container / file / thread / msg / other
+__readState().queue.bytes        THIS slot's context map — 0 until the queue hydrates
+__readState().queue.budgetBytes  65437: the ceiling less the envelope
+__readState().queue.evicted      {total, lastAt, lastKeys} — non-zero means read state was dropped
+```
+
+Since peek#232 the blob cannot exceed the ceiling: the oldest markers are
+evicted to keep it under, and `evicted.total` is the only place that loss is
+reported, alongside a line in the **Read state** panel in the account menu.
+**A non-zero `total` at anything under ~700 contexts is a bug, not usage.**
+
+**`queue.bytes` reading 0 is usually not a fault.** `flush()` returns early when
+nothing is pending, *before* it hydrates, so a freshly loaded tab that has read
+nothing new reports `hydrated: false` and `known: {}` — and the re-anchor
+legitimately records nothing when the horizon cache holds nothing the relay
+lacks. Read something new first, then flush. Miky's slot on 2026-09-16:
+**25,324 bytes, 38.6%, 296 contexts, `evicted.total` 0.**
 
 **Do not judge this from the UI alone.** A cleared indicator is not proof a
 marker moved: opening a topic in Peek to look at one advances the container,
