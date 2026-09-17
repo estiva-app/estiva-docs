@@ -15,8 +15,32 @@ right seam for the *screener* and the wrong one for *open work*.
 1. **`deskOpenWork` is layer 2 whole — DMs included.** It is pure curation: a
    person puts a conversation in front of themselves and takes it out again.
    Nothing about it needs a relay stream, so the DM coupling does not bind it.
-   It is the same shape as `stars`, and the shipped `stars` blob is the
-   precedent to copy verbatim.
+   It is the same *kind* of thing as `stars` — a layer-2 blob of ids the person
+   authored — and `stars.ts` is the precedent for everything except the shape.
+
+   **Correction, 2026-09-17 (SHR-9, peek#238).** This said "copy the `stars`
+   blob verbatim", and that was wrong. Stars are a **set**, rendered
+   alphabetically, so `serializeStarsBlob` sorts and array order is free to be
+   an implementation detail. Open work is an **ordered list**, and new work is
+   appended — "latest added go last, kind of like a tab in a browser; similarly
+   to a tab, you should in future be able to change the order" (Miky). The
+   stars blob's two arrays, `topics` and `people`, can express recency within a
+   kind and nothing across them, so a DM promoted from the Screener between two
+   topics would regroup on reload. What shipped is one ordered `entries` array,
+   each entry tagged with its kind and carrying exactly the fields its `stars`
+   counterpart carries:
+
+   ```
+   { v: 1, updatedAt, entries: [ { kind: 'topic', id, channelUuid? }
+                               | { kind: 'dm',    key, pubkey? } ] }
+   ```
+
+   Nothing was added — an `addedAt` per entry would encode the order a second
+   time, and a second encoding is a second thing to keep right once dragging
+   arrives. Two consequences are load-bearing rather than incidental:
+   `serializeOpenWorkBlob` does **not** sort, and the "nothing changed" check
+   compares **in order**, because a sorted comparison would call a reorder
+   "unchanged" and publish nothing at all.
 
 2. **`screenerItems` is neither layer 2 nor layer 3 — it is a fold.** Its rows
    are *derived*, every input is something the viewer can already read, and only
@@ -328,23 +352,26 @@ export const report = query({
         .withIndex('by_user', (q) => q.eq('userId', user._id))
         .collect()
 
-      // A — open work, on the shape `src/nostr/stars.ts` already publishes.
-      const topicIds = openWork.filter((w) => w.kind === 'topic').map((w) => w.targetId)
-      const channelUuid = new Map<string, string>()
-      for (const id of topicIds) {
-        const normalized = ctx.db.normalizeId('topics', id)
-        const topic = normalized ? await ctx.db.get(normalized) : null
-        if (topic?.channelUuid) channelUuid.set(id, topic.channelUuid)
-      }
-      const openWorkBlob = {
-        v: 1,
-        updatedAt: now,
-        topics: topicIds.map((id) => ({
-          id,
-          ...(channelUuid.has(id) ? { channelUuid: channelUuid.get(id)! } : {}),
-        })),
-        people: openWork.filter((w) => w.kind === 'dm').map((w) => ({ key: w.targetId })),
-      }
+      // A — open work. SUPERSEDED: this wrote the two-array `stars` shape, and
+      // SHR-9 shipped one ordered `entries` array (see the correction in §1).
+      // Do not run it as written — a blob with no `entries` key parses as an
+      // empty list with a non-zero `updatedAt`, which reads as "present and
+      // empty" rather than "absent", and last-write-wins would then delete the
+      // person's open work rather than migrate it.
+      //
+      // The shipped migration is client-side and needs no sweep at all:
+      // `OpenWorkProvider` seeds the coordinate from `api.desk.openWorkList`
+      // the first time the relay answers `absent`, oldest first, reversing the
+      // query's newest-first sort. Kept here only so the shape this document
+      // originally prescribed is not mistaken for the shape that shipped.
+      const entries = [...openWork]
+        .sort((a, b) => a.addedAt - b.addedAt) // oldest first; new work appends
+        .map((w) =>
+          w.kind === 'dm'
+            ? { kind: 'dm' as const, key: w.targetId }
+            : { kind: 'topic' as const, id: w.targetId },
+        )
+      const openWorkBlob = { v: 1, updatedAt: now, entries }
 
       // B — the screener's *decisions* only; the rows themselves are a fold.
       const decisionsBlob = {
