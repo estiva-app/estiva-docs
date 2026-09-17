@@ -2,7 +2,7 @@
 
 **Working reference. Living document.** [Estiva Ship](https://ship.estiva.app) is the source of truth for ticket detail; this is the map between them — what depends on what, what can run in parallel, and what is deliberately still undecided.
 
-Last updated 2026-09-16. Not published to the docs site (`site/nav.mjs` is opt-in) because it changes often and carries operational detail.
+Last updated 2026-09-17. Not published to the docs site (`site/nav.mjs` is opt-in) because it changes often and carries operational detail.
 
 **Everything here serves one goal: making the third major app cheap enough to build.** Leaf is that app ([ADR 0001](decisions/0001-relay-canonical-by-default.md)). When a piece of work is hard to prioritise, that is the question to ask of it.
 
@@ -41,7 +41,7 @@ They used to be here, one `open / total` per row, and they drifted in both direc
 
 | project | what it is |
 | --- | --- |
-| **DMs on Nostr** | Move Peek's DMs off Convex onto the relay. Gated on one cheap probe |
+| **DMs on Nostr** | Move Peek's DMs off Convex onto the relay. **Ungated 2026-09-17** — DMS-2's probe answered all four questions on production (estiva-agent#47); M2 now starts with a `@estiva-app/protocol` change, see [below](#still-unverified) |
 | **Projection layer** | Render and act on another app's objects. *Mostly already built — this is extraction and extension* |
 | **Cross-app read state** | Read/unread becomes a property of the person, not the app. **Shipped and verified against production** — what is left is CRO-10, a parked spike. See [READ-STATE.md](operations/READ-STATE.md) |
 | **Shared foundation packages** | The packages a third app installs. **SHA-4 done 2026-09-08** — `@estiva-app/identity` is the whole Estiva ID client, including `POST /sign`, in all three consumers |
@@ -80,7 +80,7 @@ They used to be here, one `open / total` per row, and they drifted in both direc
 
 **One cost FOL-3 carries that neither decision removes: unread.** Read state is keyed on the *channel* (CRO-3, [SPEC §11.1](protocol/SPEC.md)). Once several topics share a team's channel, "unread in this topic" is a new read-state context — §11.1 reserved `folder:<address>` for the folder level, and a per-file one needs adding. A FOL-3 sub-ticket, filed when the shape is on production.
 
-**Deferred past the week, and why.** Labels' UI (FOL-6) — the grant lands on day 1, and eighty-plus Folders on production (peek#192) make it real rather than polish, but not this week. DMs — DMS-2 is a half-day probe gating ten tickets and is orthogonal to all of the above; first thing the following week, so DM work can be estimated honestly. [Shrinking Convex](#shrinking-convex) — most of it shrinks with every step above and cannot go first, but MS1 and MS3 are both done (peek#229, peek#231, peek#232, 2026-09-16) — MS3 was the one that was a possible live bug rather than a cleanup, and it measured at 37.2% of the ceiling and is now capped. Private folders — nothing on production is private. COM-2 — the Leaf-shaped payoff, and nothing waits on it.
+**Deferred past the week, and why.** Labels' UI (FOL-6) — the grant lands on day 1, and eighty-plus Folders on production (peek#192) make it real rather than polish, but not this week. DMs — **DMS-2 ran early and is done** (2026-09-17, estiva-agent#47), so the ten tickets behind it are estimable now rather than the following week; M2 is the next DM work and its first step is in `estiva-foundation`. [Shrinking Convex](#shrinking-convex) — most of it shrinks with every step above and cannot go first, but MS1 and MS3 are both done (peek#229, peek#231, peek#232, 2026-09-16) — MS3 was the one that was a possible live bug rather than a cleanup, and it measured at 37.2% of the ceiling and is now capped. Private folders — nothing on production is private. COM-2 — the Leaf-shaped payoff, and nothing waits on it.
 
 ### Ready now, and independent of the sequence
 
@@ -90,7 +90,7 @@ They used to be here, one `open / total` per row, and they drifted in both direc
 
 - **INT-9's remaining half** — *Create project* and *Create topic* stay hidden until an action can create a container. That is PRO-18's unbuilt half. It used to wait on a folder model; there is one now (buzz#13), so it waits on step 4's turn and nothing else.
 - **CON-11** — said *a Peek topic has no address*. It has one — `39000:<relay-pk>:<uuid>`, measured in RFC 0.4 §5.2. What it lacks is messages *addressed to it*: they carry `h` and no `a`. FOL-3's `1111` decision is exactly that, so CON-11 turns on with step 2–3 rather than waiting on anything of its own.
-- **DMS-2** still gates the whole DM track, and still costs hours.
+- ~~**DMS-2** still gates the whole DM track, and still costs hours.~~ **Done 2026-09-17** (estiva-agent#47). It cost a morning, and the DM track is unblocked — but **DMS-3 is no longer the Peek ticket it reads as**. See the note under *What blocks what*.
 
 ## What blocks what
 
@@ -105,7 +105,8 @@ Live dependencies only. Resolved ones moved to *Finished*; if a pair is not here
 | **CON-11** (mentions in Peek's Activity) | **FOL-3** | Said a topic has no address; it has one (RFC 0.4 §5.2). What it lacks is messages *addressed to it* — `h` and no `a` — and FOL-3's `1111` decision is exactly that. The surface is built and takes a second relation |
 | **CON-5** (extract the package) | *(nothing)* | **Unblocked 2026-09-07.** CON-7 and CON-9 are done and the model has two consumers that pushed back on it, which is the condition SHA-7's lesson asks for |
 | **INT-9**'s remaining half | **PRO-18**'s container half | An action still cannot create a container. It waited on a folder model; there is one now (buzz#13), so PRO-18 is step 4 and waits on nothing else. *Create topic* creates a bare file, per step 1 |
-| all DM code | **DMS-2** | Verifies that `kind:41010` is accepted over the HTTP bridge. If not, the track changes shape |
+| ~~all DM code~~ | ~~**DMS-2**~~ | **Answered 2026-09-17** (estiva-agent#47). `41010` *is* accepted over the HTTP bridge, so the track keeps its shape and needs no WebSocket publish path. `ingest.rs` gates exactly `KIND_GIFT_WRAP` and `KIND_PRESENCE_UPDATE`; the DM kinds are in `ALL_KINDS` and only `30622` of them is relay-only |
+| **DMS-3**, and so M2 | a `@estiva-app/protocol` publish | **New, and the one surprise DMS-2 produced.** `handle_dm_open` returns the DM channel uuid inside `IngestResult.message`; `parsePublishResponse` keeps `message` **only** on the `accepted: false` branch, so `Relay.publish()` answers `{ok, eventId, httpStatus}` and the uuid is gone. DMS-3 — *"record the channel uuid"* — therefore starts in `estiva-foundation` with a publish and a lock bump in Peek, not in Peek |
 | **Leaf starting** | *(nothing)* | §6 was answered in Ship (RIC-7). It is unblocked, and files nesting is what would make it cheap |
 | ~~**SHA-7** (extract the socket plumbing)~~ | *(done)* | **Done 2026-09-08.** It created `@estiva-app/platform` 0.1.0 — which did not exist when this row was written, and which SHA-2's PWA export now adds to rather than creating. Refactored rather than moved: ADR 0002 §10 scored `liveTopics.ts` ❌ on two constraints, so `git mv` was never available |
 | ~~**PER-3** (Ship's socket)~~ | ~~**LIV-2** (the grant)~~ | **Both done 2026-09-08.** Estiva ID refused `estiva-ship` a `22242` deliberately, with a test named after it; the grant reversed that and is scoped to the workspace relay and no other. Proved by a signature the relay accepted rather than by a database row |
@@ -271,7 +272,7 @@ Failure shapes worth reading before building anything: [SILENT-FAILURES.md](oper
 
 The short list. Everything else claimed in this programme has been read from a live system rather than inferred — see [SPEC §9](protocol/SPEC.md) and RFC 0.4 §5.2/§5.3 for the measurements that matter.
 
-- **Whether `kind:41010` is accepted over the HTTP bridge.** Estiva ID will *sign* one, which says nothing about ingest. This is DMS-2, and it gates ten tickets.
+- ~~**Whether `kind:41010` is accepted over the HTTP bridge.**~~ **Measured 2026-09-17, and it is** (DMS-2, estiva-agent#47). The relay's own words to a first `41010`: `response:{"channel_id":"6a8d299d-…","created":true}`; a second, distinct one over the same participants returned the same channel with `created: false`; a `kind:9` on that `h` was accepted and read back. The instinct behind this entry was right — Estiva ID signing one says nothing about ingest, and the probe found a real gap, just not in the relay. **What it found instead:** the bridge client discards the answer. `parsePublishResponse` keeps the relay's `message` only when `accepted` is false, so the channel uuid never reaches a caller of `Relay.publish()`. That is the first piece of work in M2, and it is in `estiva-foundation`.
 - **The private-channel refusal.** That a non-member is refused a private channel's `39000` follows from reading the relay's `UNION`, not from measurement — production has no private channel to be refused from. RFC 0.4 §5.2. Closing it needs a private channel and a second relay-member identity. **This moved up the list on 2026-09-05:** the whole HR scenario rests on it, and so does the rule that a reference to something unreadable renders as nothing. Both are currently believed rather than measured.
 - ~~**Whether `SIGN_RELAY_AUTH_ALLOWED_URLS` is non-empty in production.**~~ **Read 2026-09-08: `wss://estiva.estiva.app`.** Non-empty, and exactly one relay — so the inference from Peek's working socket was right, and it also settled how to scope Ship, since mirroring Peek resolves to that one origin and nothing else. Gate 1's lesson still stands and was worth acting on: had it been empty, LIV-2 would have added `22242`, read as correct, and been refused for every relay there is.
 - **Whether one folder channel holds every file's conversation at scale.** RFC 0.4 open question 4. The catch-up left a production-shaped database to test against.
