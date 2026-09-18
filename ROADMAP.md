@@ -43,7 +43,7 @@ The active projects and what each is *for*. **Counts are deliberately not here**
 | --- | --- |
 | **Folders: navigation for the whole suite** | **The centre of the programme.** Teams, files that nest, the tree that replaces the Topics view. Built: relay-maintained Folder state (buzz#13/#15), folder views in both apps, the file route `/topic/<address>` opening any file in three panes (FOL-19), the left column of five teams with expand-on-demand (FOL-21, FOL-22), Ship's sidebar folding projects under teams (SHI-25, ship#152), bare-file topics with `1111` conversations (FOL-12/13/14, peek#194), per-file unread inside a shared channel (FOL-16), the union dot (FOL-18), and the topic migration — 22 old topics live as files with 549 re-posts signed by their real authors and threaded (FOL-25, peek#220–#226). **What is left is in [§What to do next](#what-to-do-next)** |
 | **Convex → Buzz data migration** | Opened 2026-09-17 out of SHR-8's census. **Move every non-DM message and attachment out of Convex into Buzz with its real date, and leave one store behind.** Twelve tickets; the sequence and its six corrections to the first plan are in the project brief on Ship, which is the source of truth. The premise: Convex is **not a mirror** — it is the *only* copy of 202 of 807 non-DM messages and 62 of 70 attachments, across 26 topics and a huddle (peek#244). Code deletion is not here; that is FOL-23/FOL-26 |
-| **Conversation standard** | Comments the third app adopts rather than rebuilds. Track 2 is done. Left: **CON-5** (extract `@estiva-app/conversation`, Peek and Ship the two consumers), **CON-6** (publish it with the "comments in an hour" guide), **CON-11** (mentions in Peek's Activity — turns on now that a topic's messages are addressed to it) |
+| **Conversation standard** | Comments the third app adopts rather than rebuilds. Track 2 is done. Left: **CON-5** (extract `@estiva-app/conversation`, Peek and Ship the two consumers), **CON-6** (publish it with the "comments in an hour" guide), **CON-11** (mentions in Peek's Activity — turns on now that a topic's messages are addressed to it). **Re-sequenced 2026-09-18 into the middle of Folders parity**: the extraction follows FOL-31, the one conversation view for both shapes — see *What to do next* A3 |
 | **Projection layer** | Render and act on another app's objects. Mostly built; **PRO-18**'s container-creating emit is what INT-9's last two rows wait on |
 | **Intelligence in Peek** | Cmd+K. Built and deployed; *Create project* and *Create topic* stay hidden until PRO-18 |
 | **Rich text and blocks** | Thin on purpose |
@@ -52,6 +52,8 @@ The active projects and what each is *for*. **Counts are deliberately not here**
 | **Performance & infrastructure** | CRO-10 (should Convex be in the read path — stale twice over, re-scope before running), PER-6 (Ship still polls), PER-7 (CI) |
 | **UI Guardrails** | Katerina's — the `@estiva-app/ui` gates, adopted by both apps through 0.22.0 (peek#245/#251, ship#161/#162). Not sequenced here; it runs beside everything |
 | **Highlights on the relay** | HIG-1, research. Peek's highlights are an experiment and must not be published to `kind:9802` while the model is unsettled — 9802 is append-only |
+| **Remove Convex** | Opened 2026-09-18 (`e6aefcdc`). What *Shrinking Convex* excluded and the migration does not cover: the residue — all fifteen tables mapped to their relay homes in the brief — and the deletion of `convex/` and the deployment. Phase C of *What to do next* |
+| **Huddles** | Placeholder (`cec874b6`), 2026-09-18. A concept on paper; out of scope for the Folders and Convex work, and the feature may be removed to get there — its one huddle exported first |
 | **Make Agent more token efficient** | MAK-1..3 |
 | **Peek: Improvements**, **Peek: Feedback & Bugs**, **Ship: Feedback & Bugs** | the bug lists |
 
@@ -63,31 +65,46 @@ The active projects and what each is *for*. **Counts are deliberately not here**
 
 ## What to do next
 
-**The sequence of 2026-09-11 is spent.** Steps 0–3b landed the week of 2026-09-14 (the tree, the file route, the five teams, the topic migration, plus SHR-5's fold ahead of schedule); step 4 (PRO-18 → INT-9), steps 5–6 (CON-5/6) and step 7 (FOL-4's remainder, the deploy dance) were never started. **The next sequence is being decided 2026-09-18** around one goal, stated by Miky: *get rid of Convex, and make Folders as good as the Topics view is now, because Folders replace Topics.* What that has to cover, per track:
+**One sequence, decided 2026-09-18 with Miky**, replacing the one of 2026-09-11, which is spent — steps 0–3b landed the week of 2026-09-14 and steps 4–7 were never started. The goal it serves: *get rid of Convex, and make Folders as good as the Topics view is now, because Folders replace Topics.* Three phases, **interleaved**: A in the foreground, B prepared in the background from day one and executed when Miky's inputs land, C after B's census reads 0. One ticket per session.
 
-**Folders — finish v1 so the tree can replace Topics.** Every open leg, in the order the dependencies allow:
+### A — Folders reaches parity, then the tree replaces Topics
 
-- **Close what is done.** FOL-12's last leg (a `30840` on production drawn in the folder view) is met 22 times over by FOL-25; FOL-22's five-Folder top level is on production in both apps (peek#217/#221, ship#152) — both still read *In Progress*.
-- **FOL-14's remainder** — the production check by a person, and reactions / edit / delete on the foreign conversation view.
-- **SHR-11** — the Widgets file and the Widgets topic both show under Peek; Miky's question, unanswered.
-- **The parity gap** — what the Topics view does that the tree does not yet. Not measured; it is the first thing the plan needs, because FOL-26 cannot retire a view the tree does not match.
-- **FOL-26** — retire the Topics view. Gated twice: on parity, and on the migration (retiring it makes the 202 Convex-only messages unreachable).
-- **FOL-25's delete mode** — the 9 restored channels and the 8 test channels go, after FOL-26.
-- **FOL-23** — demolition: `TopicsPage`, `FoldersPage`, `/o/` for files, Convex `topics` as the source of what a topic is.
-- **FOL-4** — a generic parent declaration, breadcrumbs, the manifest saying a kind may nest.
+Four gaps were known before any audit, all from Miky using the tree on 2026-09-18, and they are the first four tickets:
 
-**Convex → Buzz data migration** — steps 0–8 in the project brief. The inputs only Miky can supply: the author-key export (138 of the 202 are Miky's, 63 Katerina's), the two env vars on the box that decide the timestamp mechanism (CON-2 / `7ffbaddd`), and the un-delete of the 14 channels PEE-30 hid (CON-4 / `f19cd9e9`, needs the box). Then DMS-7 and CON-9 (`209fa791`) for the DM side, which nobody has counted.
+| | ticket | what |
+| --- | --- | --- |
+| A1 | **FOL-28** (`d2d83474`), closes SHR-11 | **Unlist the 18 topic channels** placed beside their projects and files. Nine are the record channels of paired Ship projects (*Peek: Feedback & Bugs* draws twice), nine are the channels FOL-25 restored beside their `30840` files (Widgets). One `1852` batch, nothing deleted — a project's `h` is immutable, so its record channel stays as an invisible conversation container. Needs a person's click or a grant |
+| A2 | **FOL-27** (`4358783d`) | **The parity audit** — `TopicsPage` → `useTopicView` → `ThreadReplyCard` → `ComposeBox`, feature by feature against `/topic/<address>` on production as a signed-in person. Its output is FOL-26's gate: a checklist with a ticket or a "not needed" beside every missing row |
+| A3 | **FOL-31** (`e5031bf9`) → **CON-5** → **CON-6** | **The conversation slice.** A file's conversation is Peek's own view — composer, edits, reactions, resolution, deletion, threads, drafts, attachments — reading `1111` on a file as it reads `kind:9` in a channel, on the `containerKind`/`containerKey` pair DMS-5 introduced. Today the file page renders every conversation through `ForeignConversationView`, which is read-only *by design*; "the composer is dumber and edits do not show" is that one fact. Then CON-5 extracts the view with Ship as the second consumer and CON-6 publishes it. **This moves *Conversation standard* from last to the middle of parity.** Katerina is the natural owner — she is migrating exactly these components through the `@estiva-app/ui` gates, and the extraction happens after the gates reach them or inside the package |
+| A4 | **FOL-29** (`fea8e059`) | **A non-Peek file's widget in the right pane** while no thread is open; a topic shows nothing there. Same three panes for every file, the widget the only difference (2026-09-13) |
+| A5 | **FOL-30** (`d4d3f511`) | **Following replaces topic membership** — decided 2026-09-18 (below). The unread dot exists only for followed files; FOL-16 and FOL-18 run over the followed set; RFC 0.4 §4.6's private `30078` list widened from Folders to any file. Whether stars *become* follows is answered on the ticket before its first PR |
+| A6 | from FOL-27 | CON-11 (mentions reach Activity — unblocked), live `1111` delivery through `watchFolders`, the Screener and Desk seeing `1111`, and whatever else the audit lists |
+| A7 | **FOL-26** | **Retire the Topics view.** Gated on A2's checklist being struck and on **B6** — the Topics view is the only reader of 202 messages and 62 attachments |
 
-**Conversation standard** — CON-5, CON-6, CON-11. **Why it stays after Folders:** a topic whose messages are `1111` comments on its address is Peek consuming Ship's conversation shape — the second consumer CON-5 was waiting for. Extracting before FOL-14's remainder lands would produce a package shaped like today's Peek and then change it. One coordination point: if the conversation components are in the `@estiva-app/ui` migration queue, extract after that lands or migrate inside the package.
+Then **FOL-25's delete mode** (the 9 restored channels and the 8 test channels) and **FOL-23**, the demolition — which are phase C's first two steps.
 
-**Deferred past all of it, and why.** Labels (FOL-5/FOL-6) — the grant costs nothing, the UI is real with 62 Folders on production, but nothing waits on it. Private folders (FOL-10) — nothing on production is private. PRO-18 → INT-9 — polish once containers are stable. COM-2 — the Leaf-shaped payoff, nothing waits on it. FOL-7, FOL-8 — placeholders.
+### B — the migration: Convex → Buzz, with true dates
+
+The project brief on Ship is the source of truth for steps 0–8. What 2026-09-18 decided: **(a) the floor is lowered for the window**, not a date-in-a-tag rule every reader carries for ever — the 202 sit between 605 messages with true dates, so a tag would have every consumer sorting by it. **The keys are exported** (Miky's and Katerina's, by Miky, into a file the repo ignores before it exists), so the migration does not depend on Katerina's availability. **The 549 FOL-25 copies are re-done under the same mechanism** — nothing obsolete stays.
+
+| who | what |
+| --- | --- |
+| **Miky** | the two env vars on the box that say whether production serves reads from a replica (CON-2 / `7ffbaddd`) — everything branches on it; the key export; the un-delete of the 14 channels PEE-30 hid (CON-4 / `f19cd9e9`, SQL prepared); the 62-blob re-upload out of Convex `_storage` (`0bd35bc1`, script prepared, prod Convex is unreadable to the agent) |
+| **agent, now** | the buzz PR making `CREATED_AT_FLOOR_SECS` env-overridable with the default unchanged (`nfb-demo-kinds`, gated on the env-var read); CON-3's discriminator (`ad9c059d`, read-only); CON-7's guard (`706eb704`); the migrate and retract scripts; the snapshot (CON-10 / `05c2773d`) |
+| **then** | SHR-8 migrate → census verifies → CON-6 (`a61e921f`) retracts the wrong copies, the 549 included → **B6: CON-7 census 0** → CON-8 (`19ae5b48`) Peek stops writing messages to Convex → CON-9 (`209fa791`) counts the DM side → DMS-7 decides it → the same mechanism migrates it |
+
+### C — Remove Convex
+
+A new project (2026-09-18, `e6aefcdc`) for what *Shrinking Convex* excluded and the migration does not cover: the residue and the deletion. Its brief maps all fifteen tables to their relay homes. Three small decisions first (rename history — Buzz applies a name change silently; `isExternal`/`role`; the one huddle), then the per-person blobs (screener snooze/dismissal; CRO-10 re-scoped to *drop the read-state cache*), then the two relay reads (my DM channels; the People directory from the roster), then — after B6 — FOL-25 delete mode, FOL-23, the dead tables, `convex/` gone, the deployment deleted behind a snapshot. **Huddles** are out of scope by their own placeholder project (`cec874b6`): the feature may be removed to get there, its one huddle exported first.
+
+**Deferred past all of it, and why.** Labels (FOL-5/FOL-6) — the grant costs nothing, the UI is real with 62 Folders on production, but nothing waits on it. Private folders (FOL-10) — nothing on production is private. PRO-18 → INT-9 — once containers are stable. FOL-4 — breadcrumbs and a generic parent declaration, after the tree is the only navigation. COM-2 — nothing waits on it. FOL-7, FOL-8 — placeholders.
 
 ### Blocked, and worth knowing why
 
-- **FOL-26 and everything behind it** (FOL-25 delete mode, FOL-23) — the Topics view is the only reader of 202 messages and 62 attachments. Until the census reads 0 (CON-7 / `706eb704`) retiring it loses content silently; that is the shape PEE-30 already produced once.
-- **The migration's step 5** — needs three things from a person: the key export, the env-var read, the un-delete. The agent's ceiling deliberately lacks `30840`, `1852` and `9008`; anything signed by a person is theirs to run from a script.
+- **FOL-26 and everything behind it** (FOL-25 delete mode, FOL-23, C's deletions) — the Topics view is the only reader of 202 messages and 62 attachments. Until the census reads 0 (B6) retiring it loses content silently; that is the shape PEE-30 already produced once.
+- **The migration's execution** — three things from a person: the env-var read, the key export, the un-delete. Everything the agent can prepare is being prepared meanwhile; the agent's ceiling deliberately lacks `30840`, `1852` and `9008`.
+- **A1** — eighteen `1852` removes, which the agent cannot sign: Miky's clicks, or a one-off grant.
 - **INT-9's remaining half** — PRO-18's container emit. Waits on its turn and nothing else.
-- **Zero messages in Convex** — needs the DM side counted (CON-9) and decided (DMS-7); *DMs on Nostr* is complete without it.
 
 ## What blocks what
 
@@ -100,13 +117,14 @@ Live dependencies only. If a pair is not here, they are independent.
 | **CON-8** stop writing to Convex | **CON-7** | Convex is not touched until the census reads 0, twice — before and after |
 | Migrate the 202 (**SHR-8**) | **CON-3** discriminator · **CON-4** un-delete · **CON-5** re-upload 62 blobs · key export | Publish before deleting; a `9008` hides everything under the `h`, so republishing into a hidden channel hides the copy; the attachment bytes are in Convex `_storage`, and deleting Convex destroys them |
 | **CON-11** (mentions in Peek's Activity) | *(nothing)* | Unblocked by FOL-14 — a topic's messages now carry its address. The surface is built and takes a second relation |
-| **CON-5** (extract the package) | FOL-14's remainder, by choice | See *Why it stays after Folders* |
+| **CON-5** (extract the package) | **FOL-31**, and the `@estiva-app/ui` gates reaching the conversation components | Extracting the read-only foreign view would produce a package shaped like today's file page and then change it; extracting before the gates ships the old primitives on day one |
+| **FOL-30** (following) | *(nothing)* | Its one open question — do stars become follows — is answered on the ticket, not by anyone else |
 | **INT-9**'s remaining half | **PRO-18**'s container half | An action still cannot create a container |
 | **Leaf starting** | *(nothing)* | Unblocked; files nesting is what makes it cheap |
 
 **Two constraints every migration step runs into**, settled rather than chosen:
 
-- **A republished message carries today's `created_at`.** Buzz floors `created_at` at 960 s for anything with an `h` (`CREATED_AT_FLOOR_SECS`, a `pub const` in `replica_fence.rs`, part of the replica-read correctness proof), and the ingest drift check (`BUZZ_MAX_TIMESTAMP_DRIFT_SECS`, default 900) refuses first with a `400`. Widening only the env var moves the failure. The true date goes in a tag — unless production runs no read replica, in which case the floor guards nothing in use and can be lowered for the window. That is what CON-2 reads.
+- **A republished message carries today's `created_at`.** Buzz floors `created_at` at 960 s for anything with an `h` (`CREATED_AT_FLOOR_SECS`, a `pub const` in `replica_fence.rs`, part of the replica-read correctness proof), and the ingest drift check (`BUZZ_MAX_TIMESTAMP_DRIFT_SECS`, default 900) refuses first with a `400`. Widening only the env var moves the failure. **Decided 2026-09-18: the floor is lowered for the window** (a buzz PR makes the constant env-overridable, default unchanged), *provided* production serves no reads from a replica — the floor is part of that proof and guards nothing otherwise. That is what CON-2 reads, and it gates the PR's deploy. A date-in-a-tag rule was rejected: the 202 sit between 605 messages with true dates, so every reader would carry the sort rule for ever.
 - **An event's author is its signature.** A re-post signed by the agent is the agent's message. FOL-25's copies were re-signed with their authors' keys (peek#223); the 202 must be too, which is why the key export gates the migration and the retraction alike — only the author or the channel owner may send a `kind:5`/`9008`.
 
 ## Decisions that gate work
@@ -119,11 +137,13 @@ Open decisions only. Everything settled is in *Finished* or in the RFC it amende
 | **What happens to Convex-only DMs** | DMS-7 | Republished history cannot carry original timestamps (above). Now in the migration project |
 | **What the product says about DM privacy** | *(no ticket)* | "Private" is accurate for membership-scoped; whether to say more is product and possibly legal |
 | **Disclosure copy** | RFC 0.4 §12.6 | Granting access discloses all history, and *listing* a team discloses its roster — "who is on this team" is org structure |
-| **Topics-view parity** | *(to file)* | What the tree must do before FOL-26 can retire the Topics view. The first output of the 2026-09-18 plan |
+| **Topics-view parity** | FOL-27 | What the tree must do before FOL-26 can retire the Topics view: a checklist measured on production, struck by Miky. Filed 2026-09-18 |
+| **Do stars become follows?** | FOL-30 | Both are a private `30078` list of addresses; a star is "keep this near", a follow is "tell me when this moves". If nobody can say when they differ, there is one list. Answered on the ticket before its first PR |
+| **Rename history, `isExternal`/`role`, the one huddle** | *Remove Convex* | Three small decisions that gate nothing else, so they go first |
 
 **Settled 2026-09-05**, recorded here because the RFCs do not yet say so: workspace = the relay, team = a Folder, files nest inside, teams never nest; a file's description is the file; nesting never grants access; labels are shared, not per-person; a team may point at another team's files, and a reference to something the reader cannot see renders as **nothing** (not "unavailable" — a deliberate divergence from NIP-MP); someone who should see one project and not the team gets their own team; following is a subscription, not a permission tier; open teams have public rosters.
 
-**Settled 2026-09-11:** a topic is a **bare file** (`30840`) — not its own kind, not a Leaf document; a message in a topic is a **`kind:1111` comment** on it, and the team's general conversation stays `kind:9` in the channel. **Settled 2026-09-15 (Miky, FOL-25):** nothing obsolete stays on the relay — early-experiment shapes are migrated where easy and deleted otherwise, never kept beside the new shape. **Settled 2026-09-07:** the reaction horizon is 100 (SPEC §6.6).
+**Settled 2026-09-11:** a topic is a **bare file** (`30840`) — not its own kind, not a Leaf document; a message in a topic is a **`kind:1111` comment** on it, and the team's general conversation stays `kind:9` in the channel. **Settled 2026-09-15 (Miky, FOL-25):** nothing obsolete stays on the relay — early-experiment shapes are migrated where easy and deleted otherwise, never kept beside the new shape. **Settled 2026-09-07:** the reaction horizon is 100 (SPEC §6.6). **Settled 2026-09-18 (Miky):** topic membership is replaced by **following** — a per-person, private list (RFC 0.4 §4.6) widened from Folders to any file; the unread dot exists only for followed files, and an unfollowed file never lights a row or its team however new its messages are. Following is a subscription, never a permission: everyone in a team can open every file in it. The alternative — a member list that grants access — is the old model, and the relay grants access per channel, not per file.
 
 ## Not filed, and why
 
