@@ -130,6 +130,22 @@ Two traps:
 There are prior patches on that branch to copy the shape from — one for ratified
 kinds, one for provisional ones.
 
+### A kind people will search for needs a third file
+
+Accepted is not searchable. NIP-50 `search` runs over Postgres FTS, and the
+`search_tsv` column is a **positive allowlist** — `kind IN (0, 9, 1111, 40002,
+45001, 45003)` after buzz#18 — so a `search` over a kind outside it answers an
+empty list with no error, exactly like a kind nobody has written. That is how
+137 file comments were unfindable for two days after `kind:1111` shipped
+(FOL-36, 2026-09-20): the filter was right, the index had no words. A new kind
+whose content people will search for takes a migration in the shape of
+`migrations/0035_comment_fts.sql` (wrap the existing expression; never edit
+0008, its sqlx checksum is immutable) and the same kind in
+`scripts/maintenance/nip_rs_search_allowlist.sql`. The migration rewrites the
+events heap on relay startup — seconds at production's size, a window on a
+large one. Prove it the way it was found: `{kinds:[<kind>], search:"<a word
+in one>"}` through `POST /query`, and expect the event, not a 200.
+
 ## Gate 3 — deploy the relay by hand
 
 **The relay has no update timer.** `estiva-id`, `peek` and `ship` each have a
