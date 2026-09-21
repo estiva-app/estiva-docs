@@ -467,7 +467,18 @@ takes the event id instead:
 ```
 https://<app>.estiva.app/<type>/<slug>-<id>          64 hex, an event id
 https://<app>.estiva.app/<type>/<slug>-<d>           36 chars, a uuid
+https://<app>.estiva.app/<type>/<slug>-<d>?thread=<id>   an event inside an object
 ```
+
+*Amended 2026-09-21, FOL-38 (interop 0.27.0).* The placeholder MAY sit in the
+query string. Peek opens a thread as `/topic/<slug>-<d>?thread=<id>`, and the
+link is about the comment, not the topic: the query's placeholder is the
+identity, the path's is the container. A shape with no query placeholder
+ignores the query (a tracker's `?utm_…` does not break a link), and when two
+shapes claim one URL the one whose query the URL satisfies wins — so an app
+declares the topic shape and the thread shape as two `urls` tags, in either
+order. A `kind:1111` named this way resolves through the built-in manifest,
+as a bare file does and for the same reason: no app owns it.
 
 *Amended 2026-09-04, after PEE-17 needed a link to one.* This section twice said
 a message had **no place** in the grammar — first as "deliberately not solved
