@@ -225,7 +225,7 @@ An object's page has **two** lists, and merging them is the mistake this section
 | | in the data | shown as |
 | --- | --- | --- |
 | **Comments** | uppercase `A` at the thread root — the thread *is* about this object | the object's discussion |
-| **Mentions** | an address referenced inside a message | *Mentioned in*, secondary and collapsed |
+| **Mentions** | an `a` tag on the root that is not its `A`, or an address in a body — [SPEC §6.4](SPEC.md) has the per-tag rule | *Mentioned in*, secondary and collapsed |
 
 [SPEC §6.4](SPEC.md) already states the attaching rule: *a thread belongs to whatever anyone in it referenced, at any point, and the whole thread attaches.* That rule is correct **and it is only defensible because the two are separated.** A twenty-message thread that name-drops an issue on message twenty-one belongs under *Mentioned in*; putting it in the issue's comments would be indefensible.
 

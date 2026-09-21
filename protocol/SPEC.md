@@ -275,7 +275,7 @@ a consumer reads the union rather than showing a thread that begins in the middl
 | --- | --- |
 | no `e` tag | a root message — starts a conversation |
 | `['e', <root>, '', 'reply']` | a reply in that conversation |
-| `a` tag | the object the thread is about |
+| `a` tag | on a `kind:9`, the object the thread is about — or, since RIC-11, an address the body names; the rule below tells them apart |
 | uppercase `A`/`E`/`K`/`P` (on a `1111`) | the thread **root** — the object being commented on |
 | lowercase `a`/`e`/`k`/`p` (on a `1111`) | the immediate **parent** — the comment being replied to |
 | `h` tag | the Folder the thread lives in, which is what gates who reads it |
@@ -291,12 +291,38 @@ MUST present them separately** (added 2026-08-31):
 | | in the data | presented as |
 | --- | --- | --- |
 | **a comment** | uppercase `A` at the thread root — the thread *is* about this object | the object's own discussion |
-| **a mention** | the address referenced inside a message | *Mentioned in*, secondary and collapsed |
+| **a mention** | an `a` tag on the root that is not its `A`, or an address in a body | *Mentioned in*, secondary and collapsed |
 
 A twenty-message thread that names an issue on message twenty-one is a mention,
 not a comment. Merged into one list it would put an unrelated discussion inside
 the issue's conversation, which is why the rule above reads as surprising until
 the two are split.
+
+**Which tag carries which strength** (added 2026-09-21, CON-13). The table
+above left the mention's *data* as "referenced inside a message", and two apps
+read the same tag two ways: since RIC-11 and peek#272 a message carries every
+`nostr:naddr…` its body names as an `a` tag too — the body is what the person
+wrote, the tag is the index that lets one `#a` filter answer *who named this
+file* without reading every conversation — and Ship read a root's `a` as a
+comment, which put a Peek comment written on a file inside a Ship issue's own
+discussion. The rule, which is what both apps already publish:
+
+| on the thread's root | strength |
+| --- | --- |
+| a `kind:1111`'s `A` | **comment** — NIP-22's root object is the one thing a comment is about |
+| a `kind:1111`'s `a` that is not its `A` | **mention** — the index of an address the body names; NIP-22 makes a root's own `a` equal its `A`, so any other one is a reference |
+| a `kind:9`'s `a` that its body also names | **mention** — the same index on a message that has no `A` |
+| a `kind:9`'s `a` that its body does not name | **comment** — the anchor of a comment written before REW-10 moved comments to `1111`; nothing writes this shape any more, and a `kind:9` is not replaceable, so a reader keeps reading it (102 issue threads and 10 project threads on production, 2026-09-21) |
+| a `nostr:naddr…` in the body with no tag | **mention** — written before the index existed; a reader that wants it reads the body |
+| any tag on a reply | nothing — a reply's lowercase tags name its parent, or repeat the root's; only the root decides how the thread attaches |
+
+A `kind:1111` with no `A` at all is malformed. A reader that meets one reads
+its `a` as the `A` rather than dropping the thread; none exists on production.
+
+A writer MUST NOT put an address in a `kind:1111`'s `a` that the body does not
+name, unless it is the `A`. That is the only way the second row stays
+readable without decoding the body, and it is what `referenceTagsFor` in Peek
+and `buildNip22Comment` in Ship do.
 
 Message content is immutable, so **an accidental mention attaches permanently**
 and cannot be withdrawn. That is acceptable for the secondary section and would
