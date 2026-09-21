@@ -409,6 +409,38 @@ the opposite ever since.
 narrow. It is not an ACL. Nobody may delete another person's work; the widening
 is one identity cleaning up after an agent it is answerable for.
 
+#### Amended 2026-09-21: hiding by author label is a documented trade-off, not forbidden
+
+The MUST NOT above forbade gating the control on a client-side author
+comparison at all. Peek does it anyway: PEE-32
+(estiva-app/peek#281, merged b628bd1, on production 2026-09-21) hides Edit and
+Delete on any message whose author label is not the viewer's, in both
+`ConversationMoreMenu` and `ReplyMoreMenu` — by Miky's decision, not an
+oversight.
+
+The reasoning holds even though the rule doesn't: a plain non-author's request
+is refused by the relay every time, so offering the control there only ever
+shows a button that cannot work. The comparison this section warned about —
+narrower than the relay's and unable to include NIP-OA ownership — is still
+true, and it lands on exactly one party: an agent's owner, who has the right
+(the relay accepts the deletion from them) but does not get the control in
+Peek's UI. That is a real cost, not a hidden one, and it is accepted rather
+than fixed here.
+
+So both are now acceptable, and an app picks one:
+
+- **Offer and let the relay adjudicate** (Ship's CON-3 delete and CON-4 edit,
+  unchanged). Never wrong, including for an agent's owner, at the cost of a
+  control that a plain non-author will always see fail.
+- **Hide by author label** (Peek, since PEE-32). Never shows a control that
+  cannot succeed for the common case, at the cost of withholding it from an
+  agent's owner, who must act some other way.
+
+This does not make Ship's behavior wrong, and Ship following Peek is a
+separate decision for a Ship ticket, not implied by this correction. The two
+apps are expected to converge on one answer once they share a base library for
+this standard, rather than being reconciled by fiat now.
+
 ### 6.6 Reactions
 
 **Added 2026-08-28**, recording behaviour that has been in production since before
