@@ -364,6 +364,14 @@ New in 0.4. A conversation is not only its messages, and the three things people
 
 *Amended 2026-09-06.* This paragraph continued *"and no other identity can clean up on its behalf. An app MUST hide a delete control from a non-author rather than offer one that silently fails."* Both clauses are withdrawn — see [SPEC §6.5](SPEC.md), which carries the correction and the relay source. The reference relay accepts a deletion from the author **or** the author's NIP-OA owner, so an agent's owner *can* clean up on its behalf; and no client can evaluate that predicate, so an app MUST NOT gate the control on an author check of its own. What survives is the first clause: an identity with no `kind:5` grant at all still publishes permanently as far as its own hand is concerned.
 
+*Amended 2026-09-21.* The MUST NOT just above no longer forbids an author-label
+gate outright — see [SPEC §6.5, amended 2026-09-21](SPEC.md), which records
+Peek doing exactly that (PEE-32, estiva-app/peek#281) for edit and delete
+alike, as a documented trade-off rather than a violation. Ship's edit (CON-4)
+and delete (CON-3) still offer the control to everyone and let the relay
+adjudicate; that remains correct, and reconciling it to Peek's gate is a
+separate Ship decision, not required by this amendment.
+
 ~~**Today only Peek implements any of this.**~~ *Superseded 2026-09-07.* It said Ship had no reactions, no edit and no delete on comments, and that a grep for reaction handling in `estiva-ship` returned nothing. Ship now has **reactions** (CON-2), **delete** (CON-3) and **edit** (CON-4), all built to the corrected §6.5 rule — the control is offered to everyone and the relay adjudicates. *Updated again 2026-09-07:* Ship's edit shipped the same day this paragraph said it had not. Peek's edit published nothing until CON-8, so its rows were the only record of it — the defect ADR 0001 forbids by name. So the sentence to carry forward is narrower and still true: an app that never built these needs §13's projection layer, and the two that did had to agree first — which is what CON-1's horizon and §6.5's correction were each about.
 
 ---
