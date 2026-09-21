@@ -194,7 +194,13 @@ Letting private channels accept join requests without revealing anything would b
 
 ### 4.6 Following
 
-A per-user list, private, using the app-private storage convention: `kind:30078`, `d = "estiva:folders-followed:v1"`, NIP-44 encrypted, holding folder addresses. See CRO-11. NIP-51 `kind:30003` is the alternative and makes follows public; following is a navigation preference, so private is the better default.
+A per-user list, private, using the app-private storage convention: `kind:30078`, `d = "estiva:followed:v1"`, `["t", "estiva-appdata"]`, NIP-44 encrypted, holding **keys**: file addresses (`30840`, `30850`, `30851`, any file kind) and Folder ids — the one uuid that is a Folder's channel id, its `h` and its `d` (§5.2). See CRO-11. NIP-51 `kind:30003` is the alternative and makes follows public; following is a navigation preference, so private is the better default.
+
+Widened from Folders to any file, and renamed from `estiva:folders-followed:v1`, on 2026-09-21 (FOL-30; nothing had been published under the old name). The list is the suite's rather than one app's: **the unread indicator exists only for what a person follows.** Each conversation stream — a file's, keyed by its address, or a Folder's general stream, keyed by the Folder's id — is judged for unread only when its key is on the list, so an app that judges a stream ([SPEC](SPEC.md) §11) reads this list first. Following a Folder follows its general stream and nothing in it; following a file follows that file. Read state is untouched: markers still advance on a visit, so following later starts from where the person last was.
+
+Following is a subscription, not a permission tier (2026-09-05): everyone in a team can open every file in it. Defaults are the app's — a person follows what they create and what they comment in; mentions and placement are for the app that sees them. Whole-blob, last write wins (SPEC §12.3), as any list on this kind.
+
+Peek's starred set (`estiva-peek:stars:v1`) is a different list and stays one: a star is "keep this near", a follow is "tell me when this moves", and the second is wide where the first is hand-picked. Starring does not imply following.
 
 ### 4.7 Rejected alternatives
 
