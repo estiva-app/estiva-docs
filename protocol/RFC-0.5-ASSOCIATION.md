@@ -14,6 +14,14 @@
   The addition is **§3.4**, which answers the question the document asserted and
   never specified — where a set's identity is written — and allocates
   `kind:30852` for it.
+
+  **§7 amended 2026-09-21 (Miky): §7.7, the path is the same on every host.**
+  §7.2's grammar was written per app — `/project/` on Ship, `/topic/` on Peek —
+  and both apps now serve it. §7.7 says what follows once they do: the path
+  names the file and the host names the perspective, `/app/` is reserved for an
+  app's own pages, and the type word is declared per kind rather than chosen per
+  app. It also corrects a claim in §7.4 that a `d` is never reused under two
+  kinds.
 - **Date:** 2026-08-31
 - **Builds on:** [RFC 0.4](RFC-0.4-WORKSPACE.md), which is accepted and unchanged by this document
 - **Supersedes:** *nothing.* A higher number here does not retire 0.4 — see the
@@ -367,6 +375,15 @@ reused under two different kinds** — 0 across all 280 records. So a link whose
 `<type>` segment is wrong resolves to nothing rather than to a different
 object.
 
+*Corrected 2026-09-21.* That holds for the three kinds measured and not in
+general: a Folder's channel (`kind:39000`) and its state (`kind:30890`,
+[RFC 0.4](RFC-0.4-WORKSPACE.md) §4) carry the **same** uuid as `d`, by design —
+the state is *about* the channel, and sharing its `d` is how a reader finds it.
+So a `#d` query with no `kinds` is not unambiguous, and §7.7's fallback for an
+unknown type word restricts it to the kinds a manifest declares a shape for
+rather than dropping the filter. Nothing changes for a link whose type word is
+right, which is every link an app writes.
+
 **This adds a second reason to a rule that already exists, and the rule is now
 load-bearing in a new place.** §4.3 requires a uuid `d` so that a rename cannot
 change an address. Addressing now depends on it for *uniqueness*: an app that
@@ -479,6 +496,106 @@ resolves to nothing or to something nobody intended.
 `web` is unaffected: it still names an `nevent` for a message, because it is
 handed to NIP-19 machinery rather than pasted by a person, and §7.3's objections
 are about URLs.
+
+### 7.7 The path is the same on every host
+
+*Added 2026-09-21 (Miky).* §7.2 was written one app at a time — Ship serves
+`/project/` and `/issue/`, Peek serves `/topic/` — and each app resolves the
+other's links through §7.5. Both now do, which raises the question §7.2 left
+implicit: what is the host *for*?
+
+**The path names the file; the host names the perspective.**
+
+```
+ship.estiva.app/project/composition-fa6af533-2fa1-48d8-b7f0-1f6330443e61
+peek.estiva.app/project/composition-fa6af533-2fa1-48d8-b7f0-1f6330443e61
+```
+
+are one file. Ship draws it as a project — its issues, its status; Peek draws
+it as a conversation ([§10.7](#107-two-kinds-of-app-and-the-bare-file--decided-2026-09-11)).
+A person moves between the two by changing the host and nothing else, which is
+the property that makes the address bar the reference (§7.1) across the suite
+rather than within one app. Nothing here is new protocol: the manifest already
+declares every shape (§7.5), and the projection layer already renders any file
+by address. What is new is the obligation on the *serving* side.
+
+#### The rules
+
+1. **A type word is declared per kind, not chosen per app.** The word is the
+   `<type>` segment of the `urls` shape the kind's owner publishes (§7.5):
+   `project` is what `30850`'s manifest says, and it is the word on every
+   host. A second app that handles the same kind uses the same word. Two
+   manifests declaring the same word for **different** kinds is a collision,
+   and the manifest publisher MUST refuse to publish one — the check is a read
+   of every `kind:31990` on the relay, which `publish-manifest` already does
+   for other reasons. Two apps naming their kinds `note` is exactly the failure
+   this prevents, and it is caught at the one moment somebody is looking.
+
+2. **An app serves every declared shape.** For a path whose type word some
+   manifest declares, an app resolves the `d` exactly as §7.2 says
+   (`{kinds: [<kind>], "#d": ["<d>"]}`) and then does one of two things:
+   draws the file in its own view, if it has one for that kind; or **hands
+   off** to the owner's `web` template ([RFC 0.4](RFC-0.4-WORKSPACE.md) §13,
+   §7.5), if it does not. A 404 or an empty page is not an option — the link
+   named a real file. The projection layer's reference widget is the minimum
+   hand-off: the file's title, its app, and the link that opens it there.
+
+   "Different perspective" therefore holds where an app has a view, and
+   nowhere else. Nobody should build a Ship view of a Peek topic to satisfy the
+   URL; the hand-off *is* the answer for that case.
+
+3. **`/app/` is reserved for an app's own pages.** Everything at the root is a
+   file or a directory of files: a type word (`/project/<slug>-<d>`), its
+   plural (`/projects`), `/o/<naddr>` and `/message/<id>` (§7.6). An app's
+   pages that are not files — a desk, settings, a screener — live under
+   `/app/…`, so that a new type word can never collide with them and a person
+   learns once, for the whole suite, that `/app/` is "this app" and the rest is
+   "a file I could open anywhere".
+
+   The prefix goes on the app's pages and not on the files because **files are
+   what people link to**. `/desk` is in nobody's message; `/issue/<slug>-<d>`
+   is in hundreds. Moving the former costs a redirect; moving the latter would
+   re-break every link ever pasted, and for a worse address.
+
+4. **The type word is checked, not trusted.** As with the slug (§7.2), the
+   identity is the `d`. A resolver uses the word to choose the `kinds` filter,
+   and when the word is one no manifest declares — a link from an app whose
+   manifest is gone, or a typo — it falls back to `{kinds: [<every kind any
+   manifest declares a shape for>], "#d": ["<d>"]}`. Never a bare `#d`: §7.4's
+   correction says why. A link that resolves this way is drawn at its right
+   type word, the way a stale slug is refreshed.
+
+5. **The host stays significant for a pasted link.** §7.2's acceptance
+   amendment is unchanged: a consumer matching a URL in a message requires the
+   host to be one some manifest declares, so `evil.example.com/issue/<d>` is
+   still a plain link. Host-independence is a property of *serving* (rule 2),
+   not of matching. A consumer MAY match the path of a pasted link against
+   every manifest's shapes regardless of which declared host it carries, which
+   is what lets `peek.estiva.app/issue/…` render as an issue in Ship.
+
+#### What this changes in each app
+
+- **Peek** routes `/project/`, `/issue/` and any future declared word to the
+  file page it already has, learning the words from the manifests rather than
+  from code; moves `/desk`, `/people`, `/folders` under `/app/` with redirects;
+  and, while its Convex topics last, keeps them at `/topic-old/` — a transitional
+  exception, not a type word, gone with the migration.
+- **Ship** serves `/topic/<slug>-<d>` as a hand-off to Peek (it has no
+  conversation view); moves its own pages under `/app/`; and gains the
+  collision check in its manifest script. Its `urls` shapes are already
+  declared and its routes already carry the `d` alone (SHI-16), so the grammar
+  needs nothing.
+- **Directories** (`/<type>s`) are per perspective: an app MAY serve another
+  kind's directory and is not required to. `/projects` on Peek is a reasonable
+  thing to want and is not this amendment's concern.
+
+#### Why not `/file/<type>/<slug>-<d>`
+
+It was the first draft, on the grounds that the ecosystem may grow "endless"
+types. The number of types is not the risk; collisions are, and rules 1 and 3
+close both kinds — word against word at publish time, word against page by
+reservation. What `/file/` would buy is a namespace nobody needs, at the cost
+of six characters in every link a person shares. The root is the file's.
 
 ## 8. Deliberately deferred
 
