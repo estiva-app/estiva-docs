@@ -60,6 +60,60 @@ repo setting, so it survives upstream merges. Re-enable with
 
 ---
 
+## Opening the back-dating window
+
+Publishing history with its real date — the Convex → Buzz migration, and
+anything like it — needs **two** env vars in `/opt/buzz/.env`, because two
+gates refuse a back-dated event in sequence:
+
+| gate | var | default | how it refuses |
+|---|---|---|---|
+| ingest drift | `BUZZ_MAX_TIMESTAMP_DRIFT_SECS` | 900 | `400`, with a reason in the body |
+| commit-time floor | `BUZZ_CREATED_AT_FLOOR_SECS` | 960 | **bare `500`**, no reason — it aborts inside the transaction |
+
+Only events carrying an `h` (`channel_id IS NOT NULL`) hit the floor; global
+kinds are migration 0021's one structural exemption.
+
+**Widening only the drift var relocates the failure** from the legible 400 to
+the opaque 500. Both must cover the oldest event you intend to publish.
+
+```bash
+# open — values are an example; the floor must exceed the oldest created_at
+printf '\nBUZZ_MAX_TIMESTAMP_DRIFT_SECS=63072000\nBUZZ_CREATED_AT_FLOOR_SECS=7200\n' >> /opt/buzz/.env
+cd /opt/buzz && ./run.sh restart
+```
+
+`compose.yml` gives the relay `env_file: .env` and names neither var in its
+`environment:` block, so a new key does reach the container. No image build is
+involved — this is config plus a restart.
+
+Confirm from the relay's own log, not the exit code:
+
+```bash
+docker logs --since 2m buzz-prod-relay-1 2>&1 | grep CREATED_AT_FLOOR_SECS
+# WARN … overrides the commit-time created_at floor … commit_floor_secs=7200 default_secs=960
+```
+
+**Close it by deleting both lines and restarting again.** The warning above is
+the only thing that says the window is open; nothing expires it.
+
+Widening the floor is sound for the replica-read proof — `fence_wall` and the
+proof's bucket (c) carry the same term, so a larger floor only makes the wall
+earlier. *Narrowing* it would not be. It is also currently moot: production
+runs no read replica (the relay logs `Postgres connected`, not
+`(writer + read replica)`), so the proof guards nothing in use.
+
+Verify with `peek/scripts/probe-con13-floor-knob.ts`, which publishes into a
+throwaway channel it hides afterwards and checks the **status code** per leg —
+a run where the 400 came first proves nothing about the floor:
+
+```bash
+set -a; . ~/.estiva-agent.env; set +a
+npx tsx --tsconfig tsconfig.app.json scripts/probe-con13-floor-knob.ts --floor 7200
+```
+
+---
+
 ## Deploy order, when a change spans services
 
 ```
