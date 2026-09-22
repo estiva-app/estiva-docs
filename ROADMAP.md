@@ -91,7 +91,7 @@ What 2026-09-18 decided, and still holds: **(a) the floor is lowered for the win
 
 **Four decisions of 2026-09-22 (Miky), which change what gets built:**
 
-1. **A migrated message lands as `kind:1111` on the topic's `30840` file**, not as `kind:9` in its old channel — the shape FOL-14, FOL-25's `remigrate` and FOL-37 already established. 141 of the 185 have a file waiting. **This removes the un-delete from the critical path**: a `1111` carries `h = <team channel>`, so republishing into a hidden channel is impossible by construction.
+1. **A migrated message lands as `kind:1111` on the topic's `30840` file**, not as `kind:9` in its old channel — the shape FOL-14, FOL-25's `remigrate` and FOL-37 already established. **Every row now has a target** (CON-4, peek#291, 2026-09-22): 145 of the 185 have a file, 23 are discarded with *For testing*, and the last 34 are published in place, because *Feedback on Peek* (33) and *Claude on Estiva* (1) are live record channels that stay — a second object beside the Ship project of the same name would split one conversation. The census prints a target per gap-bearing surface and counts the ones with none; it reads 0. **This removes the un-delete from the critical path**: a `1111` carries `h = <team channel>`, so republishing into a hidden channel is impossible by construction.
 2. **The 507 are addressed, not ignored** — see CON-12 below.
 3. **No freeze.** CON-1 stays a request; idempotence and a census before and after carry it. The accepted cost is that content can be destroyed before migration, and has been.
 4. **"For testing" is discarded** — 6 unpublished + 17 unreadable, obsolete content, and the last reason to touch the box for an un-delete.
@@ -109,7 +109,7 @@ What 2026-09-18 decided, and still holds: **(a) the floor is lowered for the win
 | who | what |
 | --- | --- |
 | **Miky** | the key export; a `kind:24242` grant for the blob re-upload, or running `0bd35bc1` by hand; and **one signed-in click** on a project-record channel's conversation for CON-12's 481. ~~The env-var read~~ — **CON-2 is done, 2026-09-22** (below) |
-| **agent, now** | the snapshot (CON-10 / `05c2773d`) **first** — content is being destroyed; the buzz PR making `CREATED_AT_FLOOR_SECS` env-overridable with the default unchanged (`nfb-demo-kinds`) — **no longer gated, deploy by hand**; CON-4's one missing `30840`; CON-7's guard (`706eb704`); the migrate, copy and retract scripts |
+| **agent, now** | the snapshot (CON-10 / `05c2773d`) **first** — content is being destroyed; the buzz PR making `CREATED_AT_FLOOR_SECS` env-overridable with the default unchanged (`nfb-demo-kinds`) — **no longer gated, deploy by hand**; ~~CON-4's missing `30840`~~ (done, peek#291); CON-7's guard (`706eb704`); the migrate, copy and retract scripts |
 | **then** | SHR-8 migrates 145 as `1111` on files → CON-12 copies the 26 partials → census verifies → CON-6 (`a61e921f`) retracts **the 134** → **B6: CON-7 census 0 *and* CON-12's probe 0** → CON-8 (`19ae5b48`) Peek stops writing messages to Convex → CON-9 (`209fa791`) counts the DM side with a signed-in token (peek#258's mechanism) → DMS-7 decides it |
 
 ### C — Remove Convex
@@ -217,5 +217,5 @@ Failure shapes worth reading before building anything: [SILENT-FAILURES.md](oper
 ## Still unverified
 
 - **The `39000` half of the private-channel refusal.** The access filter is measured (DMS-4: 0 events to a non-member). A DM channel has no channel record, so "a non-member is refused a private channel's `39000`" still comes from reading the relay's `UNION`. Closing it needs a private *topic* channel, which nothing on production has.
-- **Seven topic channels that answer nothing.** SHR-5's fold found 7 of the 26 topic channels return no messages and no `kind:39000`, while the other 19 have theirs — a channel absent or unreadable, not content unmigrated, and publishing into it will not fix it. PEE-30's soft-deleted channels are the first thing to rule out; needs a signed-in person or the box (CON-4).
+- **Seven topic channels that answer nothing.** SHR-5's fold found 7 of the 26 topic channels return no messages and no `kind:39000`, while the other 19 have theirs — a channel absent or unreadable, not content unmigrated, and publishing into it will not fix it. **Settled by CON-4, 2026-09-22, with no person and no box**: six of the seven hold no recorded event id in Convex either, so they were never created rather than deleted; the seventh, `3789d2ca` *For testing*, is the one genuine soft-delete and holds the whole 17-message unreadable bucket, and it is discarded. A `9008` in a channel's history is not a test for whether it is hidden — nine channels carry one and read fine; only a read answers it.
 - **Whether one folder channel holds every file's conversation at scale.** RFC 0.4 open question 4. Every team's topics now share that team's channel, so production is becoming the test.
