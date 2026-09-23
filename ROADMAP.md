@@ -113,18 +113,18 @@ The 2026-09-18 brief read Convex as leftover tables once the migration was done.
 
 Nothing outside Peek calls the deployment, and no relay event points at Convex storage (measured 2026-09-23).
 
-One ticket per session:
+~~**REM-2**~~ (`c762527c`) shipped on 2026-09-23 (peek#330, #333): sign-in, the relay URL and file-comment uploads no longer depend on Convex, so every later done-when can be checked with `*.convex.cloud` blocked.
 
-| | ticket | what |
-| --- | --- | --- |
-| 0 | **REM-2** (`c762527c`) | Sign-in, the relay URL and file-comment uploads stop depending on Convex. After this, every done-when is checked with `*.convex.cloud` blocked |
-| 1 | **REM-1** (`9cf225fb`) → **REM-3** (`fe8d1aeb`) | **DMs first.** The DM view reads and writes the relay through FOL-31's conversation view with a `{ kind: 'channel', h }` container, and CON-7's guard lands here. Then the People page, the DM list and DM unread come from the relay, and DM links are keyed by pubkey. This ends the breakage the DMS-7 duplicates caused |
-| 2 | **FOL-26** → **FOL-25** → **FOL-23** | No route renders `TopicsPage`, and old links land on files through a fixed map in the bundle. Then re-delete the 9 restored channels and the 8 test channels, and delete the topic and huddle code |
-| 3 | **CON-14** (`083b091a`), **REM-4** (`4764de85`), **REM-5** (`6316e113`) | The Desk reads the relay; stars and open work live only on the relay; read state is the blob only (this replaces the cancelled CRO-10) |
-| 4 | **REM-6** (`48378c5e`) | The viewer is a pubkey; mentions, avatars and the profile cache leave Convex |
-| 5 | **REM-7** (`99437ab8`) → **REM-8** (`d60dbbe4`) | Delete Convex from the code. Then snapshot with file storage, Miky's click-through, delete the deployment, and update the docs |
+One ticket per session, in **three lanes run in parallel** (re-planned with Miky 2026-09-23; the brief on Ship has the reasons):
 
-Topics goes before the Desk because it takes half of the Desk's Convex inputs with it.
+| wave | DMs | Topics | per-person |
+| --- | --- | --- | --- |
+| 1: now | **REM-1** (`9cf225fb`): the DM view reads and writes the relay through FOL-31's conversation view with a `{ kind: 'channel', h }` container; CON-7's guard lands here | **FOL-26** (`fcddc731`): no route renders `TopicsPage`, and old links land on files. Then **FOL-25**: re-delete the 9 restored channels and the 8 test channels | **REM-4** (`4764de85`): stars and open work live only on the relay |
+| 2: after REM-1 | **REM-3** (`fe8d1aeb`): the People page, the DM list and DM unread come from the relay, and DM links are keyed by pubkey | **FOL-23** (`f5b889a0`): delete the topic and huddle code | |
+| 3: after REM-3 and FOL-23 | **REM-6** (`48378c5e`): the viewer is a pubkey | **CON-14** (`083b091a`): the Desk reads the relay | **REM-5** (`6316e113`): read state is the blob only (replaces the cancelled CRO-10) |
+| 4 | **REM-7** (`99437ab8`) → **REM-8** (`d60dbbe4`): delete Convex from the code, then snapshot, Miky's click-through, delete the deployment, update the docs | | |
+
+"DMs first" is still the priority: with one session, it runs REM-1. PER-7 (CI speed) can run alongside, since it touches only `.github/workflows/`.
 
 **Huddles** are out of scope, with their own placeholder project (`cec874b6`). They were disabled on 2026-09-23 (peek#309). The one huddle has no messages and is dropped; the rebuild is HUD-1 (`a7a301a9`), not scheduled.
 
@@ -141,9 +141,11 @@ Live dependencies only. If a pair is not here, they are independent.
 
 | blocked | by | why |
 | --- | --- | --- |
-| every *Remove Convex* done-when "with `*.convex.cloud` blocked" | **REM-2** (`c762527c`) | Until sign-in and the relay URL stop coming from Convex, blocking Convex blocks the whole app |
-| **FOL-26** (retire the Topics view) | **REM-1**, **REM-3**: DMs first (Miky, 2026-09-23) | An ordering, not a data dependency. B6 is met (census 0 and CON-12's probe 0, 2026-09-23), so the Topics view shows nothing the files lack |
+| ~~every *Remove Convex* done-when "with `*.convex.cloud` blocked"~~ | ~~**REM-2**~~ | Shipped 2026-09-23 (peek#330, #333) |
 | **FOL-25** delete mode, **FOL-23** | **FOL-26** | The 9 restored channels stay until nothing can write into them |
+| **FOL-23** | **REM-1** | Not behaviour: both rewrite Peek's `src/api/actions.ts` and `messages.ts`, and one would pay for a large rebase. FOL-26 no longer waits for the DMs; the DM view renders neither `TopicsPage` nor `useTopicView` |
+| **REM-3**, **REM-6** | **REM-1** (and REM-6 on REM-3) | The DM container; the "You" comparisons |
+| **REM-5** | **REM-3**, **FOL-23** | DM unread and topic unread leave the Convex horizon cache with them |
 | **CON-14** (`083b091a`, the Desk reads the relay) | **REM-1**, **FOL-23** | A DM row's preview reads through REM-1's channel container, and the topic halves of the Desk's inputs go with FOL-23 |
 | **REM-7** (delete Convex from the code) | every other *Remove Convex* ticket | Nothing may still read Convex |
 | **REM-8** (delete the deployment) | **REM-7** live, a snapshot with file storage, Miky's click-through | The snapshot is the only copy of the bytes. There is no quiet period (Miky, 2026-09-23) |
