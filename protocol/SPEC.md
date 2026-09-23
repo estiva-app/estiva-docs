@@ -585,6 +585,40 @@ naming its own parent. Both directions exist and a consumer reads both.
 Nesting organises and never grants access (RFC 0.4): a bare file's readers are
 its team's, at any depth.
 
+*Added 2026-09-23 (FOL-4):*
+
+- **Same team.** A sub-file's `h` is its parent's team: a consumer creating a
+  file under a bare file MUST copy that file's `h`, and one creating it under
+  any other kind MUST use the team whose listing it was offered from. A move
+  changes `parent` and never `h`, so a consumer MUST offer as targets only
+  files in the same team's listing. There is therefore no permission question
+  at any depth, and nothing to check.
+- **A move** is a `parent` change whose `value` is the new parent's address, or
+  empty for the top of the team. An empty value is a move, not an absence: a
+  consumer MUST NOT fall back to the root `a` tag when the change stream holds
+  one. The bare file's projection declares it as the `move` action.
+- **Read nesting from the team's listing, not from a tag query.** A relay
+  indexes a change's `a` (the file moved) and not its `value` (where to), so
+  `#a: [X]` answers "what was *created* under X" — it still returns what has
+  moved away and never what has moved in. The listing folds every change
+  against every file it holds, so it is the one read that answers "what is under
+  X". It also makes a breadcrumb free: every ancestor of a file is in the same
+  team, so the chain is walked in memory rather than one request per level. A
+  parent absent from the listing is in another team or unreadable, and is not
+  drawn — not even as "unavailable", because the count is the disclosure (the
+  rule a Folder listing already follows); the file is drawn at the top.
+- **Cycles.** Nothing on the wire can stop A naming B and B naming A. A reader
+  MUST still draw every file in the listing, so a file on a cycle is drawn at
+  the top with its parent link ignored; a file merely under a cycle keeps its
+  parent. A writer SHOULD refuse to move a file under its own descendant, and
+  with the listing in hand that is a lookup rather than a search.
+- **Depth** is unbounded on the wire and the consumer's budget in the drawing
+  (§7.2). A tree that opens one level per click needs no budget.
+- **No "may nest" field in a manifest.** Whether a kind may hold bare files is
+  answered here — every kind may — and whether it holds its own kinds is its
+  projection's `list.children` (§7.2). A consumer offers "start a file under
+  this" on any file it can address.
+
 **No migration.** An existing Peek topic is a channel and stays one: it becomes
 a *team*, and its `kind:9` messages that team's general conversation. New
 topics are bare files inside a team. Both shapes coexist permanently in every
