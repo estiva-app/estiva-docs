@@ -354,7 +354,18 @@ New in 0.4. A conversation is not only its messages, and the three things people
 
 **The fold.** The latest edit wins, ordered `ts` (when trusted), then `created_at`, then event `id` as a stable tiebreak — the same ordering as [SPEC §6.3](SPEC.md), deliberately, because a second ordering rule in the same protocol is a second thing to get wrong. An edit whose target the reader cannot see is held, not dropped: the target may arrive later, and a dropped edit cannot be recovered by a re-read.
 
-**What an edit may change is the body and nothing else.** Not the target's kind, not its channel, not its position in a thread, not its author. An edit that appears to say otherwise is folded for its content and ignored for the rest.
+**What an edit may change is the body and its attachments, and nothing else.** Not the target's kind, not its channel, not its position in a thread, not its author. An edit that appears to say otherwise is folded for its content and its `imeta` tags and ignored for the rest.
+
+*Amended 2026-09-23 (CON-5).* This read "the body and nothing else". That left no way to give a message the file it was always meant to carry. CON-5 found 62 attachments on messages already on the relay whose bytes existed only in Convex. `kind:9` and `kind:1111` are non-replaceable, so a republish would give each one a new id and orphan its replies and reactions. The only event that can repair a message in place is the one that already targets it.
+
+- **An edit MAY carry NIP-92 `imeta` tags**, in the same form a message carries them ([SPEC §13](SPEC.md)), with `m` and `x` as the relay reported them.
+- **Attachments fold separately from the body.** A message's attachment set is the `imeta` set of its **latest edit that carries at least one `imeta`**, ordered exactly as the body fold above is. If no edit carries one, it is the target's own set. An edit with no `imeta` leaves the attachments as they were. That keeps every edit written before this amendment meaning what it meant: none of them carries an `imeta`, and none of them removes a file.
+- **A set replaces; it does not append.** An edit that adds one file to a message with two carries all three.
+- **The "edited" mark stays about the body.** An edit whose content is byte-identical to the body it replaces changes attachments only. A reader SHOULD NOT mark the message edited for it. An edit that changes the body is marked edited as before, whatever it does to the attachments.
+- **The relay needs no change.** Read from buzz `origin/main` on 2026-09-23: ingest verifies `imeta` tags on any kind (`handlers/ingest.rs`, the `verify_imeta_blobs` call, which SPEC §13 already records as "not gated on kind"). So an edit naming a blob the relay does not hold is refused outright, as a message naming one would be. `validate_edit_ownership` is unchanged, so only the target's effective author or its NIP-OA owner can attach anything.
+- **Emptying a message's attachments is not expressible**, because an edit with no `imeta` means "unchanged". This is deliberate: the alternative would give every existing edit a meaning it was not written with. It is recorded as open question 11.
+
+An app that does not implement this shows the original attachments, which is the same progressive-enhancement cost the body fold has always carried.
 
 **Who may edit is the relay's answer, not the app's.** `validate_edit_ownership` accepts the target's **effective** author or the NIP-OA owner of an authoring agent — and, on the author path, re-checks channel membership, so somebody removed from a private channel cannot go back and rewrite what they said while they were in it. As with deletion (§6.5, corrected 2026-09-06), **no client can evaluate that predicate**, so an app MUST NOT gate the control on an author comparison of its own. Offer it, attempt the write, and report the refusal in the relay's own words.
 
@@ -563,6 +574,8 @@ Leaf remains the app that will stress anchoring hardest — a document editor re
 9. **What a harness may read** (§13.4's deferred neighbour). An app that derives state by scanning raw events reads across every Folder its identity can see, and §5.2 measured that open-channel content and rosters are world-readable to any relay member. That constraint is recorded here so the intelligence layer inherits it rather than rediscovering it; the layer itself is deliberately outside this RFC.
 
 10. ~~**Reaction horizon** (§7.2).~~ **Answered 2026-09-07 (CON-1).** N is **100**, written into [SPEC §6.6](SPEC.md) as a rule rather than an observation, and an app MUST report when it truncates. The deciding argument was interoperability, not performance: two apps showing one conversation with different N disagree about the count legitimately and unfixably, and a reader cannot tell that from a bug. Both reference apps now use 100 and both surface the cap. SPEC also carries a rule found on the way — an app reading reactions across more than one id space MUST *share* one budget rather than concatenate two capped lists.
+
+11. **Removing every attachment by edit** (§7.2.1, amended 2026-09-23). An edit's `imeta` set replaces the message's, but an edit with none means "unchanged", so no edit can take a message to zero files. Peek's file replacement (PEE-16) can remove the last file, and today that removal never leaves Peek. The obvious answer is a marker tag meaning "this edit's attachment set is authoritative, even if empty". It is left open until an app needs to publish that removal rather than merely hold it.
 
 ### Answered, recorded so they are not re-opened
 
