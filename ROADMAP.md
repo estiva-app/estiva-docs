@@ -14,7 +14,7 @@ Last updated 2026-09-23. Not published to the docs site (`site/nav.mjs` is opt-i
 | --- | --- | --- |
 | **Workspace** | the relay — one per company | yes, unnamed as such |
 | **Team** | a Folder: people, permissions, one conversation space. **Teams never nest** | **five, and only five, since 2026-09-15**: Estiva HQ, Peek, Ship, Leaf, Steer. `kind:1852` in, relay-signed `kind:30890` out; every Ship project is *linked* under its team, every topic is placed in one. Private folders deliberately not yet (FOL-10) |
-| **File** | anything addressable — project, issue, document, topic. **Files nest inside files** | yes; a topic is a **bare file** (`kind:30840`, RFC 0.5 §10.7, SPEC §6.7) and its conversation is `kind:1111` comments on its address. Nesting is drawn over the parent link; a *generic* parent declaration is FOL-4 |
+| **File** | anything addressable — project, issue, document, topic. **Files nest inside files** | yes; a topic is a **bare file** (`kind:30840`, RFC 0.5 §10.7, SPEC §6.7) and its conversation is `kind:1111` comments on its address. Nesting shipped with **FOL-4** (2026-09-23; foundation#75, peek#315/#328, ship#173, SPEC §6.7): a bare file names its parent, moves by a `parent` change, and both apps draw the nesting from the team listing — breadcrumbs, the deep tree, Related at depth |
 | **Block** | an addressable paragraph inside a file | shipped |
 
 A file's **description is the file**, not a document beneath it. Nesting **organises and never grants access**: everything in a team is visible to that team.
@@ -128,7 +128,7 @@ Topics goes before the Desk because it takes half of the Desk's Convex inputs wi
 
 **Huddles** are out of scope, with their own placeholder project (`cec874b6`). They were disabled on 2026-09-23 (peek#309). The one huddle has no messages and is dropped; the rebuild is HUD-1 (`a7a301a9`), not scheduled.
 
-**Deferred past all of it, and why.** Labels (FOL-5/FOL-6) — the grant costs nothing, the UI is real with 62 Folders on production, but nothing waits on it. Private folders (FOL-10) — nothing on production is private. PRO-18 → INT-9 — once containers are stable. FOL-4 — breadcrumbs and a generic parent declaration, after the tree is the only navigation. COM-2 — nothing waits on it. FOL-7, FOL-8 — placeholders.
+**Deferred past all of it, and why.** Labels (FOL-5/FOL-6) — the grant costs nothing, the UI is real with 62 Folders on production, but nothing waits on it. Private folders (FOL-10) — nothing on production is private, and Peek can only create open Folders; FOL-4's "nobody outside the team" leg was closed unrun for that reason (2026-09-23). PRO-18 → INT-9 — once containers are stable. ~~FOL-4~~ — shipped 2026-09-23. COM-2 — nothing waits on it. FOL-7, FOL-8 — placeholders.
 
 ### Blocked, and worth knowing why
 
