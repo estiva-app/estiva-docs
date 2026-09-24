@@ -2,7 +2,7 @@
 
 **Working reference. Living document.** [Estiva Ship](https://ship.estiva.app) is the source of truth for ticket detail; this is the map between them — what depends on what, what can run in parallel, and what is deliberately still undecided.
 
-Last updated 2026-09-23. Not published to the docs site (`site/nav.mjs` is opt-in) because it changes often and carries operational detail.
+Last updated 2026-09-24. Not published to the docs site (`site/nav.mjs` is opt-in) because it changes often and carries operational detail.
 
 **Pruned 2026-09-18.** Two projects finished in the same week — *DMs on Nostr* and *Shrinking Convex* — and the sequence of 2026-09-11 is spent. Everything that was struck through, every finished milestone's narrative and every resolved dependency came out; what each one taught stayed, in [§Finished](#finished--and-what-each-one-taught). The previous version is in git if a citation is needed.
 
@@ -48,7 +48,7 @@ The active projects and what each is *for*. **Counts are deliberately not here**
 | **Rich text and blocks** | Thin on purpose |
 | **Composition** | A document that points at live content. [RFC 0.6](protocol/RFC-0.6-COMPOSITION.md), gated on COM-1 |
 | **Shared foundation packages** | The packages a third app installs. `@estiva-app/protocol` 0.22.0, `interop` 0.23.0, `identity`, `platform`, `ui` 0.22.0 |
-| **Performance & infrastructure** | ~~CRO-10~~ (cancelled; the read-state cache it had been re-scoped to drop is now REM-5), PER-6 (Ship still polls), ~~PER-7~~ (Peek CI's typecheck and a 4-way test shard run in parallel, peek#335, 2026-09-23: main ~425 s → 215 s. Removing Convex takes under 20 s more off CI) |
+| **Performance & infrastructure** | ~~CRO-10~~ (cancelled; the read-state cache it had been re-scoped to drop is now REM-5), PER-6 (Ship still polls), ~~PER-7~~ (Peek CI's typecheck and a 4-way test shard run in parallel, peek#335, 2026-09-23: main ~425 s → 215 s. Removing Convex takes under 20 s more off CI), ~~PER-15~~ (`node_modules` cached per lockfile and Node version, peek#340, 2026-09-24: install 13–31 s → 5–7 s per job on a hit), PER-14 (jsdom set up per test file) |
 | **UI Guardrails** | Katerina's — the `@estiva-app/ui` gates, adopted by both apps through 0.22.0 (peek#245/#251, ship#161/#162). Not sequenced here; it runs beside everything |
 | **Highlights on the relay** | HIG-1, research. Peek's highlights are an experiment and must not be published to `kind:9802` while the model is unsettled — 9802 is append-only |
 | **Remove Convex** | **The critical path since 2026-09-23**, when the data migration finished (census 0, DMS-7 done; that project is completed and archived). **Peek runs on Buzz and Estiva ID and nothing else:** `convex/` gone, and the `honorable-guineapig-592` deployment deleted after a snapshot with file storage. Re-planned with Miky on 2026-09-23: Convex turned out not to be leftover tables but what the app stands on — sign-in, the relay URL, the viewer, the whole DM path, uploads and the Desk. The order and the table-by-table map are in the project brief on Ship (`e6aefcdc`), which is the source of truth; the sequence is [§C](#c--remove-convex) |
