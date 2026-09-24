@@ -119,16 +119,18 @@ Nothing outside Peek calls the deployment, and no relay event points at Convex s
 
 ~~**REM-3**~~ (`fe8d1aeb`) shipped on 2026-09-24 (peek#343, estiva-id#68). People, the DM list, DM channels, hide and DM dots read the relay, and a DM is keyed by the partner's pubkey. Miky checked it on production with `*.convex.cloud` blocked. People lists humans only: Estiva ID now marks role accounts NIP-24 `bot` (EST-4). `unread.summary` is gone from `src/`, so topic dots have also lost Convex's `topicMarks` cache ahead of REM-5. The Screener's DM half is still Convex, and its links use old ids and land on the People list until CON-14.
 
+~~**REM-6**~~ (`48378c5e`) shipped on 2026-09-24 (peek#350). The viewer is the Estiva ID token's pubkey, named by its `kind:0`. Mentions, avatars and the person pickers read the same roster + `kind:0` answer as People, with agents still mentionable. `users.adoptIdentity` and the `kind:0` → `users` copy are gone, and `role` and `email` were dropped. Miky checked it on production with `*.convex.cloud` blocked. Two things are left until the tickets that delete them: the Screener preview labels your own rows with your name rather than "You" (CON-14), and a first-time sign-up gets no Convex `users` row, so the Convex Desk, stars and read state stay empty for them (CON-14, REM-4, REM-5).
+
 One ticket per session, in **three lanes run in parallel** (re-planned with Miky 2026-09-23; the brief on Ship has the reasons):
 
 | wave | DMs | Topics | per-person |
 | --- | --- | --- | --- |
 | 1 | ~~**REM-1**~~ (`9cf225fb`, done, peek#336): the DM view reads and writes the relay through FOL-31's conversation view with a `{ kind: 'channel', h }` container; CON-7's guard lands here | ~~**FOL-26**~~ (`fcddc731`, done, peek#337): no route renders `TopicsPage`, and old links land on files. Now **FOL-25**: re-delete the 9 restored channels and the 8 test channels | **REM-4** (`4764de85`): stars and open work live only on the relay |
 | 2 | ~~**REM-3**~~ (`fe8d1aeb`, done, peek#343): the People page, the DM list and DM unread come from the relay, and DM links are keyed by pubkey | **FOL-23** (`f5b889a0`): delete the topic and huddle code | |
-| 3: after REM-3 (landed) and FOL-23 | **REM-6** (`48378c5e`): the viewer is a pubkey. Now: the DM lane's next | **CON-14** (`083b091a`): the Desk reads the relay | **REM-5** (`6316e113`): read state is the blob only (replaces the cancelled CRO-10) |
+| 3: after REM-3 (landed) and FOL-23 | ~~**REM-6**~~ (`48378c5e`, done, peek#350): the viewer is a pubkey. The DM lane is finished | **CON-14** (`083b091a`): the Desk reads the relay | **REM-5** (`6316e113`): read state is the blob only (replaces the cancelled CRO-10) |
 | 4 | **REM-7** (`99437ab8`) → **REM-8** (`d60dbbe4`): delete Convex from the code, then snapshot, Miky's click-through, delete the deployment, update the docs | | |
 
-"DMs first" is still the priority: with one session, it runs REM-6, which waits on nothing now that REM-3 has landed. PER-7 (CI speed) can run alongside, since it touches only `.github/workflows/`.
+The DM lane is finished. With one session, REM-4 runs next because it waits on nothing. REM-5 and CON-14 wait on FOL-23. PER-7 (CI speed) can run alongside, since it touches only `.github/workflows/`.
 
 **Huddles** are out of scope, with their own placeholder project (`cec874b6`). They were disabled on 2026-09-23 (peek#309). The one huddle has no messages and is dropped; the rebuild is HUD-1 (`a7a301a9`), not scheduled.
 
@@ -148,7 +150,7 @@ Live dependencies only. If a pair is not here, they are independent.
 | ~~every *Remove Convex* done-when "with `*.convex.cloud` blocked"~~ | ~~**REM-2**~~ | Shipped 2026-09-23 (peek#330, #333) |
 | ~~**FOL-25** delete mode~~ (done), **FOL-23** | **FOL-26** | The restored channels stayed until nothing could write into them; FOL-25 deleted them 2026-09-24 |
 | **FOL-23** | **REM-1** | Not behaviour: both rewrite Peek's `src/api/actions.ts` and `messages.ts`, and one would pay for a large rebase. FOL-26 no longer waits for the DMs; the DM view renders neither `TopicsPage` nor `useTopicView` |
-| ~~**REM-3**, **REM-6**~~ | ~~**REM-1**, REM-3~~ | Both landed (peek#336, #343); REM-6 waits on nothing |
+| ~~**REM-3**, **REM-6**~~ | ~~**REM-1**, REM-3~~ | Both landed (peek#343, #350) |
 | **REM-5** | ~~REM-3~~, **FOL-23** | DM unread has left the Convex horizon cache (REM-3); topic unread goes with FOL-23 |
 | **CON-14** (`083b091a`, the Desk reads the relay) | **REM-1**, **FOL-23** | A DM row's preview reads through REM-1's channel container, and the topic halves of the Desk's inputs go with FOL-23 |
 | **REM-7** (delete Convex from the code) | every other *Remove Convex* ticket | Nothing may still read Convex |
