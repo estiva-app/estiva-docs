@@ -96,7 +96,7 @@ Then **FOL-25's delete mode** (the 9 restored channels and the 8 test channels) 
 
 All fifteen tickets are done, and the project is completed and archived. Its brief on Ship keeps the sequence, the decisions of 2026-09-22 and the bucket sizes; what it taught is in [§Finished](#finished--and-what-each-one-taught).
 
-**One gap it leaves:** until REM-1 lands, a DM whose relay publish fails is Convex-only again.
+**The gap it left is closed:** REM-1 (peek#336) writes a DM to the relay only, so a failed publish no longer leaves a Convex-only DM. One slipped through first: a tab still running the pre-REM-1 bundle sent an image DM at 2026-09-23 21:22Z that never reached the relay. REM-8's census has to catch it.
 
 ### C — Remove Convex
 
@@ -115,16 +115,18 @@ Nothing outside Peek calls the deployment, and no relay event points at Convex s
 
 ~~**REM-2**~~ (`c762527c`) shipped on 2026-09-23 (peek#330, #333): sign-in, the relay URL and file-comment uploads no longer depend on Convex, so every later done-when can be checked with `*.convex.cloud` blocked.
 
+~~**REM-1**~~ (`9cf225fb`) shipped on 2026-09-23 (peek#336). The DM view reads its channel off the relay and writes only there, and a send reports success only on the relay's acceptance (CON-7's guard). It was checked with Convex reachable, because the DM list and each DM's channel still come from Convex; REM-3 re-runs the check with it blocked. Until CON-14, a new DM does not reach the Screener.
+
 One ticket per session, in **three lanes run in parallel** (re-planned with Miky 2026-09-23; the brief on Ship has the reasons):
 
 | wave | DMs | Topics | per-person |
 | --- | --- | --- | --- |
-| 1: now | **REM-1** (`9cf225fb`): the DM view reads and writes the relay through FOL-31's conversation view with a `{ kind: 'channel', h }` container; CON-7's guard lands here | ~~**FOL-26**~~ (`fcddc731`, done, peek#337): no route renders `TopicsPage`, and old links land on files. Now **FOL-25**: re-delete the 9 restored channels and the 8 test channels | **REM-4** (`4764de85`): stars and open work live only on the relay |
-| 2: after REM-1 | **REM-3** (`fe8d1aeb`): the People page, the DM list and DM unread come from the relay, and DM links are keyed by pubkey | **FOL-23** (`f5b889a0`): delete the topic and huddle code | |
+| 1 | ~~**REM-1**~~ (`9cf225fb`, done, peek#336): the DM view reads and writes the relay through FOL-31's conversation view with a `{ kind: 'channel', h }` container; CON-7's guard lands here | ~~**FOL-26**~~ (`fcddc731`, done, peek#337): no route renders `TopicsPage`, and old links land on files. Now **FOL-25**: re-delete the 9 restored channels and the 8 test channels | **REM-4** (`4764de85`): stars and open work live only on the relay |
+| 2: now (REM-1 has landed) | **REM-3** (`fe8d1aeb`): the People page, the DM list and DM unread come from the relay, and DM links are keyed by pubkey | **FOL-23** (`f5b889a0`): delete the topic and huddle code | |
 | 3: after REM-3 and FOL-23 | **REM-6** (`48378c5e`): the viewer is a pubkey | **CON-14** (`083b091a`): the Desk reads the relay | **REM-5** (`6316e113`): read state is the blob only (replaces the cancelled CRO-10) |
 | 4 | **REM-7** (`99437ab8`) → **REM-8** (`d60dbbe4`): delete Convex from the code, then snapshot, Miky's click-through, delete the deployment, update the docs | | |
 
-"DMs first" is still the priority: with one session, it runs REM-1. PER-7 (CI speed) can run alongside, since it touches only `.github/workflows/`.
+"DMs first" is still the priority: with one session, it runs REM-3. PER-7 (CI speed) can run alongside, since it touches only `.github/workflows/`.
 
 **Huddles** are out of scope, with their own placeholder project (`cec874b6`). They were disabled on 2026-09-23 (peek#309). The one huddle has no messages and is dropped; the rebuild is HUD-1 (`a7a301a9`), not scheduled.
 
