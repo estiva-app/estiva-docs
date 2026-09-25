@@ -52,12 +52,11 @@ The active projects and what each is *for*. **Counts are deliberately not here**
 | **Performance & infrastructure** | ~~CRO-10~~ (cancelled; the read-state cache it had been re-scoped to drop is now REM-5), ~~PER-6~~ (Ship's project page read every ~3 s and flashed its reference cards: one refresh timer per interval in platform 0.3.1, estiva-foundation#80, taken by ship#181 and peek#344; no skeleton on a refresh, ship#180; 2026-09-24, verified idle on production at one read per 10 s), ~~PER-7~~ (Peek CI's typecheck and a 4-way test shard run in parallel, peek#335, 2026-09-23: main ~425 s → 215 s. Removing Convex takes under 20 s more off CI), ~~PER-15~~ (`node_modules` cached per lockfile and Node version, peek#340, 2026-09-24: install 13–31 s → 5–7 s per job on a hit), ~~PER-14~~ (`.test.ts` files run under node, only `.test.tsx` under jsdom, peek#341, 2026-09-24: jsdom setup across shards 107 s → 55 s, each shard 72–81 s → 60–71 s), ~~PER-16~~ (Ship's CI laid out as Peek's: one install action shared from estiva-foundation `@ci-v1` (foundation#82, peek#351), web tests sharded 3 ways, and the image wraps a bundle CI built, ship#186, 2026-09-24: the slowest check a merge waits on 133–138 s → ~60 s, `publish` 99 s → 43 s), ~~PER-19~~ (Ship is one package laid out as Peek is: the app in `src/`, its data layer in `src/nostr/`, every CI job installs once, ship#191, 2026-09-25; the bundle had been carrying protocol's NIP-19 code twice, and on production it now carries it once), ~~PER-22~~ (the agent holds a session as a person, approved with their passkey at a `/device` link, and two QA accounts sign in with nobody present, estiva-id#69, #70, 2026-09-25), ~~PER-23~~ (`scripts/probe.mjs` runs production Peek headless as QA-1 or QA-2 and prints JSON, peek#369, 2026-09-25. Measured: QA-1 posts, and QA-2's open page lights the Folder dot 0.7 s later. Signed-in checks no longer need a person), PER-21 (estiva-agent reads apps through a shared conversation library and each app's manifest, not its copy of Ship's `src/`, which was four features behind on 2026-09-24; depends on the conversation library, see CON-5 and PER-20) |
 | **UI Guardrails** | Katerina's — the `@estiva-app/ui` gates, adopted by both apps through 0.22.0 (peek#245/#251, ship#161/#162). Not sequenced here; it runs beside everything |
 | **Highlights on the relay** | HIG-1, research. Peek's highlights are an experiment and must not be published to `kind:9802` while the model is unsettled — 9802 is append-only |
-| **Remove Convex** | **The critical path since 2026-09-23**, when the data migration finished (census 0, DMS-7 done; that project is completed and archived). **Peek runs on Buzz and Estiva ID and nothing else:** `convex/` gone, and the `honorable-guineapig-592` deployment deleted after a snapshot with file storage. Re-planned with Miky on 2026-09-23: Convex turned out not to be leftover tables but what the app stands on — sign-in, the relay URL, the viewer, the whole DM path, uploads and the Desk. The order and the table-by-table map are in the project brief on Ship (`e6aefcdc`), which is the source of truth; the sequence is [§C](#c--remove-convex) |
 | **Huddles** | Placeholder (`cec874b6`), 2026-09-18. A concept on paper; out of scope for the Folders and Convex work. **Disabled 2026-09-23** (peek#309, CON-8): existing huddles stay readable behind a paused banner, and none can be started or replied to. The rebuild is HUD-1 (`a7a301a9`), not scheduled |
 | **Make Agent more token efficient** | MAK-1..3 |
 | **Peek: Improvements**, **Peek: Feedback & Bugs**, **Ship: Feedback & Bugs** | the bug lists |
 
-**Completed and archived** — Convex → Buzz data migration (2026-09-23), DMs on Nostr, Shrinking Convex, Live delivery, Cross-app read state, Agent / Steer, Other, Catch up the Buzz fork, Rewrite Ship, Peek real-time. Their lessons are in [§Finished](#finished--and-what-each-one-taught). Two open tickets sit in a completed project: **DMS-9** (immutable participants) and **DMS-10** (the 9-participant cap) — both presuppose group DMs, which Peek's pair-only `dmConversations` does not have, so they move to *Peek: Improvements*; **DMS-7** (Convex-only DMs) moved to the migration project and is done.
+**Completed and archived** — Remove Convex (2026-09-25), Convex → Buzz data migration (2026-09-23), DMs on Nostr, Shrinking Convex, Live delivery, Cross-app read state, Agent / Steer, Other, Catch up the Buzz fork, Rewrite Ship, Peek real-time. Their lessons are in [§Finished](#finished--and-what-each-one-taught). Two open tickets sit in a completed project: **DMS-9** (immutable participants) and **DMS-10** (the 9-participant cap) — both presuppose group DMs, which Peek's pair-only `dmConversations` does not have, so they move to *Peek: Improvements*; **DMS-7** (Convex-only DMs) moved to the migration project and is done.
 
 **Both gates are closed.** Gate 1 (Estiva ID capabilities) 2026-08-25; Gate 2 ([ADR 0002](decisions/0002-foundation-packages.md)) 2026-08-27. Nothing in the programme is gate-blocked.
 
@@ -67,10 +66,12 @@ The active projects and what each is *for*. **Counts are deliberately not here**
 
 **One sequence, decided 2026-09-18 with Miky**, replacing the one of 2026-09-11, which is spent — steps 0–3b landed the week of 2026-09-14 and steps 4–7 were never started. The goal it serves: *get rid of Convex, and make Folders as good as the Topics view is now, because Folders replace Topics.* Three phases, **interleaved**: A in the foreground, B prepared in the background from day one and executed when Miky's inputs land, C after B's census reads 0. One ticket per session.
 
-**Where it stands, 2026-09-23:**
+**Where it stands, 2026-09-25: all three phases are finished**, so this sequence is spent.
 - A is finished, except A7, which moved into C.
 - B is finished: the census reads 0 and the project is archived.
-- C is what is left. It was re-planned the same day.
+- C finished on 2026-09-25: the Convex deployment is deleted.
+
+No sequence after it has been decided here yet.
 
 ### A — Folders reaches parity, then the tree replaces Topics
 
@@ -97,45 +98,15 @@ Four gaps were known before any audit, all from Miky using the tree on 2026-09-1
 
 All fifteen tickets are done, and the project is completed and archived. Its brief on Ship keeps the sequence, the decisions of 2026-09-22 and the bucket sizes; what it taught is in [§Finished](#finished--and-what-each-one-taught).
 
-**The gap it left is closed:** REM-1 (peek#336) writes a DM to the relay only, so a failed publish no longer leaves a Convex-only DM. One slipped through first: a tab still running the pre-REM-1 bundle sent an image DM at 2026-09-23 21:22Z that never reached the relay. REM-8's census has to catch it.
+**The gap it left is closed:** REM-1 (peek#336) writes a DM to the relay only, so a failed publish no longer leaves a Convex-only DM. One slipped through first: a tab still running the pre-REM-1 bundle sent an image DM at 2026-09-23 21:22Z that never reached the relay. REM-8's census caught it: it was Miky's test message to the test account. Its blob is in the store and the snapshot, and it was left unpublished on purpose.
 
-### C — Remove Convex
+### C — Remove Convex (finished 2026-09-25)
 
-**This is the whole of what is left** (`e6aefcdc`, `in_progress` since 2026-09-23). It was re-planned with Miky on 2026-09-23 from an inventory of Peek `origin/main`.
+**Peek runs on Buzz and Estiva ID and nothing else.** Eleven tickets from 2026-09-23 to 2026-09-25 (REM-1…REM-8, FOL-23, FOL-26, CON-14; peek#330–#368). Its lessons are in [§Finished](#finished--and-what-each-one-taught).
 
-The 2026-09-18 brief read Convex as leftover tables once the migration was done. The inventory showed it is what the app still stands on:
-- the sign-in gate (`ConvexProviderWithAuth` and Convex's `<Authenticated>`);
-- the relay URL every relay hook waits on (`relayConfig`);
-- the viewer (`users.me`);
-- the whole DM path: the view reads only a relay→Convex import, and every DM action writes Convex first, then mirrors to the relay without waiting;
-- every upload;
-- the Desk's DM half and Urgent;
-- a read-state cache.
+The code went in REM-7 (peek#366, #368). REM-8 then took the final snapshot with file storage: `~/estiva-backups/rem8-20260925/`, 102 blobs, sha256 `338f9a39…`. Its census found every one of the 90 attachments in the blob store, and 89 are also under a live `imeta`. The 90th is an unpublished test DM. A headless click-through on production with `*.convex.cloud` blocked made 0 Convex requests. Miky deleted the `honorable-guineapig-592` deployment the same day, and it now answers 404 like a name that never existed. REM-9 (`4ab56073`) carries this roadmap change and archives the project.
 
-Nothing outside Peek calls the deployment, and no relay event points at Convex storage (measured 2026-09-23).
-
-~~**REM-2**~~ (`c762527c`) shipped on 2026-09-23 (peek#330, #333): sign-in, the relay URL and file-comment uploads no longer depend on Convex, so every later done-when can be checked with `*.convex.cloud` blocked.
-
-~~**REM-1**~~ (`9cf225fb`) shipped on 2026-09-23 (peek#336). The DM view reads its channel off the relay and writes only there, and a send reports success only on the relay's acceptance (CON-7's guard). It was checked with Convex reachable, because the DM list and each DM's channel still come from Convex; REM-3 re-runs the check with it blocked. Until CON-14, a new DM does not reach the Screener.
-
-~~**REM-3**~~ (`fe8d1aeb`) shipped on 2026-09-24 (peek#343, estiva-id#68). People, the DM list, DM channels, hide and DM dots read the relay, and a DM is keyed by the partner's pubkey. Miky checked it on production with `*.convex.cloud` blocked. People lists humans only: Estiva ID now marks role accounts NIP-24 `bot` (EST-4). `unread.summary` is gone from `src/`, so topic dots have also lost Convex's `topicMarks` cache ahead of REM-5. The Screener's DM half is still Convex, and its links use old ids and land on the People list until CON-14.
-
-~~**REM-6**~~ (`48378c5e`) shipped on 2026-09-24 (peek#350). The viewer is the Estiva ID token's pubkey, named by its `kind:0`. Mentions, avatars and the person pickers read the same roster + `kind:0` answer as People, with agents still mentionable. `users.adoptIdentity` and the `kind:0` → `users` copy are gone, and `role` and `email` were dropped. Miky checked it on production with `*.convex.cloud` blocked. Two things are left until the tickets that delete them: the Screener preview labels your own rows with your name rather than "You" (CON-14), and a first-time sign-up gets no Convex `users` row, so the Convex Desk, stars and read state stay empty for them (CON-14, REM-4, REM-5).
-
-~~**REM-5**~~ (`6316e113`) shipped on 2026-09-25 (peek#363). Read state is the NIP-RS blob only. Thread reads no longer write Convex, and the merge no longer fills, re-anchors from or diffs against the Convex horizon cache. The Read state panel keeps only its size readout, and `api.readState.*` has no caller in `src/`. No replacement is needed for the re-anchor: the 90-day horizon drops whole slot events, and any marker in a dropped slot is older than every message the unread fold still judges. The Convex functions stay deployed so tabs on the old bundle do not throw, and REM-7 deletes them. Miky checked it on production on two devices with `*.convex.cloud` blocked.
-
-~~**REM-7**~~ (`99437ab8`) shipped on 2026-09-25 (peek#366, #368). Peek's code has no Convex left: `convex/`, the client, the Convex upload path, the scripts, the dependencies, the CI deploy step and the `CONVEX_DEPLOY_KEY` secret are all gone. The production bundle has 0 `convex.cloud`, and Miky saw no Convex request from a signed-in session. The deployment is still up, for tabs on the old bundle, until REM-8 snapshots it and deletes it.
-
-One ticket per session, in **three lanes run in parallel** (re-planned with Miky 2026-09-23; the brief on Ship has the reasons):
-
-| wave | DMs | Topics | per-person |
-| --- | --- | --- | --- |
-| 1 | ~~**REM-1**~~ (`9cf225fb`, done, peek#336): the DM view reads and writes the relay through FOL-31's conversation view with a `{ kind: 'channel', h }` container; CON-7's guard lands here | ~~**FOL-26**~~ (`fcddc731`, done, peek#337): no route renders `TopicsPage`, and old links land on files. Now **FOL-25**: re-delete the 9 restored channels and the 8 test channels | **REM-4** (`4764de85`): stars and open work live only on the relay |
-| 2 | ~~**REM-3**~~ (`fe8d1aeb`, done, peek#343): the People page, the DM list and DM unread come from the relay, and DM links are keyed by pubkey | ~~**FOL-23**~~ (`f5b889a0`, done, peek#358): the topic and huddle code, the live projection into Convex and every `src/` reader of Convex topics are deleted; the tables go in REM-7 | |
-| 3: after REM-3 (landed) and FOL-23 | ~~**REM-6**~~ (`48378c5e`, done, peek#350): the viewer is a pubkey. The DM lane is finished | ~~**CON-14**~~ (`083b091a`, done, peek#360): the Desk reads the relay. Its Urgent leg moved to **CON-17** (`d8eeda32`), because urgency has had no wire form since RIC-2 | ~~**REM-5**~~ (`6316e113`, done, peek#363): read state is the blob only (replaces the cancelled CRO-10) |
-| 4 | ~~**REM-7**~~ (`99437ab8`, done, peek#366) → **REM-8** (`d60dbbe4`): delete Convex from the code, then snapshot, Miky's click-through, delete the deployment, update the docs | | |
-
-The DM lane is finished. With one session, REM-4 runs next because it waits on nothing. FOL-23 landed 2026-09-24 (peek#358; Miky checked the old links on production), so REM-5 waits on nothing. CON-14 landed the same day (peek#360; Miky checked it on production with `*.convex.cloud` blocked). PER-7 (CI speed) can run alongside, since it touches only `.github/workflows/`.
+Left from it, and not blocking: **PEE-36** (`809fcc1e`, a DM message link opens an empty "DM" Folder page that offers Delete) and **CON-17** (`d8eeda32`, Urgent has had no wire form since RIC-2).
 
 **Huddles** are out of scope, with their own placeholder project (`cec874b6`). They were disabled on 2026-09-23 (peek#309). The one huddle has no messages and is dropped; the rebuild is HUD-1 (`a7a301a9`), not scheduled.
 
@@ -143,7 +114,6 @@ The DM lane is finished. With one session, REM-4 runs next because it waits on n
 
 ### Blocked, and worth knowing why
 
-- **Nothing in C waits on a person until REM-8's click-through.** The agent's ceiling covers everything the plan signs (`24242` has been granted since 2026-09-23). Deleting the deployment may need whoever holds the Convex account.
 - **INT-9's remaining half** — PRO-18's container emit. Waits on its turn and nothing else.
 
 ## What blocks what
@@ -152,14 +122,6 @@ Live dependencies only. If a pair is not here, they are independent.
 
 | blocked | by | why |
 | --- | --- | --- |
-| ~~every *Remove Convex* done-when "with `*.convex.cloud` blocked"~~ | ~~**REM-2**~~ | Shipped 2026-09-23 (peek#330, #333) |
-| ~~**FOL-25** delete mode~~ (done), ~~**FOL-23**~~ (done) | **FOL-26** | The restored channels stayed until nothing could write into them; FOL-25 deleted them 2026-09-24 |
-| ~~**FOL-23**~~ (done) | **REM-1** | Not behaviour: both rewrite Peek's `src/api/actions.ts` and `messages.ts`, and one would pay for a large rebase. FOL-26 no longer waits for the DMs; the DM view renders neither `TopicsPage` nor `useTopicView` |
-| ~~**REM-3**, **REM-6**~~ | ~~**REM-1**, REM-3~~ | Both landed (peek#343, #350) |
-| **REM-5** | ~~REM-3~~, ~~FOL-23~~ | DM unread has left the Convex horizon cache (REM-3); topic unread goes with FOL-23 |
-| ~~**CON-14**~~ (`083b091a`, the Desk reads the relay) | ~~**REM-1**~~, ~~FOL-23~~ | Shipped 2026-09-24 (peek#360). A DM row's preview reads the channel store the DM dots already hold, not a second container read |
-| ~~**REM-7**~~ (delete Convex from the code) | every other *Remove Convex* ticket | Shipped 2026-09-25 (peek#366, #368) |
-| **REM-8** (delete the deployment) | ~~**REM-7**~~ live, a snapshot with file storage, Miky's click-through | The snapshot is the only copy of the bytes. There is no quiet period (Miky, 2026-09-23) |
 | ~~**CON-11**~~ → **CON-14** (a kind:9's `a` in Peek; an older ticket that shares its ref with the Desk's `083b091a`) | *(nothing)* | CON-11 shipped in peek#272. CON-13 wrote the per-tag rule (SPEC §6.4) and Ship reads it; Peek still draws a topic message naming a Ship issue as a comment on the issue's page, and its mentions read is 1111-only |
 | **CON-5** (extract the package) | **FOL-31**, and the `@estiva-app/ui` gates reaching the conversation components | Extracting the read-only foreign view would produce a package shaped like today's file page and then change it; extracting before the gates ships the old primitives on day one |
 | **FOL-30** (following) | *(nothing)* | Its one open question — do stars become follows — is answered on the ticket, not by anyone else |
@@ -203,6 +165,7 @@ Rule 3 is why these survive the pruning: the lesson, not the history.
 
 | shipped | what it taught |
 | --- | --- |
+| **Remove Convex** — 2026-09-23/25, eleven tickets, peek#330–#368, estiva-id#68/#72 | **"Leftover tables" was the wrong picture.** An inventory showed Convex was what Peek stood on: sign-in, the relay URL, the viewer, the whole DM path, uploads, the Desk. Re-planning from that into three parallel lanes is what finished it in three days. **A census is only as good as its reader.** Read as the agent, 29 of 90 attachments looked missing; read as Miky, none were. The agent cannot see a DM channel, and FOL-25 had deleted the channels 7 of them were in. Ten more were findable only by filename, because the relay re-encodes images, so a stored hash cannot be worked out offline. **PER-22's delegated sign-in took the person out of the click-through.** It ran headless as Miky and as QA-1/QA-2, and it found PEE-36, which a checklist would not have asked about. **Prove a deletion against a control:** the deployment now answers exactly like a name that never existed. Convex CLI 1.44 has no delete; it is dashboard-only |
 | **Convex → Buzz data migration** — 2026-09-17/23, fifteen tickets, peek#260–#325, buzz#19 | **Convex was never a mirror, and a census is what proved it:** 202 of 842 non-DM messages and 62 of 68 attachments existed nowhere else. The count moved in both directions while nobody was publishing, because rows *left* Convex, and a row leaving read as progress. **Take the snapshot first** when content can be destroyed (CON-10). **A census of 0 was satisfiable while 507 messages went dark:** it scored what was on the relay, not what stayed readable once the old view went (CON-12). Before a retirement, ask what stops being readable, not only what is unpublished. **True dates were one env var away** once the floor became a knob (CON-13); a date-in-a-tag rule would have made every reader sort by it for ever. **An event's author is its signature,** so copies were re-signed with their authors' keys. **Check the allow list before calling a box read impossible:** an allow rule is a prefix match on the whole command |
 | **Convex-only DMs (DMS-7)** — 2026-09-23, peek#324 | **The option the ticket argued against won once its blocker was measured away** — the drift window had become an env var (CON-13), so republishing kept true dates. **But a republish into a channel Peek syncs races the importer:** it matches rows by `nostrEventId`, which a row only gets at write-back, so a tab open during the run imported 164 copies and every `.unique()` on that index now throws for them. Write the ids back *before* publishing. And **an `imeta` size is the store's, not the row's** — canonicalization changed one file by 21 bytes and ingest refused it |
 | **DMs on Nostr** — 2026-09-17/18, ten tickets, peek#240–#258, protocol 0.21/0.22 | **The bridge client discarded the relay's answer.** `parsePublishResponse` kept `message` only on the refusal branch, so a command kind's payload — the DM channel uuid — never reached a caller; the first ticket of the Peek track was a foundation publish. **A replay returns no uuid** (`duplicate: already processed`) — two tabs opening one DM in the same second hit it. **A DM uuid is minted, not derived.** And **verify as a participant, not as the agent**: the DMS-5 live check had to be redone twice (peek#253, #254) — first it published as the agent, then it read one capped page and hid the quiet channels. Every DM channel is private, which finally measured the access filter: 0 events to a non-member on the same filter, same run |
