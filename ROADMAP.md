@@ -123,6 +123,8 @@ Nothing outside Peek calls the deployment, and no relay event points at Convex s
 
 ~~**REM-5**~~ (`6316e113`) shipped on 2026-09-25 (peek#363). Read state is the NIP-RS blob only. Thread reads no longer write Convex, and the merge no longer fills, re-anchors from or diffs against the Convex horizon cache. The Read state panel keeps only its size readout, and `api.readState.*` has no caller in `src/`. No replacement is needed for the re-anchor: the 90-day horizon drops whole slot events, and any marker in a dropped slot is older than every message the unread fold still judges. The Convex functions stay deployed so tabs on the old bundle do not throw, and REM-7 deletes them. Miky checked it on production on two devices with `*.convex.cloud` blocked.
 
+~~**REM-7**~~ (`99437ab8`) shipped on 2026-09-25 (peek#366, #368). Peek's code has no Convex left: `convex/`, the client, the Convex upload path, the scripts, the dependencies, the CI deploy step and the `CONVEX_DEPLOY_KEY` secret are all gone. The production bundle has 0 `convex.cloud`, and Miky saw no Convex request from a signed-in session. The deployment is still up, for tabs on the old bundle, until REM-8 snapshots it and deletes it.
+
 One ticket per session, in **three lanes run in parallel** (re-planned with Miky 2026-09-23; the brief on Ship has the reasons):
 
 | wave | DMs | Topics | per-person |
@@ -130,7 +132,7 @@ One ticket per session, in **three lanes run in parallel** (re-planned with Miky
 | 1 | ~~**REM-1**~~ (`9cf225fb`, done, peek#336): the DM view reads and writes the relay through FOL-31's conversation view with a `{ kind: 'channel', h }` container; CON-7's guard lands here | ~~**FOL-26**~~ (`fcddc731`, done, peek#337): no route renders `TopicsPage`, and old links land on files. Now **FOL-25**: re-delete the 9 restored channels and the 8 test channels | **REM-4** (`4764de85`): stars and open work live only on the relay |
 | 2 | ~~**REM-3**~~ (`fe8d1aeb`, done, peek#343): the People page, the DM list and DM unread come from the relay, and DM links are keyed by pubkey | ~~**FOL-23**~~ (`f5b889a0`, done, peek#358): the topic and huddle code, the live projection into Convex and every `src/` reader of Convex topics are deleted; the tables go in REM-7 | |
 | 3: after REM-3 (landed) and FOL-23 | ~~**REM-6**~~ (`48378c5e`, done, peek#350): the viewer is a pubkey. The DM lane is finished | ~~**CON-14**~~ (`083b091a`, done, peek#360): the Desk reads the relay. Its Urgent leg moved to **CON-17** (`d8eeda32`), because urgency has had no wire form since RIC-2 | ~~**REM-5**~~ (`6316e113`, done, peek#363): read state is the blob only (replaces the cancelled CRO-10) |
-| 4 | **REM-7** (`99437ab8`) → **REM-8** (`d60dbbe4`): delete Convex from the code, then snapshot, Miky's click-through, delete the deployment, update the docs | | |
+| 4 | ~~**REM-7**~~ (`99437ab8`, done, peek#366) → **REM-8** (`d60dbbe4`): delete Convex from the code, then snapshot, Miky's click-through, delete the deployment, update the docs | | |
 
 The DM lane is finished. With one session, REM-4 runs next because it waits on nothing. FOL-23 landed 2026-09-24 (peek#358; Miky checked the old links on production), so REM-5 waits on nothing. CON-14 landed the same day (peek#360; Miky checked it on production with `*.convex.cloud` blocked). PER-7 (CI speed) can run alongside, since it touches only `.github/workflows/`.
 
@@ -155,8 +157,8 @@ Live dependencies only. If a pair is not here, they are independent.
 | ~~**REM-3**, **REM-6**~~ | ~~**REM-1**, REM-3~~ | Both landed (peek#343, #350) |
 | **REM-5** | ~~REM-3~~, ~~FOL-23~~ | DM unread has left the Convex horizon cache (REM-3); topic unread goes with FOL-23 |
 | ~~**CON-14**~~ (`083b091a`, the Desk reads the relay) | ~~**REM-1**~~, ~~FOL-23~~ | Shipped 2026-09-24 (peek#360). A DM row's preview reads the channel store the DM dots already hold, not a second container read |
-| **REM-7** (delete Convex from the code) | every other *Remove Convex* ticket | Nothing may still read Convex |
-| **REM-8** (delete the deployment) | **REM-7** live, a snapshot with file storage, Miky's click-through | The snapshot is the only copy of the bytes. There is no quiet period (Miky, 2026-09-23) |
+| ~~**REM-7**~~ (delete Convex from the code) | every other *Remove Convex* ticket | Shipped 2026-09-25 (peek#366, #368) |
+| **REM-8** (delete the deployment) | ~~**REM-7**~~ live, a snapshot with file storage, Miky's click-through | The snapshot is the only copy of the bytes. There is no quiet period (Miky, 2026-09-23) |
 | ~~**CON-11**~~ → **CON-14** (a kind:9's `a` in Peek; an older ticket that shares its ref with the Desk's `083b091a`) | *(nothing)* | CON-11 shipped in peek#272. CON-13 wrote the per-tag rule (SPEC §6.4) and Ship reads it; Peek still draws a topic message naming a Ship issue as a comment on the issue's page, and its mentions read is 1111-only |
 | **CON-5** (extract the package) | **FOL-31**, and the `@estiva-app/ui` gates reaching the conversation components | Extracting the read-only foreign view would produce a package shaped like today's file page and then change it; extracting before the gates ships the old primitives on day one |
 | **FOL-30** (following) | *(nothing)* | Its one open question — do stars become follows — is answered on the ticket, not by anyone else |
