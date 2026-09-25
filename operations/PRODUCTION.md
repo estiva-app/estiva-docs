@@ -29,10 +29,13 @@ Note also that the image repository is `ghcr.io/estiva-app/ship`, not
 inspect` on the wrong name returns nothing, and piping nothing to `sha256sum`
 yields `e3b0c442…`, the hash of the empty string, which looks like a digest.
 
-Peek additionally has a Convex backend. **Its Convex deployment is
-`honorable-guineapig-592`, which Convex labels a *Development* deployment.**
-`--prod` resolves somewhere else entirely and will report a reassuring nothing
-about a database nobody is using. Name the target explicitly.
+**Peek has no Convex backend.** Its code went in REM-7 (peek#366, #368), and the
+deployment `honorable-guineapig-592` was deleted in REM-8 on 2026-09-25. The
+final snapshot, with file storage (102 blobs), is
+`~/estiva-backups/rem8-20260925/honorable-guineapig-592-final-20260925.zip`,
+sha256 `338f9a39530234dfaacbbee59b22b8ea6b0835ebb45fd09b980f11cb12088829`. It
+cannot be imported into another deployment as it is: a Convex id encodes its
+table number, and table numbers differ between deployments.
 
 ---
 
@@ -215,13 +218,17 @@ loads fine and then fails every request** — a slow thing to diagnose.
 
 ## Session and offboarding timing
 
-Convex validates JWTs statelessly against JWKS, so **offboarding does not
-propagate to Peek immediately.** A leaver holding a live token keeps their Peek
-session until it expires. The relay side is instant; the app side is not.
+**Offboarding reaches Peek at its next signature.** Peek has no backend that
+validates tokens. Every relay request it makes carries a NIP-98 event signed
+through Estiva ID's `/sign`, which refuses a user who is not `active`. So a
+leaver's next read or write fails. Two things outlast the offboarding: what the
+tab already holds, and a relay socket that is already authenticated, which
+needs `/sign` again only when it reconnects. (Until REM-8 on 2026-09-25, Convex
+validated tokens statelessly and a leaver kept their Peek session until the
+token expired.)
 
 `JWT_TTL_SECONDS` is currently 3600. It was raised from 600 because no refresh
-grant exists yet; until one does, that window is the cost of usable browser
-sessions.
+grant exists yet.
 
 Offboarding the relay operator is refused outright — it would revoke its own
 admission and disable the capability for the whole workspace. See
