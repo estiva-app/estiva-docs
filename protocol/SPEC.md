@@ -235,6 +235,17 @@ only refine ordering *within* it.
 An app that does not implement `ts` still folds correctly, at one-second
 resolution.
 
+*Clarified 2026-09-29 (CON-5).* "Agrees to the second" means
+**`floor(ts / 1000) == created_at`, exactly**. A reader MUST NOT widen it to a
+tolerance. Two implementations accepted ±1 s (Peek's edit fold and
+`@estiva-app/interop`'s change and edit folds), and one required equality
+(Ship). The loose reading lets a `ts` claim the neighbouring second, which is
+the one thing this rule exists to prevent. Every writer floors (`buildEdit`,
+`buildChange`, Ship's `buildConversationMessage`). Production holds **3,470**
+events carrying `ts` (`kind:9` 192, `1111` 1,680, `1851` 1,485, `40003` 113),
+and all of them agree exactly (2026-09-29), so the strict reading changes no
+fold that exists.
+
 ### 6.3 The fold
 
 Current state is the change stream replayed in order, **last write wins per
@@ -312,12 +323,31 @@ discussion. The rule, which is what both apps already publish:
 | a `kind:1111`'s `A` | **comment** — NIP-22's root object is the one thing a comment is about |
 | a `kind:1111`'s `a` that is not its `A` | **mention** — the index of an address the body names; NIP-22 makes a root's own `a` equal its `A`, so any other one is a reference |
 | a `kind:9`'s `a` that its body also names | **mention** — the same index on a message that has no `A` |
-| a `kind:9`'s `a` that its body does not name | **comment** — the anchor of a comment written before REW-10 moved comments to `1111`; nothing writes this shape any more, and a `kind:9` is not replaceable, so a reader keeps reading it (102 issue threads and 10 project threads on production, 2026-09-21) |
+| a `kind:9`'s `a` that its body does not name | **comment** — the anchor of a comment written before REW-10 moved comments to `1111`; nothing writes this shape any more, and a `kind:9` is not replaceable, so a reader keeps reading it (102 issue threads and 10 project threads on production, 2026-09-21). **Retiring:** CON-20 republishes these as `1111`, and this row is removed once none remain — see *Replies* below |
 | a `nostr:naddr…` in the body with no tag | **mention** — written before the index existed; a reader that wants it reads the body |
 | any tag on a reply | nothing — a reply's lowercase tags name its parent, or repeat the root's; only the root decides how the thread attaches |
 
 A `kind:1111` with no `A` at all is malformed. A reader that meets one reads
 its `a` as the `A` rather than dropping the thread; none exists on production.
+*Clarified 2026-09-29 (CON-5):* **every** `a` it carries is read as an `A`, so
+the thread is a comment on each address it names. Ship's `anchorIndex` and
+interop's `isCommentOn` already say so; Peek's `isCommentOn` reads "no `A`" as
+a comment on whatever address it was asked about, which is the same answer
+for any event that arrived by `#a`. None has ever existed on production — 0 of
+2,297 `kind:1111`, deleted ones included (2026-09-29).
+
+**Only the root decides, and a reply is never a root** (added 2026-09-29,
+CON-5). A reader listing an object's comments MUST NOT list an event that
+carries a reply `e` — a `kind:9` with any `e`, a `kind:1111` with a lowercase
+`e` that differs from its `E` — as a comment of its own, whatever `a` it
+carries. (A top-level comment on an *event* root carries `E` and `e` naming the
+same event, and is a comment. On an address root it carries no `e` at all.) The last row of the
+table above says a reply's tags decide nothing, and a per-event test for `a`
+contradicts it the day a reply carries one: interop's `isCommentOn` is applied
+per event, so a `kind:9` reply carrying `a` would be listed as a second
+top-level comment beside the thread it answers. None does today (0 on
+production, 2026-09-29), because Ship's builder adds `a` to a reply only when a
+caller passes both `replyTo` and `about`, and none does.
 
 A writer MUST NOT put an address in a `kind:1111`'s `a` that the body does not
 name, unless it is the `A`. That is the only way the second row stays
@@ -336,6 +366,59 @@ a reference. See [RFC 0.5](RFC-0.5-ASSOCIATION.md).
 `kind:9` messages MUST carry `ts` for the same reason change events do — two
 messages in one second read back in the wrong order, which in a conversation is
 not a subtle bug.
+
+#### Replies — decided 2026-09-29 (CON-5)
+
+**A reply to a comment is a `kind:1111`, one level deep.** It carries:
+
+| tag | value |
+| --- | --- |
+| `A`, `K`, `P` | the object the thread is about: the top-level comment's `A`, or a legacy `kind:9` comment's `a`; `K` and `P` from that address |
+| `e` | the id of the thread's **top-level comment**, never of another reply |
+| `k` | that comment's kind — `1111`, or `9` for a comment written before REW-10 |
+| `p` | that comment's author |
+| `h` | the same Folder as the comment |
+| `a` | only an address the body names (the rule above), never the object's own |
+| `ts` | as §6.2 |
+
+A reply's lowercase `a` is left out because NIP-22 would read it as the
+parent, so a copy of the object's address there would claim the reply is a
+top-level comment. It follows that a reply is absent from an object's `#a`
+read, and is found by `#e` on the comments that read returned.
+
+**One level, because NIP-22 cannot name the thread otherwise.** When the thread
+root is an *address*, NIP-22 carries no id for the top-level comment: the
+uppercase tags name the object, and the lowercase `e` names only the immediate
+parent. A reply to a reply would leave a reader to walk parents to find its
+thread, one read per level. A reader that meets one anyway SHOULD walk its
+parents to the top-level comment rather than drop it. None exists on
+production: 0 of 342 `kind:1111` replies name a reply (2026-09-29).
+
+**A reply to a message in a channel stays a `kind:9`,** threaded by Buzz's
+`thread_tags` (`['e', <root>, '', 'reply']`, and a `root`/`reply` pair for a
+nested reply). Chat is talking *in* a room (§6.7), and a `kind:1111` scopes to
+an object that a channel message does not have. A reader files a nested one
+under its `root`-marked `e`, which names the thread, rather than dropping it
+because its parent is not a root (1 on production, 2026-09-29).
+
+**Why `1111`.** Production held two reply shapes under `kind:1111` comments on
+2026-09-29: **335** live `kind:1111` replies (Peek), and **19** `kind:9` replies
+(Ship's reply button, `buildConversationMessage`, on 12 roots, the newest on
+2026-09-21). A `kind:9` reply names its parent and nothing else, so a client
+that knows NIP-22 and not Ship does not see it, and every future app would
+learn Ship's shape as a second writer rule. Ship's own reason for it was
+app-internal ("the caller does not pass the anchor"): the comment being answered
+already carries its `A`, so a reply can copy it.
+
+**Reading.** A reader reads both shapes until CON-20 lands. CON-20 republishes
+every comment-shaped `kind:9` as a `kind:1111` — the legacy comment roots (the
+fourth row of the strengths table, about 126), the `kind:9` replies under them
+and under `1111` roots (38), and what points at them. Chat stays `kind:9`.
+Miky's call, 2026-09-29: the protocol does not keep an experiment's shape for
+compatibility when it can be migrated, and a second permanent reader path is
+what a shared conversation package would otherwise carry for ever. When CON-20
+is done, the retiring row above and this paragraph are removed, and
+`emits.alsoRead: [9]` (§7.3) is withdrawn from Ship's manifest.
 
 ### 6.5 Deletion and archiving
 
@@ -441,6 +524,37 @@ separate decision for a Ship ticket, not implied by this correction. The two
 apps are expected to converge on one answer once they share a base library for
 this standard, rather than being reconciled by fiat now.
 
+#### Decided 2026-09-29: own messages and agents' messages (CON-5)
+
+The two choices above converge on one rule, for edit and delete alike. For
+these two controls it replaces both the 2026-09-06 MUST NOT and the choice of
+2026-09-21:
+
+- An app **SHOULD** offer Edit and Delete on a message **the viewer wrote**.
+- An app **SHOULD** offer them on a message whose author's profile
+  (`kind:0`) declares **`bot: true`** (NIP-24). The viewer may be the agent's
+  NIP-OA owner, whom the relay accepts, and no client can tell whether they are.
+- An app **SHOULD NOT** offer them on a message by **another human**. The relay
+  refuses that request every time.
+- Whichever it offers, the relay adjudicates. An app MUST surface a refusal in
+  the relay's own words, as above.
+
+Measured on production, 2026-09-29. **1,181 of 2,345** live messages (`kind:9`
+and `1111`) were written by the workspace's two agents, and both agent
+profiles carry `bot: true`. Hiding by author label withheld the control from the
+owners of every one of them. The owner path is used (one owner edit of their
+agent's message is on the relay), and the dead control is rare (the relay's
+log since 2026-09-23 holds 2 refused non-author deletions). The rule keeps the
+first and removes almost all of the second. What remains is a non-owner
+trying somebody else's agent's message and being refused.
+
+`bot` is self-declared, and that is acceptable here because it decides only
+what is **shown**. A false `bot: true` shows a control the relay refuses. A
+missing one withholds it from an owner, which is the cost this rule removes.
+An app that cannot read the author's profile offers the control, which is never
+wrong. Peek adds the `bot` case to PEE-32's gate and Ship hides the control on
+other humans' messages, both in CON-5's extraction.
+
 ### 6.6 Reactions
 
 **Added 2026-08-28**, recording behaviour that has been in production since before
@@ -469,6 +583,39 @@ Three rules follow:
   thread replies are distinct spaces in at least one implementation — MUST share
   one budget between them rather than concatenating two capped lists and
   truncating the result. See the amendment below for why this is stated.
+
+#### Reading a reaction — decided 2026-09-29 (CON-5)
+
+Two apps must agree on a **count**, so what counts is specified. How the
+counts are ordered is not specified.
+
+- **Target.** The **last** `e` whose value is 64 hex, as NIP-25 says. The relay
+  derives a reaction's channel and its dedupe row from that same tag
+  (`handlers/ingest.rs`), so a reader that picks another `e` counts a reaction
+  against a message the relay did not file it under.
+- **Emoji.** The content as stored, **not trimmed**. An empty content is `+`,
+  which is NIP-25's "like" and what the relay records for it. The relay refuses
+  more than 64 characters.
+- **Count.** One per `(target, pubkey, emoji)`. The relay already refuses an
+  active duplicate (`buzz-db` `reaction.rs`, `ON CONFLICT (…, event_id,
+  pubkey, emoji)`). A reader still deduplicates, because another relay, or
+  a copy, need not.
+- **Retraction** is a `kind:5` on the reaction (§6.5). The relay stops
+  returning a deleted reaction, so a reader re-reads and does not reconcile.
+- **Events, not only targets.** A reader that caps the number of reaction
+  *events* it takes back MUST report that cut, as it reports the target cut.
+- **Order** is presentation. An app MAY sort by count, by first reaction, or
+  otherwise, and two apps that differ here do not disagree about anything.
+
+Where the apps stood, 2026-09-29:
+- **Target.** Ship and interop took the first `e`.
+- **Emoji.** Ship trimmed, and skipped an empty reaction.
+- **Count.** Peek and interop counted every event.
+- **Event cap.** Ship asked for at most 500 events per read (`REACTION_EVENT_LIMIT`), interop for 1,000 per 100 targets, and neither reported a cut.
+
+None of these differences shows on production today. Of 57 live reactions, 0
+have more than one `e`, 0 are empty or untrimmed, 0 are duplicates, and 2 targets carry
+more than one emoji, where order is visible.
 
 ### The horizon is 100
 
@@ -523,6 +670,28 @@ dropped and every reaction on every reply silently disappeared for every
 reader. Concatenating two capped lists is not a horizon; it is one id space
 starving another.
 
+#### Which 100 — decided 2026-09-29 (CON-5)
+
+**The newest 100 targets, by the target's `created_at`, ties broken on the
+higher event id**, in one budget across every id space shown (roots and
+replies alike). The rest are the reported omission. `created_at` rather than
+§6.3's `ts`, because every target has one and not every target carries `ts`.
+The id tie-break is what keeps the cut stable between two reads of the same
+page.
+
+Ship keeps the last 100 of its caller's order (`reactionTargets`), and its one
+caller sorts oldest first by time. Interop keeps the newest 100 by `at`, with
+ties on the higher id (`commentDecorationsOf`). They agree except on ties at the
+cut, where Ship's answer depended on thread order.
+
+**Measured again 2026-09-29: the horizon now bites.** The table above said no
+container reached 100. Now five channels hold more than 100 live messages. The
+busiest holds 399 (`kind:9` and `1111` together), the busiest chat 199
+`kind:9`, and the busiest single file conversation 93. N stays 100. This is the
+day the truncation report was written for, and whether the busiest
+chat should be read further is a question for this section, not for one app's
+constant.
+
 **Reactions attach to messages.** Whether they attach to anything else — a block
 inside a rich text field, an object — is a product question RFC 0.4 §7.2 answers
 in the negative for blocks, and it is not settled for objects.
@@ -554,8 +723,8 @@ is where it goes, and nothing about the file "converts".
 
 **Conversation.** `kind:1111` anchored at the file's address (§6.4), with the
 same `h` — the shape an issue's comments already have. Threads are NIP-22
-replies. Reactions, edits, deletions and drafts follow §6.5, §6.6 and RFC 0.4
-§7.2.1 unchanged. The team's general conversation stays `kind:9` in the
+replies (§6.4). Reactions, edits, deletions and drafts follow §6.5, §6.6 and
+§6.8 unchanged. The team's general conversation stays `kind:9` in the
 channel: chat is talking *in* a room, a comment is talking *about* a file, and
 the line between them is the kind.
 
@@ -623,6 +792,121 @@ its team's, at any depth.
 a *team*, and its `kind:9` messages that team's general conversation. New
 topics are bare files inside a team. Both shapes coexist permanently in every
 consumer, which is the same rule §6.4 already states for comments.
+
+### 6.8 Edits
+
+*Moved here 2026-09-29 (CON-5) from [RFC 0.4 §7.2.1](RFC-0.4-WORKSPACE.md),
+decided 2026-09-07 (CON-4) and amended 2026-09-23. That section said it would
+move once both apps implement it. Ship has since CON-4, and Peek since CON-8.*
+
+**An edit is a new event, never a rewrite.** A `kind:9` and a `kind:1111` are
+both non-replaceable, so an edit cannot overwrite what it edits. What an app
+shows as "edited" is a fold over the message and its edits.
+
+**Wire shape.** Mirrors Buzz's `build_edit` (`buzz-sdk/src/builders.rs`), which
+is what the relay validates against, plus `ts`:
+
+| Kind | Tag order | Content |
+| --- | --- | --- |
+| `40003` | `h`, `e`, `ts`, `[imeta…]` | the **new body**, in the target's own format |
+
+- **`h`** is REQUIRED. `40003` is in the relay's `requires_h_channel_scope`, so
+  an edit without one is refused with `accepted: false`, and the relay refuses
+  one whose `h` is not the target's channel. The content cap is 64 KB.
+- **`ts`** is REQUIRED, in epoch milliseconds, under §6.2's rule. `build_edit`
+  emits `h` and `e` only, which leaves two edits in one second with no defined
+  order. The relay ignores a tag it has no rule for, so adding it is safe.
+- **`e`: exactly one, naming the target.**
+
+**The target is the first `e` whose value is 64 hex, and a reader MUST NOT apply
+an edit to any other `e`** (decided 2026-09-29, CON-5). That is the event whose
+ownership the relay checked (`validate_edit_ownership`, `handlers/ingest.rs`:
+the first `e` with a 64-hex value, marker ignored). Nothing refuses an edit
+carrying a second `e`, so a reader that picks a different one applies an edit
+the relay authorised for message X to message Y. An edit tagged
+`['e', <own message>, '', 'mention'], ['e', <victim>]` passes the relay's check
+on the writer's own message, and a reader taking "the first unmarked `e` naming
+a message on screen" draws it on the victim's. Peek's `foldEdits` and interop's
+`commentDecorationsOf` read it that way. `@estiva-app/interop@0.33.0` returns
+the forged body for both that shape and the unmarked one whose first `e` is off
+screen (PEE-38). Ship's first-`e` rule was right except for skipping a
+non-hex `e`, which fails safe. All 113 edits on production carry exactly one
+unmarked `e` naming a `kind:9` or `1111` on the relay (2026-09-29), so no edit
+that exists is read differently under this rule.
+
+**The fold.** The latest edit wins, ordered `ts` (when trusted), then
+`created_at`, then event `id` as a stable tiebreak. That is §6.3's ordering on
+purpose, since a second ordering rule would be a second thing to get wrong. An
+edit whose target the reader cannot see is held, not dropped: the target may
+arrive later, and a dropped edit is not recovered by a re-read.
+
+**An edit changes the body and the attachments, and nothing else.** It does not
+change the target's kind, channel, place in a thread or author. An edit that
+appears to change any of those is folded for its content and its `imeta` tags,
+and ignored for the rest.
+
+**Attachments fold separately from the body** (amended 2026-09-23). CON-5 found
+62 attachments whose bytes existed only in Convex. The only event that can
+repair a non-replaceable message in place is the one that already targets it.
+
+- An edit MAY carry NIP-92 `imeta` tags, in the form a message carries them
+  (§13), with `m` and `x` as the relay reported them. Ingest verifies `imeta` on
+  any kind (`verify_imeta_blobs`), so an edit naming a blob the relay does not
+  hold is refused.
+- A message's attachment set is the `imeta` set of its **latest edit that
+  carries at least one `imeta`**, in the body fold's order. If no edit carries
+  one, it is the message's own set. An edit with no `imeta` leaves the
+  attachments as they were, so every edit written before 2026-09-23 keeps its
+  meaning.
+- **A set replaces, it does not append.** An edit that adds one file to a
+  message with two carries all three.
+- **Emptying** a message's attachments is not expressible, because an edit with
+  no `imeta` means "unchanged". That is RFC 0.4 open question 11.
+
+**What a reader shows.** An app that renders an edited message MUST show the
+current text and MUST mark it as edited. The mark is about the **body**. An
+edit whose content is byte-identical to the body it replaces, judged against
+the body as it then stood, changes attachments only, and a reader SHOULD NOT
+mark the message edited for it. "Edited at" is the last edit that changed the
+body. Whether earlier versions are reachable is the app's call, because every
+event stays on the relay either way.
+
+**Who may edit is the relay's answer.** `validate_edit_ownership` accepts the
+target's effective author, or the NIP-OA owner of an authoring agent, and on
+the author path re-checks channel membership. So somebody removed from a
+private channel cannot rewrite what they said there. Which controls an app
+offers is §6.5, decided 2026-09-29.
+
+**An app that does not implement `40003` shows the original text.** An edit is
+a progressive enhancement. Until every reader folds it, the same message reads
+differently in two apps, and neither is wrong.
+
+### 6.9 Where the apps stand (CON-5, 2026-09-29)
+
+The rules above were lined up against Peek, Ship and `@estiva-app/interop` at
+`origin/main` on 2026-09-29, before `@estiva-app/conversation` is extracted
+from them. Each row is one app still to change. "Production" counts what that
+difference changes on the relay today.
+
+| rule | § | differs in | production |
+| --- | --- | --- | --- |
+| a reply to a comment is a flat `1111` | 6.4 | Ship writes `kind:9` | 19 replies, migrated by CON-20 |
+| a reply is never a root | 6.4 | interop's `isCommentOn` is per event | 0 |
+| a nested chat reply files under its `root` | 6.4 | Peek's channel read drops it | 1 |
+| a `1111` with no `A`: every `a` is an `A` | 6.4 | none (Peek equivalent by `#a`) | 0 |
+| Edit and Delete: own and `bot` messages | 6.5 | Peek hides `bot` messages; Ship offers on humans' | 1,181 agent messages |
+| `ts` exactly within its second | 6.2 | Peek and interop accept ±1 s | 0 of 3,470 |
+| edit target: first 64-hex `e` | 6.8 | Peek, interop (PEE-38); Ship skips no non-hex `e` | 0 of 113 |
+| reaction target: last 64-hex `e` | 6.6 | Ship and interop take the first | 0 of 57 |
+| reaction emoji untrimmed, empty is `+` | 6.6 | Ship trims and skips empty | 0 |
+| one reaction per `(target, pubkey, emoji)` | 6.6 | Peek and interop count every event | 0 |
+| a reaction event cap is reported | 6.6 | Ship (500) and interop (1,000) cut silently | 57 reactions in all |
+| newest 100 targets, ties on higher id | 6.6 | Ship breaks ties by thread order | ties only |
+
+The agent, which reads through a byte-copy of Ship's `src/nostr/`, inherits
+Ship's column. It also still counts a mention as a comment
+(`conversationsAbout`) and reads Peek topics as `kind:9` channels (PER-24).
+Both go with the extraction.
 
 ---
 
@@ -1028,6 +1312,26 @@ against a live relay:
 
 C9 is not decoration. Once no app can sign locally, an identity-service outage
 looks exactly like nothing happening.
+
+**Conversations** (added 2026-09-29, CON-5). An app that shows or writes a
+conversation also conforms to these. They are stated so that an app can build
+conversations from this document alone, without `@estiva-app/conversation`.
+Every one is a fixture of events plus the expected result, runnable against a
+throwaway relay or a fake query.
+
+| # | Check |
+| --- | --- |
+| C10 | **Both kinds.** A thread rooted in a `kind:1111` on an object and one rooted in a legacy `kind:9` anchored by `a` both list under that object, and a channel's `kind:9` chat lists under no object (§6.4) |
+| C11 | **Two strengths.** On one object: a `1111` whose `A` is the object is a comment; a `1111` whose `A` is another file but whose `a` names this one is a mention; a `kind:9` whose body names the object is a mention; a `kind:9` whose `a` the body does not name is a comment; a `1111` with no `A` is a comment on each of its `a`. Mentions are presented apart from comments. A reply carrying the object's `a` lists as neither (§6.4) |
+| C12 | **Edit fold.** Three edits to one message inside one second, carrying `ts`, fold to the last by `ts`. One whose `ts` is off by a second folds by `created_at`. An edit whose first `e` is marked and names another message is applied to that message and never to the second `e`. An edit byte-identical to the body does not mark the message edited. The message is marked edited, and shows the current text (§6.2, §6.8) |
+| C13 | **Reaction horizon and count.** With 101 targets, reactions are asked for the newest 100 and the omission of 1 is reported. `+`, empty and a duplicate from one pubkey count as one `+`. A reaction with two `e` counts against the last (§6.6) |
+| C14 | **Deletion left to the relay.** After the author's `kind:5`, the next read no longer holds the message, and the app shows nothing for it from local state. A non-author's `kind:5` is refused and the refusal is shown in the relay's words. Edit and Delete are offered on the viewer's own message and on a `bot: true` author's, and not on another human's (§6.5) |
+| C15 | **Attachment fold.** An edit carrying `imeta` replaces the message's set. A later edit with none leaves it. An edit carrying one file on a message with two leaves one (§6.8) |
+| C16 | **Reply shape.** A reply to a comment is a `kind:1111` with the comment's `A`/`K`/`P`, `e`/`k`/`p` naming the top-level comment, the comment's `h`, and no lowercase `a` for the object. A reply read back threads under that comment in every conforming app (§6.4) |
+
+C11 and C12 both have a failure that is invisible from the app that has it.
+A merged mention looks like somebody said it here. A forged edit looks like an
+edit, which is the reason the target rule in §6.8 is a MUST.
 
 ### 9.1 Reference checks
 

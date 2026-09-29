@@ -338,44 +338,8 @@ New in 0.4. A conversation is not only its messages, and the three things people
 
 #### 7.2.1 The edit model — decided 2026-09-07 (CON-4)
 
-*This section is the design. It moves into SPEC when both apps implement it, per the rule in the acceptance notes above — not before, or SPEC would document a protocol no app speaks.*
+**Moved to [SPEC §6.8](SPEC.md) on 2026-09-29 (CON-5).** This section said it would move once both apps implement it. Ship does since CON-4, and Peek since CON-8. SPEC carries the whole model, including the attachment amendment of 2026-09-23, and one rule this section lacked: **an edit's target is the first `e` whose value is 64 hex**, the event whose ownership the relay checked (PEE-38). The design history is in this file's git log. The paragraph above predates SPEC §6.8. Two apps may still differ in how they *present* an edit, but not in which body is current.
 
-**The mechanism already exists and nobody was using it.** Buzz has carried `kind:40003` (`KIND_STREAM_MESSAGE_EDIT`) since before this RFC, with validation and channel scoping already written. Peek has an edit control that publishes nothing — `editBody` patches its own database, so a human edit never leaves Peek and every other reader keeps the old text. Ship has no edit at all. So this is less a design than an agreement about something already built and unclaimed.
-
-**Wire shape.** Mirrors `build_edit` (`buzz-sdk/src/builders.rs`), which is what the relay validates against:
-
-| Kind | Tags | Content |
-| --- | --- | --- |
-| `40003` | `h` (the channel), `e` (the target event id), `ts` | the **new body**, in the target's own format |
-
-`h` is REQUIRED — `40003` is in the relay's `requires_h_channel_scope`, so an edit without one is refused with `accepted: false` while the kind is allowed and the signature is fine. The content cap is 64KB.
-
-**`ts` is new here and is the one addition to Buzz's shape.** `build_edit` emits `h` and `e` only, which leaves two edits published in the same second with no defined order — and unlike a change event, where last-write-wins per *field* limits the damage, two edits of one message that disagree resolve to whichever the reader happens to sort first. So an edit MUST carry `ts` in epoch milliseconds, under exactly the rule §6.2 already gives it: **a reader honours `ts` only when it agrees with `created_at` to the second, and ignores it otherwise.** An app that does not implement `ts` still folds correctly, at one-second resolution. Adding a tag Buzz's builder does not emit is safe in the direction that matters — the relay validates the kind, the `h` and the ownership, and ignores tags it has no rule for.
-
-**The fold.** The latest edit wins, ordered `ts` (when trusted), then `created_at`, then event `id` as a stable tiebreak — the same ordering as [SPEC §6.3](SPEC.md), deliberately, because a second ordering rule in the same protocol is a second thing to get wrong. An edit whose target the reader cannot see is held, not dropped: the target may arrive later, and a dropped edit cannot be recovered by a re-read.
-
-**What an edit may change is the body and its attachments, and nothing else.** Not the target's kind, not its channel, not its position in a thread, not its author. An edit that appears to say otherwise is folded for its content and its `imeta` tags and ignored for the rest.
-
-*Amended 2026-09-23 (CON-5).* This read "the body and nothing else". That left no way to give a message the file it was always meant to carry. CON-5 found 62 attachments on messages already on the relay whose bytes existed only in Convex. `kind:9` and `kind:1111` are non-replaceable, so a republish would give each one a new id and orphan its replies and reactions. The only event that can repair a message in place is the one that already targets it.
-
-- **An edit MAY carry NIP-92 `imeta` tags**, in the same form a message carries them ([SPEC §13](SPEC.md)), with `m` and `x` as the relay reported them.
-- **Attachments fold separately from the body.** A message's attachment set is the `imeta` set of its **latest edit that carries at least one `imeta`**, ordered exactly as the body fold above is. If no edit carries one, it is the target's own set. An edit with no `imeta` leaves the attachments as they were. That keeps every edit written before this amendment meaning what it meant: none of them carries an `imeta`, and none of them removes a file.
-- **A set replaces; it does not append.** An edit that adds one file to a message with two carries all three.
-- **The "edited" mark stays about the body.** An edit whose content is byte-identical to the body it replaces changes attachments only. A reader SHOULD NOT mark the message edited for it. An edit that changes the body is marked edited as before, whatever it does to the attachments.
-- **The relay needs no change.** Read from buzz `origin/main` on 2026-09-23: ingest verifies `imeta` tags on any kind (`handlers/ingest.rs`, the `verify_imeta_blobs` call, which SPEC §13 already records as "not gated on kind"). So an edit naming a blob the relay does not hold is refused outright, as a message naming one would be. `validate_edit_ownership` is unchanged, so only the target's effective author or its NIP-OA owner can attach anything.
-- **Emptying a message's attachments is not expressible**, because an edit with no `imeta` means "unchanged". This is deliberate: the alternative would give every existing edit a meaning it was not written with. It is recorded as open question 11.
-
-An app that does not implement this shows the original attachments, which is the same progressive-enhancement cost the body fold has always carried.
-
-**Who may edit is the relay's answer, not the app's.** `validate_edit_ownership` accepts the target's **effective** author or the NIP-OA owner of an authoring agent — and, on the author path, re-checks channel membership, so somebody removed from a private channel cannot go back and rewrite what they said while they were in it. As with deletion (§6.5, corrected 2026-09-06), **no client can evaluate that predicate**, so an app MUST NOT gate the control on an author comparison of its own. Offer it, attempt the write, and report the refusal in the relay's own words.
-
-*This corrects CON-4's own done-when*, which said "a non-author is not offered the control" — written before §6.5's correction and wrong for the same reason.
-
-**What a reader sees.** An app that renders an edited message MUST show the current text and MUST mark it as edited. Whether the earlier versions are reachable is a product decision and is deliberately left open: it is a different question for a comment on an issue than for a message in a chat, and the events are append-only either way, so an app that shows no history is hiding nothing that another app cannot show.
-
-**An app that does not implement `40003` shows the original text, and this is the interop cost worth stating.** An edit is a progressive enhancement: until both apps fold it, the same message reads differently in each, and neither is wrong. That is the ordinary condition of this protocol rather than a defect — but it means "edited in Peek" is not "edited everywhere" until Ship ships it too, which is why CON-4 covers both apps and not one.
-
-**The gate.** No identity could sign `40003` at all until [estiva-id#60](https://github.com/estiva-app/estiva-id/pull/60) — not Peek, not Ship, not the agent. Checked before any of this was built, which is the standing lesson from CON-2: a ceiling that arrives after the code refuses at the final publish, with the control already on screen.
 
 **Delete is a NIP-09 `kind:5` and inherits every property SPEC §6.5 already gives it** — a request, refusable, removing the record and not the work. One consequence deserves restating here because it has bitten this workspace repeatedly: **an identity that cannot sign `kind:5` publishes permanently.**
 
@@ -388,6 +352,8 @@ alike, as a documented trade-off rather than a violation. Ship's edit (CON-4)
 and delete (CON-3) still offer the control to everyone and let the relay
 adjudicate; that remains correct, and reconciling it to Peek's gate is a
 separate Ship decision, not required by this amendment.
+
+*Decided 2026-09-29 (CON-5).* Both apps converge on one rule: offer Edit and Delete on the viewer's own messages and on messages by a `bot: true` author, and not on another human's. See [SPEC §6.5](SPEC.md).
 
 ~~**Today only Peek implements any of this.**~~ *Superseded 2026-09-07.* It said Ship had no reactions, no edit and no delete on comments, and that a grep for reaction handling in `estiva-ship` returned nothing. Ship now has **reactions** (CON-2), **delete** (CON-3) and **edit** (CON-4), all built to the corrected §6.5 rule — the control is offered to everyone and the relay adjudicates. *Updated again 2026-09-07:* Ship's edit shipped the same day this paragraph said it had not. Peek's edit published nothing until CON-8, so its rows were the only record of it — the defect ADR 0001 forbids by name. So the sentence to carry forward is narrower and still true: an app that never built these needs §13's projection layer, and the two that did had to agree first — which is what CON-1's horizon and §6.5's correction were each about.
 
@@ -575,7 +541,7 @@ Leaf remains the app that will stress anchoring hardest — a document editor re
 
 10. ~~**Reaction horizon** (§7.2).~~ **Answered 2026-09-07 (CON-1).** N is **100**, written into [SPEC §6.6](SPEC.md) as a rule rather than an observation, and an app MUST report when it truncates. The deciding argument was interoperability, not performance: two apps showing one conversation with different N disagree about the count legitimately and unfixably, and a reader cannot tell that from a bug. Both reference apps now use 100 and both surface the cap. SPEC also carries a rule found on the way — an app reading reactions across more than one id space MUST *share* one budget rather than concatenate two capped lists.
 
-11. **Removing every attachment by edit** (§7.2.1, amended 2026-09-23). An edit's `imeta` set replaces the message's, but an edit with none means "unchanged", so no edit can take a message to zero files. Peek's file replacement (PEE-16) can remove the last file, and today that removal never leaves Peek. The obvious answer is a marker tag meaning "this edit's attachment set is authoritative, even if empty". It is left open until an app needs to publish that removal rather than merely hold it.
+11. **Removing every attachment by edit** (§7.2.1, amended 2026-09-23; now SPEC §6.8). An edit's `imeta` set replaces the message's, but an edit with none means "unchanged", so no edit can take a message to zero files. Peek's file replacement (PEE-16) can remove the last file, and today that removal never leaves Peek. The obvious answer is a marker tag meaning "this edit's attachment set is authoritative, even if empty". It is left open until an app needs to publish that removal rather than merely hold it.
 
 ### Answered, recorded so they are not re-opened
 
