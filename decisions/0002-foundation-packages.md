@@ -376,7 +376,7 @@ new name is not a failed publish.
   Confirmed obsolete by Miky on 2026-08-26: `peek-develop.vercel.app` is a
   leftover, still serving a build four commits behind `main`, and the repo shows
   no Vercel check-runs and no GitHub deployments — only `github-actions`. **Peek's
-  build gate is GitHub Actions**, `npm ci` → `npm run test:run` → `npx convex
+  build gate is GitHub Actions** — on 2026-08-26, `npm ci` → `npm run test:run` → `npx convex
   deploy --cmd 'npm run build'`, and the image build after it. That is the check
   the done-when's Vercel clause now means, and it passed here from a clean
   checkout: 42 test files, 565 tests, then `tsc -b && vite build` with the

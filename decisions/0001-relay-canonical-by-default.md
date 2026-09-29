@@ -9,7 +9,8 @@
 
 ## 1. Context
 
-Peek runs on Convex. Ship has no backend at all — it reads the relay and folds
+Peek ran on Convex when this was written (removed 2026-09-25, REM-7/REM-8). Ship
+has no backend at all — it reads the relay and folds
 events in the browser. Estiva ID has its own Postgres. Three apps, three
 different answers, none of them a decision anybody made on purpose.
 
@@ -33,8 +34,8 @@ feature, not anticipated during design, and preferably measured.
 
 **"Only this app reads it" is not sufficient grounds for a database.** That
 conflation is what made the suite's ownership claim only half true: Peek's
-starred containers, curated desk work and screener queue sit in a deployment the
-person cannot export, archive or delete.
+starred containers, curated desk work and screener queue sat in a deployment the
+person could not export, archive or delete.
 
 ## 3. The three-layer rule
 
@@ -53,7 +54,7 @@ matching only `read-state:<32 hex>`, and **Buzz already stores its own mesh
 member status this way** — a `BOOKMARK_SET` under a namespaced `d_tag`.
 
 Layer 3 is permanent and legitimate. It will grow as apps ship features that
-genuinely need it, and Convex may well be the right tool. The rule is only that
+genuinely need it. The rule is only that
 apps do not *start* there.
 
 ## 4. Estiva ID is excluded, and it is not a close call
@@ -76,16 +77,12 @@ time; none survives:
 | There was no home for per-user app state | Layer 2 — `kind:30078`, app-namespaced, encrypted. |
 | There was no substrate for document-shaped data | Relay git hosting is live (§6). |
 
-So "Peek has Convex, why can't Leaf?" has an answer: Leaf would be choosing it
+So "Peek had Convex, why can't Leaf?" has an answer: Leaf would be choosing it
 with none of Peek's reasons.
 
-This ADR does **not** require removing Convex from Peek. What causes harm there
-is the *duplicate* — Convex holding a second copy of relay content, which is what
-its projection layer exists to maintain and where its reliability problems came
-from. The rule that applies to Peek is narrower and enforceable per change:
-
-> Convex may never be the source of truth for something the relay owns, and never
-> the only home for something a person would reasonably expect to own.
+The harm was the *duplicate* — Convex holding a second copy of relay content,
+which is where Peek's reliability problems came from. Peek has since removed
+Convex entirely (REM-7/REM-8, 2026-09-25).
 
 ## 6. Documents use relay git — decided, and recorded elsewhere
 
@@ -179,7 +176,7 @@ more:
    packages already wired. Relay-canonical becomes the physical default — you
    have to add a database on purpose. Tracked as SHA-6.
 2. **This ADR**, so nobody strips that out of the template without finding the
-   reasoning first, and so the "why can't Leaf have Convex" question has a
+   reasoning first, and so the "why can't Leaf have a database" question has a
    permanent answer.
 
 ## 10. Related
@@ -187,5 +184,4 @@ more:
 - Shared foundation packages — SHA-1…6
 - App-private storage convention (`kind:30078`) — CRO-11
 - Read-context convention — CRO-3
-- Convex read-path measurement for Peek — CRO-10
 - `protocol/SPEC.md` — the wire protocol this ADR assumes

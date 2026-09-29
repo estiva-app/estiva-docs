@@ -18,7 +18,6 @@ RUN_DIR="$DOCS_DIR/.run"
 LOG_DIR="$RUN_DIR/logs"
 
 PORT_RELAY=3000
-PORT_CONVEX=3210
 PORT_PEEK=5173
 PORT_SHIP=5190
 PORT_ID=8787
@@ -26,7 +25,7 @@ PORT_ID=8787
 # Services in dependency order. Nothing below starts before the thing above it
 # is answering — a service that starts against a dependency that is still
 # booting fails in ways that read as configuration errors.
-SERVICES=(deps relay id convex peek ship)
+SERVICES=(deps relay id peek ship)
 
 if [[ -t 1 ]]; then
   C_OK=$'\033[32m'; C_BAD=$'\033[31m'; C_WARN=$'\033[33m'; C_DIM=$'\033[2m'; C_OFF=$'\033[0m'
@@ -75,27 +74,9 @@ check_relay_nip11() {
     | grep -q '"supported_nips"'
 }
 check_id()     { curl -s -m 3 "http://localhost:$PORT_ID/readyz" 2>/dev/null | grep -q '"status":"ok"'; }
-check_convex() { [[ $(http_code "http://localhost:$PORT_CONVEX/version") == 200 ]]; }
 check_peek()   { [[ $(http_code "http://localhost:$PORT_PEEK/") == 200 ]]; }
 check_ship()   { [[ $(http_code "http://localhost:$PORT_SHIP/ship/") == 200 ]]; }
 check_deps()   { docker ps --format '{{.Names}}' 2>/dev/null | grep -q '^buzz-postgres$'; }
-
-# Which local Convex deployment to run against.
-#
-# `.env.local` names a CLOUD deployment (`dev:hallowed-stork-966`), and that
-# wins over CONVEX_AGENT_MODE — so `npx convex dev` stops on an interactive
-# "You don't have access to the selected project / create a new project?"
-# prompt, which under a launcher looks exactly like a hang. Naming the local
-# deployment explicitly in the environment overrides the file without editing
-# it, so the cloud pointer is left alone for whoever needs it.
-convex_local_deployment() {
-  local cfg name
-  cfg=$(ls -1 "$PEEK_DIR"/.convex/local/*/config.json 2>/dev/null | head -1)
-  [[ -n "$cfg" ]] || return 1
-  name=$(grep -oE '"deploymentName":"[^"]+"' "$cfg" | cut -d'"' -f4)
-  [[ -n "$name" ]] || return 1
-  printf 'anonymous:%s' "$name"
-}
 
 # tmux is how a service keeps running after this script exits, and how you get
 # at its output afterwards without a pidfile dance.

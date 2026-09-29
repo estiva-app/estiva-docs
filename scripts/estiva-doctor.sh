@@ -4,8 +4,7 @@
 # success from every other angle.
 #
 # Ordinary health is not enough here. A relay that is up but does not know a
-# kind, an Estiva ID whose seed never ran, and a Peek that publishes into the
-# void because one env var is unset all answer 200 to everything.
+# kind and an Estiva ID whose seed never ran both answer 200 to everything.
 
 source "$(dirname "${BASH_SOURCE[0]}")/estiva-lib.sh"
 
@@ -37,7 +36,6 @@ else
   fi
 fi
 
-check_convex && ok convex "http://localhost:$PORT_CONVEX" || bad convex "nothing on :$PORT_CONVEX"
 check_peek   && ok peek   "http://localhost:$PORT_PEEK"   || bad peek   "nothing on :$PORT_PEEK"
 check_ship   && ok ship   "http://localhost:$PORT_SHIP/ship/" || bad ship "nothing on :$PORT_SHIP"
 
@@ -107,20 +105,7 @@ if check_id; then
   fi
 fi
 
-# 3. Is Peek pointed at the relay at all? `convex/nostr/publish.ts` no-ops
-#    silently when NOSTR_RELAY_URL is unset — the app works perfectly and
-#    nothing ever reaches the relay.
-if check_convex; then
-  relay_env=$(cd "$PEEK_DIR" && CONVEX_AGENT_MODE=anonymous npx convex env get NOSTR_RELAY_URL 2>/dev/null | tail -1)
-  if [[ -z "$relay_env" || "$relay_env" == *error* ]]; then
-    warn publish "NOSTR_RELAY_URL is unset in Convex — Peek will not publish"
-    note "npx convex env set NOSTR_RELAY_URL http://localhost:$PORT_RELAY"
-  else
-    ok publish "Peek publishes to $relay_env"
-  fi
-fi
-
-# 3b. Estiva ID's three fail-closed env vars.
+# 3. Estiva ID's three fail-closed env vars.
 #
 #     Each defaults to empty and each turns a feature off *silently* — the
 #     service starts, authenticates and answers /readyz with all three blank.
@@ -138,16 +123,6 @@ if check_id; then
       note "$why"
     fi
   done
-fi
-
-# 4. Will Convex accept a token from the LOCAL Estiva ID? convex/auth.config.ts
-#    pins the issuer, and a local identity service issues a different one.
-issuer=$(grep -oE "domain: '[^']+'" "$PEEK_DIR/convex/auth.config.ts" 2>/dev/null | head -1 | cut -d"'" -f2)
-if [[ "$issuer" == http://localhost:* ]]; then
-  ok issuer "Convex trusts $issuer"
-else
-  warn issuer "Convex trusts $issuer — a local Estiva ID cannot sign you in"
-  note "see local-dev/RUNNING.md § 'The sign-in blocker'"
 fi
 
 echo

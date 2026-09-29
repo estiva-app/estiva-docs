@@ -29,13 +29,12 @@ Note also that the image repository is `ghcr.io/estiva-app/ship`, not
 inspect` on the wrong name returns nothing, and piping nothing to `sha256sum`
 yields `e3b0c442…`, the hash of the empty string, which looks like a digest.
 
-**Peek has no Convex backend.** Its code went in REM-7 (peek#366, #368), and the
-deployment `honorable-guineapig-592` was deleted in REM-8 on 2026-09-25. The
-final snapshot, with file storage (102 blobs), is
+**Peek has no backend.** The final snapshot of the Convex deployment it used to
+have (deleted in REM-8, 2026-09-25) is kept outside the repo at
 `~/estiva-backups/rem8-20260925/honorable-guineapig-592-final-20260925.zip`,
 sha256 `338f9a39530234dfaacbbee59b22b8ea6b0835ebb45fd09b980f11cb12088829`. It
-cannot be imported into another deployment as it is: a Convex id encodes its
-table number, and table numbers differ between deployments.
+holds what was dropped rather than migrated: `users.role`, `users.isExternal`,
+`topicRenames`, the one huddle and DM highlights.
 
 ---
 
@@ -65,8 +64,8 @@ repo setting, so it survives upstream merges. Re-enable with
 
 ## Opening the back-dating window
 
-Publishing history with its real date — the Convex → Buzz migration, and
-anything like it — needs **two** env vars in `/opt/buzz/.env`, because two
+Publishing history with its real date needs **two** env vars in
+`/opt/buzz/.env`, because two
 gates refuse a back-dated event in sequence:
 
 | gate | var | default | how it refuses |
@@ -223,9 +222,7 @@ validates tokens. Every relay request it makes carries a NIP-98 event signed
 through Estiva ID's `/sign`, which refuses a user who is not `active`. So a
 leaver's next read or write fails. Two things outlast the offboarding: what the
 tab already holds, and a relay socket that is already authenticated, which
-needs `/sign` again only when it reconnects. (Until REM-8 on 2026-09-25, Convex
-validated tokens statelessly and a leaver kept their Peek session until the
-token expired.)
+needs `/sign` again only when it reconnects.
 
 `JWT_TTL_SECONDS` is currently 3600. It was raised from 600 because no refresh
 grant exists yet.

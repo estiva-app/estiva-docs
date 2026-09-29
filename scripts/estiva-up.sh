@@ -86,29 +86,7 @@ if wants id; then
   fi
 fi
 
-# --- 4. Convex ------------------------------------------------------------
-# CONVEX_AGENT_MODE=anonymous runs the backend entirely on this machine, with
-# no account and no cloud deployment. Data lives in peek-app/.convex.
-
-if wants convex; then
-  if check_convex; then
-    ok convex "already running on :$PORT_CONVEX"
-  else
-    deployment=$(convex_local_deployment) || {
-      bad convex "no local Convex deployment in $PEEK_DIR/.convex/local"
-      note "run estiva-bootstrap.sh — it creates one"
-      exit 1
-    }
-    # CONVEX_TMPDIR keeps the temp dir on the project's filesystem; without it
-    # convex warns on every start and file watching is unreliable under WSL.
-    start_window convex "$PEEK_DIR" \
-      "CONVEX_AGENT_MODE=anonymous CONVEX_DEPLOYMENT=$deployment CONVEX_TMPDIR=$PEEK_DIR/.convex/tmp npx convex dev" check_convex
-    wait_for convex 180 check_convex || exit 1
-    ok convex "http://localhost:$PORT_CONVEX"
-  fi
-fi
-
-# --- 5. the apps ----------------------------------------------------------
+# --- 4. the apps ----------------------------------------------------------
 
 if wants peek; then
   if check_peek; then

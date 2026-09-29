@@ -91,7 +91,7 @@ Stated plainly, because these are not small:
 | **Topic = a channel** | Topic = a file listed in a folder |
 | Comments = `kind:9` with a custom `about` tag | Conversations = NIP-22 `kind:1111` anchored by address |
 | A project record is channel-scoped, so discovery runs through membership | A listed folder is global and discoverable without access; a private one is not discoverable at all beyond a contentless stub |
-| Huddle = a bespoke Peek concept in Convex | Huddle = a channel with narrower access and an anchor |
+| Huddle = a bespoke Peek concept | Huddle = a channel with narrower access and an anchor |
 
 The first two are the load-bearing changes and both land on Peek's central abstraction. See §11.
 
@@ -502,7 +502,6 @@ What that touches:
 - **PEE-6**, which subscribes one WebSocket REQ per channel. Fewer channels and more anchored threads changes *what* to subscribe to, though not how
 - **CRO-3**, which settled the read-context grammar. It did **not** land as `h:<folder-uuid>`, as this bullet assumed while it was open: [SPEC §11.1](SPEC.md) keys a container on the **bare channel uuid**, because NIP-RS grandfathers exactly that and a prefixed variant would be a second convention for the same object. Conversation read state is therefore keyed on the channel and survives this RFC untouched. A *folder*-level frontier is still a new context, and §11.1 now reserves `folder:<folder-address>` for it rather than leaving it to be discovered later. **A per-file frontier turned out to be needed first** (FOL-16, 2026-09-13): once several topics share a team's channel, the channel marker no longer says which of them you have read, so SPEC §11.1 keys a file's conversation on its bare address and §11.3 stops the channel's marker propagating into it
 - every topic that already exists, each of which is a channel with no folder — see §12
-- Convex's `topics` table, which stops being the source of truth for what a topic *is*
 
 None of it is blocked and none of it is small. Plan it as its own project, sequenced after the Ship rewrite has proven the shared foundation, not concurrently.
 
@@ -1001,7 +1000,7 @@ Three candidates, and the choice is not free in any direction:
 
 ### 15.2 What they must still build themselves, and should not have to
 
-- **Rendering another app's objects.** The consumer runtime exists, works, and still lives inside one app — but at `peek-app/interop/`, a directory that is a peer of `src/` and `convex/` rather than inside either (PRO-1, 2026-08-31). It moved by `git mv` with no content change, because it already satisfied every constraint in [ADR 0002](../decisions/0002-foundation-packages.md) §10 except the one about where it sat. It becomes `@estiva-app/interop` once a second consumer has pushed back on it (PRO-7, PRO-9).
+- **Rendering another app's objects.** The consumer runtime exists, works, and still lives inside one app — but at `peek-app/interop/`, a directory beside `src/` rather than inside it (PRO-1, 2026-08-31). It moved by `git mv` with no content change, because it already satisfied every constraint in [ADR 0002](../decisions/0002-foundation-packages.md) §10 except the one about where it sat. It becomes `@estiva-app/interop` once a second consumer has pushed back on it (PRO-7, PRO-9).
 
   *Corrected 2026-08-31:* this sentence used to say the file's header "says it knows nothing about Convex". **That sentence is not in the file**, and the paraphrase propagated from here into tickets. The header's actual claim is stronger — that everything in it *"takes a `query` function rather than reaching for one"* and that *"Nothing in this file knows what Linear-lite is"*: ignorance of the app being rendered, not of its own backend.
 - **Comments.** An HR specialist wants people commenting on candidates. They do not want to implement threading, reactions, edit, delete and unread. Today they would build all of it, and it would be the fifth independent implementation of a model that is specified in three places and complete in one.
