@@ -4,11 +4,6 @@ Every command on this page was run on a Windows 11 + WSL Ubuntu box on
 2026-08-18 and produced the output shown. Where something does **not** work
 yet, it says so rather than describing what it would do.
 
-> **Do not follow `peek-app/docs/buzz-compat/RUNNING.md`.** It describes a
-> backend and a sign-in Peek no longer has, and following it gets you stuck on
-> steps for systems that do not exist — a failure that reads as a broken
-> environment.
-
 ---
 
 ## TL;DR

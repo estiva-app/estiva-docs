@@ -65,10 +65,6 @@ local journal". They are in `docker logs`. See
 
 `README.md` is the unmodified Vite template. Ignore it.
 
-⚠️ **`docs/buzz-compat/RUNNING.md` is stale.** It describes a backend and a
-sign-in Peek no longer has. Use
-[../local-dev/RUNNING.md](../local-dev/RUNNING.md).
-
 ### `docs/buzz-compat/` — the analysis corpus
 
 Fifteen documents written during the compatibility investigation. They are the
