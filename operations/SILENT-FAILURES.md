@@ -22,7 +22,7 @@ Postgres row, `origin/main`, the bytes.
 
 | What looked fine | What was actually wrong | How to check |
 | --- | --- | --- |
-| Peek works perfectly, nothing reaches the relay | `NOSTR_RELAY_URL` unset — `convex/nostr/publish.ts` **no-ops silently by design** | `npx convex env get NOSTR_RELAY_URL` |
+| Peek works perfectly, nothing reaches the relay | `VITE_RELAY_URL` unset or empty — Peek runs on its mock data **by design** (`src/api/relayUrl.ts`, `hasRelay`) | Check `VITE_RELAY_URL` in the build environment or `.env.local` |
 | `/sign` returns, the app renders the change | The kind is not in the app's `allowed_kinds`; `/sign` refused with `kind_not_allowed` on a console line nobody was watching | Read `app_credentials` in Postgres |
 | Signing succeeded, publish failed | The relay's kind allowlist rejects at ingest — *after* signing | `npm run probe` in `~/estiva-ship` |
 | `HTTP 200` from `POST /events` | `{"accepted":false,"message":"duplicate: …"}`. **The status code is not the answer** | Read the `accepted` field |
@@ -79,10 +79,7 @@ re-examining that proof, which is a different piece of work.
 | --- | --- |
 | `journalctl … \| grep -c "…"` returns `0` | Estiva ID's app logs are in `docker logs estiva-id-estiva-id-1`, **not the journal**. The grep proved nothing |
 | `docker logs` shows nothing before a date | It only reaches back to container start. Check `docker inspect -f '{{.State.StartedAt}}'` before concluding a bug is new |
-| A Convex custody audit reported clean | `--prod` resolved to a deployment nobody uses. Name the target explicitly; `.env.local` is a hint, never the answer |
-| Convex dashboard shows no arguments | It never shows arguments for successful calls. Absence is not evidence |
 | `git checkout -b foo origin/main` | A **failed fetch is quiet**. `origin/main` stayed where it was and the branch was cut from a stale commit |
-| Local export shows zero attachments | The local Convex backend's export **omits `_storage`**. Check `convex data _storage` |
 | A folder read returned rows, and the folder looked thin | **`{'#h': [A, B]}` returns only A's events.** NIP-01 says a tag filter's values are OR-ed; this relay does not, and it does not error — it answers with a short set. Measured against production, and **every folder-shaped read is exposed to it**: send one filter *per folder* in the array (`POST /query` takes a bare array, so it is still one round trip). Check it by asking for two folders you know have events and counting both |
 | A read is correct, and the app goes blank | **The relay meters `POST /query` at 300 a minute, per pubkey — not per app.** A Ship tab and a Peek tab signed in as the same person share one allowance, and `enforce_http_admission` runs once per HTTP call *before* the filters are parsed, so the unit is **requests, not filters**. One Ship workspace read was 38 requests; at a 10 s poll that is 76% of the budget at rest, and a refused *first* read renders nothing at all. Count the transport's calls through one real read rather than the filters you sent |
 | A `search` filter came back with rows | A relay that **ignores** an unknown `search` field answers with everything of that kind — identically to one that honours it. "Search returned results" is not evidence. Pair every search with a nonsense token that must return **zero** |
@@ -111,9 +108,6 @@ moment?** If the two questions disagree about that, one list cannot serve both.
 | A bundle carried a new package's fix and an old package's bug at once | **`web/` and the repo root are separate `package.json` files resolving `@estiva-app/*` independently.** Ship's `web/src/auth/*` imports by name and got `web/`'s `identity@0.1.1`; `web/src/api/store.ts` imports through `../../../lib/` and got the root's `0.2.0`. One bundle, two versions — so the author guard was live and the expiry clamp was not, and a merged PR of mine claimed otherwise. Bumping "the dependency" means bumping every tree that resolves it | Grep the **built bundle** for a string unique to the new version. Two lockfiles can each be internally consistent and still disagree; nothing compares them. **Removed at the cause since PER-19 (ship#191):** Ship is one package, so there is one tree to resolve from. Even with matching versions, the two trees had put protocol's NIP-19 code into the bundle twice |
 | `curl -w '%{http_code}' … \|\| echo 000` | curl already prints `000` on failure *and* exits non-zero, so the fallback appends a second one. `"000000" != "000"` reads as success — this reported a dead relay as healthy |
 | A tmux window exists for a service | A run that died on an interactive prompt leaves the window there forever. Existence is not readiness |
-| `npx convex dev` appears to hang | `.env.local` names a cloud deployment, which beats `CONVEX_AGENT_MODE=anonymous`; it is sitting on an interactive prompt |
-| Schema push succeeded locally | Nothing local runs Convex's module loader. **Push failures are discovered at deploy time** |
-| Removing a field from a schema | Fails the **entire** push for every row still carrying it. Sweep first, confirm zero, then remove. Removing a whole *table* does not fail |
 
 ---
 
@@ -124,5 +118,5 @@ looks exactly like nothing happening. Conformance check C9 in
 [../protocol/SPEC.md](../protocol/SPEC.md) exists for this: publish failures
 belong in the UI, not only in `console.warn`.
 
-**Run `estiva-doctor.sh`.** It exists because six services can all answer `200`
+**Run `estiva-doctor.sh`.** It exists because five services can all answer `200`
 while four of these are true at once. It checks the state, not the health.

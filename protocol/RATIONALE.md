@@ -192,10 +192,9 @@ it cannot happen unseen — which is why the audit log is Stage 1 and not later.
 
 ## Why `/sign` over HTTP rather than NIP-46
 
-NIP-46 needs a socket for `kind:24133` traffic. Convex functions are
-request-scoped and cannot hold one — Peek's sync already polls for exactly this
-reason. And signing latency measured in seconds would be unusable on every
-click.
+NIP-46 needs a socket for `kind:24133` traffic, which Peek's backend at the
+time (Convex, request-scoped) could not hold. And signing latency measured in
+seconds would be unusable on every click.
 
 `/sign` has NIP-46's property — secrets never leave the signer — over HTTPS
 instead of relay transport. **This is the seam that gets re-pointed at a local

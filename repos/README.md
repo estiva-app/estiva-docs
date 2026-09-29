@@ -58,15 +58,15 @@ local journal". They are in `docker logs`. See
 
 | File | Why |
 | --- | --- |
-| `CLAUDE.md` | Working rules, and the Convex deployment warnings |
-| `convex/nostr/` | Event builders, publish, sync, projection |
+| `CLAUDE.md` | Working rules |
+| `src/nostr/` | Relay reads and folds, and the bridge client (`bridge.ts`) |
 | `docs/buzz-compat/` | The original analysis corpus — see below |
 | `PRODUCTION-PLAN.md` | The phase plan; still the progress record |
 
 `README.md` is the unmodified Vite template. Ignore it.
 
-⚠️ **`HOW-TO-RUN.md` and `docs/buzz-compat/RUNNING.md` are stale.** Both describe
-a Convex Auth email/password sign-in deleted by PEEK-41. Use
+⚠️ **`docs/buzz-compat/RUNNING.md` is stale.** It describes a backend and a
+sign-in Peek no longer has. Use
 [../local-dev/RUNNING.md](../local-dev/RUNNING.md).
 
 ### `docs/buzz-compat/` — the analysis corpus

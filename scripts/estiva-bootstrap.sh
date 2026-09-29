@@ -62,19 +62,6 @@ wait_for id-postgres 60 docker exec estiva-id-dev-postgres-1 pg_isready -U estiv
 (cd "$PEEK_DIR" && npm install >/dev/null 2>&1) && ok deps "peek node_modules"
 (cd "$SHIP_DIR" && npm install >/dev/null 2>&1) && ok deps "ship node_modules"
 
-# --- Convex ----------------------------------------------------------------
-# Create the local anonymous deployment if there is not one. `--once` exits
-# after pushing, which is what we want here — estiva-up.sh runs the watcher.
-
-if convex_local_deployment >/dev/null; then
-  ok convex "local deployment $(convex_local_deployment) already exists"
-else
-  echo "  ..    convex    creating a local deployment"
-  (cd "$PEEK_DIR" && CONVEX_AGENT_MODE=anonymous npx convex dev --once >/dev/null 2>&1)
-  convex_local_deployment >/dev/null && ok convex "created $(convex_local_deployment)" \
-    || { bad convex "could not create a local deployment"; exit 1; }
-fi
-
 echo
 echo "  Now run:  estiva-up.sh"
 echo "  Then:     estiva-doctor.sh"

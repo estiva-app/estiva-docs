@@ -36,7 +36,7 @@ which argued the opposite until SHA-3 amended it, and the amendment says why.
 | --- | --- | --- |
 | **buzz** | The relay. Forked from [block/buzz](https://github.com/block/buzz). Storage, access control, the HTTP bridge, the kind allowlist | Rust |
 | **estiva-id** | Identity: passkeys, key custody, remote signing, the profile publisher, admission | Node + Hono + Postgres |
-| **peek** | Team communication — DMs, Topics, Huddles, Screener, Desk | React + Vite + Convex |
+| **peek** | Team communication — DMs, Topics, Huddles, Screener, Desk | React + Vite, no backend |
 | **ship** | A minimal issue tracker — projects, issues, comments | React + Vite, no backend |
 
 Peek and Ship are the proof: two apps, built separately, sharing no application

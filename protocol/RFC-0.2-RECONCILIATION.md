@@ -110,8 +110,8 @@ Buzz and turned out not to be the road taken.
 
 The suite authenticates to the relay with **NIP-98** HTTP auth over the relay's
 HTTP bridge. NIP-42 has a challenge/response handshake that needs a held socket,
-and Peek's backend is Convex, whose functions are request-scoped and cannot hold
-one — its sync already polls for exactly this reason.
+and Peek's backend at the time, Convex, ran request-scoped functions that could
+not hold one.
 
 The same constraint shaped remote signing: `/sign` is NIP-46's property (secrets
 never leave the signer) over HTTPS rather than relay transport, because NIP-46

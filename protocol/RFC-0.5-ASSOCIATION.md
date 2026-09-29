@@ -589,8 +589,8 @@ by address. What is new is the obligation on the *serving* side.
 - **Peek** routes `/project/`, `/issue/` and any future declared word to the
   file page it already has, learning the words from the manifests rather than
   from code; moves `/desk`, `/people`, `/folders` under `/app/` with redirects;
-  and, while its Convex topics last, keeps them at `/topic-old/` — a transitional
-  exception, not a type word, gone with the migration.
+  and lands an old `/topic-old/` link on its file through a table in the bundle —
+  a redirect, not a type word.
 - **Ship** serves `/topic/<slug>-<d>` as a hand-off to Peek (it has no
   conversation view); moves its own pages under `/app/`; and gains the
   collision check in its manifest script. Its `urls` shapes are already

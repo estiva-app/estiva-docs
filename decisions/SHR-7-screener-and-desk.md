@@ -5,6 +5,9 @@ migration. Everything below is read off `peek-app` `origin/main` at
 `0e65a5b` (2026-09-16), or measured; where something is estimated rather than
 measured, it says so.
 
+**Peek has had no Convex since 2026-09-25** (REM-7/REM-8). The tables, paths and
+deployment named below are as they stood at `0e65a5b`; none of them exists now.
+
 ---
 
 ## Executive summary
@@ -425,20 +428,10 @@ export const report = query({
 })
 ```
 
-Run it against the deployment Peek actually uses — **not `--prod`**, which
-resolves elsewhere (`peek-app/CLAUDE.md`):
-
-```
-npx convex run dev/shr7BlobBound:report \
-  --url https://honorable-guineapig-592.eu-west-1.convex.cloud \
-  --admin-key '<deploy key>'
-```
-
-**It has not been run.** The deployment answers (`/version` → 200) but this
-session has no deploy key, and the function is not deployed, so neither the
-dashboard nor an anonymous call reaches it. The §3 table is the analytic bound
-in the meantime, computed on the real field widths; it does not depend on the
-row counts, and the row counts are what this query adds.
+**It had not been run when this was written, and cannot be now:** the deployment
+it targeted was deleted in REM-8 (2026-09-25). The §3 table is the analytic
+bound, computed on the real field widths; it does not depend on the row counts,
+and the row counts are what this query would have added.
 
 ---
 
@@ -490,9 +483,8 @@ unchanged.** What changes is the residue. Rendering has a relay answer after all
 — NIP-29 `39000` carries `name`, `about` and `topic` (`side_effects.rs:1378-1450`)
 — as do membership (`39002`, channel-scoped so only members read it) and the
 person directory (`kind:0`, plus `GET /api/members`). The Convex that §1 assumed
-would survive *as rendering* is therefore smaller than §1 assumed. Sizing that
-residue is not this spike's job; it is PER-5 §7's stage 3, which now has a
-sharper question to ask than it had.
+would survive *as rendering* is therefore smaller than §1 assumed. None of it
+survived: REM-7 (2026-09-25) removed Convex from Peek entirely.
 
 ---
 
@@ -517,10 +509,8 @@ sharper question to ask than it had.
 ## 9. Related
 
 - ADR 0001 §3 — the three-layer rule and the five
-- PER-5 — `decisions/PER-5-convex-research.md`, §1, §3, §6.3, §7 stage 2
 - SHR-4 — `capContextsToBytes`, the byte cap this reuses (peek#232)
-- SHR-6 — the same question for `stars`; its blob is already shipped, so what
-  remains there is removing the Convex copy, not designing one
+- SHR-6 — the same question for `stars`; its blob is already shipped
 - DMS-3 — the DM relay identity §4 waits on
 - PEE-6 — the de-duplication §2 re-reads
 - SHR-9 — open work onto the layer-2 blob, filed from §1's first recommendation

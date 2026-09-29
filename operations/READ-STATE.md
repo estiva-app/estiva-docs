@@ -9,19 +9,11 @@ document says differently from its first draft.
 
 ## What happened, and why there was nothing to switch on
 
-CRO-7 was written expecting two render paths — Convex-native unread, and unread
-derived from the merged relay state — with a day when one replaced the other.
-
-That day never came, because CRO-6 did not build a second path. It fed the merge
-into the store the UI already read: `applyRelayReadState` writes into
-`readState`, and `unread.summary` reads `readState` through `watermarks()`. The
-same table. So Peek began rendering merged read state the moment CRO-6 deployed,
-with no flag and no switch.
-
-**Do not "finish the cutover" later.** The obvious remaining move — removing the
-direct Convex write so the relay is the sole writer — is a regression. It would
-cost the instant dot-clears-on-read feedback and gain nothing: the cache is the
-union of local writes and the merge, which is what the merged state *is*.
+CRO-7 was written expecting two render paths, with a day when one replaced the
+other. That day never came, because CRO-6 did not build a second path: it fed
+the merged relay state into the store the UI already read, so Peek began
+rendering merged read state the moment CRO-6 deployed, with no flag and no
+switch. Since REM-5 the NIP-RS blob on the relay is Peek's only read state.
 
 ---
 
@@ -125,18 +117,9 @@ held one topic.
 
 ## The way back
 
-**A code revert, with no data migration.** Convex `readState` is written by
-`useMarkRead` on every read and by `applyRelayReadState` on every merge, so its
-rows are current at all times. Nothing needs restoring.
-
-**Do not drop the `readState` table or its fields** to tidy up. Removing a field
-from a Convex validator fails the *entire* push for every row that still carries
-it, at deploy time — not at `tsc -b`, not in the suite. If something must go:
-ship a sweep, run it, confirm zero, then remove.
-
-There is no rollback *window* to state, because there was no cutover to roll
-back. What would be reverted is CRO-6, and it has been live and verified since
-2026-09-01.
+**There is no second store to fall back to.** Since REM-5 the NIP-RS blobs on
+the relay are Peek's only read state, and there was no cutover, so there is no
+rollback window to state.
 
 ---
 

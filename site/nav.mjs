@@ -19,7 +19,7 @@
  *   operations/SILENT-FAILURES.md internal debugging lore naming container
  *                                 names and paths on the box
  *   operations/READ-STATE.md      what shipped, what to watch, and the way back;
- *                                 names a deployed table and a devtools diagnostic
+ *                                 names a devtools diagnostic
  *
  * Both stay in the repo, which is where the people who need them already are.
  */
@@ -80,9 +80,8 @@ export const PAGES = NAV.flatMap((s) => s.items.map((i) => ({ ...i, section: s.s
 export const INTERNAL = new Set([
   'operations/PRODUCTION.md',
   'operations/SILENT-FAILURES.md',
-  // A cutover runbook: what people are told, the day-one checks, and the
-  // rollback window. Names the deployed Convex table and a devtools diagnostic,
-  // and is only meaningful for the weeks around the change.
+  // A cutover runbook: what people are told and the day-one checks. Names a
+  // devtools diagnostic, and is only meaningful for the weeks around the change.
   'operations/READ-STATE.md',
   // The site's own runbook — it names the box, its SSH account and the pull
   // token. Publishing the instructions for the gate alongside the gate would
