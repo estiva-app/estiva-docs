@@ -78,7 +78,6 @@ place a thing is written down:
 | `PEEK_DATA_MODEL.md` — Peek's tables and the durable/local split | — |
 | `BUZZ_PROTOCOL_MODEL.md` — Buzz's model, cited to code | — |
 | `INTEROP_PROOF.md` — real recorded output | — |
-| `LINEAR_LITE_SPEC.md` | [../protocol/SPEC.md](../protocol/SPEC.md) |
 | `RFC_UPDATES.md` | [../protocol/SPEC.md](../protocol/SPEC.md) |
 | `RUNNING.md` | [../local-dev/RUNNING.md](../local-dev/RUNNING.md) |
 | `NIP_SURVEY.md`, `COMPATIBILITY_GAP_ANALYSIS.md` | partly — both predate implementation |
