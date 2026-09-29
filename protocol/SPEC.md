@@ -1035,6 +1035,12 @@ child only from a read that folds every change in the Folder — the Folder's
 listing. A consumer that does neither draws a moved issue under its old project,
 which is the failure this field exists to end.
 
+> **The reference implementation does not meet this yet, in one place.**
+> interop 0.36.0's Folder listing folds `movedBy`, so nesting built from it is
+> right; its inline card `list` (`resolveForeignObject`'s children) folds
+> nothing for a child and still draws a moved one under its old parent. That is
+> interop's gap, tracked as MAN-7 — not a reading of this rule.
+
 **The move is the action whose `emits.field` is the `movedBy` field** and which
 applies to the child kind (§7.3). Its value is an address, so a consumer SHOULD
 draw it as a choice among objects of the declaring kind rather than a text box
