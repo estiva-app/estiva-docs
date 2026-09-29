@@ -1020,7 +1020,9 @@ A consumer MUST read a child's parent in this order:
    of.
 2. Otherwise **the `via` tag** whose value is an address of the declaring kind.
 
-The field's value is the new parent's address, `kind:pubkey:d`, or empty.
+The field's value is the new parent's address, `kind:pubkey:d`, or empty. A
+folded value that is not an address of the declaring kind names no parent, and
+a consumer MUST treat it as empty rather than as a reference to fetch.
 `movedBy` is meaningful only when `via` holds an address; a consumer MUST
 ignore it on a list whose child tag holds anything else.
 
