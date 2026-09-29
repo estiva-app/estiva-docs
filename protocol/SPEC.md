@@ -984,6 +984,7 @@ exactly one source:
 | `{"fold": "lead", "tag": "lead"}` | folded, **seeded** from a root tag |
 | `{"fold": "description", "field": "content"}` | folded, **seeded** from the event body |
 | `{"children": {"kind": 30851, "via": "a", "limit": 200}}` | child objects, found by the tag **on the child** that names this one |
+| `{"children": {"kind": 30851, "via": "a", "movedBy": "project"}}` | the same, where a child **moves** by a change to the named field (below) |
 
 **`children` is the only source that does not read the root event.** The others
 answer *"what does this event say?"*; it answers *"what points at it?"* The
@@ -999,6 +1000,55 @@ it, and a producer able to set that number could hang any consumer that trusted
 it. `limit` is the producer's hint about how many children are worth fetching;
 a consumer applying it MUST apply it to what it renders and not to what it
 counts, or a total silently changes with the render budget.
+
+#### `movedBy` — the field that moves a child (MAN-1, 2026-09-29)
+
+The `via` tag is written once, on the child's root, by the child's author, and
+the root is replaceable by that author alone. So a child that can change parent
+— a Ship issue moved to another project — moves by a **change event** (§6.2),
+and `movedBy` names the field that change sets:
+
+```json
+"list": { "children": { "kind": 30851, "via": "a", "movedBy": "project" } }
+```
+
+A consumer MUST read a child's parent in this order:
+
+1. **The folded `movedBy` field**, when the fold holds a value for it. An
+   **empty value is a move to no parent** and not an absence: falling back to
+   the tag would put the child straight back under the parent it was moved out
+   of.
+2. Otherwise **the `via` tag** whose value is an address of the declaring kind.
+
+The field's value is the new parent's address, `kind:pubkey:d`, or empty. A
+folded value that is not an address of the declaring kind names no parent, and
+a consumer MUST treat it as empty rather than as a reference to fetch.
+`movedBy` is meaningful only when `via` holds an address; a consumer MUST
+ignore it on a list whose child tag holds anything else.
+
+**A `#via` read cannot see a move.** It finds the children *created* under a
+parent, still finds the ones moved away, and never finds the ones moved in,
+because a relay indexes single-letter tags and a move's new parent is in a
+`value`. A consumer drawing a parent's children from `#via` alone MUST drop a
+child whose folded `movedBy` names another parent, and can find a moved-in
+child only from a read that folds every change in the Folder — the Folder's
+listing. A consumer that does neither draws a moved issue under its old project,
+which is the failure this field exists to end.
+
+**The move is the action whose `emits.field` is the `movedBy` field** and which
+applies to the child kind (§7.3). Its value is an address, so a consumer SHOULD
+draw it as a choice among objects of the declaring kind rather than a text box
+asking a person to type `30850:<hex>:<uuid>`. A move changes the parent and
+never the child's Folder, which is its own placement (§7.3).
+
+The bare file declares `movedBy: "parent"` on its own list, naming the field
+§6.7 defines; §6.7's rule that a bare file's parent may be of *any* kind is
+unchanged, and is why its `via` tag is not matched on the declaring kind. Absent
+`movedBy`, the `via` tag is the only parent, so every manifest published before
+this field reads exactly as it did.
+
+Measured on production 2026-09-29, the 1,000 newest `kind:1851`: 41 set
+`project` on a `kind:30851`, and all 41 values are a `kind:30850` address.
 
 Three rules learned from writing a consumer rather than from reading a spec:
 
@@ -1084,6 +1134,140 @@ published before this field behaves unchanged.
 
 Ship's move of comments from `kind:9` to NIP-22 `kind:1111` is the case this was
 written for, and Peek implements it as `commentKindsOf`.
+
+#### What an action declares
+
+Stated here because a consumer builds the event from the declaration alone, and
+until MAN-1 the rules below lived only in the reference implementation.
+
+```jsonc
+{
+  "id": "add-issue",
+  "label": "Add issue",                  // a button caption
+  "description": "File a new issue…",    // prose for a caller choosing between actions
+  "effect": "writes",                    // "safe" | "writes" | "destructive"; absent means unknown
+  "appliesTo": "30850",                  // the kind(s) it is offered on, as strings
+  "emits": { "kind": 30851, "setTag": "a", "toAddressOf": "self" },
+  "input": {
+    "type": "object",
+    "properties": { "title": { "type": "string" }, "description": { "type": "string", "target": "content" } },
+    "required": ["title"]
+  }
+}
+```
+
+An action is one of four shapes, decided in this order:
+
+| shape | declared by | the event |
+| --- | --- | --- |
+| **deletion** | `emits.kind: 5` | NIP-09: `a` naming the object, `k` its kind; no `h`; takes no value |
+| **creation** | `input.type: "object"` with `properties` | a new root of `emits.kind`: a fresh `d` if addressable, one tag per property, the Folder tag, and `[setTag, <object's address>]` when `toAddressOf` is `"self"` |
+| **change** | `emits.field` | `emits.kind` carrying the fold rule's target, field and value tags (§7.1), `h`, and `ts` when the rule orders by it |
+| **comment** | `emits.scope: "address"` | NIP-22 `kind:1111` naming the object (§6.4) |
+
+**A property's name is the tag its value is written to**, unless it declares
+`target: "content"`, when its value is the event's `content`. At most one
+property may target `content`; a consumer MUST refuse a declaration with two,
+because the second would silently replace the first. `input.enum` (or a
+property's `enum`) names a vocabulary (§7.4) the value MUST come from — the
+owner cannot enforce it, so the consumer checks. An empty property is omitted,
+not written as an empty tag.
+
+An action MAY produce more than one event (`listed`, below). A consumer MUST
+publish them in the order given and stop at the first refusal, because each
+later event assumes the earlier ones were accepted.
+
+#### `placement` and `listed` — where a new object lives, and the command that follows (MAN-1)
+
+A Ship project is not filed in its Folder the way an issue is. Its record
+carries `buzz-channel` instead of `h`, so the relay stores it globally and
+anybody can discover the project without being admitted to its channel (RFC 0.3
+§4.2). And it is then **named** in its Folder with a `kind:1852`, because a
+Folder with state (`kind:30890`) lists only what its state names and filing
+never updates it. Neither could be declared, so `add-project` could not be.
+
+```jsonc
+"emits": { "kind": 30850, "placement": "buzz-channel", "listed": true }
+```
+
+**`placement`** — on a creation only — is the tag the new root names its Folder
+with: `"h"`, the default, or `"buzz-channel"`. Those are the two tags a relay
+indexes for a Folder's containment read and the two a consumer reads an
+object's Folder from (`h` first), and a consumer MUST refuse any other value: a
+root naming its Folder in a tag nothing reads belongs to no Folder. `buzz-channel` changes where the *record* lives and nothing else: the
+changes, comments and children of that object still carry `h`, naming the
+Folder the root's `buzz-channel` names.
+
+**`listed: true`** says objects of this action's kind are named in their
+Folder's state, so writing one is followed by a Folder command (RFC 0.4 §4):
+
+- **On a creation**: publish the root, then — **only if the Folder has state** —
+  a `kind:1852` with `op: add` naming the new address, in the Folder the root
+  was placed in. A Folder without state lists by containment and already shows
+  the root; a command against it would emit state listing only this one object
+  and hide everything else filed there.
+- **On a deletion**: publish the `kind:5`, then one `kind:1852` with
+  `op: remove` naming the address in **each Folder whose state names it**. A
+  Folder with state lists what it names, deleted or not, so without it the row
+  stays pointing at nothing (FOL-48). The deletion goes first, so a refused
+  `remove` leaves a stale row rather than unlisting an object the relay kept.
+
+Whether a Folder has state, and which Folders name an object, MUST come from a
+read of `kind:30890` and never from a guess — a wrong guess is silent loss. A
+consumer that cannot read them MUST NOT offer a `listed` action; publishing the
+root alone creates an object its Folder does not show, and reports success.
+
+Measured on production 2026-09-29: 24 of 34 `kind:30850` carry `buzz-channel`
+and 10 carry `h` (older records, which never move); 0 of 452 `kind:30851` carry
+`buzz-channel`. Of the 24, 20 are named by an `op: add` and 4 by none — objects
+in no Folder's listing, the failure `listed` is for. Of 5 `kind:5` naming a
+`kind:30850`, 4 were followed by an `op: remove`.
+
+#### `format` — a field whose value is prose (MAN-1, RIC-13)
+
+Ship writes a description as a block document (§13.3) with
+`["content-format", "estiva-blocks-1"]`, and nothing in a declaration could say
+so: a consumer saw `{"type": "string"}` and drew a one-line box. A field is
+declared as prose with a **format on the declaration, not a new type**, because
+the wire value is a string either way:
+
+```jsonc
+// a creation: on the property that targets content
+"description": { "type": "string", "target": "content", "format": "estiva-blocks-1" }
+// a change: on the scalar input
+"emits": { "kind": 1851, "field": "description" },
+"input": { "type": "string", "format": "estiva-blocks-1" }
+```
+
+`format` names the richest model the owner accepts for this value. It does not
+make the value mandatory, and it does not refuse a plain one:
+
+- A value **written as a block document** carries the `content-format` tag with
+  the declared format — on the root for a creation, where it describes
+  `content`; on the change for a change, where it describes `value`. The tag is
+  per event (§13.4), so a change's tag describes that change alone.
+- A value **written as plain text** — from a consumer that drew a text box, or
+  one that does not know the format — carries **no tag**, and is §13.2 marker
+  text, which §13.4 obliges every reader to accept permanently. So a consumer
+  that ignores `format` still publishes a correct event.
+- A consumer MUST NOT put the tag on a value it did not produce in that format,
+  and MUST NOT write a format it does not implement. A reader decides the model
+  by the tag alone (§13.4), so a wrong tag renders JSON at a person, or a
+  paragraph as nothing.
+- A block document carrying `attachment` blocks carries one `imeta` per file,
+  as §13.3 requires of every event holding one.
+- On a creation, `format` is meaningful only with `target: "content"`: a tag is
+  a scalar (§7.2), and an event has one `content-format`. A consumer MUST ignore
+  `format` on a property written to a tag.
+
+A consumer SHOULD draw a prose field as a block editor and MAY draw a
+multi-line text box. `estiva-blocks-1` is the only format defined (§13.3).
+
+Measured on production 2026-09-29, the 1,000 newest `kind:1851`: 234 set
+`description`, and 67 of those carry `estiva-blocks-1`. **0 of 452 `kind:30851`
+roots carry the tag** — an issue has never been *created* with a block
+document, which is the gap RIC-13 names: rich text arrives only by a later
+edit.
 
 ### 7.4 Vocabularies
 
