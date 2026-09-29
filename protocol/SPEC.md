@@ -821,18 +821,21 @@ is what the relay validates against, plus `ts`:
 **The target is the first `e` whose value is 64 hex, and a reader MUST NOT apply
 an edit to any other `e`** (decided 2026-09-29, CON-5). That is the event whose
 ownership the relay checked (`validate_edit_ownership`, `handlers/ingest.rs`:
-the first `e` with a 64-hex value, marker ignored). Nothing refuses an edit
-carrying a second `e`, so a reader that picks a different one applies an edit
-the relay authorised for message X to message Y. An edit tagged
-`['e', <own message>, '', 'mention'], ['e', <victim>]` passes the relay's check
-on the writer's own message, and a reader taking "the first unmarked `e` naming
-a message on screen" draws it on the victim's. Peek's `foldEdits` and interop's
-`commentDecorationsOf` read it that way. `@estiva-app/interop@0.33.0` returns
-the forged body for both that shape and the unmarked one whose first `e` is off
-screen (PEE-38). Ship's first-`e` rule was right except for skipping a
-non-hex `e`, which fails safe. All 113 edits on production carry exactly one
-unmarked `e` naming a `kind:9` or `1111` on the relay (2026-09-29), so no edit
-that exists is read differently under this rule.
+the first `e` with a 64-hex value, marker ignored). **Since 2026-09-29 the
+relay refuses an edit that does not carry exactly one `e`, or whose `e` is not
+64 hex** (`invalid: an edit must name exactly one target via one e tag`,
+CON-21, buzz#20). Before that, nothing refused a second `e`, so a reader that
+picked a different one applied an edit the relay authorised for message X to
+message Y. An edit tagged `['e', <own message>, '', 'mention'], ['e', <victim>]`
+passed the relay's check on the writer's own message, and a reader taking "the
+first unmarked `e` naming a message on screen" drew it on the victim's. Peek's
+`foldEdits` and `@estiva-app/interop` before 0.34.0 read it that way (PEE-38);
+both now read `editTargetOf`, the rule above. The reader rule stays a MUST
+because a reader cannot assume every relay refuses the shape. Ship's first-`e`
+rule was right except for skipping a non-hex `e`, which fails safe and can no
+longer be stored. All 113 edits on production carried exactly one unmarked `e`
+naming a `kind:9` or `1111` on the relay (2026-09-29), so no edit that exists is
+read differently under either rule.
 
 **The fold.** The latest edit wins, ordered `ts` (when trusted), then
 `created_at`, then event `id` as a stable tiebreak. That is §6.3's ordering on
@@ -896,7 +899,7 @@ difference changes on the relay today.
 | a `1111` with no `A`: every `a` is an `A` | 6.4 | none (Peek equivalent by `#a`) | 0 |
 | Edit and Delete: own and `bot` messages | 6.5 | Peek hides `bot` messages; Ship offers on humans' | 1,181 agent messages |
 | `ts` exactly within its second | 6.2 | Peek and interop accept ±1 s | 0 of 3,470 |
-| edit target: first 64-hex `e` | 6.8 | Peek, interop (PEE-38); Ship skips no non-hex `e` | 0 of 113 |
+| edit target: first 64-hex `e` | 6.8 | none since PEE-38 (Peek, interop 0.34.0); the relay refuses a second `e` since CON-21 | 0 of 113 |
 | reaction target: last 64-hex `e` | 6.6 | Ship and interop take the first | 0 of 57 |
 | reaction emoji untrimmed, empty is `+` | 6.6 | Ship trims and skips empty | 0 |
 | one reaction per `(target, pubkey, emoji)` | 6.6 | Peek and interop count every event | 0 |
