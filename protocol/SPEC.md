@@ -2021,6 +2021,9 @@ its membership. The roster carries no join time, so condition 3 does not apply
 to it, and absence is still the app's choice there (§11.6). A DM's two
 participants are its members.
 
+**An app lights nothing for a stream it has no screen for.** A dot the person
+cannot clear in that app is noise, whatever another app shows.
+
 **Agents are members like anyone else.** A comment the agent writes lights a
 member's dot the way a person's does. Membership is what keeps that bounded:
 nobody is told about a file they have no part in.
