@@ -1811,7 +1811,9 @@ The hierarchy is applied **at read time**, never by writing extra keys.
 A Folder's own indicator — the dot on a team in Peek — is **the union of its
 streams**: unread if its general conversation is unread, or any file in it is,
 or any Folder beneath it is. Each file row carries its own indicator alongside;
-the team's clears when the last of them does.
+the team's clears when the last of them does. Every stream in the union is
+judged for the person's membership of it (§11.8): a file they are not a member
+of, or have muted, contributes only the messages that mention them.
 
 Union rather than general-stream-only, for two reasons. Peek already rolls
 activity up this way — a huddle's new message raises its parent topic's dot,
@@ -1890,12 +1892,14 @@ not fix the value. A consequence that bites: absence of a context means unread,
 so a container last read before the horizon reads as unread unless the client
 keeps its own cache behind the protocol.
 
-The same choice arrives with every file grain a person has never opened, and
-it is the app's to make, as Ship made it for the divider (no marker, no
-divider) and Peek makes it for a Folder listing (no marker: unread only for
-activity inside the horizon, so a project's years of issues do not all light up
-on the first day while a topic started yesterday does). What an app MUST NOT do
-is write a marker to settle the question — that is a read it did not make.
+For a **file**, membership settles it (§11.8, added 2026-09-30, CON-19): a
+member's unread starts when they became a member, so a file they have never
+opened is unread only for what was said since they joined. Until then each app
+chose — Ship showed no divider without a marker, and Peek counted everything
+inside its 90-day horizon, which is what lit a file's whole recent history the
+day a mention made someone follow it. For a **channel**, the choice is still
+the app's. What an app MUST NOT do in either case is write a marker to settle
+the question — that is a read it did not make.
 
 Superseded blobs at a NIP-RS coordinate are **hard-deleted** by the relay, and a
 watermark survives a NIP-09 deletion so an old signed blob cannot be
@@ -1905,6 +1909,145 @@ resurrected. Read state is not an audit log.
 
 The relay does **not** advertise NIP-RS, and `supported_nips` does not include
 78. An app cannot discover this support from NIP-11 and MUST NOT gate on it.
+
+### 11.8 Membership: whose unread a stream is
+
+Added 2026-09-30 (CON-19). Read state says *how far* a person has read. It does
+not say *which* conversations they should be told about, and without a rule for
+that every stream a person can open is a candidate for a dot. **A person is told
+about a file's conversation when they are a member of the file.** Every app
+computes membership the same way, from events already on the relay, so a member
+in Ship is a member in Peek and in Leaf.
+
+It replaces *following* (RFC 0.4 §4.6), which was a private list that only Peek
+kept and that no other app could see or add to. "Member" keeps the meaning
+RFC 0.4 §4.0 gives it — a **person** — and names a different relation for each
+grain:
+
+| grain | a member is | decided by |
+| --- | --- | --- |
+| a Folder | a person on its channel's roster — in an open Folder, a reader who has not joined is not one | the relay roster, `kind:39002` (RFC 0.4 §5) |
+| a file | a person involved in it | the fold below |
+
+**Membership of a file grants nothing.** Access is the Folder's (§3). A person
+who is a member of a file in a Folder they cannot read has nothing to be told,
+and a reader cannot see the events that would make them a member anyway.
+
+#### What makes a person a member of a file
+
+A person `P` **joins** file `F` with each of these events. Every one is public
+and already carries what the rule needs:
+
+| trigger | the event |
+| --- | --- |
+| created it | `F`'s root event, whose address names `P` as its pubkey. It joins at the earliest `created_at` of the root the reader holds. |
+| took part in its conversation | a message in `F`'s stream (§11.1) authored by `P` |
+| was mentioned in it | a message in `F`'s stream whose content mentions `P` (§13) |
+| was placed on it | a `kind:1851` on `F` carrying `["p", P]` whose field is not a membership field — an assignee, a lead |
+| was added, or joined | a `kind:1851` on `F` setting `member:<P>` to `true`, by anyone |
+
+A person **leaves** `F` with one event: a `kind:1851` on `F` setting
+`member:<P>` to `false`, **signed by `P`**. A `false` signed by anybody else is
+ignored. Membership costs its member only their attention, so only they can
+give it up, and nobody can take away somebody else's view of a file they are
+involved in.
+
+A mention requires the content to name `P`, not merely a `p` tag. The comment
+builders tag the file's author and the parent's author on every comment
+(§6.4), so a `p` alone would make each new comment re-join an author who had
+left.
+
+#### The membership change
+
+```
+kind: 1851
+tags: ["a", F] ["field", "member:<P>"] ["value", "true" | "false"] ["h", <channel>] ["ts", <ms>] ["p", P]
+```
+
+It is an ordinary change event (§6.2). The field is **per person** because §6.3
+folds last write wins per field: one `member` field would hold one person.
+`<P>` is 64 lowercase hex. The trailing `p` is what lets a person find every
+file they were added to with one `#p` filter, as they already find what they
+were assigned to. An app that does not know the field folds it like any other
+(§6.3).
+
+Measured on production 2026-09-30, as the agent in the QA Folder: the relay
+accepted a `member:<P>` change on an issue, and both `#p` and `#a` returned it.
+
+#### The fold
+
+Take every join and leave for `(F, P)` and order them as §6.3 orders changes.
+`P` is a member when the last of them is a join. They are a member **since**
+the first join after the last leave, or the first join of all when they never
+left.
+
+A later trigger makes a person who left a member again: being mentioned,
+placed, added, or writing in the conversation themselves. Other people talking
+in it does not.
+
+A reader computes one file's membership from that file's own events: its root,
+its stream and its `kind:1851` changes. To find **which** files a person is a
+member of, these filters return every candidate, and each candidate is then
+folded as above:
+
+```json
+[{"kinds": [1851], "#p": ["<P>"]},
+ {"kinds": [1111, 9], "authors": ["<P>"]},
+ {"kinds": [1111, 9], "#p": ["<P>"]}]
+```
+
+together with the files `P` created. A client MAY bound these with `since`.
+Membership that such a client cannot see lapses for that client alone, and it
+comes back with the next event that names the person.
+
+#### What membership changes about unread
+
+A message in a file's stream is **unread for `P`** when all of these hold:
+
+1. `P` is a member of the file and has not muted it, or the message's content
+   mentions `P`;
+2. `P` did not write it;
+3. its `created_at` is at or after the second `P` became a member — so the
+   message that mentioned or placed them counts;
+4. it is newer than `P`'s effective marker for it (§11.3).
+
+Condition 3 is what settles absence for a file (§11.6). A member who has never
+opened the file is told about what was said since they joined, and nothing
+before it. A person who is mentioned for the first time on a year-old issue sees
+the message that mentions them, not the year.
+
+A Folder's general stream is judged the same way, with the channel roster as
+its membership. The roster carries no join time, so condition 3 does not apply
+to it, and absence is still the app's choice there (§11.6). A DM's two
+participants are its members.
+
+**Agents are members like anyone else.** A comment the agent writes lights a
+member's dot the way a person's does. Membership is what keeps that bounded:
+nobody is told about a file they have no part in.
+
+#### Muting is private
+
+A member MAY mute a stream: stay a member, visible to everyone as one, and be
+told nothing about it except the messages that mention them. A mute is the
+person's own and nobody else's business, so it lives in suite-wide app-private
+storage (§12): `kind:30078`, `d` = `estiva:muted:v1`, `["t", "estiva-appdata"]`,
+NIP-44 encrypted to self, holding
+
+```json
+{"v": 1, "updatedAt": <epoch ms>, "keys": ["<file address or channel uuid>", …]}
+```
+
+Whole blob, last write wins (§12.3). `estiva` is the suite's client id, shared
+because muting is judged the same way in every app.
+
+#### Following, retired
+
+`estiva:followed:v1` (RFC 0.4 §4.6) is read once more and not written again. Its
+file keys are **not** published: the list was private, so a client MUST NOT
+sign a membership change for one without the person choosing to join. Its
+`muted` keys become this list. Its Folder keys are dropped, because the roster
+decides the general stream. Nothing else is migrated, because everything
+following implied is a trigger above.
 
 ---
 
