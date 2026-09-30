@@ -217,6 +217,10 @@ a bare file is the address of the file it sits under, **of any kind**.
 | --- | --- |
 | `1851` | `a`, `field`, `value`, `h`, `ts` |
 
+A move — a change to a `movedBy` field (§7.2) — also carries `A` after `ts`,
+naming the new parent. It is an index, not a second target: `a` is the only
+tag a change targets.
+
 - A change event is authored by **whoever acts**, not by the object's author.
 - A change event MUST set exactly **one** field. Two fields in one event would
   require a conflict rule for partial application; one field per event requires
@@ -1053,10 +1057,28 @@ ignore it on a list whose child tag holds anything else.
 parent, still finds the ones moved away, and never finds the ones moved in,
 because a relay indexes single-letter tags and a move's new parent is in a
 `value`. A consumer drawing a parent's children from `#via` alone MUST drop a
-child whose folded `movedBy` names another parent, and can find a moved-in
-child only from a read that folds every change in the Folder — the Folder's
-listing. A consumer that does neither draws a moved issue under its old project,
-which is the failure this field exists to end.
+child whose folded `movedBy` names another parent. A consumer that does not
+draws a moved issue under its old project, which is the failure this field
+exists to end.
+
+**So a move names its new parent twice** (FOL-45, 2026-09-30). A change to a
+`movedBy` field whose value is an address MUST also carry `["A", <that
+address>]`, after `ts`; a move to no parent carries none, and no other change
+carries it. A consumer finds the children moved in with `{ kinds: [<change
+kind>], "#A": [<parent>] }`, reads the root of each target of the child kind,
+and folds it as it folds a child found by `#via`:
+
+- **The tag is a hint, the fold is the answer.** A later move away names the
+  *next* parent, so a change found by `#A` may be stale. A consumer MUST keep a
+  child found this way only while its folded `movedBy` names this parent.
+- **Uppercase, because `a` is the target.** A reader takes a change's first
+  `a` as what it changes, and a Folder listing matches a change against *every*
+  `a` it carries — a second `a` would fold the move into the parent itself.
+  `A` is NIP-22's root scope on a comment; on a change it means only this, and
+  a consumer MUST NOT query `#A` without a `kinds` filter.
+- **Moves written before this carry no `A`.** Such a child is still found only
+  by a read that folds every change in the Folder — the Folder's listing — or
+  once it is moved again.
 
 > **The reference implementation meets this in both reads since interop
 > 0.38.0** (MAN-7, 2026-09-30). The Folder listing has folded `movedBy` since
@@ -1064,7 +1086,10 @@ which is the failure this field exists to end.
 > each addressable child from one more read of the children's changes, made
 > only when the app declares `records`, and drops a child whose folded
 > `movedBy` names another parent. Measured on production, 36 of 36 issues moved
-> away from a project are on no card of it.
+> away from a project are on no card of it. **Since interop 0.42.0** (FOL-45)
+> `buildActionEvent` writes the `A` on a move, and a card's own read asks
+> `#A` for its parent, reading the roots it names with the children's changes —
+> no request more. Ship's and the agent's own writers carry it too.
 
 **The move is the action whose `emits.field` is the `movedBy` field** and which
 applies to the child kind (§7.3). Its value is an address, so a consumer SHOULD
