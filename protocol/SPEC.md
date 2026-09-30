@@ -417,13 +417,13 @@ already carries its `A`, so a reply can copy it.
 **Reading.** CON-20 (2026-09-30) republished every comment-shaped `kind:9` on
 production as a `kind:1111` — 107 legacy comment roots, 24 replies (14 more were
 already copied by SHR-8 and only deleted) and the 14 events that pointed at them
-— so no `kind:9` in a live channel is a comment, and the strengths table's
-"`kind:9`'s `a` its body does not name" row is gone. Miky's call, 2026-09-29: the
-protocol does not keep an experiment's shape for compatibility when it can be
-migrated. One writer is left: Ship's reply button still publishes a `kind:9`
-reply (SHI-28). Until it writes a `kind:1111`, a reader also reads a `kind:9`
-whose `e` names a `kind:1111` comment as that comment's reply, and Ship's manifest
-keeps `emits.alsoRead: [9]` (§7.3); both go when SHI-28 lands.
+— and the 24 left in deleted channels were deleted, so no `kind:9` on
+production is a comment, and the strengths table's "`kind:9`'s `a` its body
+does not name" row is gone. Miky's call, 2026-09-29: the protocol does not keep
+an experiment's shape for compatibility when it can be migrated. The last writer,
+Ship's reply button, writes a flat `kind:1111` since SHI-28 (2026-09-30), so a
+reader does not read a `kind:9` as a comment or a comment's reply, and Ship's
+manifest declares no `emits.alsoRead` (§7.3).
 
 ### 6.5 Deletion and archiving
 
@@ -898,7 +898,6 @@ difference changes on the relay today.
 
 | rule | § | differs in | production |
 | --- | --- | --- | --- |
-| a reply to a comment is a flat `1111` | 6.4 | Ship writes `kind:9` (SHI-28) | 0 since CON-20 (2026-09-30); each Ship reply adds one |
 | a reply is never a root | 6.4 | interop's `isCommentOn` is per event | 0 |
 | a nested chat reply files under its `root` | 6.4 | Peek's channel read drops it | 1 |
 | a `1111` with no `A`: every `a` is an `A` | 6.4 | none (Peek equivalent by `#a`) | 0 |
@@ -1147,7 +1146,8 @@ Absent `alsoRead`, a consumer reads exactly one kind, so every manifest
 published before this field behaves unchanged.
 
 Ship's move of comments from `kind:9` to NIP-22 `kind:1111` is the case this was
-written for, and Peek implements it as `commentKindsOf`.
+written for, and Peek implements it as `commentKindsOf`. Ship then migrated that
+history instead (CON-20) and withdrew the field (SHI-28, 2026-09-30).
 
 #### What an action declares
 
