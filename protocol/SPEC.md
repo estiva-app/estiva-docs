@@ -433,6 +433,21 @@ the same control.
 **Archive** is a change event on an `archived` field. Reversible, attributable,
 and available to anyone in the Folder.
 
+*Added 2026-09-30 (FOL-46), as shipped in interop 0.37–0.38, Ship and Peek:*
+
+- **One concept for every kind.** A project, an issue, a topic, a bare file and
+  a Folder are all archived the same way: `archived` set to `true` on the
+  file's address, and an empty value to restore it. A Folder is archived on its
+  channel's address, published in the Folder that lists it.
+- **An archived file hides its subtree, computed when reading.** A project's
+  issues, a file's sub-files and a Folder's contents leave every list with it,
+  and nothing is written to them, so unarchiving the parent restores exactly
+  what was there. A file another, unarchived Folder also lists stays visible
+  there. Before archiving, an app SHOULD say what would be hidden, counted.
+- **The resolution is the change's `content`**, optional, and a reader shows it
+  first when the archived file is opened. A link still opens an archived file;
+  it is out of lists, not gone.
+
 **Delete** is a NIP-09 `kind:5`, and three properties are normative:
 
 - It is a **request**. Relays MAY decline; copies held elsewhere are untouched.
