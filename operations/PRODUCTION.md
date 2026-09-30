@@ -5,10 +5,12 @@ behind the `estiva-prod` Cloudflare Tunnel.
 
 | Service | Public URL | Local port | Auto-updates? |
 | --- | --- | --- | --- |
-| Buzz relay | `https://estiva.estiva.app` | — | **No — deploy by hand** |
+| Buzz relay | `https://estiva.estiva.app` | 3000 | Yes, `estiva-buzz-update.timer` (since 2026-09-29, buzz#21) |
 | Estiva ID | `https://id.estiva.app` | 8787 | Yes, `estiva-id-update.timer` |
 | Estiva Peek | `https://peek.estiva.app` | 8082 | Yes, `estiva-peek-update.timer` |
 | Estiva Ship | `https://ship.estiva.app` | 8081 | Yes, `estiva-ship-update.timer` |
+| Docs | `https://docs.estiva.app` | 8083 | Yes, `estiva-docs-update.timer` |
+| Leaf | `https://leaf.estiva.app` | 8084 | Yes, `estiva-leaf-update.timer` (since 2026-09-30, leaf#7) |
 
 CI cannot SSH to the box — the firewall allows TCP 22 from one address — so
 deployment is pull-based: CI builds an image to `ghcr.io/estiva-app/<svc>`, a
@@ -135,11 +137,12 @@ docker compose exec -T postgres psql -U estiva_id -d estiva_id -tAc "select clie
 ### Adding a kind to a ceiling is a seed change for two rows and a psql change for three
 
 This used to say adding a kind to an app's ceiling *is* the seed-only case. It
-is, for `estiva-peek` and `estiva-ship` — and **those are the only two rows
-`SEED_APPS` holds**. Production has five:
+is, for `estiva-peek`, `estiva-ship` and `estiva-leaf` — and **those are the
+only three rows `SEED_APPS` holds**. Production has six:
 
 ```
 claude-agent    the CLI, the Desktop extension and the Claude Code plugin
+estiva-leaf     seeded (estiva-id#74)
 estiva-peek     seeded
 estiva-ship     seeded
 pc-0a4935       a self-service credential
@@ -203,11 +206,11 @@ Two further limits:
 
 ## CORS
 
-Ship and Peek's browser code talks to the relay directly, so the relay must name
-every origin:
+Ship, Peek and Leaf's browser code talks to the relay directly, so the relay
+must name every origin. As of 2026-09-30:
 
 ```
-BUZZ_CORS_ORIGINS=https://estiva.estiva.app,https://peek.estiva.app,https://ship.estiva.app
+BUZZ_CORS_ORIGINS=https://estiva.estiva.app,https://leaf.estiva.app,https://peek.estiva.app,https://ship.estiva.app,http://localhost:5173,http://localhost:5191
 ```
 
 in `/opt/buzz/.env`, followed by a relay restart. **Omit an origin and that app
