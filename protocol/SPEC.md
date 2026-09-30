@@ -908,12 +908,21 @@ offers is §6.5, decided 2026-09-29.
 a progressive enhancement. Until every reader folds it, the same message reads
 differently in two apps, and neither is wrong.
 
-### 6.9 Where the apps stand (CON-5, 2026-09-29)
+### 6.9 Where the apps stand (CON-5, 2026-09-30)
 
-The rules above were lined up against Peek, Ship and `@estiva-app/interop` at
-`origin/main` on 2026-09-29, before `@estiva-app/conversation` is extracted
-from them. Each row is one app still to change. "Production" counts what that
-difference changes on the relay today.
+**Every row below is closed.** Since 2026-09-30, Peek (peek#406), Ship
+(ship#215), the agent (estiva-agent#65) and `@estiva-app/interop` 0.41.0 read
+these rules from `@estiva-app/conversation` 0.1.0 and have deleted their own
+copies. The package's conformance tests are §9's C10–C16. A thread written
+from each of the three apps, with replies, edits, reactions and a delete, read
+the same in the other two on production (CON-5). The one exception is the
+agent's CLI, which does not show reactions at all.
+
+The table is kept as the record of what the extraction changed. The rules
+above were lined up against Peek, Ship and `@estiva-app/interop` at
+`origin/main` on 2026-09-29, before the package was extracted from them. Each
+row was one app still to change. "Production" counts what that difference
+changed on the relay at the time.
 
 | rule | § | differs in | production |
 | --- | --- | --- | --- |
@@ -929,10 +938,11 @@ difference changes on the relay today.
 | a reaction event cap is reported | 6.6 | Ship (500) and interop (1,000) cut silently | 57 reactions in all |
 | newest 100 targets, ties on higher id | 6.6 | Ship breaks ties by thread order | ties only |
 
-The agent, which reads through a byte-copy of Ship's `src/nostr/`, inherits
-Ship's column. It also still counts a mention as a comment
-(`conversationsAbout`) and reads Peek topics as `kind:9` channels (PER-24).
-Both go with the extraction.
+The agent, which reads through a byte-copy of Ship's `src/nostr/`, inherited
+Ship's column, and the same sync closed it. Its comment lists and counts no
+longer count a mention as a comment. `delete-issue`'s warning and
+`edit-comment`'s candidate set still take mentions too, on purpose: both are
+about every message that names the object.
 
 ---
 
