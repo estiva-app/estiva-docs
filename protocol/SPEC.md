@@ -980,8 +980,9 @@ second, which is the common case rather than the rare one.
 
 ### 7.2 `projections` — how to render an object
 
-A projection names a widget and fills its slots. A slot draws its value from
-exactly one source:
+A projection names a widget and fills its slots, and MAY name what one of its
+objects is called (`noun`, §7.9). A slot draws its value from exactly one
+source:
 
 | Source | Meaning |
 | --- | --- |
@@ -1471,6 +1472,31 @@ manifest published, the file still resolves and simply has nowhere to open.
 
 A consumer MUST NOT read `aspect` as ownership: a manifest declaring it still
 claims no kind, and a `k` tag naming `30840` is ignored as §7 says.
+
+### 7.9 `noun` — what one of these is called
+
+*Added 2026-09-30 (PEE-41). Numbered after the existing subsections for the
+reason §7.5 gives; it belongs beside §7.2.*
+
+A projection MAY declare a `noun`: what the owning app calls one object of that
+kind, lower case and singular.
+
+```jsonc
+"projections": {
+  "30851": { "widget": "row", "noun": "issue", "slots": { … } }
+}
+```
+
+It exists for a consumer that names the object in its own sentences — a menu's
+"Delete issue", a confirm's "Delete this project?". Without it the only way to
+say anything better than a generic word is to recognise the kind number, which
+is the check this section exists to replace.
+
+`noun` is OPTIONAL, and a manifest published before it existed has none. A
+consumer MUST treat its absence as *"this app does not say"* and use its own
+word, never infer one from the app's `name` or the kind. The bare file (§6.7)
+declares none: a consumer says its own word for a file nobody owns.
+`@estiva-app/interop` 0.39.0 resolves it onto the object as `noun`.
 
 ---
 
