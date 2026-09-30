@@ -739,7 +739,8 @@ Everything else in §10 follows from work that already exists:
 - **A Folder can already list files of any kind as peers.** Built and running:
   `resolveFolderContents` in `@estiva-app/interop` 0.15.0, drawn in both apps.
 - **Following stays per-file** and needs no new kind — RFC 0.4 §4.6's private
-  `kind:30078` list, pointed at files as well as Folders.
+  `kind:30078` list, pointed at files as well as Folders. *Superseded
+  2026-09-30 by membership, SPEC §11.8 — still per file, and still no new kind.*
 
 ### 10.6 What is deliberately *not* concluded
 
