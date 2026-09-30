@@ -277,10 +277,15 @@ to an **addressable** event, which is what lets two apps comment on the same
 object without either owning the comment kind. `kind:9` remains what it always
 was: a message in a channel, not about anything in particular.
 
-The pair can never shrink to one. A `kind:9` is not replaceable, so every comment
-written before an app switched stays a `kind:9` for good — there is no migration
-and there never will be. §7.3's `alsoRead` is how an app declares that history so
-a consumer reads the union rather than showing a thread that begins in the middle.
+The pair does not shrink to one, because chat stays `kind:9` (§6.7). What did
+shrink is a comment's kinds. This section used to say every comment written as a
+`kind:9` before an app switched stays one for good, since a `kind:9` is not
+replaceable. **Corrected 2026-09-30 (CON-20):** they were republished, author-signed
+with their original `created_at`, as `kind:1111`, and the originals deleted —
+107 comment roots, 24 replies and what pointed at them. A comment on an object is
+a `kind:1111`. §7.3's `alsoRead` is how an app declares a history it has *not*
+migrated, so a consumer reads the union rather than a thread that begins in the
+middle.
 
 | Shape | Meaning |
 | --- | --- |
@@ -323,7 +328,6 @@ discussion. The rule, which is what both apps already publish:
 | a `kind:1111`'s `A` | **comment** — NIP-22's root object is the one thing a comment is about |
 | a `kind:1111`'s `a` that is not its `A` | **mention** — the index of an address the body names; NIP-22 makes a root's own `a` equal its `A`, so any other one is a reference |
 | a `kind:9`'s `a` that its body also names | **mention** — the same index on a message that has no `A` |
-| a `kind:9`'s `a` that its body does not name | **comment** — the anchor of a comment written before REW-10 moved comments to `1111`; nothing writes this shape any more, and a `kind:9` is not replaceable, so a reader keeps reading it (102 issue threads and 10 project threads on production, 2026-09-21). **Retiring:** CON-20 republishes these as `1111`, and this row is removed once none remain — see *Replies* below |
 | a `nostr:naddr…` in the body with no tag | **mention** — written before the index existed; a reader that wants it reads the body |
 | any tag on a reply | nothing — a reply's lowercase tags name its parent, or repeat the root's; only the root decides how the thread attaches |
 
@@ -373,9 +377,9 @@ not a subtle bug.
 
 | tag | value |
 | --- | --- |
-| `A`, `K`, `P` | the object the thread is about: the top-level comment's `A`, or a legacy `kind:9` comment's `a`; `K` and `P` from that address |
+| `A`, `K`, `P` | the object the thread is about: the top-level comment's `A`; `K` and `P` from that address |
 | `e` | the id of the thread's **top-level comment**, never of another reply |
-| `k` | that comment's kind — `1111`, or `9` for a comment written before REW-10 |
+| `k` | that comment's kind, `1111` |
 | `p` | that comment's author |
 | `h` | the same Folder as the comment |
 | `a` | only an address the body names (the rule above), never the object's own |
@@ -410,15 +414,16 @@ learn Ship's shape as a second writer rule. Ship's own reason for it was
 app-internal ("the caller does not pass the anchor"): the comment being answered
 already carries its `A`, so a reply can copy it.
 
-**Reading.** A reader reads both shapes until CON-20 lands. CON-20 republishes
-every comment-shaped `kind:9` as a `kind:1111` — the legacy comment roots (the
-fourth row of the strengths table, about 126), the `kind:9` replies under them
-and under `1111` roots (38), and what points at them. Chat stays `kind:9`.
-Miky's call, 2026-09-29: the protocol does not keep an experiment's shape for
-compatibility when it can be migrated, and a second permanent reader path is
-what a shared conversation package would otherwise carry for ever. When CON-20
-is done, the retiring row above and this paragraph are removed, and
-`emits.alsoRead: [9]` (§7.3) is withdrawn from Ship's manifest.
+**Reading.** CON-20 (2026-09-30) republished every comment-shaped `kind:9` on
+production as a `kind:1111` — 107 legacy comment roots, 24 replies (14 more were
+already copied by SHR-8 and only deleted) and the 14 events that pointed at them
+— so no `kind:9` in a live channel is a comment, and the strengths table's
+"`kind:9`'s `a` its body does not name" row is gone. Miky's call, 2026-09-29: the
+protocol does not keep an experiment's shape for compatibility when it can be
+migrated. One writer is left: Ship's reply button still publishes a `kind:9`
+reply (SHI-28). Until it writes a `kind:1111`, a reader also reads a `kind:9`
+whose `e` names a `kind:1111` comment as that comment's reply, and Ship's manifest
+keeps `emits.alsoRead: [9]` (§7.3); both go when SHI-28 lands.
 
 ### 6.5 Deletion and archiving
 
@@ -893,7 +898,7 @@ difference changes on the relay today.
 
 | rule | § | differs in | production |
 | --- | --- | --- | --- |
-| a reply to a comment is a flat `1111` | 6.4 | Ship writes `kind:9` | 19 replies, migrated by CON-20 |
+| a reply to a comment is a flat `1111` | 6.4 | Ship writes `kind:9` (SHI-28) | 0 since CON-20 (2026-09-30); each Ship reply adds one |
 | a reply is never a root | 6.4 | interop's `isCommentOn` is per event | 0 |
 | a nested chat reply files under its `root` | 6.4 | Peek's channel read drops it | 1 |
 | a `1111` with no `A`: every `a` is an `A` | 6.4 | none (Peek equivalent by `#a`) | 0 |
@@ -1514,8 +1519,8 @@ throwaway relay or a fake query.
 
 | # | Check |
 | --- | --- |
-| C10 | **Both kinds.** A thread rooted in a `kind:1111` on an object and one rooted in a legacy `kind:9` anchored by `a` both list under that object, and a channel's `kind:9` chat lists under no object (§6.4) |
-| C11 | **Two strengths.** On one object: a `1111` whose `A` is the object is a comment; a `1111` whose `A` is another file but whose `a` names this one is a mention; a `kind:9` whose body names the object is a mention; a `kind:9` whose `a` the body does not name is a comment; a `1111` with no `A` is a comment on each of its `a`. Mentions are presented apart from comments. A reply carrying the object's `a` lists as neither (§6.4) |
+| C10 | **Both kinds.** A thread rooted in a `kind:1111` on an object lists under that object, and a channel's `kind:9` chat lists under no object, whatever `a` it carries (§6.4) |
+| C11 | **Two strengths.** On one object: a `1111` whose `A` is the object is a comment; a `1111` whose `A` is another file but whose `a` names this one is a mention; a `kind:9` whose body names the object is a mention; a `1111` with no `A` is a comment on each of its `a`. Mentions are presented apart from comments. A reply carrying the object's `a` lists as neither (§6.4) |
 | C12 | **Edit fold.** Three edits to one message inside one second, carrying `ts`, fold to the last by `ts`. One whose `ts` is off by a second folds by `created_at`. An edit whose first `e` is marked and names another message is applied to that message and never to the second `e`. An edit byte-identical to the body does not mark the message edited. The message is marked edited, and shows the current text (§6.2, §6.8) |
 | C13 | **Reaction horizon and count.** With 101 targets, reactions are asked for the newest 100 and the omission of 1 is reported. `+`, empty and a duplicate from one pubkey count as one `+`. A reaction with two `e` counts against the last (§6.6) |
 | C14 | **Deletion left to the relay.** After the author's `kind:5`, the next read no longer holds the message, and the app shows nothing for it from local state. A non-author's `kind:5` is refused and the refusal is shown in the relay's words. Edit and Delete are offered on the viewer's own message and on a `bot: true` author's, and not on another human's (§6.5) |
