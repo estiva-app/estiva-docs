@@ -76,6 +76,7 @@ that layout (`../peek-app/...`), never as absolute paths.
 | Deploy, or debug production | [operations/PRODUCTION.md](operations/PRODUCTION.md) |
 | Know which docs in each repo are worth reading | [repos/](repos/) |
 | Publish or operate the docs site | [deploy/README.md](deploy/README.md) |
+| Write a Ship project or issue | [process/PROJECT.md](process/PROJECT.md), [process/ISSUE.md](process/ISSUE.md) |
 
 ## The docs site
 

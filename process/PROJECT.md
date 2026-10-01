@@ -1,0 +1,75 @@
+# Project description template
+
+Every Ship project description follows this shape. `/shape-project` fills it, the
+product reviewer in `/land` checks work against it, and `/sweep` flags projects
+that do not have it.
+
+**Order:** highest level first, widest audience first, and what is least likely to
+change first. Context is stable ground truth; Milestones are the living part.
+Adapted from Linear's PRD guidelines (Context → Usage scenarios → Milestones).
+
+**The one rule that is not negotiable:** a usage scenario is a real person at a
+real moment that actually happened. Right now that means Miky or Katerina. If
+there is no real moment yet, leave the scenario blank and say what to go and
+find. An invented scenario turns a guess into something that reads like a fact;
+a blank shows what we still need to learn.
+
+Copy everything below the line. Delete each italic prompt once its section is
+filled; leave it only on a section that is still empty.
+
+---
+
+```markdown
+# Context
+*For everyone. Stable — if it changes, question the project.*
+
+**When it ships we say:** *The one-sentence changelog line, in Peek's words.*
+
+**Problem:** *Why now — how it actually showed up, linked to the Peek message or
+Ship issue.*
+
+# Solution
+*What we will do: the mechanism, not the spec.*
+
+- **Out of scope:** *What this deliberately does not do.*
+- **Options rejected:** *(optional) Only alternatives that were really on the table, and why each lost.*
+- **How others do it:** *(optional) Slack, Linear, Notion — only where it matters.*
+
+# Usage scenarios
+*One per real moment: what happened, then what changes with this project.*
+
+**[Miky / Katerina], [date], [what they were doing]** — *What happened. With
+this project: what changes for them.*
+
+**Blank — to find:** *Use when there is no real moment yet: whom to watch doing what.*
+
+# Milestones
+*How the issues are sequenced, riskiest first. Each is named for what a person
+can do when it lands.*
+
+## 1. <what someone can do when this lands>
+- <issue title>
+- <issue title>
+
+## 2. <…>
+- <issue title>
+
+# Technical notes
+*Optional. Architecture, protocol, repos, links to SPEC sections and RFCs. Everything
+engineering-only goes here, below the parts everyone reads.*
+```
+
+## Notes
+
+- **Milestones sequence issues; they are not objects.** Ship has no milestone
+  field. Each issue names its milestone on its `**Milestone:**` line
+  ([ISSUE.md](ISSUE.md)), and the project lists its issues under each milestone
+  by title. Refs collide across projects, so a list of refs alone is ambiguous.
+- **Usage scenarios cite their source**: a Peek conversation, a Ship issue, a
+  session or a call. The test for every sentence in Context and Usage scenarios
+  is that you can point to where someone said it or clearly meant it.
+- An infrastructure project with no direct user still gets a Context. Its
+  scenario is a real moment it would have changed, if there is one; otherwise
+  it says `No direct user — enables <project>`.
+- A **Feedback & Bugs** project is an inbox, not a plan: it has Context and no
+  Usage scenarios or Milestones, and its issues have no Milestone line.

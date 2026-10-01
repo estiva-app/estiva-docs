@@ -115,6 +115,10 @@ export const INTERNAL = new Set([
   'protocol/RFC-0.5-ASSOCIATION.md',
   // 0.6 likewise: a draft, and it cites production measurements by date.
   'protocol/RFC-0.6-COMPOSITION.md',
+  // How we write Ship projects and issues. Internal working practice that names
+  // the people usage scenarios are anchored to, not documentation of the suite.
+  'process/PROJECT.md',
+  'process/ISSUE.md',
 ])
 
 /**
