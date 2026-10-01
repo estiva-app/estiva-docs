@@ -1604,7 +1604,7 @@ throwaway relay or a fake query.
 | C14 | **Deletion left to the relay.** After the author's `kind:5`, the next read no longer holds the message, and the app shows nothing for it from local state. A non-author's `kind:5` is refused and the refusal is shown in the relay's words. Edit and Delete are offered on the viewer's own message and on a `bot: true` author's, and not on another human's (§6.5) |
 | C15 | **Attachment fold.** An edit carrying `imeta` replaces the message's set. A later edit with none leaves it. An edit carrying one file on a message with two leaves one (§6.8) |
 | C16 | **Reply shape.** A reply to a comment is a `kind:1111` with the comment's `A`/`K`/`P`, `e`/`k`/`p` naming the top-level comment, the comment's `h`, and no lowercase `a` for the object. A reply read back threads under that comment in every conforming app (§6.4) |
-| C17 | **Membership fold.** The file's author is a member from the earliest root version. Writing in the stream, a body mention, an assignee change whose `value` is the person, and `member:<P>`=`true` by anyone each make the person a member. A comment's `p` tag alone does not, and neither does a `kind:9` with an `a`. A `member:<P>`=`false` signed by someone else is ignored. One signed by `P` ends membership until a later trigger, and member-since is then that trigger's second. Two changes inside one second order by `ts` (§11.8) |
+| C17 | **Membership fold.** The file's author is a member from the earliest root version. Writing in the stream, a body mention, an assignee change carrying `["p", P]`, and `member:<P>`=`true` by anyone each make the person a member. A comment's `p` tag alone does not, nor an assignee change without a `p`, nor an unassign, nor a `kind:9` with an `a`. An edit of the root after the author left does not re-join them. A `member:<P>`=`false` signed by someone else is ignored. One signed by `P` ends membership until a later trigger, and member-since is then that trigger's second. Two changes inside one second order by `ts` (§11.8) |
 | C18 | **Unread for a member.** Someone mentioned for the first time on a year-old file has one unread message, the mention. The person's own messages are never unread. A reply is read once its thread's marker or the file's passes it, and the channel's marker never reads a file. A muted file shows only the messages that mention the person (§11.3, §11.8) |
 
 C11 and C12 both have a failure that is invisible from the app that has it.
@@ -1945,7 +1945,7 @@ and already carries what the rule needs:
 | created it | `F`'s root event, whose address names `P` as its pubkey. It joins at the earliest `created_at` of the root the reader holds. |
 | took part in its conversation | a message in `F`'s stream (§11.1) authored by `P` |
 | was mentioned in it | a message in `F`'s stream whose content mentions `P` (§13) |
-| was placed on it | a `kind:1851` on `F`, whose field is not a membership field, with `value` = `P` or carrying `["p", P]` — an assignee, a lead |
+| was placed on it | a `kind:1851` on `F` carrying `["p", P]`, whose field is not a membership field and whose `value` is not empty — an assignee, a lead |
 | was added, or joined | a `kind:1851` on `F` setting `member:<P>` to `true`, by anyone |
 
 A person **leaves** `F` with one event: a `kind:1851` on `F` setting
@@ -1959,14 +1959,12 @@ builders tag the file's author and the parent's author on every comment
 (§6.4), so a `p` alone would make each new comment re-join an author who had
 left.
 
-A placement is read from its `value` as well as its `p` (clarified 2026-10-01).
-On production on 2026-09-30, 37 of 52 assignee changes and all 4 lead changes
-carried no `p`, including one written that day. A writer SHOULD add
-`["p", <value>]` to a change that places a person. Without the `p`, the
-placement makes them a member only for a reader that reads that file, and the
-discovery filters below do not find it. A change with an empty `value` takes
-someone off the file, such as an unassign, and places nobody, whatever `p` it
-carries.
+A placement counts by its `p` alone (decided 2026-10-01), so the members a
+fold finds are exactly what the `#p` filter below returns. A writer that places
+a person MUST add `["p", <value>]`. On production on 2026-09-30, 37 of 52
+assignee changes and all 4 lead changes carried no `p`, and those place nobody.
+A change with an empty `value`, such as an unassign, takes someone off the file
+and places nobody, whatever `p` it carries.
 
 The creation orders **before every other event for the file**. A relay keeps
 only the latest version of an addressable event, so the root a reader holds is
