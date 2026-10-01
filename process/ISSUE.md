@@ -15,7 +15,7 @@ comment in a Ship issue from Peek and it stayed unread." Link where it happened.
 run into.>
 **Done when:** <The action that person can take on production, and as whom it is
 checked — QA-1/QA-2 by probe, or Miky/Katerina by hand. Not the mechanism.>
-**Milestone:** <The project milestone this belongs to.>
+**Milestone:** <The project milestone it belongs to; omit if the project has none.>
 
 ---
 
@@ -38,3 +38,12 @@ Prior, links to the PR, SPEC sections and related issues.>
   title>". Do not invent a story for it.
 - If the work shows the done-when to be wrong, **change the done-when in the
   description and say so in a comment**. Do not quietly satisfy a different one.
+
+## Comments
+
+A comment lands in the project's conversation in Peek, where people who were not
+involved read it. **Open with one sentence anyone outside the project
+understands** — what a person can now do, or what the change means for them: "You
+can now move a project to another Folder from its menu, and its conversation
+comes with it." Then the PR link and the technical detail. Under 600 characters;
+the rest goes in the PR description.

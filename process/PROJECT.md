@@ -14,47 +14,38 @@ there is no real moment yet, leave the scenario blank and say what to go and
 find. An invented scenario turns a guess into something that reads like a fact;
 a blank shows what we still need to learn.
 
-Copy everything below the line. Keep the italic prompts on any section that is
-still empty.
+Copy everything below the line. Delete each italic prompt once its section is
+filled; leave it only on a section that is still empty.
 
 ---
 
 ```markdown
 # Context
-*For everyone, whatever their role. This should not change. If it does, question
-whether we should be building this at all.*
+*For everyone. Stable — if it changes, question the project.*
 
-**When it ships we say:** *One sentence, in the words someone reading Peek would
-use — the changelog line. If it cannot be written cleanly, the project is not
-clear enough to build yet.*
+**When it ships we say:** *The one-sentence changelog line, in Peek's words.*
 
-**Problem:** *The underlying problem, and why now. Anchor it to how it actually
-showed up — a workaround, a complaint, a request for something adjacent — and
-link the Peek message or Ship issue it came from. Claim no more than that
-evidence supports.*
+**Problem:** *Why now — how it actually showed up, linked to the Peek message or
+Ship issue.*
 
 # Solution
-*What we will do, stated simply: the mechanism, not the spec.*
+*What we will do: the mechanism, not the spec.*
 
-- **Options we considered and rejected:** *Real alternatives that were on the
-  table, and why each lost. This is where a reader can challenge the reasoning.*
-- **How others do it:** *Slack, Linear, Notion — only where relevant. What they
-  do, and why ours is the better story.*
-- **Out of scope:** *What this project deliberately does not do.*
+- **Out of scope:** *What this deliberately does not do.*
+- **Options rejected:** *(optional) Only alternatives that were really on the table, and why each lost.*
+- **How others do it:** *(optional) Slack, Linear, Notion — only where it matters.*
 
 # Usage scenarios
-*A real person at a real moment. Describe what happened, then what changes for
-them with this project. Two or more.*
+*One per real moment: what happened, then what changes with this project.*
 
-**[Miky / Katerina], [date], [what they were doing]** — *What happened, as it
-happened. With this project: what changes for them.*
+**[Miky / Katerina], [date], [what they were doing]** — *What happened. With
+this project: what changes for them.*
 
-**[Blank — to find:]** *Who we would need to watch, doing what, to fill this in.*
+**Blank — to find:** *Use when there is no real moment yet: whom to watch doing what.*
 
 # Milestones
-*The living part: how the issues are sequenced. Riskiest and most uncertain work
-first. Each milestone ends in something a person can do or see — not a layer of
-plumbing with nothing to show. Name them for what they deliver.*
+*How the issues are sequenced, riskiest first. Each is named for what a person
+can do when it lands.*
 
 ## 1. <what someone can do when this lands>
 - <issue title>
@@ -78,6 +69,7 @@ engineering-only goes here, below the parts everyone reads.*
   session or a call. The test for every sentence in Context and Usage scenarios
   is that you can point to where someone said it or clearly meant it.
 - An infrastructure project with no direct user still gets a Context. Its
-  scenario names the person whose experience it protects ("Katerina opens a
-  Folder on a slow connection…"), or states plainly that it enables another
-  project and names that project.
+  scenario is a real moment it would have changed, if there is one; otherwise
+  it says `No direct user — enables <project>`.
+- A **Feedback & Bugs** project is an inbox, not a plan: it has Context and no
+  Usage scenarios or Milestones, and its issues have no Milestone line.
