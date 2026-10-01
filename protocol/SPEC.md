@@ -1964,7 +1964,15 @@ On production on 2026-09-30, 37 of 52 assignee changes and all 4 lead changes
 carried no `p`, including one written that day. A writer SHOULD add
 `["p", <value>]` to a change that places a person. Without the `p`, the
 placement makes them a member only for a reader that reads that file, and the
-discovery filters below do not find it.
+discovery filters below do not find it. A change with an empty `value` takes
+someone off the file, such as an unassign, and places nobody, whatever `p` it
+carries.
+
+The creation orders **before every other event for the file**. A relay keeps
+only the latest version of an addressable event, so the root a reader holds is
+usually the last edit. Ordered by its own time, an edit after the author left
+would make them a member again. The author's member-since is the earliest
+second among their joins after their last leave.
 
 #### The membership change
 
