@@ -1634,6 +1634,7 @@ throwaway relay or a fake query.
 | C16 | **Reply shape.** A reply to a comment is a `kind:1111` with the comment's `A`/`K`/`P`, `e`/`k`/`p` naming the top-level comment, the comment's `h`, and no lowercase `a` for the object. A reply read back threads under that comment in every conforming app (§6.4) |
 | C17 | **Membership fold.** The file's author is a member from the earliest root version. Writing in the stream, a body mention, an assignee change carrying `["p", P]`, and `member:<P>`=`true` by anyone each make the person a member. A comment's `p` tag alone does not, nor an assignee change without a `p`, nor an unassign, nor a `kind:9` with an `a`. An edit of the root after the author left does not re-join them. A `member:<P>`=`false` signed by someone else is ignored. One signed by `P` ends membership until a later trigger, and member-since is then that trigger's second. Two changes inside one second order by `ts` (§11.8) |
 | C18 | **Unread for a member.** Someone mentioned for the first time on a year-old file has one unread message, the mention. The person's own messages are never unread. A reply is read once its thread's marker or the file's passes it, and the channel's marker never reads a file. A muted file shows only the messages that mention the person (§11.3, §11.8) |
+| C19 | **Urgent mention.** A message urgent for `P` carries `["urgent", P]` and `["p", P]` and names `P` in its body as published as an ordinary reference. It is urgent for `P` and for nobody else it names. An `urgent` tag for a person the body does not name is not urgent. An app that does not draw urgency renders it as an ordinary mention (§13.1) |
 
 C11 and C12 both have a failure that is invisible from the app that has it.
 A merged mention looks like somebody said it here. A forged edit looks like an
@@ -2289,6 +2290,43 @@ that survives a rename. A message that mentions a person MUST also carry the
 corresponding `p` tag; the tags say who was mentioned, the URI says where in the
 text. A reader that cannot resolve a reference MUST render the URI's own label
 or its shortened form, never blank.
+
+#### An urgent mention — decided 2026-10-02 (CON-17)
+
+A mention can ask for the person's attention now. The urgency is a tag, not a
+mark: one `["urgent", <pubkey>]` per person it is urgent for, beside that
+person's `p`. The body names them with the same reference as any mention.
+
+```
+content: "nostr:npub1… can you sign off by 11?"
+tags:    ["h", <folder>], ["p", <pubkey>], ["urgent", <pubkey>]
+```
+
+- A writer MUST NOT write an `urgent` tag for a person the body does not name.
+- A message is urgent **for the person the tag names**, and for nobody else it
+  mentions. Urgency belongs to the single message (ruling 2026-07-16), and to
+  a single recipient within it.
+- A reader MUST NOT treat an `urgent` tag as urgent unless the body names that
+  person. A `p` alone is not a mention (§11.8), and a tag nobody can see in the
+  text should not page anyone. The body is the message **as published**, not
+  as edited (§6.8), so every reader reaches the same answer.
+- An app that does not draw urgency ignores the tag, and the message is an
+  ordinary mention. That is the reason it is a tag. The other candidates were a
+  `!` before the reference, which every other app would have drawn as a stray
+  character, and a fourth field on `p`, which libraries that dedupe `p` by
+  pubkey drop without saying so.
+- It applies to a `kind:9` and to a `kind:1111` alike. An edit (§6.8) carries no
+  `p` or `urgent` tag, so it cannot make a message urgent or stop it being
+  urgent.
+- The tag name is longer than one letter, so a relay does not index it. A reader
+  finds urgent messages among the ones `#p` already returns.
+
+Before this, Peek's composer wrote every urgent mention as `!@Name`, and it
+still does for a person with no key, who has no `p` to carry the tag. A reader
+MAY treat `!@` in text as urgent for everybody but its author, because a name
+cannot say whom it was meant for. A reader that holds only the messages `#p`
+returned SHOULD NOT, because the comment builders tag the file's author on
+every comment (§6.4) and the text would page them.
 
 A link's `href` MUST use the `http`, `https`, `mailto` or `nostr` scheme. A
 reader MUST refuse any other scheme and render the link as text.
