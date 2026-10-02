@@ -65,7 +65,7 @@ The active projects and what each is *for*. **Counts are deliberately not here**
 
 **No sequence after 2026-09-18's is decided here.** Since the sweep of 2026-10-01 each in-progress project's Ship description orders its own issues as milestones, riskiest first. The first of each:
 
-- **Conversation standard** — CON-19 and CON-23: you are told only about the files you are part of, and reading in one app clears it in the other.
+- **Conversation standard** — milestone 1 shipped 2026-10-02 (CON-19, and CON-23: read state is private to its author, buzz#24); next is CON-17, an urgent mention reaches the relay as urgent.
 - **Shared foundation packages** — SHA-28: an assignment made from Peek counts for the person assigned.
 - **Intelligence / Launcher** — INT-12: Create topic from the launcher.
 - **Projection layer** — PRO-22 shipped 2026-10-01 (ship#226); next is PRO-23, whether and how a type word has an owner, which is Miky's protocol call.
