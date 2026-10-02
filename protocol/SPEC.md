@@ -256,7 +256,12 @@ Current state is the change stream replayed in order, **last write wins per
 field**.
 
 Ordering, most significant first: `ts` (when trusted), then `created_at`, then
-event `id` as a stable tiebreak.
+event `id` as a stable tiebreak — ascending, so when two changes to one field
+tie on everything else **the higher `id` is the later write and wins**. Ship,
+`@estiva-app/interop` and `@estiva-app/conversation` all replay this way
+(PER-21, 2026-10-02). This is the rule for changes only: two versions of one
+addressable *record* are NIP-01's, where the later `created_at` and then the
+**lower** `id` is the one that stands.
 
 - An object with no change events has its **default** state. Defaults are
   declared in the manifest (§7), not assumed.
