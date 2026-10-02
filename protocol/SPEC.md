@@ -1935,6 +1935,16 @@ Superseded blobs at a NIP-RS coordinate are **hard-deleted** by the relay, and a
 watermark survives a NIP-09 deletion so an old signed blob cannot be
 resurrected. Read state is not an audit log.
 
+**Only the author can read their slots** (added 2026-10-02, CON-23). A blob's
+`created_at` says when a person last read something, so a reader who could
+fetch someone else's slots could watch them. The Estiva relay serves a
+`kind:30078` carrying `["t","read-state"]` only to its author, on every read
+path including `ids`, COUNT and live delivery. NIP-RS makes this a SHOULD for
+relays that authenticate their readers; a client cannot detect it (§11.7), so
+it should not assume it on another relay. The Estiva relay drops those rows before any
+`limit`, so a short page does not reveal a hidden one either. Querying another
+person's read state returns nothing. Other `kind:30078` data is unaffected.
+
 ### 11.7 What the relay does not tell you
 
 The relay does **not** advertise NIP-RS, and `supported_nips` does not include
