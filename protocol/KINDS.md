@@ -33,7 +33,6 @@ nobody held the whole list.
 | `9` | Stream message | NIP-29 group message. A Topic message, a DM, and a Ship project conversation are all this |
 | `7` | Reaction | Emoji capped at 64 chars (`build_reaction`) |
 | `5` | Deletion | NIP-09. A *request* — relays may decline. Accepted from the author **or** the author's NIP-OA owner, which no client can evaluate ([SPEC §6.5](SPEC.md)) |
-| `9007` | Folder (NIP-29 create group) | The container. See §3 |
 | `9101` | **Estiva assertion** | A statement *about* something in the channel rather than a message in it. `resolution` is the first and currently only subtype, named by the `t` tag. Estiva-specific |
 
 ### Issue tracking — written by Estiva Ship
@@ -45,6 +44,18 @@ nobody held the whole list.
 | `1851` | Change | Regular, append-only. Authored by whoever acts, not by the object's author |
 | `1111` | Comment | NIP-22 |
 | `31989` / `31990` | Handler recommendation / information | NIP-89 manifest. Global, not channel-scoped — discovery must work before you are a member of anything |
+
+### Folders — written by every app, owned by none ([SPEC §3](SPEC.md))
+
+| Kind | Name | Notes |
+| --- | --- | --- |
+| `9007` | Folder create (NIP-29 create group) | The container. Followed by a `1852` so the Folder has state from birth. See §3 |
+| `9002` | Folder rename (NIP-29 edit metadata) | Followed by a `1852 add` carrying the name, because the state's name shadows the channel's |
+| `9008` | Folder delete (NIP-29 delete group) | **Refused by the relay while the Folder holds any file**, by `h` or by its listing; owner or workspace admin only |
+| `1852` | Folder command | `add` / `remove` / `set` addresses, and the name. Never names a `39000:` address — Folders do not nest |
+| `30890` | Folder state | **Relay-signed**, never an app's. What a Folder lists. A NIP-29 group without one is a conversation space, not a Folder |
+| `39000` | Group metadata | Relay-signed, NIP-29. The Folder's address; no `kind:31990` may claim it |
+| `9000` / `9001` | Add / remove member | NIP-29, unchanged |
 
 ---
 
@@ -73,15 +84,17 @@ Two live consequences:
 
 ## 3. The Folder is a `kind:9007`, and `h` points at it
 
-The single structural rule of this protocol. A Folder is a NIP-29 group. Every
-object below it carries that Folder's id in an `h` tag.
+The single structural rule of this protocol. A Folder is a NIP-29 group with a
+relay-signed `kind:30890` listing ([SPEC §3](SPEC.md)). Every object filed in it
+carries that Folder's id in an `h` tag; what it *lists* is its `30890`, and a
+listing never changes who can read a file.
 
 | Event | `h` |
 | --- | --- |
-| `30850` Project | the project's Folder |
-| `30851` Issue | the same Folder |
-| `1851` change to either | the same Folder |
-| `1111` comment / `9` message | the same Folder |
+| `30850` Project | the Folder it was filed in (or `buzz-channel`, SPEC §7.3) |
+| `30851` Issue | the Folder it was filed in |
+| `1851` change | the Folder of the object it changes |
+| `1111` comment / `9` message | the Folder it was filed in |
 
 **There is no workspace object, deliberately.** Buzz resolves a *community*
 from the request host before a connection is authenticated, so **the relay URL
@@ -89,8 +102,8 @@ is the workspace**. Everyone pointed at the same relay is in the same
 workspace, in every app. An index object invented by one app would be a second,
 app-private notion of the same thing — invisible to the others.
 
-This is why a Peek topic and a Ship project are not "linked": they are **one
-Folder**, from the first event.
+This is why a Peek topic and a Ship project are never "linked": an object
+lives beside another by being filed and listed in the same Folder.
 
 ---
 
@@ -127,8 +140,14 @@ Source of truth: `SEED_APPS` in `estiva-id/src/db/seed.ts`, stored in the
 
 | App | `client_id` | Allowed kinds |
 | --- | --- | --- |
-| Estiva Peek | `estiva-peek` | `9, 7, 5, 9007, 27235, 1851, 9101` |
-| Estiva Ship | `estiva-ship` | `30850, 30851, 1851, 9, 5, 9007, 31989, 27235` |
+| Estiva Peek | `estiva-peek` | `9, 7, 5, 9007, 27235, 1851, 9101, 9002, 9008, 1111, 30078, 41010, 41011, 41012, 22242, 30851, 40003, 1852, 24242, 30840, 30850` |
+| Estiva Ship | `estiva-ship` | `30850, 30851, 1851, 9, 5, 9007, 9002, 31989, 27235, 1111, 30078, 7, 40003, 1852, 24242, 22242` |
+| Estiva Leaf | `estiva-leaf` | `27235, 22242` |
+
+*Copied from `seed.ts` on origin/main, 2026-10-03 (MAN-3).* Against SPEC §3.3's
+Folder set (`9007, 9002, 9008, 1852, 1851, 9, 5`): Peek holds all of it; Ship
+all but `9008`, so Ship does not offer deleting a Folder ("deleting a Folder
+stays Peek's", the seed's own note); Leaf none yet.
 
 Two things this table teaches:
 
