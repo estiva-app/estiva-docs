@@ -1,8 +1,8 @@
 # Issue description template
 
 Every Ship issue opens with a short section about the person it is for, then the
-engineering detail. The top three lines are what the product reviewer checks a
-PR against and what the production check proves before the issue is marked done.
+engineering detail. The top lines are what the product reviewer checks a PR
+against and what the production check proves before the issue is marked done.
 
 Copy everything below the line.
 
@@ -16,6 +16,9 @@ run into.>
 **Done when:** <The action that person can take on production, and as whom it is
 checked — QA-1/QA-2 by probe, or Miky/Katerina by hand. Not the mechanism.>
 **Milestone:** <The project milestone it belongs to; omit if the project has none.>
+**Decided:** <YYYY-MM-DD — a product, design or protocol question in a few words →
+the answer (who gave it — Miky, or Katerina for design — and where: a link, or "in
+the kickoff session"). One line per decision; omit until there is one.>
 
 ---
 
@@ -38,6 +41,12 @@ Prior, links to the PR, SPEC sections and related issues.>
   title>". Do not invent a story for it.
 - If the work shows the done-when to be wrong, **change the done-when in the
   description and say so in a comment**. Do not quietly satisfy a different one.
+- **Decided lines record what Miky or Katerina settled**, before the build (`/kickoff`) or
+  during it. The PR is reviewed against them, and where one contradicts older text
+  in the description, the Decided line wins. A decision that lives only in a
+  conversation or a handoff gets reopened, or reviewed against the wrong version.
+  Only an answer a person actually gave is written as a Decided line — never the
+  agent's own choice, however obvious. A line that names nobody is not a decision.
 
 ## Comments
 
