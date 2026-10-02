@@ -1911,7 +1911,9 @@ resurrected. Read state is not an audit log.
 `created_at` says when a person last read something, so a reader who could
 fetch someone else's slots could watch them. The Estiva relay serves a
 `kind:30078` carrying `["t","read-state"]` only to its author, on every read
-path including `ids`, COUNT and live delivery. It drops those rows before any
+path including `ids`, COUNT and live delivery. NIP-RS makes this a SHOULD for
+relays that authenticate their readers; a client cannot detect it (§11.7), so
+it should not assume it on another relay. The Estiva relay drops those rows before any
 `limit`, so a short page does not reveal a hidden one either. Querying another
 person's read state returns nothing. Other `kind:30078` data is unaffected.
 
