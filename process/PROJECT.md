@@ -1,8 +1,9 @@
 # Project description template
 
 Every Ship project description follows this shape. `/shape-project` fills it, the
-product reviewer in `/land` checks work against it, and `/sweep` flags projects
-that do not have it.
+product pre-reviewer in `/kickoff` checks each ticket against it before the build,
+the product reviewer in `/land` checks the work against it, and `/sweep` flags
+projects that do not have it.
 
 **Order:** highest level first, widest audience first, and what is least likely to
 change first. Context is stable ground truth; Milestones are the living part.
