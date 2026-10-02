@@ -1525,6 +1525,34 @@ manifest published, the file still resolves and simply has nowhere to open.
 A consumer MUST NOT read `aspect` as ownership: a manifest declaring it still
 claims no kind, and a `k` tag naming `30840` is ignored as §7 says.
 
+**`fileNoun` — what the app calls a bare file.** *Added 2026-10-02 (PRO-24).*
+A manifest declaring `aspect` MAY also declare `fileNoun`: what that app calls
+a file nobody owns, lower case and singular, with the meaning §7.9 gives a
+projection's `noun` (Peek's is `"topic"`):
+
+```jsonc
+{ "name": "Peek", "aspect": "conversation", "fileNoun": "topic", "projections": {} }
+```
+
+A consumer naming a bare file reads both its words off the manifest it took the
+link from: the app is that manifest's `name`, and the noun is its `fileNoun`.
+With no such manifest, or with no `fileNoun` that is a non-empty string, the
+file has no noun. The word is the opener's and not this specification's,
+because a company running its own conversation app calls these whatever its
+people call them. As with `aspect`, nothing else in the opener's manifest
+applies to a bare file: its slots, fold rule and actions stay §6.7's.
+`@estiva-app/interop` 0.44.0 reads it.
+
+Neither word is verified. The opener is the newest manifest declaring the
+aspect, from any author, so its `name` and `fileNoun` are exactly as
+trustworthy as its link, until a workspace can name the app it trusts (the
+§6.7 recommendation, still unread). A consumer SHOULD treat a noun or name
+that is not a short word (at most 32 letters, digits, spaces, hyphens or
+apostrophes) as absent, because it prints the noun inside its own sentences.
+
+A comment (`kind:1111`, §6.4) has a noun that is not an opener's: `"comment"`,
+the word NIP-22 and this specification already use.
+
 ### 7.9 `noun` — what one of these is called
 
 *Added 2026-09-30 (PEE-41). Numbered after the existing subsections for the
