@@ -338,6 +338,7 @@ discussion. The rule, which is what both apps already publish:
 | a `kind:1111`'s `a` that is not its `A` | **mention** — the index of an address the body names; NIP-22 makes a root's own `a` equal its `A`, so any other one is a reference |
 | a `kind:9`'s `a` that its body also names | **mention** — the same index on a message that has no `A` |
 | a `nostr:naddr…` in the body with no tag | **mention** — written before the index existed; a reader that wants it reads the body |
+| a `q` (§13.1) | nothing — it says which *message* this one points at, and a message is not an object a thread attaches to |
 | any tag on a reply | nothing — a reply's lowercase tags name its parent, or repeat the root's; only the root decides how the thread attaches |
 
 A `kind:1111` with no `A` at all is malformed. A reader that meets one reads
@@ -364,8 +365,11 @@ caller passes both `replyTo` and `about`, and none does.
 
 A writer MUST NOT put an address in a `kind:1111`'s `a` that the body does not
 name, unless it is the `A`. That is the only way the second row stays
-readable without decoding the body, and it is what `referenceTagsFor` in Peek
-and `buildNip22Comment` in Ship do.
+readable without decoding the body, and it is what `referenceTagsFor` in
+`@estiva-app/conversation` writes. Peek appends it to every comment. *Corrected
+2026-10-02 (CON-25):* Ship appended none until CON-25, so a Ship comment from
+before it that names a file by `naddr` carries no `a` — the fourth row, read
+from the body.
 
 Message content is immutable, so **an accidental mention attaches permanently**
 and cannot be withdrawn. That is acceptable for the secondary section and would
@@ -876,6 +880,11 @@ arrive later, and a dropped edit is not recovered by a re-read.
 change the target's kind, channel, place in a thread or author. An edit that
 appears to change any of those is folded for its content and its `imeta` tags,
 and ignored for the rest.
+
+The indexes a body earns — `p`, `urgent`, `a` and `q` (§6.4, §13.1) — stay as
+first published (added 2026-10-02, CON-25). An edit carries none of them, so a
+person or a message named only in an edit has no tag, and one an edit removed
+keeps it. A reader that needs the edited answer reads the folded body.
 
 **Attachments fold separately from the body** (amended 2026-09-23). CON-5 found
 62 attachments whose bytes existed only in Convex. The only event that can
@@ -2283,7 +2292,7 @@ its parser and serialiser belong in `@estiva-app/protocol`.
 | underline | `__text__` | `{"type":"underline"}` |
 | code | `` `text` `` | `{"type":"code"}` |
 | link | `[label](url)` | `{"type":"link","attrs":{"href":…}}` |
-| reference | `nostr:npub…` / `nostr:naddr…` | `{"type":"reference","attrs":{"uri":…}}` |
+| reference | `nostr:npub…` / `nostr:naddr…` / `nostr:nevent…` | `{"type":"reference","attrs":{"uri":…}}` |
 
 Bold, italic and underline MAY combine on one run. `code` MUST NOT combine with
 any other mark, and its content MUST NOT be parsed for further marks.
@@ -2332,6 +2341,38 @@ MAY treat `!@` in text as urgent for everybody but its author, because a name
 cannot say whom it was meant for. A reader that holds only the messages `#p`
 returned SHOULD NOT, because the comment builders tag the file's author on
 every comment (§6.4) and the text would page them.
+
+#### A reference to a message — decided 2026-10-02 (CON-25)
+
+A message that references another message names it in the body by
+`nostr:nevent…`, carrying the event's kind and no relay. It also carries one
+`["q", <event id>]` per message it references, beside its `p` and `a` tags.
+The `q` is an index, not a meaning: it lets one `#q` read answer *who pointed
+at this message* without decoding every body.
+
+```
+content: "see nostr:nevent1… for the numbers"
+tags:    ["h", <folder>], ["q", <event id>]
+```
+
+- A writer MUST NOT write `note` for a reference, because it carries no kind and
+  costs a reader a second fetch. A reader MUST accept `note`, and a `note` earns
+  a `q` too.
+- A writer MUST NOT write a `q` for an event the body does not name, by
+  reference or by an app URL that resolves to one (§7.7). It writes one `q` per
+  distinct event, with two elements. A reader reads index 1 and MUST accept
+  the relay and author elements NIP-18 allows.
+- **A `q` is never a reply.** A reply is `e` (§6.4). A reader MUST NOT thread,
+  file or attach a conversation by a `q`, and it gives no strength on any object.
+  It is NIP-18's quote, not NIP-10's `mention`-marked `e`, because on a
+  `kind:1111` a lowercase `e` is NIP-22's parent.
+- It applies to a `kind:9` and to a `kind:1111` alike. Upstream chat clients
+  (NIP-C7) read a `kind:9`'s `q` as quoting that message, which is close to how
+  Estiva apps draw it. An incoming NIP-C7 reply, which carries a `q` and no `e`,
+  is read as a reference.
+- An edit carries no `q` (§6.8). If the referenced message is deleted, the
+  `q` points at nothing and the reader draws the reference from the body,
+  never blank.
 
 A link's `href` MUST use the `http`, `https`, `mailto` or `nostr` scheme. A
 reader MUST refuse any other scheme and render the link as text.
