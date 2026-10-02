@@ -2360,7 +2360,8 @@ tags:    ["h", <folder>], ["q", <event id>]
   a `q` too.
 - A writer MUST NOT write a `q` for an event the body does not name, by
   reference or by an app URL that resolves to one (§7.7). It writes one `q` per
-  distinct event, with two elements. A reader reads index 1 and MUST accept
+  distinct event, with two elements, except the event a reply answers: that
+  one is already its `e`, and a message is not both answered and quoted. A reader reads index 1 and MUST accept
   the relay and author elements NIP-18 allows.
 - **A `q` is never a reply.** A reply is `e` (§6.4). A reader MUST NOT thread,
   file or attach a conversation by a `q`, and it gives no strength on any object.
