@@ -34,6 +34,7 @@ COPY site ./site
 COPY README.md ./README.md
 COPY protocol ./protocol
 COPY design ./design
+COPY guide ./guide
 COPY local-dev ./local-dev
 COPY repos ./repos
 
