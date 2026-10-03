@@ -97,6 +97,11 @@ The first two are the load-bearing changes and both land on Peek's central abstr
 
 ## 4. Folder
 
+> **Normative text moved to [SPEC §3](SPEC.md) on 2026-10-02 (MAN-3).** What a
+> Folder is, the operations every app gets and the order of their events live
+> there. This section is the reasoning. Where they differ, SPEC wins — notably,
+> a group with no `kind:30890` is not a Folder, and Folders never nest.
+
 ### 4.0 Terminology, because one word was doing two jobs
 
 Upstream's NIP-MP calls the repositories inside a project its *members*. In Estiva "member" means a **person**. This document therefore never uses it for files:

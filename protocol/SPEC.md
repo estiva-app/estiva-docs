@@ -73,27 +73,128 @@ Folder you are not a member of is simply not in the response.
 
 ## 3. The Folder
 
-The Folder is the single container. It is a NIP-29 group, created as a
-`kind:9007`.
+*Rewritten 2026-10-02 (MAN-3). Folders belong to no app: every app gets them
+from this section, and no app's `kind:31990` declares them. RFC 0.4 §4 is the
+history; this section is the rule.*
+
+The Folder is the single container. It is a NIP-29 group (a `kind:9007`
+channel) **whose relay keeps a listing for it**: a relay-signed `kind:30890`
+state naming what the Folder holds.
 
 - A Folder id MUST be a **lowercase UUID v4**. The relay advertises
   `"h_grammar": "uuid-v4-lowercase"` in its NIP-11 document and parses the tag
   with a strict UUID parser. **A malformed id yields no channel rather than an
   error**, surfacing much later as a membership failure — so an app MUST
   validate the id before publishing.
-- Every object event MUST carry its Folder in an `h` tag.
-- There is exactly one level. A Folder MUST NOT contain another Folder.
+- Every object event MUST carry the Folder it was filed in, in an `h` tag. An
+  event cannot change its own `h`.
+- **A group without a `kind:30890` is not a Folder.** DMs, a Ship project's
+  record channel and a legacy Peek topic channel are NIP-29 groups too; they
+  are conversation spaces. A consumer MUST NOT draw one in Folder navigation,
+  and MUST NOT run §3.3's operations on one — a command against a group with no
+  state emits state listing only what that command named, and everything filed
+  there by `h` stops being listed on every surface (peek#192). §7.3's `listed`
+  rule still applies to objects filed in such a group.
+- **There is exactly one level.** A Folder MUST NOT be listed in another
+  Folder: a `kind:30890` names files, never a `39000:` address. A writer MUST
+  NOT send a `kind:1852` naming one, and a reader that finds one ignores that
+  row and draws the named Folder at the top, as every Folder is.
 
-### 3.1 One Folder, many projections
+### 3.1 A listing is not access
 
-The same Folder is a Topic in Peek and a Project in Ship. This is not a link
-between two records; there is one container, rendered differently.
+What a Folder **lists** is its `kind:30890`; who may **read** a file is the
+membership of the channel its `h` names (RFC 0.4 §4.2, §4.4). The two are
+independent, and a listing never grants, widens or narrows access. A file
+listed in Folder B while its `h` names Folder A is readable by A's members and
+by nobody else, wherever it is drawn. A root placed with `buzz-channel` instead
+of `h` (§7.3, a Ship project record) is stored globally and readable by every
+member of the workspace, whichever Folder lists it.
 
-Consequently: **pairing is not an operation.** An app that wants its object to
-live alongside another app's object creates it *in that Folder*. An event cannot
-change its own `h`, so an app that re-points an existing object MUST express
-that as an explicit field override, and readers MUST take the **union** of every
-Folder an object has pointed at, so previously filed children do not disappear.
+**The listing itself is public.** The relay publishes every `kind:30890`
+globally, not under the Folder's `h`, so any member of the workspace can read
+what any Folder lists — the kind, author and `d` of each file, though not the
+file. That is why a Folder command never carries a name (§3.3). Hiding a
+private Folder's listing from non-members is a relay change and a prerequisite
+of private Folders (FOL-10); until it ships, a Folder is not offered as private
+(Miky, 2026-10-03).
+
+So **filing is not an operation, and neither is pairing.** An app that wants its
+object to live beside another app's object creates it in that Folder and lists
+it there (§3.3). Which Folder a thread belongs to is never a question: a thread
+is about what it is anchored at (§6.4), and the Folder it was filed in is only
+where it is stored.
+
+### 3.2 What a Folder is, to a consumer
+
+A Folder is a built-in object, like the bare file (§6.7): owned by no app,
+described here, and answered by `@estiva-app/interop` before NIP-89 is
+consulted. **A consumer MUST NOT let a `kind:31990` claim `39000`.**
+
+| | |
+| --- | --- |
+| address | `39000:<relay pubkey>:<id>` — the channel record |
+| `title` | the `name` of its `kind:39000`, and only that. The relay lets only the channel's owners and admins change it (`kind:9002`), while any member may send a `kind:1852`; so a `name` in the state is never shown (Miky, 2026-10-03) |
+| list | the addresses its `kind:30890` names, folded with each file's own projection; an address the reader cannot resolve is not drawn, because the count is the disclosure |
+| conversation | `kind:9` messages carrying the Folder's `h` — the Folder's own conversation, §6.4's chat, §11.1's general stream. An `a` on one is a mention (§6.4) and does not take it out of the Folder's conversation. Threads and replies follow §6.4 |
+| `archived` | the `archived` field of `kind:1851` changes on its address (§6.2), counting only a change carrying the Folder's own `h` whose author the relay lists as the Folder's owner or admin (`kind:39001`) — the same people who may rename it (Miky, 2026-10-03) |
+| open in | the `web` template of the generic app declaring the `conversation` aspect (§7.8) |
+
+Both the `kind:30890` and the `kind:39000` are signed by the relay. A consumer
+MUST keep either only when its signer is the relay's own key — the
+`<relay pubkey>` in the address, which the relay advertises in NIP-11 — and not
+merely when the two signers match each other; anybody can publish an event of
+that shape.
+
+### 3.3 The operations
+
+Every app gets exactly these, and each is the ordered list of events below.
+**Publish in order, and stop at the first refusal**: each later event assumes
+the earlier ones were accepted, and the index of the refused one is what tells
+a person what state they are in. `@estiva-app/interop`'s `plan*` functions are
+the reference implementation; an implementer that does not use them MUST
+produce the same events in the same order.
+
+| operation | events, in order | refused when |
+| --- | --- | --- |
+| **create** | `kind:9007` with a new id and its `name`; then `kind:1852` `add` with no addresses and no `name`, so the Folder has state from birth | — |
+| **rename** | `kind:9002` with the new `name`. Nothing else: a `kind:1852` never carries a name | by the relay, to anybody but the channel's owners and admins |
+| **archive** / **restore** | `kind:1851` on the Folder's address, `field` `archived`, `value` `true` (or empty to restore), `h` the Folder itself; `content` MAY carry what the person said about it | by the consumer, to anybody but the Folder's owners and admins; a reader ignores one from anybody else (§3.2) |
+| **delete** | `kind:9008` with the Folder's `h` | by the relay, while the Folder holds a file — a `30840`, `30850` or `30851` under its `h`, or any address its listing names — and to anybody but the channel's owner, the person who owns an owner-role agent in the channel, or an owner or admin of the workspace on the relay's roster |
+| **place** a new file | the file's root, with this Folder's `h` (or the tag its owner's `placement` names, §7.3); then `kind:1852` `add` naming its address | — |
+| **unlist** a deleted file | the `kind:5`; then `kind:1852` `remove` naming its address, in each Folder whose state names it (§7.3) | — |
+| **move** a file to another Folder | `kind:1852` `add` in the target; then `kind:1852` `remove` in the source — one pair for the file and one for each file listed beneath it (§6.7), so a subtree moves whole. The file's `h` does not change | by the consumer, when the target is private and the file's `h` names any other channel (§3.1: the move would look private and not be) |
+| **start a conversation** | `kind:9` with the Folder's `h` (§6.4) | — |
+
+- **Delete is for an empty Folder.** The relay refuses a `kind:9008` while the
+  Folder holds a file by containment or by placement, with a reason naming the
+  count ("folder holds N file(s) … remove them first"), and a consumer shows
+  that reason. An accepted delete still hides **every** event under the `h` —
+  the Folder's conversation, and any comment, change or other app's kind filed
+  there — because only the three file kinds are counted. A relay that does not refuse a Folder with files hides
+  those too — what happened to the `Folders` Folder on 2026-09-14 — so the
+  refusal is a conformance requirement of the relay, not a courtesy. **Archive** is the
+  reversible way to put a Folder away: its state, contents and channel are
+  untouched.
+- **Move adds before it removes.** State is per Folder, so there is no atomic
+  move; a failure between the two leaves the file listed in both — visible,
+  obviously wrong, fixed by moving again — where the other order would leave it
+  in neither.
+- **Membership** — adding people (`kind:9000`, `9001`), joining and leaving
+  (`9021`, `9022`) — is NIP-29's, unchanged (RFC 0.4 §4.5). Which apps offer it
+  is each app's call (§11.8).
+- **Where the apps stand (2026-10-03).** Shipped code predates parts of this
+  section, and each gap has an issue in *Manifests: every app declares its
+  actions*: interop has no delete planner and moves a single address, not a
+  subtree, and does not refuse a private move; Peek, Ship and interop still
+  read a Folder listed in a Folder (one on production, under Estiva HQ) and
+  still show groups with no listing; Peek's manifest still declares
+  `start-a-conversation` and claims `39000`. Until those land, a difference
+  from this section is a known gap, not a regression.
+- **The kinds an app signs** to offer all of the above: `9007`, `9002`, `9008`,
+  `1852`, `1851` and `9`. (Unlisting follows a `kind:5`, which is the file's
+  own deletion and not a Folder operation.) Never `30890` or `39000`; those
+  are the relay's. A signing service MAY grant an app fewer, and that app then
+  offers fewer operations — it MUST NOT offer one it cannot sign.
 
 ---
 
@@ -747,7 +848,7 @@ app for.
 | --- | --- | --- |
 | `d` | REQUIRED | an opaque uuid (RFC 0.4 §4.3), never a slug |
 | `title` | REQUIRED | seeds the `title` field; a rename is a change event |
-| `h` | REQUIRED | the team's channel. The relay says SHOULD; **this document says MUST**, for the reason the relay already gives for issues — several apps write these, and one forgetting the `h` puts an unreachable object in the shared space that nobody can unpublish |
+| `h` | REQUIRED | the Folder it was filed in (§3). The relay says SHOULD; **this document says MUST**, for the reason the relay already gives for issues — several apps write these, and one forgetting the `h` puts an unreachable object in the shared space that nobody can unpublish |
 | `a` | at most one | the address of the file this one sits under, of any kind. Seeds the `parent` field; a move is a change event |
 
 `content` is a §13.3 block document, or empty. A topic that is only a
@@ -757,8 +858,8 @@ is where it goes, and nothing about the file "converts".
 **Conversation.** `kind:1111` anchored at the file's address (§6.4), with the
 same `h` — the shape an issue's comments already have. Threads are NIP-22
 replies (§6.4). Reactions, edits, deletions and drafts follow §6.5, §6.6 and
-§6.8 unchanged. The team's general conversation stays `kind:9` in the
-channel: chat is talking *in* a room, a comment is talking *about* a file, and
+§6.8 unchanged. A Folder's own conversation stays `kind:9` in the
+channel (§3.2): chat is talking *in* a room, a comment is talking *about* a file, and
 the line between them is the kind.
 
 **Changes.** `kind:1851` under §6.2, targeted by `a` at the file. Two fields are
@@ -784,29 +885,30 @@ kind may sit under a bare file, by the `a` tag above. The parent's owner does
 not declare this and does not need to: for every other kind `parentRef` is
 derived from the *parent's* declared child list; for a bare file it is the file
 naming its own parent. Both directions exist and a consumer reads both.
-Nesting organises and never grants access (RFC 0.4): a bare file's readers are
-its team's, at any depth.
+Nesting organises and never grants access (§3.1): a bare file's readers are
+its Folder's, at any depth.
 
 *Added 2026-09-23 (FOL-4):*
 
-- **Same team.** A sub-file's `h` is its parent's team: a consumer creating a
+- **Same Folder.** A sub-file's `h` is its parent's: a consumer creating a
   file under a bare file MUST copy that file's `h`, and one creating it under
-  any other kind MUST use the team whose listing it was offered from. A move
+  any other kind MUST use the Folder whose listing it was offered from. A move
   changes `parent` and never `h`, so a consumer MUST offer as targets only
-  files in the same team's listing. There is therefore no permission question
-  at any depth, and nothing to check.
+  files in the same Folder's listing. There is therefore no permission question
+  at any depth, and nothing to check. Moving a file to another *Folder* is
+  §3.3's move, and takes its subtree with it.
 - **A move** is a `parent` change whose `value` is the new parent's address, or
-  empty for the top of the team. An empty value is a move, not an absence: a
+  empty for the top of the Folder. An empty value is a move, not an absence: a
   consumer MUST NOT fall back to the root `a` tag when the change stream holds
   one. The bare file's projection declares it as the `move` action.
-- **Read nesting from the team's listing, not from a tag query.** A relay
+- **Read nesting from the Folder's listing, not from a tag query.** A relay
   indexes a change's `a` (the file moved) and not its `value` (where to), so
   `#a: [X]` answers "what was *created* under X" — it still returns what has
   moved away and never what has moved in. The listing folds every change
   against every file it holds, so it is the one read that answers "what is under
   X". It also makes a breadcrumb free: every ancestor of a file is in the same
-  team, so the chain is walked in memory rather than one request per level. A
-  parent absent from the listing is in another team or unreadable, and is not
+  Folder, so the chain is walked in memory rather than one request per level. A
+  parent absent from the listing is in another Folder or unreadable, and is not
   drawn — not even as "unavailable", because the count is the disclosure (the
   rule a Folder listing already follows); the file is drawn at the top.
 - **Cycles.** Nothing on the wire can stop A naming B and B naming A. A reader
@@ -821,9 +923,9 @@ its team's, at any depth.
   projection's `list.children` (§7.2). A consumer offers "start a file under
   this" on any file it can address.
 
-**No migration.** An existing Peek topic is a channel and stays one: it becomes
-a *team*, and its `kind:9` messages that team's general conversation. New
-topics are bare files inside a team. Both shapes coexist permanently in every
+**No migration.** An existing Peek topic is a channel and stays one: a
+conversation space (§3), its `kind:9` messages that space's conversation. New
+topics are bare files inside a Folder. Both shapes coexist permanently in every
 consumer, which is the same rule §6.4 already states for comments.
 
 ### 6.8 Edits
@@ -980,7 +1082,8 @@ work before you are a member of anything.
 (§6.7) is owned by no app; its projection is written in this document and a
 consumer MUST resolve it from here rather than from the relay, ignoring any
 `31990` that lists it. A consumer that treats "no handler found" as "cannot
-render" will render a team's topics as nothing.
+render" will render a Folder's topics as nothing. The Folder itself is the
+other such object (§3.2).
 
 ### 7.1 `records` — how to fold this app's objects
 
@@ -1795,7 +1898,7 @@ MUST NOT be treated as one.
 A channel's messages divide into **streams**, and a message answers to exactly
 the marker of the stream it is in:
 
-- a root with no `a` tag — a `kind:9`, the team's general conversation — is in
+- a root with no `a` tag — a `kind:9`, the Folder's own conversation — is in
   the **general stream**, whose marker is the channel uuid;
 - a root whose root-level `a` tag names a file — a `kind:1111` about that
   file — is in that **file's stream**, whose marker is the file's address. A
@@ -1810,7 +1913,7 @@ what a reader is shown alongside a file, not what the file's unread counts.
 
 This is why the channel uuid alone stopped being enough. It was one topic per
 channel, so "I have read this channel" named exactly one conversation. A Folder
-holds a team's general chat *and* several files' conversations in one channel,
+holds its own conversation *and* several files' conversations in one channel,
 and a Ship project has always held its issues that way; a per-file marker is
 what says which of them you have read.
 
@@ -1845,25 +1948,25 @@ stay unread until their own marker advances.
 
 **The channel's marker does not propagate into a file's stream.** That is the
 one place the hierarchy stops, and it is the whole point of the file grain:
-reading the team's chat says nothing about which of the team's topics you have
+reading the Folder's chat says nothing about which of its topics you have
 read. The reserved `folder:` grain (§11.5) is the only key that would ever reach
 every stream in a Folder, and it is not specified.
 
 The hierarchy is applied **at read time**, never by writing extra keys.
 
-#### A team's indicator is the union — the product call
+#### A Folder's indicator is the union — the product call
 
-A Folder's own indicator — the dot on a team in Peek — is **the union of its
-streams**: unread if its general conversation is unread, or any file in it is,
-or any Folder beneath it is. Each file row carries its own indicator alongside;
-the team's clears when the last of them does. Every stream in the union is
+A Folder's own indicator — the dot on a Folder in Peek — is **the union of its
+streams**: unread if its own conversation is unread, or any file in it is.
+(There is no Folder beneath it to count, §3.) Each file row carries its own
+indicator alongside; the Folder's clears when the last of them does. Every stream in the union is
 judged for the person's membership of it (§11.8): a file they are not a member
 of, or have muted, contributes only the messages that mention them.
 
 Union rather than general-stream-only, for two reasons. Peek already rolls
 activity up this way — a huddle's new message raises its parent topic's dot,
 because a signal only visible once you have opened the parent is a signal you
-do not get. And a collapsed team must not be able to hide a topic that needs
+do not get. And a collapsed Folder must not be able to hide a topic that needs
 you. The cost is a dot that stays lit until every conversation under it is read,
 which is what every workspace tool does and what people expect of it.
 
