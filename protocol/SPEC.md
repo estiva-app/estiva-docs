@@ -1954,25 +1954,14 @@ every stream in a Folder, and it is not specified.
 
 The hierarchy is applied **at read time**, never by writing extra keys.
 
-#### A Folder's indicator is the union — the product call
+#### An indicator over a Folder
 
-A Folder's own indicator — the dot on a Folder in Peek — is **the union of its
-streams**: unread if its own conversation is unread, or any file in it is.
-(There is no Folder beneath it to count, §3.) Each file row carries its own
-indicator alongside; the Folder's clears when the last of them does. Every stream in the union is
-judged for the person's membership of it (§11.8): a file they are not a member
-of, or have muted, contributes only the messages that mention them.
-
-Union rather than general-stream-only, for two reasons. Peek already rolls
-activity up this way — a huddle's new message raises its parent topic's dot,
-because a signal only visible once you have opened the parent is a signal you
-do not get. And a collapsed Folder must not be able to hide a topic that needs
-you. The cost is a dot that stays lit until every conversation under it is read,
-which is what every workspace tool does and what people expect of it.
-
-It is a **display rule, computed at read time from the markers above.** Nothing
-is written to express it, no key is needed for it, and it does not consume the
-reserved `folder:` grain.
+Whether an app draws one indicator for a whole Folder is the app's choice, not
+the protocol's. An aggregate indicator over a Folder, if an app draws one, is
+**computed at read time from the markers above** — over the streams in the
+Folder, each judged for the person's membership of it (§11.8) — and **writes
+nothing**: no key is needed for it, and it does not consume the reserved
+`folder:` grain (§11.5).
 
 ### 11.4 Monotonic, and there is no mark-as-unread
 
@@ -1998,8 +1987,9 @@ The file grain (§11.1) does not take its place, and a Folder is not a special
 case of it. A Folder is a file, so a comment anchored at the Folder's *address*
 answers to that bare address like any other file's would; the Folder's *general*
 conversation answers to its channel uuid; and `folder:<address>` remains the
-name for the third thing, "everything under it at once". The union indicator of
-§11.3 is computed from the first two and needs no third.
+name for the third thing, "everything under it at once". An indicator over a
+Folder (§11.3), where an app draws one, is computed from the first two and
+needs no third.
 
 **No huddle context is standardised.** If huddles land as channels they get the
 container scheme for free. Nothing is reserved for them.
@@ -2187,9 +2177,11 @@ opened the file is told about what was said since they joined, and nothing
 before it. A person who is mentioned for the first time on a year-old issue sees
 the message that mentions them, not the year.
 
-A Folder's general stream is judged the same way, with the channel roster as
-its membership. The roster carries no join time, so condition 3 does not apply
-to it, and absence is still the app's choice there (§11.6). A DM's two
+A Folder's general stream is not judged by membership: being on the channel
+roster makes a person a member of the Folder, not someone its conversation is
+unread for. A message there is unread for `P` only when its content mentions
+`P` and conditions 2 and 4 hold; condition 3 does not apply, and absence is
+still the app's choice there (§11.6). A DM's two
 participants are its members.
 
 **An app lights nothing for a stream it has no screen for.** A dot the person
@@ -2219,8 +2211,8 @@ because muting is judged the same way in every app.
 `estiva:followed:v1` (RFC 0.4 §4.6) is read once more and not written again. Its
 file keys are **not** published: the list was private, so a client MUST NOT
 sign a membership change for one without the person choosing to join. Its
-`muted` keys become this list. Its Folder keys are dropped, because the roster
-decides the general stream. Nothing else is migrated, because everything
+`muted` keys become this list. Its Folder keys are dropped, because a Folder's
+general stream is unread only for a mention. Nothing else is migrated, because everything
 following implied is a trigger above.
 
 ---
