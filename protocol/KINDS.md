@@ -128,6 +128,17 @@ field on another member's object, which is the normal case in a tracker.
 optional — several apps write these kinds, and one of them forgetting would put
 an unreachable object into the shared space that nobody can unpublish.
 
+What a NIP-50 `search` matches, per kind ([SPEC §5.2](SPEC.md); buzz
+migrations 0035 and 0036):
+
+| Kind | Searchable by |
+| --- | --- |
+| `0`, `9`, `1111` | `content` |
+| `30850`, `30840`, any object kind `30000`–`39999` except `39000`–`39009` | root `title` |
+| `30851` | root `title` and root `ref` |
+| `1851` | `value`, only for a `title` change aimed at an object or a `ref` change aimed at a `30851` |
+| `5`, `7`, `9007`, `9030`, `9031`, `30078`, any other `1851` | not searchable |
+
 ---
 
 ## 5. Per-app signing ceilings

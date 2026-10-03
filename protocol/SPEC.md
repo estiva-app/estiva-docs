@@ -285,6 +285,47 @@ bridge is usable from a request-scoped server runtime that cannot hold a socket.
   land in the same second.** Any ordering that matters MUST carry it explicitly;
   see §6.2.
 
+### 5.2 Search
+
+A filter's NIP-50 `search` finds objects by the name a person types, so that a
+picker can reach a file in a Folder the client has not loaded (*decided
+2026-10-03, CON-33*). A relay SHOULD index:
+
+| Event | What the search matches |
+| --- | --- |
+| A message: `kind:9`, `kind:1111` (and profiles, `kind:0`) | its `content` |
+| An object: any kind `30000`–`39999` except the relay-signed `39000`–`39009` | its root `title` tag; on a `30851` also its root `ref` (§6.1). Never `content`, so a description is not searchable. |
+| A `kind:1851` change (§6.2) with `field` `title`, aimed at such an object | its `value` |
+| A `kind:1851` with `field` `ref`, aimed at a `30851:` address | its `value` |
+| Any other `kind:1851`, and app data (`kind:30078`) | nothing |
+
+The object row is a rule rather than a list, so a new object kind is searchable
+by title on the day it is registered (§8), with no change to the relay.
+
+**A hit is a candidate, not the current state.** The index holds every title an
+object ever had: a renamed object is found by its old title through the old
+`kind:1851`, and a deleted root's changes still match. A reader therefore
+resolves each hit to its object (the root itself, or the `kind:1851`'s `a`),
+folds it (§6.3), and shows it only if the object resolves and its *current*
+title or ref holds the words. A client matches whole words, and it folds before
+it matches. A relay answers at most 500 events per filter.
+
+Access does not change. A hit is returned only if a plain read would return the
+event, so a title in a Folder the reader cannot read is not found. An object
+with no `h` is channel-less, readable and therefore findable by every member of
+the workspace.
+
+**Search is a SHOULD.** A relay that does not index these advertises no `50` in
+its NIP-11 `supported_nips`, and a relay that does not support a kind answers
+`[]` with `200`, exactly as if nobody had written the word. A client that does
+not see `50` falls back to matching titles in the listings it has loaded, and
+says the result is partial. It MUST NOT tell the person that no such file exists.
+
+**Typeahead.** The reference relay accepts `"search_mode": "prefix"` in a
+`/query` filter: the last word matches as a prefix, so `zebraf` finds
+`zebrafile`. It is an extension of the bridge, not NIP-50. A relay that ignores
+it matches whole words only, so typeahead gets worse but still works.
+
 ---
 
 ## 6. Objects
@@ -308,9 +349,19 @@ Reference root events:
 | `30851` | Issue | `d`, `title`, `h`, `[a]`, `[ref]` |
 | `30840` | Bare file | `d`, `title`, `h`, `[a]` — §6.7 |
 
-`a` on an Issue is the parent project's address, `30850:<pubkey>:<d>`. `ref` is
-a display-only key such as `SHIP-12` and MUST NOT be used for addressing. `a` on
+`a` on an Issue is the parent project's address, `30850:<pubkey>:<d>`. `a` on
 a bare file is the address of the file it sits under, **of any kind**.
+
+`ref` is a display key such as `SHIP-12` that people type and search for
+(§5.2), and it MUST NOT be used for addressing. Like `title`, the root tag is
+only its seed: a `kind:1851` with `field` `ref` aimed at a `30851:` address
+overrides it, and the fold (§6.3) gives the current one. That is also how an
+issue created without a ref gets one. **A ref is not unique**: it is numbered
+by whoever assigns it, from what that client can see, so two issues can share
+one (on production, 2026-10-03, `CON-12` names two issues and `PEE-2` four). A
+reader that shows an issue by ref MUST show its project beside it, and a
+lookup by ref returns every issue that carries it (*decided 2026-10-03,
+CON-33*).
 
 ### 6.2 Change events
 
@@ -503,6 +554,14 @@ A reply's lowercase `a` is left out because NIP-22 would read it as the
 parent, so a copy of the object's address there would claim the reply is a
 top-level comment. It follows that a reply is absent from an object's `#a`
 read, and is found by `#e` on the comments that read returned.
+
+A file the reply's *body* names (a `[` pick or a pasted `naddr`) still earns
+`["a", addr]`, not `q`: `q` points at a message, and the strengths table reads
+a reply's `a` that is not its object's address as a mention (*decided
+2026-10-03, PEE-21*). Upstream NIP-22 leaves this ambiguous, because it reads
+any lowercase `a` on a `kind:1111` as the parent item. A reader that knows
+NIP-22 and not this section may take the named file for the reply's parent.
+An Estiva reader cannot, because a reply's parent is always its `e`.
 
 **One level, because NIP-22 cannot name the thread otherwise.** When the thread
 root is an *address*, NIP-22 carries no id for the top-level comment: the
