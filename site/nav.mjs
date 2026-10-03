@@ -39,6 +39,12 @@ export const NAV = [
     ],
   },
   {
+    section: 'Build an app',
+    items: [
+      { file: 'guide/QUICKSTART.md', slug: 'quickstart', title: 'Quickstart' },
+    ],
+  },
+  {
     section: 'Protocol',
     items: [
       { file: 'protocol/SPEC.md', slug: 'spec', title: 'Specification' },
