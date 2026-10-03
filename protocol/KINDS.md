@@ -134,10 +134,10 @@ migrations 0035 and 0036):
 | Kind | Searchable by |
 | --- | --- |
 | `0`, `9`, `1111` | `content` |
-| `30850`, `30840`, any object kind `30000`–`39999` except `39000`–`39009` | root `title` |
+| `30850`, `30840`, any object kind `30000`–`39999` except `39000`–`39009` and the private kinds below | root `title` |
 | `30851` | root `title` and root `ref` |
 | `1851` | `value`, only for a `title` change aimed at an object or a `ref` change aimed at a `30851` |
-| `5`, `7`, `9007`, `9030`, `9031`, `30078`, any other `1851` | not searchable |
+| `5`, `7`, `9007`, `9030`, `9031`, `30078`, the author-only or ciphertext kinds `30179`, `30300`, `30350`, `30622` (and a `1851` aimed at one), any other `1851` | not searchable |
 
 ---
 

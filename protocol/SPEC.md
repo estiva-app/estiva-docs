@@ -294,21 +294,23 @@ picker can reach a file in a Folder the client has not loaded (*decided
 | Event | What the search matches |
 | --- | --- |
 | A message: `kind:9`, `kind:1111` (and profiles, `kind:0`) | its `content` |
-| An object: any kind `30000`–`39999` except the relay-signed `39000`–`39009` | its root `title` tag; on a `30851` also its root `ref` (§6.1). Never `content`, so a description is not searchable. |
+| An object: any kind `30000`–`39999` except the relay-signed `39000`–`39009` and the private kinds below | its root `title` tag; on a `30851` also its root `ref` (§6.1). Never `content`, so a description is not searchable. |
 | A `kind:1851` change (§6.2) with `field` `title`, aimed at such an object | its `value` |
 | A `kind:1851` with `field` `ref`, aimed at a `30851:` address | its `value` |
-| Any other `kind:1851`, and app data (`kind:30078`) | nothing |
+| Any other `kind:1851`; app data (`kind:30078`); a kind only its author may read or that carries ciphertext (on the reference relay `30179`, `30300`, `30350`, `30622`), and a `kind:1851` aimed at one | nothing |
 
 The object row is a rule rather than a list, so a new object kind is searchable
-by title on the day it is registered (§8), with no change to the relay.
+by title on the day it is registered (§8), with no change to the relay. A kind
+that is private to its author is the exception, and a relay names it.
 
 **A hit is a candidate, not the current state.** The index holds every title an
 object ever had: a renamed object is found by its old title through the old
 `kind:1851`, and a deleted root's changes still match. A reader therefore
 resolves each hit to its object (the root itself, or the `kind:1851`'s `a`),
 folds it (§6.3), and shows it only if the object resolves and its *current*
-title or ref holds the words. A client matches whole words, and it folds before
-it matches. A relay answers at most 500 events per filter.
+title or ref holds the words. It matches the way it asked: whole words, or
+with the last word as a prefix when it used prefix mode (below). A relay
+answers at most 500 events per filter.
 
 Access does not change. A hit is returned only if a plain read would return the
 event, so a title in a Folder the reader cannot read is not found. An object
@@ -357,9 +359,8 @@ a bare file is the address of the file it sits under, **of any kind**.
 only its seed: a `kind:1851` with `field` `ref` aimed at a `30851:` address
 overrides it, and the fold (§6.3) gives the current one. That is also how an
 issue created without a ref gets one. **A ref is not unique**: it is numbered
-by whoever assigns it, from what that client can see, so two issues can share
-one (on production, 2026-10-03, `CON-12` names two issues and `PEE-2` four). A
-reader that shows an issue by ref MUST show its project beside it, and a
+by whoever assigns it, from what that client can see, so in practice two
+issues share one. A reader that shows an issue by ref MUST show its project beside it, and a
 lookup by ref returns every issue that carries it (*decided 2026-10-03,
 CON-33*).
 
