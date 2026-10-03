@@ -50,9 +50,9 @@ nobody held the whole list.
 | Kind | Name | Notes |
 | --- | --- | --- |
 | `9007` | Folder create (NIP-29 create group) | The container. Followed by a `1852` so the Folder has state from birth. See §3 |
-| `9002` | Folder rename (NIP-29 edit metadata) | Followed by a `1852 add` carrying the name, because the state's name shadows the channel's |
-| `9008` | Folder delete (NIP-29 delete group) | **Refused by the relay while the Folder holds any file**, by `h` or by its listing; owner or workspace admin only |
-| `1852` | Folder command | `add` / `remove` / `set` addresses, and the name. Never names a `39000:` address — Folders do not nest |
+| `9002` | Folder rename (NIP-29 edit metadata) | The only rename: owners and admins only (relay). The Folder's title is the `39000` name; a `1852` never carries one |
+| `9008` | Folder delete (NIP-29 delete group) | **Refused by the relay while the Folder holds a file** (`30840`/`30850`/`30851` under its `h`, or anything its listing names); channel owner, the owner of its owner-role agent, or a workspace owner/admin. An accepted one hides every event under the `h` |
+| `1852` | Folder command | `add` / `remove` / `set` addresses; any member may send one, so it carries no name. Never names a `39000:` address — Folders do not nest |
 | `30890` | Folder state | **Relay-signed**, never an app's. What a Folder lists. A NIP-29 group without one is a conversation space, not a Folder |
 | `39000` | Group metadata | Relay-signed, NIP-29. The Folder's address; no `kind:31990` may claim it |
 | `9000` / `9001` | Add / remove member | NIP-29, unchanged |
@@ -156,9 +156,9 @@ Two things this table teaches:
   target app's published manifest, not from its own vocabulary. Any further
   cross-app action needs the same treatment: the list is the union of what an
   app writes for itself and what the apps it acts on declare.
-- **The same number means different things to different apps.** `9007` is a
-  huddle for Peek and a Folder for Ship. That is fine: this list says what an
-  app may *sign*, not what a kind *means*.
+- **The list says what an app may *sign*, not what a kind *means*.** `9007`
+  creates a NIP-29 group for every app; it is a Folder only once the group has
+  a listing (SPEC §3), and a Peek huddle or DM is the same kind without one.
 
 Read the live values rather than trusting this page, because a seed change only
 reaches production through a manual re-seed:

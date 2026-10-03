@@ -106,7 +106,17 @@ What a Folder **lists** is its `kind:30890`; who may **read** a file is the
 membership of the channel its `h` names (RFC 0.4 §4.2, §4.4). The two are
 independent, and a listing never grants, widens or narrows access. A file
 listed in Folder B while its `h` names Folder A is readable by A's members and
-by nobody else, wherever it is drawn.
+by nobody else, wherever it is drawn. A root placed with `buzz-channel` instead
+of `h` (§7.3, a Ship project record) is stored globally and readable by every
+member of the workspace, whichever Folder lists it.
+
+**The listing itself is public.** The relay publishes every `kind:30890`
+globally, not under the Folder's `h`, so any member of the workspace can read
+what any Folder lists — the kind, author and `d` of each file, though not the
+file. That is why a Folder command never carries a name (§3.3). Hiding a
+private Folder's listing from non-members is a relay change and a prerequisite
+of private Folders (FOL-10); until it ships, a Folder is not offered as private
+(Miky, 2026-10-03).
 
 So **filing is not an operation, and neither is pairing.** An app that wants its
 object to live beside another app's object creates it in that Folder and lists
@@ -123,15 +133,17 @@ consulted. **A consumer MUST NOT let a `kind:31990` claim `39000`.**
 | | |
 | --- | --- |
 | address | `39000:<relay pubkey>:<id>` — the channel record |
-| `title` | the `name` of its `kind:30890`, else the `name` of its `kind:39000`. Writers keep both (§3.3, rename), and the state's shadows the channel's |
+| `title` | the `name` of its `kind:39000`, and only that. The relay lets only the channel's owners and admins change it (`kind:9002`), while any member may send a `kind:1852`; so a `name` in the state is never shown (Miky, 2026-10-03) |
 | list | the addresses its `kind:30890` names, folded with each file's own projection; an address the reader cannot resolve is not drawn, because the count is the disclosure |
-| conversation | `kind:9` messages carrying the Folder's `h` and no root `a` — the Folder's own conversation, §6.4's chat. Threads and replies follow §6.4 |
-| `archived` | the `archived` field of `kind:1851` changes on its address (§6.2) |
+| conversation | `kind:9` messages carrying the Folder's `h` — the Folder's own conversation, §6.4's chat, §11.1's general stream. An `a` on one is a mention (§6.4) and does not take it out of the Folder's conversation. Threads and replies follow §6.4 |
+| `archived` | the `archived` field of `kind:1851` changes on its address (§6.2), counting only a change carrying the Folder's own `h` whose author the relay lists as the Folder's owner or admin (`kind:39001`) — the same people who may rename it (Miky, 2026-10-03) |
 | open in | the `web` template of the generic app declaring the `conversation` aspect (§7.8) |
 
 Both the `kind:30890` and the `kind:39000` are signed by the relay. A consumer
-MUST keep a `kind:30890` only when its signer is the signer of the matching
-`kind:39000`; anybody can publish an event of that shape.
+MUST keep either only when its signer is the relay's own key — the
+`<relay pubkey>` in the address, which the relay advertises in NIP-11 — and not
+merely when the two signers match each other; anybody can publish an event of
+that shape.
 
 ### 3.3 The operations
 
@@ -144,11 +156,11 @@ produce the same events in the same order.
 
 | operation | events, in order | refused when |
 | --- | --- | --- |
-| **create** | `kind:9007` with a new id; then `kind:1852` `add` with the `name` and no addresses, so the Folder has state from birth | — |
-| **rename** | `kind:9002` with the new `name`; then `kind:1852` `add` with the `name` and no addresses (`set` would empty it; there is no `rename` op) | — |
-| **archive** / **restore** | `kind:1851` on the Folder's address, `field` `archived`, `value` `true` (or empty to restore), `h` the Folder itself; `content` MAY carry what the person said about it | — |
-| **delete** | `kind:9008` with the Folder's `h` | by the relay, while the Folder holds any file — by `h` or by its listing — and to anybody but the channel's owner or a workspace admin |
-| **place** a new file | the file's root, with this Folder's `h`; then `kind:1852` `add` naming its address | — |
+| **create** | `kind:9007` with a new id and its `name`; then `kind:1852` `add` with no addresses and no `name`, so the Folder has state from birth | — |
+| **rename** | `kind:9002` with the new `name`. Nothing else: a `kind:1852` never carries a name | by the relay, to anybody but the channel's owners and admins |
+| **archive** / **restore** | `kind:1851` on the Folder's address, `field` `archived`, `value` `true` (or empty to restore), `h` the Folder itself; `content` MAY carry what the person said about it | by the consumer, to anybody but the Folder's owners and admins; a reader ignores one from anybody else (§3.2) |
+| **delete** | `kind:9008` with the Folder's `h` | by the relay, while the Folder holds a file — a `30840`, `30850` or `30851` under its `h`, or any address its listing names — and to anybody but the channel's owner, the person who owns an owner-role agent in the channel, or an owner or admin of the workspace on the relay's roster |
+| **place** a new file | the file's root, with this Folder's `h` (or the tag its owner's `placement` names, §7.3); then `kind:1852` `add` naming its address | — |
 | **unlist** a deleted file | the `kind:5`; then `kind:1852` `remove` naming its address, in each Folder whose state names it (§7.3) | — |
 | **move** a file to another Folder | `kind:1852` `add` in the target; then `kind:1852` `remove` in the source — one pair for the file and one for each file listed beneath it (§6.7), so a subtree moves whole. The file's `h` does not change | by the consumer, when the target is private and the file's `h` names any other channel (§3.1: the move would look private and not be) |
 | **start a conversation** | `kind:9` with the Folder's `h` (§6.4) | — |
@@ -156,10 +168,11 @@ produce the same events in the same order.
 - **Delete is for an empty Folder.** The relay refuses a `kind:9008` while the
   Folder holds a file by containment or by placement, with a reason naming the
   count ("folder holds N file(s) … remove them first"), and a consumer shows
-  that reason. What a delete removes is the Folder's name and its own
-  conversation. A relay that does not enforce this hides every event under the
-  `h` — what happened to the `Folders` Folder on 2026-09-14 — so it is a
-  conformance requirement of the relay, not a courtesy. **Archive** is the
+  that reason. An accepted delete still hides **every** event under the `h` —
+  the Folder's conversation, and any comment, change or other app's kind filed
+  there — because only the three file kinds are counted. A relay that does not refuse a Folder with files hides
+  those too — what happened to the `Folders` Folder on 2026-09-14 — so the
+  refusal is a conformance requirement of the relay, not a courtesy. **Archive** is the
   reversible way to put a Folder away: its state, contents and channel are
   untouched.
 - **Move adds before it removes.** State is per Folder, so there is no atomic
@@ -169,8 +182,17 @@ produce the same events in the same order.
 - **Membership** — adding people (`kind:9000`, `9001`), joining and leaving
   (`9021`, `9022`) — is NIP-29's, unchanged (RFC 0.4 §4.5). Which apps offer it
   is each app's call (§11.8).
+- **Where the apps stand (2026-10-03).** Shipped code predates parts of this
+  section, and each gap has an issue in *Manifests: every app declares its
+  actions*: interop has no delete planner and moves a single address, not a
+  subtree, and does not refuse a private move; Peek, Ship and interop still
+  read a Folder listed in a Folder (one on production, under Estiva HQ) and
+  still show groups with no listing; Peek's manifest still declares
+  `start-a-conversation` and claims `39000`. Until those land, a difference
+  from this section is a known gap, not a regression.
 - **The kinds an app signs** to offer all of the above: `9007`, `9002`, `9008`,
-  `1852`, `1851`, `9`, and `5` for unlisting. Never `30890` or `39000`; those
+  `1852`, `1851` and `9`. (Unlisting follows a `kind:5`, which is the file's
+  own deletion and not a Folder operation.) Never `30890` or `39000`; those
   are the relay's. A signing service MAY grant an app fewer, and that app then
   offers fewer operations — it MUST NOT offer one it cannot sign.
 
