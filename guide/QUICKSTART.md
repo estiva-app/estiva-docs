@@ -7,7 +7,7 @@ you have access, it takes about fifteen minutes.
 Every app on Nostr for Business uses the same two services: **Estiva ID**
 (`https://id.estiva.app`), which signs you in and signs events for you, and
 **the relay** (`https://estiva.estiva.app`), which stores them. We host both.
-Running your own is not supported yet.
+Running your own is not supported.
 
 You need Node.js and npm, and a browser that can use a passkey.
 
@@ -39,10 +39,12 @@ somewhere else, ask again. That address has to be added to both Estiva ID and
 the relay.
 
 > **What an invite opens.** There is one workspace on the relay, and it is
-> ours. With an Estiva ID account you are a member of it. You can read and post
-> in every Folder, through your own app and through Peek and Ship, the same as
-> our team. Anything you post, everyone in the workspace can read. This is
-> why we invite people one by one.
+> ours. With an Estiva ID account you are a member of it, through your own app
+> and through Peek and Ship. A member can read everything in every Folder, post
+> in any of them, and change or move anything there: rename an issue, change
+> its status, move a file. Only managing Folders themselves is kept for their
+> owners. Anything you post, everyone in the workspace can read. This is why
+> we invite people one by one.
 
 ## 2. Make the app
 
@@ -97,19 +99,19 @@ another port that sign-in would refuse. Stop the other program and try again.
 
 Find a project to list. Open [Ship](https://ship.estiva.app), open any project,
 and copy the link from your browser's address bar. It looks like
-`https://ship.estiva.app/#/project/30850%3A…`.
+`https://ship.estiva.app/project/<the project's name>-<its id>`.
 
 Add `src/issues.ts`, and paste the link into `PROJECT`:
 
 ```ts
 import { estivaIdSigner } from '@estiva-app/identity'
-import { resolveForeignObject, type QueryFn } from '@estiva-app/interop'
+import { identifierFromRef, resolveForeignObject, type QueryFn } from '@estiva-app/interop'
 import { addrToNaddr, Relay } from '@estiva-app/protocol'
 import { useEffect, useState } from 'react'
 import { currentToken } from './auth/estivaId'
 import { ID_CONFIG, RELAY_URL } from './config'
 
-/** The project to list: its address, or its link copied from Ship's address bar. */
+/** The project to list: its link copied from Ship's address bar, or its address. */
 export const PROJECT = ''
 
 export interface Issue {
@@ -133,21 +135,33 @@ export function relayQuery(): QueryFn | null {
   return (filters) => relay.queryAll(filters)
 }
 
-/** `30850:<pubkey>:<id>` from an address or a Ship link (`…/#/project/30850%3A…`). */
-export function projectAddress(input: string): string {
-  const address = decodeURIComponent(input.split('#/project/')[1] ?? input).trim()
-  if (!/^30850:[0-9a-f]{64}:.+$/.test(address)) throw new Error(`Not a project's address or Ship link: ${input}`)
-  return address
+/**
+ * The project's address, `30850:<pubkey>:<id>`, from what was pasted: the
+ * project's link from Ship (`https://ship.estiva.app/project/<name>-<id>`) or
+ * the address itself. A link carries only the id, so the author is one read
+ * away. `null` when no project has that id.
+ */
+export async function projectAddress(input: string, query: QueryFn): Promise<string | null> {
+  const pasted = input.trim()
+  if (/^30850:[0-9a-f]{64}:[^:]+$/.test(pasted)) return pasted
+  const id = identifierFromRef(/\/project\/([^/?#]+)/.exec(pasted)?.[1] ?? '')
+  if (!id) throw new Error(`Not a project's link or address: ${input}`)
+  const [project] = await query([{ kinds: [30850], '#d': [id], limit: 1 }])
+  return project ? `30850:${project.pubkey}:${id}` : null
 }
 
 /**
  * A project's issues, each with its current title and status. Ship's manifest
  * says how: issues are `kind:30851` events naming the project in an `a` tag,
  * and their titles and statuses are the `kind:1851` changes folded over them.
- * `@estiva-app/interop` reads the manifest and does both.
+ * `@estiva-app/interop` reads the manifest and does both. The manifest lists
+ * at most 200 issues.
  */
 export async function listIssues(project: string, query: QueryFn): Promise<Issue[] | null> {
-  const resolved = await resolveForeignObject(addrToNaddr(projectAddress(project)), query)
+  const address = await projectAddress(project, query)
+  if (!address) return null
+  // The last argument looks people up by pubkey; this page shows no names, so it asks for none.
+  const resolved = await resolveForeignObject(addrToNaddr(address), query, async () => ({}))
   if (!resolved || resolved.unreachable) return null
   return (resolved.children ?? []).map((issue) => ({
     address: issue.address ?? issue.ref,
@@ -158,20 +172,22 @@ export async function listIssues(project: string, query: QueryFn): Promise<Issue
 
 /** {@link listIssues} for a page: loading, then the list or why there is none. */
 export function useIssues(project: string): Issues {
-  const [issues, setIssues] = useState<Issues>({ kind: 'loading' })
+  const [read, setRead] = useState<{ project: string; issues: Issues } | null>(null)
   const [query] = useState(relayQuery)
   useEffect(() => {
     if (!query) return
     let live = true
+    const settle = (issues: Issues) => live && setRead({ project, issues })
     listIssues(project, query).then(
-      (found) => live && setIssues(found ? { kind: 'listed', issues: found } : { kind: 'failed', reason: 'No project at that address.' }),
-      (error: unknown) => live && setIssues({ kind: 'failed', reason: error instanceof Error ? error.message : String(error) }),
+      (found) => settle(found ? { kind: 'listed', issues: found } : { kind: 'failed', reason: 'No project at that address.' }),
+      (error: unknown) => settle({ kind: 'failed', reason: error instanceof Error ? error.message : String(error) }),
     )
     return () => {
       live = false
     }
   }, [project, query])
-  return query ? issues : { kind: 'failed', reason: 'Sign in to read the relay.' }
+  if (!query) return { kind: 'failed', reason: 'Sign in to read the relay.' }
+  return read?.project === project ? read.issues : { kind: 'loading' }
 }
 ```
 
@@ -211,12 +227,12 @@ import { PROJECT, useIssues } from './issues'
 import { IssuesPage } from './pages/IssuesPage'
 ```
 
-Then show the issues in place of the home page once `PROJECT` is set. Replace
-the `<HomePage … />` line with the first line below, and add the small
-component at the end of the file:
+Then show the issues in place of the home page once `PROJECT` is set and you
+are signed in. Replace the `<HomePage … />` line with the first line below, and
+add the small component at the end of the file:
 
 ```tsx
-      {PROJECT ? <ProjectIssues project={PROJECT} /> : <HomePage relay={RELAY_URL} state={relayState} name={me.name} />}
+      {PROJECT && signedIn ? <ProjectIssues project={PROJECT} /> : <HomePage relay={RELAY_URL} state={relayState} name={me.name} />}
 ```
 
 ```tsx
@@ -226,10 +242,12 @@ function ProjectIssues({ project }: { project: string }) {
 ```
 
 Save, and the app lists the project's issues, one row each: the title, and the
-status as Ship shows it ("Todo", "In Progress", "Done"). Change an issue's
-status in Ship, reload your app, and the new status is there.
+status as Ship shows it ("Todo", "In Progress", "Done"). It reads the project
+when the page loads, so reload to see changes made since. Ship's manifest lists
+at most 200 issues per project.
 
-`npm run lint`, `npm test` and `npm run build` still pass.
+`npm run lint`, `npm test` and `npm run build` still pass. The tests run with
+no sign-in, whatever `.env.local` holds.
 
 ### What just happened
 
@@ -238,8 +256,9 @@ Your app never learned how Ship stores its data. It asked
 event) and followed it:
 
 - **The project** is a `kind:30850` event. Its address is
-  `30850:<author's pubkey>:<id>`, the part of the Ship link after
-  `#/project/`.
+  `30850:<author's pubkey>:<id>`. A Ship link carries only the id, so
+  `projectAddress` reads the project once by its id (a `#d` filter) to learn
+  its author.
 - **Its issues** are the `kind:30851` events that name that address in an `a`
   tag. An issue does not carry its current title and status itself. Each rename
   or status change is a `kind:1851` event, and interop folds them in order.
@@ -260,7 +279,7 @@ The [Specification](../protocol/SPEC.md) sets these rules out, and
 | `npm run dev` stops with `Port 5173 is already in use` | Another program holds the port | Stop it. The app will not move to another port, because sign-in would refuse it |
 | "Running alone: no relay is set." | `VITE_RELAY_URL` is empty, or `.env.local` changed after Vite started | Fill it in and restart `npm run dev` |
 | "Could not connect to estiva.estiva.app." | The relay refused the connection or could not be reached | Check you are on `http://localhost:5173` and signed in. If it persists, email us |
-| "Not a project's address or Ship link: …" | `PROJECT` holds something else | Copy the link again from Ship's address bar, while a project is open |
+| "Not a project's link or address: …" | `PROJECT` holds something else, such as an issue's link | Copy the link again from Ship's address bar, while a project is open |
 | "No project at that address." | Nothing is published at that address. The project may have been deleted | Open the project in Ship and copy its link again |
 
 ## Where next
