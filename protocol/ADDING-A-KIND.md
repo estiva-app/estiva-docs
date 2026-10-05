@@ -130,15 +130,22 @@ Two traps:
 There are prior patches on that branch to copy the shape from — one for ratified
 kinds, one for provisional ones.
 
-### A kind people will search for needs a third file
+### A kind people will search for: objects already are, messages need a third file
 
-Accepted is not searchable. NIP-50 `search` runs over Postgres FTS, and the
-`search_tsv` column is a **positive allowlist** — `kind IN (0, 9, 1111, 40002,
-45001, 45003)` after buzz#18 — so a `search` over a kind outside it answers an
-empty list with no error, exactly like a kind nobody has written. That is how
-137 file comments were unfindable for two days after `kind:1111` shipped
-(FOL-36, 2026-09-20): the filter was right, the index had no words. A new kind
-whose content people will search for takes a migration in the shape of
+**A new object kind needs nothing.** Since buzz 0036 (CON-33) the relay indexes
+the root `title` of any kind `30000`–`39999` outside the relay-signed
+`39000`–`39009` block, and the `value` of a `kind:1851` title change aimed at
+one ([SPEC §5.2](SPEC.md)). Give the root a `title` tag and it is findable by
+name. Its `content` is not indexed, by design.
+
+Anything else is not searchable just because it is accepted. NIP-50 `search`
+runs over Postgres FTS, and for message content the `search_tsv` column is a
+**positive allowlist** — `kind IN (0, 9, 1111, 40002, 45001, 45003)` after
+buzz#18 — so a `search` over a kind outside it answers an empty list with no
+error, exactly like a kind nobody has written. That is how 137 file comments
+were unfindable for two days after `kind:1111` shipped (FOL-36, 2026-09-20):
+the filter was right, the index had no words. A new kind whose content people
+will search for takes a migration in the shape of
 `migrations/0035_comment_fts.sql` (wrap the existing expression; never edit
 0008, its sqlx checksum is immutable) and the same kind in
 `scripts/maintenance/nip_rs_search_allowlist.sql`. The migration rewrites the
