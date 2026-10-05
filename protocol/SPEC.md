@@ -1345,8 +1345,8 @@ An action is one of four shapes, decided in this order:
 | shape | declared by | the event |
 | --- | --- | --- |
 | **deletion** | `emits.kind: 5` | NIP-09: `a` naming the object, `k` its kind; no `h`; takes no value |
-| **creation** | `input.type: "object"` with `properties` | a new root of `emits.kind`: a fresh `d` if addressable, one tag per property, the Folder tag, and `[setTag, <object's address>]` when `toAddressOf` is `"self"` |
-| **change** | `emits.field` | `emits.kind` carrying the fold rule's target, field and value tags (§7.1), `h`, and `ts` when the rule orders by it |
+| **creation** | `input.type: "object"` with `properties` | a new root of `emits.kind`: a fresh `d` if addressable, one tag per property, the Folder tag, `[setTag, <object's address>]` when `toAddressOf` is `"self"`, and one `["p", <key>]` per distinct person a `pubkey` property names |
+| **change** | `emits.field` | `emits.kind` carrying the fold rule's target, field and value tags (§7.1), `h`, `ts` when the rule orders by it, and `["p", <value>]` when the input is `pubkey` and the value is not empty |
 | **comment** | `emits.scope: "address"` | NIP-22 `kind:1111` naming the object (§6.4) |
 
 **A property's name is the tag its value is written to**, unless it declares
@@ -1356,6 +1356,15 @@ because the second would silently replace the first. `input.enum` (or a
 property's `enum`) names a vocabulary (§7.4) the value MUST come from — the
 owner cannot enforce it, so the consumer checks. An empty property is omitted,
 not written as an empty tag.
+
+**`type: "pubkey"` names a person** (SHA-28, decided 2026-10-05), on a scalar
+input or on a property. Its value is a person's key as 64 lowercase hex, or `''`
+to clear the field. Every writer — the owner's own included — adds exactly one
+`["p", <key>]` for each person it names, because the value tag is not indexed
+and §11.8 makes a person a member of a file by that `p`. A consumer MUST refuse
+any other value (an npub, upper-case hex) rather than write it without the
+`p`: it would fold as the field's value and make nobody a member. There is no
+opt-out; a person named by mistake leaves the file themselves (§11.8).
 
 An action MAY produce more than one event (`listed`, below). A consumer MUST
 publish them in the order given and stop at the first refusal, because each
@@ -2092,6 +2101,7 @@ and already carries what the rule needs:
 | took part in its conversation | a message in `F`'s stream (§11.1) authored by `P` |
 | was mentioned in it | a message in `F`'s stream whose content mentions `P` (§13) |
 | was placed on it | a `kind:1851` on `F` carrying `["p", P]`, whose field is not a membership field and whose `value` is not empty — an assignee, a lead |
+| was named on it when it was made | `F`'s root event carrying `["p", P]`, which a creation writes for a `pubkey` property (§7.3) — a lead set on a new project. It joins as `created it` does, at the earliest `created_at` of the root the reader holds. (Decided 2026-10-05.) |
 | was added, or joined | a `kind:1851` on `F` setting `member:<P>` to `true`, by anyone |
 
 A person **leaves** `F` with one event: a `kind:1851` on `F` setting
@@ -2107,7 +2117,9 @@ left.
 
 A placement counts by its `p` alone (decided 2026-10-01), so the members a
 fold finds are exactly what the `#p` filter below returns. A writer that places
-a person MUST add `["p", <value>]`. On production on 2026-09-30, 37 of 52
+a person MUST add `["p", <value>]`; a change places a person exactly when its
+action's input is `type: "pubkey"` (§7.3), so a generic writer needs no list of
+field names. On production on 2026-09-30, 37 of 52
 assignee changes and all 4 lead changes carried no `p`, and those place nobody.
 A change with an empty `value`, such as an unassign, takes someone off the file
 and places nobody, whatever `p` it carries.
@@ -2157,7 +2169,9 @@ folded as above:
  {"kinds": [1111, 9], "#p": ["<P>"]}]
 ```
 
-together with the files `P` created. A client MAY bound these with `since`.
+together with the files `P` created, and the roots that name `P` — one more
+`{"kinds": [<root kinds>], "#p": ["<P>"]}`, whose kinds are the creations the
+workspace's manifests declare with a `pubkey` property. A client MAY bound these with `since`.
 Membership that such a client cannot see lapses for that client alone, and it
 comes back with the next event that names the person.
 
