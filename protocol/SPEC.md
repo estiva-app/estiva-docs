@@ -2043,9 +2043,9 @@ effective(thread:<root>) = max( merged[thread:<root>],
 
 an absent term dropping out. The floor alone is not a frontier: with neither
 a thread nor a stream marker, the absent-marker rule (§11.6, §11.8) decides,
-and a reply at or before the floor is read besides. **T0 is `4294967295`** —
-the stream term is then NIP-RS's — until every Estiva app
-judges by it; it is then set here, once, to the second the rule began. A reply
+and a reply at or before the floor is read besides. **T0 is `1791216225`**
+(2026-10-05T16:03:45Z), the second the rule began, once every Estiva app judged by it;
+it is set once and does not move. A reply
 created at or before T0 is still read by reading its stream, so nothing read
 before the cut-over lights up again. T0 is one suite constant, not per person:
 every reader must agree on which replies predate it, and the rule runs on the
