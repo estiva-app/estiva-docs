@@ -301,6 +301,41 @@ distinct frontier, which is why §11.5 reserves `folder:` for it.
 
 The principle: **add a scheme for the new idea, never relabel the shared one.**
 
+## Why a reply is read only by opening its thread, against NIP-RS
+
+NIP-RS's Hierarchical Frontier Rule lets a stream's marker reach every reply
+under it: reading a conversation reads all its threads. Its own advice is to
+advance a stream only to its newest top-level message, not to the moment it was
+opened. Peek does that since PEE-44, and it does hold a reply that is newer than
+every top-level message. It does not hold the case a person actually meets: a
+reply in an old thread, and then a newer top-level message. Opening the
+conversation reads the newer message, the stream's marker passes the reply, and
+the reply is gone without anyone having seen it. Miky, 2026-10-03: "it should
+only get read when it's actually opened."
+
+The shape was chosen for the direction of its disagreement. Above the reply
+floor, Estiva's effective marker for a thread is never later than NIP-RS's, so
+the two can disagree only by Estiva showing a reply unread that a NIP-RS client
+shows read. That is a reply a person can still find, never one that is hidden.
+Below the floor the direction reverses, deliberately, and only for replies
+older than any thread marker the blob still holds. The cut-over T0 keeps
+every reply that predates the rule exactly as it was, so the change relights
+nothing.
+
+The cost is that a `thread:` key is never made redundant by its stream, so a
+blob only grows, and the byte cap will eventually drop markers that are doing
+work. Dropping one would light replies the person already read, which is the
+bug this rule exists to prevent, arriving later. The reply floor makes the cap
+pay in the other direction, with the oldest replies nobody opened (Miky,
+2026-10-05). Two other options were turned down:
+
+- **A sliding window** ("unread until opened, for N days"). A dot would clear
+  with nothing having happened, and clients with different clocks would
+  disagree.
+- **Holding the stream marker back below the oldest unopened reply.** This
+  stays inside NIP-RS, but it costs a `msg:` key for every top-level message
+  read past that reply, and any NIP-RS client that reads the stream undoes it.
+
 ## Why a person's app state belongs on the relay rather than in an app's database
 
 "You own your data" was true of content and quietly false of everything else. A

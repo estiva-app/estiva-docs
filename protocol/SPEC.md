@@ -1759,7 +1759,7 @@ throwaway relay or a fake query.
 | C15 | **Attachment fold.** An edit carrying `imeta` replaces the message's set. A later edit with none leaves it. An edit carrying one file on a message with two leaves one (§6.8) |
 | C16 | **Reply shape.** A reply to a comment is a `kind:1111` with the comment's `A`/`K`/`P`, `e`/`k`/`p` naming the top-level comment, the comment's `h`, and no lowercase `a` for the object. A reply read back threads under that comment in every conforming app (§6.4) |
 | C17 | **Membership fold.** The file's author is a member from the earliest root version. Writing in the stream, a body mention, an assignee change carrying `["p", P]`, and `member:<P>`=`true` by anyone each make the person a member. A comment's `p` tag alone does not, nor an assignee change without a `p`, nor an unassign, nor a `kind:9` with an `a`. An edit of the root after the author left does not re-join them. A `member:<P>`=`false` signed by someone else is ignored. One signed by `P` ends membership until a later trigger, and member-since is then that trigger's second. Two changes inside one second order by `ts` (§11.8) |
-| C18 | **Unread for a member.** Someone mentioned for the first time on a year-old file has one unread message, the mention. The person's own messages are never unread. A reply is read once its thread's marker or the file's passes it, and the channel's marker never reads a file. A muted file shows only the messages that mention the person (§11.3, §11.8) |
+| C18 | **Unread for a member.** Someone mentioned for the first time on a year-old file has one unread message, the mention. The person's own messages are never unread. A reply is read once its thread's marker or the reply floor passes it, or the file's marker passes it and it predates T0; the channel's marker never reads a file. A muted file shows only the messages that mention the person (§11.3, §11.8) |
 | C19 | **Urgent mention.** A message urgent for `P` carries `["urgent", P]` and `["p", P]` and names `P` in its body as published as an ordinary reference. It is urgent for `P` and for nobody else it names. An `urgent` tag for a person the body does not name is not urgent. An app that does not draw urgency renders it as an ordinary mention (§13.1) |
 
 C11 and C12 both have a failure that is invisible from the app that has it.
@@ -1851,7 +1851,10 @@ between an app interoperating and an app being a second opinion.
 
 Read state is **per person, not per app.** Reading a conversation in one Estiva
 app marks it read in the others, and in any other client on the relay that
-implements NIP-RS.
+implements NIP-RS. One exception is deliberate: a reply in a thread is read only
+by opening its thread (§11.3), which NIP-RS does not require, so a NIP-RS client
+that reads a stream may show a reply read that Estiva still shows unread. The
+reverse happens only below the reply floor (§11.6).
 
 The mechanism is NIP-RS: `kind:30078` blobs, NIP-44 encrypted to self, one per
 installation, merged by taking the **maximum** timestamp per context. The relay
@@ -1871,6 +1874,7 @@ does not already work. This section fixes the identifiers for the Estiva suite.
 | thread | `thread:<root-event-id>` | 64-char lowercase hex |
 | message | `msg:<event-id>` | 64-char lowercase hex |
 | folder | `folder:<folder-address>` | **RESERVED, unspecified** — see §11.5 |
+| reply floor | `reply-floor` | the literal key, one per blob — see §11.3 and §11.6 |
 
 **A container context is the scope a message carries on the wire, verbatim.**
 The `h` tag scopes a message to a channel, and the channel uuid is the context.
@@ -1879,6 +1883,9 @@ context. Neither is prefixed, neither is an application's own id for whatever it
 renders, and nothing has to be looked up to derive either — a reader holding
 the message holds its context. Prefixed forms name frontiers that are *not* a
 wire scope: `thread:` and `msg:` (NIP-RS's own), and the reserved `folder:`.
+`reply-floor` is not a frontier of any one conversation: it is the person's
+floor under every thread (§11.3), and only the byte cap raises it (§11.6). A
+NIP-RS client that does not know it carries it as an opaque context.
 
 **The channel context is the bare channel uuid.** NIP-RS's grandfathered
 clause states that "a bare channel identifier remains the channel context", and
@@ -1937,6 +1944,14 @@ An app advances **exactly the streams it is showing**, and nothing beside them:
 - A screen that shows both — Ship's project page draws the Folder's `kind:9`
   chat and the project's own comments as one feed — advances both.
 - Marking a thread read MUST advance only `thread:<root>`.
+- A screen that draws a thread's replies — a thread opened in a side panel, or
+  replies drawn inline under their comment, as Ship draws every thread —
+  MUST advance `thread:<root>` for each thread it draws, since reading the
+  stream no longer reads them (§11.3). A list that rolls threads up as titles
+  draws none of them.
+- Replies whose root a screen cannot show (deleted, or outside the read) MUST
+  still be openable as a thread — a stand-in for the root — or nothing could
+  ever read them.
 - Marking a message read MUST advance only `msg:<id>`.
 - None of these MUST advance a parent it is not showing.
 
@@ -1949,11 +1964,45 @@ their activity up as titles, advances none of them.
 
 ### 11.3 Hierarchy at read time
 
-A stream's frontier propagates down: `effective(thread:<root>)` is the later of
-the thread's own marker and **its stream's** — the channel uuid for a root in the
-general stream, the file's address for a root about that file. Marking a stream
-read clears threads whose events predate the frontier; replies newer than it
-stay unread until their own marker advances.
+**A reply is read by opening its thread** (CON-34, 2026-10-05). Reading a
+stream reads its top-level messages. A reply stays unread until its own thread
+is opened, however old the thread is and however far past it the stream has
+been read. With `<stream>` the channel uuid for a root in the general
+stream and the file's address for a root about that file:
+
+```
+effective(thread:<root>) = max( merged[thread:<root>],
+                                merged["reply-floor"],
+                                min(merged[<stream>], T0) )
+```
+
+an absent term dropping out. The floor alone is not a frontier: with neither
+a thread nor a stream marker, the absent-marker rule (§11.6, §11.8) decides,
+and a reply at or before the floor is read besides. **T0 is `4294967295`** —
+the stream term is then NIP-RS's — until every Estiva app
+judges by it; it is then set here, once, to the second the rule began. A reply
+created at or before T0 is still read by reading its stream, so nothing read
+before the cut-over lights up again. T0 is one suite constant, not per person:
+every reader must agree on which replies predate it, and the rule runs on the
+merged map, where a key has no blob of its own.
+
+For a reply, `effective(msg:<id>)` is `max(merged[msg:<id>],
+effective(thread:<root>))` — never the stream directly, or a client that
+implements `msg:` would put the stream back. For a top-level message and for
+any other context, NIP-RS's rule stands: the later of its own marker and its
+stream's.
+
+**This diverges from NIP-RS**, whose Hierarchical Frontier Rule lets a
+stream's marker reach every reply under it. Above the reply floor, Estiva's
+effective marker is never later than NIP-RS's, so whatever a NIP-RS client
+shows unread, Estiva shows unread too. RATIONALE.md says why NIP-RS's rule was
+not enough.
+
+A `thread:` key is **inert** only when `v ≤ max(merged["reply-floor"],
+min(merged[<stream>], T0))`. A client MUST NOT drop a key that is not inert as
+dominated by its parent, which NIP-RS's eviction otherwise allows. A blob does
+not say which stream a `thread:` key belongs to, so a client treats every
+`thread:` key as live, and §11.6's floor pays for dropping one.
 
 **The channel's marker does not propagate into a file's stream.** That is the
 one place the hierarchy stops, and it is the whole point of the file grain:
@@ -2047,6 +2096,22 @@ inside its 90-day horizon, which is what lit a file's whole recent history the
 day a mention made someone follow it. For a **channel**, the choice is still
 the app's. What an app MUST NOT do in either case is write a marker to settle
 the question — that is a read it did not make.
+
+**When a blob is full, the oldest markers go, and the reply floor pays for the
+threads among them** (CON-34, Miky 2026-10-05). `/nip44/encrypt` refuses a
+plaintext over 65,535 bytes (§12.5), so a blob is trimmed to fit, newest marker
+kept first, ties by key — deterministic, so a merge does not hand back what was
+dropped. Dropping a stream's marker costs that stream looking unread. Dropping
+a `thread:` marker would light replies the person already read, since under
+§11.3 no stream marker covers them; so before a client drops a `thread:`
+marker worth `v` it MUST raise `reply-floor` to at least `v`, in the same
+blob. `reply-floor` is merged by maximum like any context, is never dropped
+itself — by the byte cap or by the merged view's 10,000-context cap, which
+raises it the same way — and is only ever raised by this: a client MUST NOT
+write it as an ordinary marker. A reader takes a slot's floor as at most that
+slot's `created_at`, since a floor is the value of a marker already in the
+blob, so a corrupt floor cannot mark later replies read. What the floor costs
+is the oldest replies nobody opened: those at or before it count as read.
 
 Superseded blobs at a NIP-RS coordinate are **hard-deleted** by the relay, and a
 watermark survives a NIP-09 deletion so an old signed blob cannot be
