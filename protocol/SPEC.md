@@ -1824,7 +1824,7 @@ throwaway relay or a fake query.
 | C15 | **Attachment fold.** An edit carrying `imeta` replaces the message's set. A later edit with none leaves it. An edit carrying one file on a message with two leaves one (§6.8) |
 | C16 | **Reply shape.** A reply to a comment is a `kind:1111` with the comment's `A`/`K`/`P`, `e`/`k`/`p` naming the top-level comment, the comment's `h`, and no lowercase `a` for the object. A reply read back threads under that comment in every conforming app (§6.4) |
 | C17 | **Membership fold.** The file's author is a member from the earliest root version. Writing in the stream, a body mention, an assignee change carrying `["p", P]`, and `member:<P>`=`true` by anyone each make the person a member. A comment's `p` tag alone does not, nor an assignee change without a `p`, nor an unassign, nor a `kind:9` with an `a`. An edit of the root after the author left does not re-join them. A `member:<P>`=`false` signed by someone else is ignored. One signed by `P` ends membership until a later trigger, and member-since is then that trigger's second. Two changes inside one second order by `ts` (§11.8) |
-| C18 | **Unread for a member.** Someone mentioned for the first time on a year-old file has one unread message, the mention. The person's own messages are never unread. A reply is read once its thread's marker or the reply floor passes it, or the file's marker passes it and it predates T0; the channel's marker never reads a file. A muted file shows only the messages that mention the person (§11.3, §11.8) |
+| C18 | **Unread for a member.** Someone mentioned for the first time on a year-old file has one unread message, the mention. The person's own messages are never unread. A reply is read once its thread's marker or the reply floor passes it, or the file's marker passes it and it is at or before T0; the channel's marker never reads a file. A muted file shows only the messages that mention the person (§11.3, §11.8) |
 | C19 | **Urgent mention.** A message urgent for `P` carries `["urgent", P]` and `["p", P]` and names `P` in its body as published as an ordinary reference. It is urgent for `P` and for nobody else it names. An `urgent` tag for a person the body does not name is not urgent. An app that does not draw urgency renders it as an ordinary mention (§13.1) |
 
 C11 and C12 both have a failure that is invisible from the app that has it.
@@ -2043,10 +2043,10 @@ effective(thread:<root>) = max( merged[thread:<root>],
 
 an absent term dropping out. The floor alone is not a frontier: with neither
 a thread nor a stream marker, the absent-marker rule (§11.6, §11.8) decides,
-and a reply at or before the floor is read besides. **T0 is `4294967295`** —
-the stream term is then NIP-RS's — until every Estiva app
-judges by it; it is then set here, once, to the second the rule began. A reply
-created at or before T0 is still read by reading its stream, so nothing read
+and a reply at or before the floor is read besides. **T0 is `1791226800`**
+(2026-10-05T19:00:00Z), chosen to fall after every Estiva app judges by the
+rule; it is set once and does not move. A reply created at or before T0 is
+still read by reading its stream, so nothing read
 before the cut-over lights up again. T0 is one suite constant, not per person:
 every reader must agree on which replies predate it, and the rule runs on the
 merged map, where a key has no blob of its own.
