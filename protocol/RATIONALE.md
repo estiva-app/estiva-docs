@@ -313,10 +313,12 @@ conversation reads the newer message, the stream's marker passes the reply, and
 the reply is gone without anyone having seen it. Miky, 2026-10-03: "it should
 only get read when it's actually opened."
 
-The shape was chosen for the direction of its disagreement. Estiva's effective
-marker for a thread is never later than NIP-RS's, so the two can disagree only
-by Estiva showing a reply unread that a NIP-RS client shows read. That is a
-reply a person can still find, never one that is hidden. The cut-over T0 keeps
+The shape was chosen for the direction of its disagreement. Above the reply
+floor, Estiva's effective marker for a thread is never later than NIP-RS's, so
+the two can disagree only by Estiva showing a reply unread that a NIP-RS client
+shows read. That is a reply a person can still find, never one that is hidden.
+Below the floor the direction reverses, deliberately, and only for replies
+older than any thread marker the blob still holds. The cut-over T0 keeps
 every reply that predates the rule exactly as it was, so the change relights
 nothing.
 

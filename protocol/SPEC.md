@@ -1853,8 +1853,8 @@ Read state is **per person, not per app.** Reading a conversation in one Estiva
 app marks it read in the others, and in any other client on the relay that
 implements NIP-RS. One exception is deliberate: a reply in a thread is read only
 by opening its thread (§11.3), which NIP-RS does not require, so a NIP-RS client
-that reads a stream may show a reply read that Estiva still shows unread — never
-the reverse.
+that reads a stream may show a reply read that Estiva still shows unread. The
+reverse happens only below the reply floor (§11.6).
 
 The mechanism is NIP-RS: `kind:30078` blobs, NIP-44 encrypted to self, one per
 installation, merged by taking the **maximum** timestamp per context. The relay
@@ -1976,8 +1976,10 @@ effective(thread:<root>) = max( merged[thread:<root>],
                                 min(merged[<stream>], T0) )
 ```
 
-an absent term dropping out. **T0 is `4294967295`** — the rule is not yet in
-force, and this is NIP-RS's frontier rule exactly — until every Estiva app
+an absent term dropping out. The floor alone is not a frontier: with neither
+a thread nor a stream marker, the absent-marker rule (§11.6, §11.8) decides,
+and a reply at or before the floor is read besides. **T0 is `4294967295`** —
+the stream term is then NIP-RS's — until every Estiva app
 judges by it; it is then set here, once, to the second the rule began. A reply
 created at or before T0 is still read by reading its stream, so nothing read
 before the cut-over lights up again. T0 is one suite constant, not per person:
@@ -1991,9 +1993,10 @@ any other context, NIP-RS's rule stands: the later of its own marker and its
 stream's.
 
 **This diverges from NIP-RS**, whose Hierarchical Frontier Rule lets a
-stream's marker reach every reply under it. Estiva's effective marker is never
-later than NIP-RS's, so whatever a NIP-RS client shows unread, Estiva shows
-unread too. RATIONALE.md says why NIP-RS's rule was not enough.
+stream's marker reach every reply under it. Above the reply floor, Estiva's
+effective marker is never later than NIP-RS's, so whatever a NIP-RS client
+shows unread, Estiva shows unread too. RATIONALE.md says why NIP-RS's rule was
+not enough.
 
 A `thread:` key is **inert** only when `v ≤ max(merged["reply-floor"],
 min(merged[<stream>], T0))`. A client MUST NOT drop a key that is not inert as
