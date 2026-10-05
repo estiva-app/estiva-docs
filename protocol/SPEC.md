@@ -321,8 +321,9 @@ the workspace.
 probe for title search: on a Nostr-for-Business relay, `50` in NIP-11
 `supported_nips` means the indexing above (*decided 2026-10-05, CON-33*). A
 relay that does not index these advertises no `50`. A client that does not see
-`50` falls back to matching titles in the listings it has loaded, and says the
-result is partial. It MUST NOT tell the person that no such file exists. A
+`50` falls back to matching titles in the listings it has loaded, and MAY say
+the result is partial (Peek and Ship do not: *decided 2026-10-05, PEE-21*). It
+MUST NOT tell the person that no such file exists. A
 search over a kind a relay does not index answers `[]` with `200`, exactly as if
 nobody had written the word, so a relay that lists `50` without this indexing
 is not conforming.
