@@ -2106,8 +2106,12 @@ a `thread:` marker would light replies the person already read, since under
 §11.3 no stream marker covers them; so before a client drops a `thread:`
 marker worth `v` it MUST raise `reply-floor` to at least `v`, in the same
 blob. `reply-floor` is merged by maximum like any context, is never dropped
-itself, and is only ever raised by this. What it costs instead is the oldest
-replies nobody opened: those at or before the floor count as read.
+itself — by the byte cap or by the merged view's 10,000-context cap, which
+raises it the same way — and is only ever raised by this: a client MUST NOT
+write it as an ordinary marker. A reader takes a slot's floor as at most that
+slot's `created_at`, since a floor is the value of a marker already in the
+blob, so a corrupt floor cannot mark later replies read. What the floor costs
+is the oldest replies nobody opened: those at or before it count as read.
 
 Superseded blobs at a NIP-RS coordinate are **hard-deleted** by the relay, and a
 watermark survives a NIP-09 deletion so an old signed blob cannot be
