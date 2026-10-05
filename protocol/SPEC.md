@@ -317,11 +317,15 @@ event, so a title in a Folder the reader cannot read is not found. An object
 with no `h` is channel-less, readable and therefore findable by every member of
 the workspace.
 
-**Search is a SHOULD.** A relay that does not index these advertises no `50` in
-its NIP-11 `supported_nips`, and a relay that does not support a kind answers
-`[]` with `200`, exactly as if nobody had written the word. A client that does
-not see `50` falls back to matching titles in the listings it has loaded, and
-says the result is partial. It MUST NOT tell the person that no such file exists.
+**Search is a SHOULD.** A workspace is one relay (§2), so a client does not
+probe for title search: on a Nostr-for-Business relay, `50` in NIP-11
+`supported_nips` means the indexing above (*decided 2026-10-05, CON-33*). A
+relay that does not index these advertises no `50`. A client that does not see
+`50` falls back to matching titles in the listings it has loaded, and says the
+result is partial. It MUST NOT tell the person that no such file exists. A
+search over a kind a relay does not index answers `[]` with `200`, exactly as if
+nobody had written the word, so a relay that lists `50` without this indexing
+is not conforming.
 
 **Typeahead.** The reference relay accepts `"search_mode": "prefix"` in a
 `/query` filter: the last word matches as a prefix, so `zebraf` finds
