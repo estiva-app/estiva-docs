@@ -725,6 +725,8 @@ this standard, rather than being reconciled by fiat now.
 
 #### Decided 2026-09-29: own messages and agents' messages (CON-5)
 
+*Replaced 2026-10-06 by "own messages only", below.*
+
 The two choices above converge on one rule, for edit and delete alike. For
 these two controls it replaces both the 2026-09-06 MUST NOT and the choice of
 2026-09-21:
@@ -753,6 +755,25 @@ missing one withholds it from an owner, which is the cost this rule removes.
 An app that cannot read the author's profile offers the control, which is never
 wrong. Peek adds the `bot` case to PEE-32's gate and Ship hides the control on
 other humans' messages, both in CON-5's extraction.
+
+#### Decided 2026-10-06: own messages only (SHI-29)
+
+This replaces the 2026-09-29 rule above, for edit and delete alike:
+
+- An app **SHOULD** offer Edit and Delete on a message **the viewer wrote**.
+- An app **SHOULD NOT** offer them on any other message, **an agent's
+  included**. An app that does not know who the viewer is offers neither.
+- Whichever it offers, the relay adjudicates, and an app MUST surface a refusal
+  in the relay's own words, as above.
+
+The 2026-09-29 rule kept the owner's path and assumed the dead control was
+rare. In use it was not. Katerina met Edit and Delete on every message by
+"Claude (steered by Miky)" in both apps, and the relay refused her each time.
+The owner path it kept had been used once. An agent can still edit and delete
+its own messages, and its owner keeps the right on the relay. Only the
+control in the apps goes. Offering the control to the agent's owner alone needs
+ownership a client can verify, such as a NIP-OA `auth` tag on the agent's
+`kind:0`. That is a protocol change and is tracked on its own ticket.
 
 ### 6.6 Reactions
 
@@ -1110,7 +1131,7 @@ changed on the relay at the time.
 | a reply is never a root | 6.4 | interop's `isCommentOn` is per event | 0 |
 | a nested chat reply files under its `root` | 6.4 | Peek's channel read drops it | 1 |
 | a `1111` with no `A`: every `a` is an `A` | 6.4 | none (Peek equivalent by `#a`) | 0 |
-| Edit and Delete: own and `bot` messages | 6.5 | Peek hides `bot` messages; Ship offers on humans' | 1,181 agent messages |
+| Edit and Delete: own and `bot` messages (replaced 2026-10-06 by own messages only, SHI-29) | 6.5 | Peek hides `bot` messages; Ship offers on humans' | 1,181 agent messages |
 | `ts` exactly within its second | 6.2 | Peek and interop accept ±1 s | 0 of 3,470 |
 | edit target: first 64-hex `e` | 6.8 | none since PEE-38 (Peek, interop 0.34.0); the relay refuses a second `e` since CON-21 | 0 of 113 |
 | reaction target: last 64-hex `e` | 6.6 | Ship and interop take the first | 0 of 57 |
@@ -1820,7 +1841,7 @@ throwaway relay or a fake query.
 | C11 | **Two strengths.** On one object: a `1111` whose `A` is the object is a comment; a `1111` whose `A` is another file but whose `a` names this one is a mention; a `kind:9` whose body names the object is a mention; a `1111` with no `A` is a comment on each of its `a`. Mentions are presented apart from comments. A reply carrying the object's `a` lists as neither (§6.4) |
 | C12 | **Edit fold.** Three edits to one message inside one second, carrying `ts`, fold to the last by `ts`. One whose `ts` is off by a second folds by `created_at`. An edit whose first `e` is marked and names another message is applied to that message and never to the second `e`. An edit byte-identical to the body does not mark the message edited. The message is marked edited, and shows the current text (§6.2, §6.8) |
 | C13 | **Reaction horizon and count.** With 101 targets, reactions are asked for the newest 100 and the omission of 1 is reported. `+`, empty and a duplicate from one pubkey count as one `+`. A reaction with two `e` counts against the last (§6.6) |
-| C14 | **Deletion left to the relay.** After the author's `kind:5`, the next read no longer holds the message, and the app shows nothing for it from local state. A non-author's `kind:5` is refused and the refusal is shown in the relay's words. Edit and Delete are offered on the viewer's own message and on a `bot: true` author's, and not on another human's (§6.5) |
+| C14 | **Deletion left to the relay.** After the author's `kind:5`, the next read no longer holds the message, and the app shows nothing for it from local state. A non-author's `kind:5` is refused and the refusal is shown in the relay's words. Edit and Delete are offered only on the viewer's own message — not on another person's or an agent's (§6.5, 2026-10-06) |
 | C15 | **Attachment fold.** An edit carrying `imeta` replaces the message's set. A later edit with none leaves it. An edit carrying one file on a message with two leaves one (§6.8) |
 | C16 | **Reply shape.** A reply to a comment is a `kind:1111` with the comment's `A`/`K`/`P`, `e`/`k`/`p` naming the top-level comment, the comment's `h`, and no lowercase `a` for the object. A reply read back threads under that comment in every conforming app (§6.4) |
 | C17 | **Membership fold.** The file's author is a member from the earliest root version. Writing in the stream, a body mention, an assignee change carrying `["p", P]`, and `member:<P>`=`true` by anyone each make the person a member. A comment's `p` tag alone does not, nor an assignee change without a `p`, nor an unassign, nor a `kind:9` with an `a`. An edit of the root after the author left does not re-join them. A `member:<P>`=`false` signed by someone else is ignored. One signed by `P` ends membership until a later trigger, and member-since is then that trigger's second. Two changes inside one second order by `ts` (§11.8) |
