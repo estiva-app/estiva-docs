@@ -12,6 +12,8 @@ Files and Components
 > draft's central open question (multi-writer) far better than any option
 > sketched below. Kept as a record of the reasoning that led there; its one
 > surviving idea is addressable sub-file units for anchoring comments.
+> `30841` is retired (COM-3) and refused by the relay; `30840` lives on as the
+> bare file, [SPEC §6.7](../SPEC.md), with a different shape.
 
 This NIP defines `kind:30840` (a **File**) and `kind:30841` (a **Component**):
 a shared business object composed of separately addressable parts.

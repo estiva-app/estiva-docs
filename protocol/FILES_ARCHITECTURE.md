@@ -313,12 +313,11 @@ than where NIP-FC left things.
   the reasoning — its "Open Questions" section is what led here — but it should
   not be proposed. Its one surviving idea is addressable sub-file units for
   comment anchoring (§5).
-- **The Meet app currently publishes a File + Components** (`kind:30840/30841`).
-  Under this model it should commit Markdown to a repo instead. That is a rewrite
-  of the publish path, not of the app.
-- **The two relay patches stay useful.** `kind:9802` (NIP-84) is unaffected and
-  ratified. `30840/30841` would become dead if this model is adopted — worth
-  keeping on the branch until the decision is firm.
+- **No app publishes Components.** (When this was written a demo "Meet app"
+  published a File + Components; production never held a `kind:30841`.)
+- **The relay patches.** `kind:9802` (NIP-84) is unaffected and ratified.
+  `30840` lives on as the bare file (SPEC §6.7); `30841` is retired and refused
+  by the relay (COM-3, [KINDS.md §6](KINDS.md)).
 
 ## 9. What to check next
 
