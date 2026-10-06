@@ -188,13 +188,21 @@ push leases, stream message variants. **Do not read that file as a menu.** Most
 of it belongs to upstream Buzz features the Estiva suite does not ship, and
 picking a number out of it will produce an event no Estiva app renders.
 
-Two that were registered *for* NfB and then not used — one of which now has a
-use:
+One that was registered *for* NfB, went unused, and now has a use:
 
 | Kind | Name | Status |
 | --- | --- | --- |
 | `30840` | **Bare file** | **The file no app owns — SPEC §6.7, decided 2026-09-11.** A Peek topic is one. Registered on `nfb-demo-kinds` as `KIND_FILE`, `MessagesWrite`; `h` is SHOULD at ingest and MUST in SPEC. Granted to `estiva-peek` (estiva-id#66). Built by `buildBareFile` in `@estiva-app/protocol` 0.20.0; resolved without a manifest by `@estiva-app/interop` 0.19.0 |
-| `30841` | Component | Registered, unused, and **deprecated**: blocks carry ids (§13.3) and attachments are blocks (RFC 0.6 §3). COM-3 decides whether it is retired or repurposed |
+
+### Retired numbers
+
+A retired number was allocated, never carried data we keep, and is refused
+everywhere. **Never reallocate one** — an old client or a stray event would give
+it two meanings.
+
+| Kind | Name | Status |
+| --- | --- | --- |
+| `30841` | Component | Retired (COM-3, 2026-10). Allocated by NIP-FC, never published on production. Refused by the relay (buzz#26), granted to no app by Estiva ID, and no longer built by `@estiva-app/protocol` (0.27.0). Blocks carry ids (SPEC §13.3), so nothing needs it |
 
 ---
 
@@ -203,7 +211,7 @@ use:
 Provisional Estiva numbers are taken from ranges unused in the NIP index:
 **`30820`–`30899`** for addressable objects and **`185x`** for regular ones.
 `9101` is outside both — it was chosen to sit in the regular range while
-clearing NIP-29's admin block.
+clearing NIP-29's admin block. Skip the retired numbers in §6.
 
 Before you take a number, read [ADDING-A-KIND.md](ADDING-A-KIND.md). Registering
 the number is the easy part; three gates have to open, and each one refuses
