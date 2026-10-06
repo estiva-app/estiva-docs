@@ -305,7 +305,7 @@ So the sequencing in §11.3 inverts. **§6 is answered in Ship first, and Leaf s
 
 **The hard problem is still hard, and the options are unchanged:** an app-maintained anchor event per component; content-addressed anchors that degrade to "somewhere in this file" when the target changes; `(path, anchor-id)` with the app responsible for rewriting. What changed is that there is now somewhere cheap to test them.
 
-**The kind numbers already exist and are already published.** `KIND.FILE = 30840` and `KIND.COMPONENT = 30841`, with `buildFile` and `buildComponent`, ship today in `@estiva-app/protocol` — left over from NIP-FC, which FILES_ARCHITECTURE superseded as a *document model* while explicitly preserving its anchoring idea. Production holds **zero** events of either kind. So the anchoring work inherits allocated, published, unused numbers, and §12.1's caution about squatting does not apply here: these were allocated in our own NIP, not taken from a range we do not own.
+**The kind numbers already exist and are already published.** `KIND.FILE = 30840` and `KIND.COMPONENT = 30841`, with `buildFile` and `buildComponent`, ship today in `@estiva-app/protocol` — left over from NIP-FC, which FILES_ARCHITECTURE superseded as a *document model* while explicitly preserving its anchoring idea. Production holds **zero** events of either kind. So the anchoring work inherits allocated, published, unused numbers, and §12.1's caution about squatting does not apply here: these were allocated in our own NIP, not taken from a range we do not own. *(Since then: anchoring was solved by block ids, SPEC §13.3; 30840 became the bare file and 30841 was retired, 2026-10-06 — see [KINDS.md §6](KINDS.md).)*
 
 ## 7. Conversation
 

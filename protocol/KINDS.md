@@ -196,13 +196,13 @@ One that was registered *for* NfB, went unused, and now has a use:
 
 ### Retired numbers
 
-A retired number was allocated, never carried data we keep, and is refused
-everywhere. **Never reallocate one** — an old client or a stray event would give
+A retired number was allocated and is now refused by the Estiva relay and by
+Estiva ID. **Never reallocate one** — an old client or a stray event would give
 it two meanings.
 
 | Kind | Name | Status |
 | --- | --- | --- |
-| `30841` | Component | Retired (COM-3, 2026-10). Allocated by NIP-FC, never published on production. Refused by the relay (buzz#26), granted to no app by Estiva ID, and no longer built by `@estiva-app/protocol` (0.27.0). Blocks carry ids (SPEC §13.3), so nothing needs it |
+| `30841` | Component | Retired 2026-10-06. Allocated by NIP-FC, never published on production. Refused by the relay (buzz#26), granted to no app by Estiva ID, and no longer built by `@estiva-app/protocol` (0.27.0). Blocks carry ids (SPEC §13.3), so nothing needs it |
 
 ---
 
