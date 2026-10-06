@@ -1131,7 +1131,7 @@ changed on the relay at the time.
 | a reply is never a root | 6.4 | interop's `isCommentOn` is per event | 0 |
 | a nested chat reply files under its `root` | 6.4 | Peek's channel read drops it | 1 |
 | a `1111` with no `A`: every `a` is an `A` | 6.4 | none (Peek equivalent by `#a`) | 0 |
-| Edit and Delete: own and `bot` messages | 6.5 | Peek hides `bot` messages; Ship offers on humans' | 1,181 agent messages |
+| Edit and Delete: own and `bot` messages (replaced 2026-10-06 by own messages only, SHI-29) | 6.5 | Peek hides `bot` messages; Ship offers on humans' | 1,181 agent messages |
 | `ts` exactly within its second | 6.2 | Peek and interop accept ±1 s | 0 of 3,470 |
 | edit target: first 64-hex `e` | 6.8 | none since PEE-38 (Peek, interop 0.34.0); the relay refuses a second `e` since CON-21 | 0 of 113 |
 | reaction target: last 64-hex `e` | 6.6 | Ship and interop take the first | 0 of 57 |
