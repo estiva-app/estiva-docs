@@ -85,6 +85,9 @@ engineering-only goes here, below the parts everyone reads.*
 
 ## Notes
 
+- **Projects written before 2026-10-07** use bold labels and may have no Goal or
+  Done when. They stay valid; add the headings when the project is next shaped or
+  swept for its own sake, not in a bulk rewrite.
 - **The issue list is fixed when the project is shaped.** An issue is added only
   for a blocker — it stops the Done when, or it is a production bug a person hits
   now — or on Miky's call. Everything else found on the way is a line in Later.

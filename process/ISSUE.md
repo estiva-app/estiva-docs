@@ -24,9 +24,10 @@ QA-1/QA-2 by probe, or Miky/Katerina by hand. Not the mechanism.>
 <The project milestone it belongs to; omit the section if the project has none.>
 
 ## Decided
+*One bullet per decision; omit the section until there is one.*
 - <YYYY-MM-DD — a product, design or protocol question in a few words → the answer
   (who gave it — Miky, or Katerina for design — and where: a link, or "in the
-  kickoff session")>. One line per decision; omit the section until there is one.
+  kickoff session")>
 
 ---
 
