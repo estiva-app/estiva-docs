@@ -9,25 +9,37 @@ Copy everything below the line.
 ---
 
 ```markdown
-**Who, when:** <A real person at a real moment: "Katerina, 24 Sep, replied to a
-comment in a Ship issue from Peek and it stayed unread." Link where it happened.>
-**What changes:** <One sentence, in their words: what they can now do or no longer
-run into.>
-**Done when:** <The action that person can take on production, and as whom it is
-checked — QA-1/QA-2 by probe, or Miky/Katerina by hand. Not the mechanism.>
-**Milestone:** <The project milestone it belongs to; omit if the project has none.>
-**Decided:** <YYYY-MM-DD — a product, design or protocol question in a few words →
-the answer (who gave it — Miky, or Katerina for design — and where: a link, or "in
-the kickoff session"). One line per decision; omit until there is one.>
+## Who, when
+<A real person at a real moment: "Katerina, 24 Sep, replied to a comment in a Ship
+issue from Peek and it stayed unread." Link where it happened.>
+
+## What changes
+<One sentence, in their words: what they can now do or no longer run into.>
+
+## Done when
+<The action that person can take on production, and as whom it is checked —
+QA-1/QA-2 by probe, or Miky/Katerina by hand. Not the mechanism.>
+
+## Milestone
+<The project milestone it belongs to; omit the section if the project has none.>
+
+## Decided
+- <YYYY-MM-DD — a product, design or protocol question in a few words → the answer
+  (who gave it — Miky, or Katerina for design — and where: a link, or "in the
+  kickoff session")>. One line per decision; omit the section until there is one.
 
 ---
 
-<Engineering detail: what is wrong or missing and where, the approach, repos,
-Prior, links to the PR, SPEC sections and related issues.>
+## Engineering
+<What is wrong or missing and where, the approach, repos, Prior, links to the PR,
+SPEC sections and related issues.>
 ```
 
 ## Writing the top section
 
+- **Headings, so it reads at a glance** (Miky, 2026-10-07). Issues written
+  before then carry the same sections as bold `**Who, when:**` labels; they mean
+  the same and are rewritten only when the description is edited anyway.
 - **Who, when is real or it is blank.** Right now the real people are Miky and
   Katerina. With no real moment yet, write `Blank — to find: <what would show it>`
   rather than a hypothetical user. A bug report is its own moment: who saw what,
