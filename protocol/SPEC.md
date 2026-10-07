@@ -2949,7 +2949,7 @@ tags:    ["h", <folder>], ["a", "30851:<pubkey>:<d>"],
 | | when | what a reader shows |
 | --- | --- | --- |
 | **resolved** | the block is in the object | the block, attributed to the object and linking to it |
-| **unaddressable** | the object's body is not a block document | that the message points at a part of something with no parts |
+| **unaddressable** | the object's body is not a block document | that this part can't be shown, linking to the whole object; nothing was deleted |
 | **detached** | the object is readable and the block is gone | that this part was deleted |
 | **deleted** | the read by address is empty, and a `kind:5` naming the address by `a` is found | that it was deleted, with no title |
 | **unreadable** | the read by address is empty, and no deletion is found | that it is not available to the reader, with no title and no text |
@@ -2958,8 +2958,19 @@ To tell the last two apart, a reader that gets nothing for
 `{kinds:[k], authors:[pubkey], "#d":[d]}` asks for `{kinds:[5], "#a":[address]}`.
 A Folder the reader cannot read is skipped silently, so an empty answer cannot
 say why. A deletion can (42 of 52 file deletions on production carry no `h`).
-The reader does not compare the deletion's signer with the address's author. The
-relay accepts the author's owner too (§6.5), and no client can check that.
+
+A deletion counts only when the reader can trust it:
+
+- **its signer is the address's author** (NIP-09, on any relay), or
+- **it is the shape the relay checked:** no `e` tag, and the address is its
+  first `a`. The reference relay accepts that shape from the author or the
+  author's owner (§6.5), and no client can check ownership itself.
+
+Any other `a` on a deletion is unchecked. Buzz validates only the `e` targets
+when there are any, and only the first `a` when there are none, yet stores
+every tag. Counting the rest would let any member make a hidden object read
+"deleted". On a relay that does not apply §6.5's check, a reader counts only
+the author's own deletions.
 
 **`unreadable` does not claim the object exists.** An address that never existed
 reads the same way, and saying "you may not see this" about a hidden object
@@ -2969,13 +2980,19 @@ nothing about it.
 
 **Deleting a file deletes it by `a`.** A writer deleting an addressable object
 SHOULD carry its `a`, so that a reader of a part can find the deletion. A
-deletion by `e` alone leaves the part reading as `unreadable`.
+deletion by `e` alone leaves the part reading as `unreadable`. Ship's file
+deletion already carries the `a` (2026-10-07).
+
+No production `kind:9` carried a `block` tag when it was narrowed to
+`kind:1111` (2026-10-07: none among the last 1000 messages, and Ship writes
+the tag only through `buildComment`), so the narrowing changes nothing a person
+sees.
 
 #### Finding the block from a link
 
 Ship's block menu copies `…/issue/<slug>-<d>#block-<id>`. A `urls` pattern MAY
 declare the fragment with a `<block>` placeholder (§7.7), and a consumer
 reading a pasted link then recovers the block as well as the object. A writer
-turns such a link into the `a` and `part` above. `@estiva-app/protocol` 0.28.0
+turns such a link into the `a` and `part` above. `@estiva-app/protocol` 0.28.1
 (`partsOf`, `resolvePart`, `absenceOf`) and `@estiva-app/interop` 0.52.0
 (`matchObjectUrl`'s `block`, `blockUrlOf`) implement this section.
