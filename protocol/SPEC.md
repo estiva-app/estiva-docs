@@ -497,6 +497,7 @@ discussion. The rule, which is what both apps already publish:
 | a `kind:9`'s `a` that its body also names | **mention** — the same index on a message that has no `A` |
 | a `nostr:naddr…` in the body with no tag | **mention** — written before the index existed; a reader that wants it reads the body |
 | a `q` (§13.1) | nothing — it says which *message* this one points at, and a message is not an object a thread attaches to |
+| a `part` (§13.6.1) | nothing — it says which block to show; the `a` beside it is the mention |
 | any tag on a reply | nothing — a reply's lowercase tags name its parent, or repeat the root's; only the root decides how the thread attaches |
 
 A `kind:1111` with no `A` at all is malformed. A reader that meets one reads
@@ -1069,10 +1070,11 @@ change the target's kind, channel, place in a thread or author. An edit that
 appears to change any of those is folded for its content and its `imeta` tags,
 and ignored for the rest.
 
-The indexes a body earns — `p`, `urgent`, `a` and `q` (§6.4, §13.1) — stay as
-first published (added 2026-10-02, CON-25). An edit carries none of them, so a
-person or a message named only in an edit has no tag, and one an edit removed
-keeps it. A reader that needs the edited answer reads the folded body.
+The indexes a body earns — `p`, `urgent`, `a`, `q` and `part` (§6.4, §13.1,
+§13.6.1) — stay as first published (added 2026-10-02, CON-25). An edit carries
+none of them, so a person or a message named only in an edit has no tag, and one
+an edit removed keeps it. A reader that needs the edited answer reads the folded
+body. A `part` is drawn only while the folded body still names its address.
 
 **Attachments fold separately from the body** (amended 2026-09-23). CON-5 found
 62 attachments whose bytes existed only in Convex. The only event that can
@@ -1709,6 +1711,20 @@ the slug.** Matching the trailing uuid alone resolves any site's URL as this
 app's object, which is a way of rendering an attacker's chosen content inside
 someone's conversation. A link matching no published shape MUST render as an
 ordinary link — it is one, and nothing should claim otherwise.
+
+**A block in the fragment** (added 2026-10-07, COM-2). A pattern MAY end in a
+fragment carrying a `<block>` placeholder, which names one block of the object
+(§13.6.1):
+
+```jsonc
+["urls", "https://example.app/issue/<slug>-<d>#block-<block>", "30851"]
+```
+
+The block is optional: the pattern still claims the link without its fragment,
+so an app adds it to a shape it already declares. A consumer that predates this
+reads the pattern as the same shape without the block. A link to one block is
+built from this shape, not from `web`, whose NIP-89 template has only
+`<bech32>`.
 
 **This is the projection layer's inversion applied to links**: the owner says
 what its URLs look like, the consumer decides whether to draw a widget. No
@@ -2563,7 +2579,8 @@ form that is resolvable by an app that does not hold the writer's directory and
 that survives a rename. A message that mentions a person MUST also carry the
 corresponding `p` tag; the tags say who was mentioned, the URI says where in the
 text. A reader that cannot resolve a reference MUST render the URI's own label
-or its shortened form, never blank.
+or its shortened form, never blank. A reference to an object MAY also show one
+block of it, live, through a `part` tag (§13.6.1).
 
 #### An urgent mention — decided 2026-10-02 (CON-17)
 
@@ -2845,6 +2862,12 @@ The address says which object; the `block` tag says which part of it. The id is
 §13.3's — unique within the document and stable across every edit that does not
 replace the block.
 
+**Only a `kind:1111` anchors** (narrowed 2026-10-07, COM-2). Its `A` is what
+says whose block the tag names. A `kind:9` has no `A`, so a reader MUST ignore a
+`block` tag on one. Resolving it against whatever page the message happens to be
+drawn on gives a confident "deleted" about the wrong document. A message that
+shows a block of another object uses `part` (§13.6.1).
+
 **A `block` tag is meaningful only against a block document.** Marker text has
 no addressable sub-unit (§13.1), so an anchor on an object whose body is marker
 text does not resolve and never will. That is not a defect to repair: it is what
@@ -2872,12 +2895,9 @@ This is the same discipline §7.5 applies to an unknown widget and §13.3 to an
 unknown block type, for the same reason each time: **an absence that renders as
 an ordinary presence is indistinguishable from correctness.**
 
-> **This address has a second use, still a draft.** `(object, block)` is also
-> what a *transclusion* needs — a document or a message showing a live part of
-> another object rather than a copy of it. [RFC 0.6](RFC-0.6-COMPOSITION.md)
-> generalises this section's grammar and its four states, and adds a fifth the
-> anchor case cannot reach: content the reader is not permitted to see. Nothing
-> in §13.6 changes if that is accepted; it becomes the degenerate case.
+The same `(object, block)` address has a second use: a message that *shows* a
+live part of another object instead of a copy. That is §13.6.1, and it adds the
+states an anchor cannot reach.
 
 #### An anchor is expected to break
 
@@ -2890,3 +2910,89 @@ So **detachment is a normal state, not an error condition.** An implementation
 MUST NOT delete a comment whose anchor no longer resolves, and MUST NOT rewrite
 the comment to drop its `block` tag: the tag is the record of what the author
 was looking at, and it is still true that they were looking at it.
+
+### 13.6.1 Showing one block of another object in a message
+
+*Decided 2026-10-07 (COM-2), replacing RFC 0.6's draft for this case.*
+
+A message shows a live block of another object by carrying a `part` tag beside
+that object's `a`, with a body that names the object by reference (§13.1) or
+by an app URL (§7.7):
+
+```
+content: "what do you think of this? https://ship.estiva.app/issue/plan-<d>#block-8373a025427f"
+tags:    ["h", <folder>], ["a", "30851:<pubkey>:<d>"],
+         ["part", "30851:<pubkey>:<d>", "8373a025427f"]
+```
+
+- The pair is §13.6's. The relation is not. An anchor is what a comment is
+  *about*, and a part is what a message *shows*. They are separate tags so a
+  comment can be both, and so that a reader that knows neither still draws an
+  ordinary reference to the object.
+- **Pointer, never copy.** A reader resolves the block against the object as it
+  is now, and MUST NOT write the resolved content into the message, a draft, a
+  notification or any store that outlives the view. A copy goes stale and keeps
+  showing text to someone who has since lost access to the object's Folder.
+- One `part` per address. A reader takes the first and ignores the rest. A
+  block id outside `[A-Za-z0-9_-]{1,64}` is ignored, because it ends up in a
+  URL fragment and a selector. Index 3 is reserved for an extent (a section, a
+  range), which nothing writes yet.
+- A writer MUST NOT write a `part` for an address the body does not name. A
+  reader draws a part only while the body, as edited (§6.8), still names its
+  address.
+- A `part` gives no strength (§6.4) and no membership. The `a` beside it is the
+  ordinary mention.
+- It applies to a `kind:9` and to a `kind:1111` alike.
+
+#### Five states, and deleted is not not-permitted
+
+| | when | what a reader shows |
+| --- | --- | --- |
+| **resolved** | the block is in the object | the block, attributed to the object and linking to it |
+| **unaddressable** | the object's body is not a block document | that this part can't be shown, linking to the whole object; nothing was deleted |
+| **detached** | the object is readable and the block is gone | that this part was deleted |
+| **deleted** | the read by address is empty, and a `kind:5` naming the address by `a` is found | that it was deleted, with no title |
+| **unreadable** | the read by address is empty, and no deletion is found | that it is not available to the reader, with no title and no text |
+
+To tell the last two apart, a reader that gets nothing for
+`{kinds:[k], authors:[pubkey], "#d":[d]}` asks for `{kinds:[5], "#a":[address]}`.
+A Folder the reader cannot read is skipped silently, so an empty answer cannot
+say why. A deletion can (42 of 52 file deletions on production carry no `h`).
+
+A deletion counts only when the reader can trust it:
+
+- **its signer is the address's author** (NIP-09, on any relay), or
+- **it is the shape the relay checked:** no `e` tag, and the address is its
+  first `a`. The reference relay accepts that shape from the author or the
+  author's owner (§6.5), and no client can check ownership itself.
+
+Any other `a` on a deletion is unchecked. Buzz validates only the `e` targets
+when there are any, and only the first `a` when there are none, yet stores
+every tag. Counting the rest would let any member make a hidden object read
+"deleted". On a relay that does not apply §6.5's check, a reader counts only
+the author's own deletions.
+
+**`unreadable` does not claim the object exists.** An address that never existed
+reads the same way, and saying "you may not see this" about a hidden object
+would confirm it to anyone holding its address. A reader MUST NOT draw
+`unreadable` like `deleted`. One says the work is gone, and the other says
+nothing about it.
+
+**Deleting a file deletes it by `a`.** A writer deleting an addressable object
+SHOULD carry its `a`, so that a reader of a part can find the deletion. A
+deletion by `e` alone leaves the part reading as `unreadable`. Ship's file
+deletion already carries the `a` (2026-10-07).
+
+No production `kind:9` carried a `block` tag when it was narrowed to
+`kind:1111` (2026-10-07: none among the last 1000 messages, and Ship writes
+the tag only through `buildComment`), so the narrowing changes nothing a person
+sees.
+
+#### Finding the block from a link
+
+Ship's block menu copies `…/issue/<slug>-<d>#block-<id>`. A `urls` pattern MAY
+declare the fragment with a `<block>` placeholder (§7.7), and a consumer
+reading a pasted link then recovers the block as well as the object. A writer
+turns such a link into the `a` and `part` above. `@estiva-app/protocol` 0.28.1
+(`partsOf`, `resolvePart`, `absenceOf`) and `@estiva-app/interop` 0.52.0
+(`matchObjectUrl`'s `block`, `blockUrlOf`) implement this section.
