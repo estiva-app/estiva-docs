@@ -41,24 +41,24 @@ The live projects after the sweep of 2026-10-08, which applied the size rule of 
 
 | project | Goal | first open work |
 | --- | --- | --- |
-| **Optimistic updates & caching for Peek** (`c6b4bb0b`) | going back is instant, and clicking fast does not hit the relay's limit | OPT-2, reads over the open connection (in progress) |
-| **Read / unread** (`f74534fe`) | Unread shows what is new, and what you read stays read | REA-4 (Unread filter and Ship issues), REA-5 (cold load), SHI-47 (indicators blink) |
+| **Optimistic updates & caching for Peek** (`c6b4bb0b`) | *no Goal line yet* | OPT-2, reads over the open connection (in progress) |
+| **Read / unread** (`f74534fe`) | Unread shows what is new for you, and what you have read stays read | REA-4 (Unread filter and Ship issues), REA-5 (cold load), SHI-47 (indicators blink) |
 | **People at the protocol level** (`c3636093`) | anyone's name in Ship, an agent's included, opens a page of what they are assigned | MAN-16 (a person in the SPEC), then the shared resolver |
-| **People in Peek: open and paste a person's link** | a person's link opens them in Peek, and pasting it mentions them | after People's stage 1 |
-| **docs.estiva.app 1: the Specification says what runs** (`a3f2c248`) | a builder looks a rule up and it is true on production | SHA-29, DOC-3, DOC-6, DOC-7, DOC-8, DOC-4 |
-| **docs.estiva.app 2: a grant reviewer sees what it can do** | Overview and Capabilities, then the site goes public | after stage 1 (order decided by Miky 2026-10-08: Spec → Grant → Builder) |
-| **docs.estiva.app 3: a builder follows the docs to their own app** | a fresh agent builds the Quickstart app from the published pages | SHA-23, DOC-12; the Quickstart (DOC-1) shipped |
-| **Folders are one level** | no Folder is listed inside another, and an empty Folder you made can be deleted | MAN-18, MAN-21 |
-| **Workspace apps** (`39395f98`) | a manifest or lookalike file from a key the workspace did not add changes nothing | the roster's `app` role, with Ship and Peek added |
-| **Rich text and blocks** (`254a0dee`) | a description keeps every block you write | MAN-13 (Tab loses text, data loss), RIC-20 (agent tables), RIC-19 |
+| **People in Peek: open and paste a person's link** (`852c45c0`) | a person's link opens them in Peek, and pasting it mentions them | after People's stage 1 |
+| **docs.estiva.app 1: the Specification says what runs** (`a3f2c248`) | a builder looks a rule up in the Specification and it is true on production | SHA-29, DOC-3, DOC-6, DOC-7, DOC-8, DOC-4 |
+| **docs.estiva.app 2: a grant reviewer sees what it can do** (`4d513dea`) | a grant reviewer, with no password, sees what Nostr for Business can do and why | Overview (DOC-9) and Capabilities (DOC-10), then public (DOC-13), after stage 1 (order decided by Miky 2026-10-08: Spec → Grant → Builder) |
+| **docs.estiva.app 3: a builder follows the docs to their own app** (`f9afdc6a`) | a builder who has never seen our code gets from the Quickstart to their own signed-in app using only the published pages | SHA-23, DOC-12; the Quickstart (DOC-1) shipped. The fresh-agent build is the Done when itself (it was referred to as `c4b9fc13`, which was never filed). Access is by email to hello@estiva.app, handled by hand: an Estiva ID invite plus a `client_id` for `http://localhost:5173/` (Miky, 2026-10-03) |
+| **Folders are one level** (`bd46229d`) | no Folder is listed inside another, and a Folder you made by mistake can be deleted | MAN-18, MAN-21 |
+| **Workspace apps** (`39395f98`) | a manifest or lookalike file from a key the workspace did not add changes nothing a member sees | the roster's `app` role, with Ship and Peek added |
+| **Rich text and blocks** (`254a0dee`) | a description written in Ship keeps every block you write: a checklist, a nested list, a callout or an agent's table | MAN-13 (Tab loses text, data loss), RIC-20 (agent tables), RIC-19 |
 | **Intelligence / Launcher** (`a39cafac`) | create a topic from Peek's launcher, filed in the Folder you choose | INT-12 |
-| **Widgets** (`4fdb6017`) | a link draws as an inline chip by default, with an optional attachment | PEE-3 (a URL resolves as you paste) |
-| **Composition** (`fa6af533`) | one live block of a description in a conversation | COM-2 (peek#457 awaits Katerina) |
-| **UI Guardrails** | Katerina's gates; its done-when closed 2026-09-30 (UIG-26) | seven next-phase tickets; whether to close it is Katerina's call |
-| **Catch up the Buzz fork** (`5b2701f3`) | upstream merges keep landing without stopping the relay | CAT-12, on the next upstream merge |
-| **Peek / Ship: Feedback & Bugs**, **Agent: Feedback & Improvements** | intake: a blocker is fixed from there, the rest is a Later line | SHI-4 (refs collide); `9142ac3b` (`edit-issue` flattens a Ship-editor description) |
+| **Widgets** (`4fdb6017`) | a link to an issue, project, topic or person draws as an inline chip by default, with an optional attachment underneath | PEE-3 (a URL resolves as you paste) |
+| **Composition** (`fa6af533`) | *no Goal line yet* | COM-2 (peek#457 awaits Katerina) |
+| **UI Guardrails** (`24684889`) | *no Goal line yet*; its done-when closed 2026-09-30 (UIG-26) | seven next-phase tickets; whether to close it is Katerina's call |
+| **Catch up the Buzz fork** (`5b2701f3`) | *no Goal line yet* | CAT-12, on the next upstream merge |
+| **Peek / Ship: Feedback & Bugs**, **Agent: Feedback & Improvements** | *intake, no Goal*: a blocker is fixed from there, the rest is a Later line | SHI-4 (refs collide); `9142ac3b` (`edit-issue` flattens a Ship-editor description) |
 
-Parked, with their ideas in their descriptions: *Private folders / topic / files* (FOL-10, FOL-44, MAN-20), *Transforming file types*, *Huddles* and *Highlights on the relay* (archived).
+Parked, with their ideas in their descriptions: *Private folders / topic / files* (FOL-10, FOL-44, MAN-20), *Transforming file types*, *Navigation & structure in Nostr for Business* (`0527cd72`, no issues yet), *Huddles* and *Highlights on the relay* (archived). Peek's highlights stay an experiment and must not be published to `kind:9802` while the model is unsettled: 9802 is append-only.
 
 **Completed** — 2026-10-08: *Conversation standard* (reactions, edit and delete, formatting, the shared @ [ / lists, membership and unread, urgent mentions in Peek and Ship; a third app's comments guide, CON-6, was cancelled), *Manifests* (PER-21: the agent works through Ship's manifest alone), *Folder & Other Conversation Improvements*, *Peek: Improvements* and *Leaf Setup*. Archived earlier: *Folders: navigation for the whole suite* and *Folders & Sidebar in Ship / Peek* (2026-09-30), Performance & infrastructure (its last open issue, PER-25, is a Later line of Conversation standard), Shared foundation packages, Projection layer, Convex removed (REM-7/REM-8, 2026-09-25), Make Agent more token efficient (MAK-1…3), DMs on Nostr, Live delivery, Cross-app read state, Agent / Steer, Other, Rewrite Ship, Peek real-time. Their lessons are in [§Finished](#finished--and-what-each-one-taught).
 
@@ -78,7 +78,7 @@ Live dependencies only. If a pair is not here, they are independent.
 
 | blocked | by | why |
 | --- | --- | --- |
-| **People in Peek** | People's stage 1 (the shared person-link resolver, PEO-3) | Peek's /person route and paste-to-mention read the same resolver |
+| **People in Peek**: opening a link (PEO-8) and paste-to-mention (PEO-2) | People's stage 1 (the shared person-link resolver, PEO-3) | Peek's /person route and paste-to-mention read the same resolver |
 | **docs.estiva.app 2** going public (DOC-13) | docs.estiva.app 1 | a public site must not carry a Specification that is untrue |
 | **Leaf starting** | *(nothing)* | Unblocked; files nesting is what makes it cheap |
 
@@ -103,7 +103,7 @@ Open decisions only. Everything settled is in *Finished* or in the RFC it amende
 
 | work | why not yet | what unblocks it |
 | --- | --- | --- |
-| **`@onboarding-team` mentions** | the reference works today; what is missing is fanning a notification to members | nothing protocol-shaped — a Later line of *Folder & Other Conversation Improvements* (was FOL-7) |
+| **`@onboarding-team` mentions** | the reference works today; what is missing is fanning a notification to members | nothing protocol-shaped — a Later line of *Folder & Other Conversation Improvements*, archived (was FOL-7; `ship projects --archived`) |
 | **Association and facets** (RFC 0.5 §2, §3) | parked 2026-09-05; facets withdrawn (§10) | a panel needing §2 |
 | **The upstream NIP proposal** (RFC 0.4 §10.2) | not happening — FOL-1 chose fork | kept as the list to propose if revisited |
 | **The intelligence layer** — cross-app agent actions, per-app harnesses | what it protects is the *persistence*, not the reasoning; see *Highlights on the relay* | the first time a second app's harness needs another app's memories |
