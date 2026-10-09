@@ -11,7 +11,8 @@ Adapted from Linear's PRD guidelines (Context → Usage scenarios → Milestones
 
 **Small, and it finishes.** About 1–2 weeks and at most ~8 issues. Bigger is cut
 to the smallest version worth building, or split into stages, each its own
-project. When the Done when holds, the project is marked Completed and archived —
+project. When the Done when holds, the project is marked Completed and archived
+with a one-line resolution, and each of its issues is archived with it —
 whatever is left in Later stays there. ("Design projects so that they can be
 completed in 1–3 weeks", Linear Method, *Scope projects down*.)
 
@@ -76,7 +77,7 @@ can do when it lands.*
 
 # Progress
 *One dated line per issue closed, newest last — the plain sentence of what a
-person can now do, and the issue's ref. Written by the agent instead of a
+person can now do, and the issue's title (refs collide across projects). Written by the agent instead of a
 comment; the project's conversation is for questions to Miky or Katerina.*
 
 # Later
