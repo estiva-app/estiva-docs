@@ -74,6 +74,11 @@ can do when it lands.*
 ## 2. <…>
 - <issue title>
 
+# Progress
+*One dated line per issue closed, newest last — the plain sentence of what a
+person can now do, and the issue's ref. Written by the agent instead of a
+comment; the project's conversation is for questions to Miky or Katerina.*
+
 # Later
 *Empty at shaping. One line per nice-to-have found while building — polish, an
 edge case nobody has hit, parity on another surface, an idea. Not issues.*

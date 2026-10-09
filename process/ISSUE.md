@@ -29,6 +29,12 @@ QA-1/QA-2 by probe, or Miky/Katerina by hand. Not the mechanism.>
   (who gave it — Miky, or Katerina for design — and where: a link, or "in the
   kickoff session")>
 
+## Progress
+*One dated bullet per stopping point, newest last; omit until there is one.*
+- <YYYY-MM-DD — one plain sentence of where it is: kickoff done, PR opened,
+  merged and checked on production as whom, blocked on what, or cancelled
+  because… Then the PR link.>
+
 ---
 
 ## Engineering
@@ -53,7 +59,7 @@ SPEC sections and related issues.>
   person it protects or the issue it unblocks: "No direct user — unblocks <issue
   title>". Do not invent a story for it.
 - If the work shows the done-when to be wrong, **change the done-when in the
-  description and say so in a comment**. Do not quietly satisfy a different one.
+  description and say so in a Progress line**. Do not quietly satisfy a different one.
 - **Decided lines record what Miky or Katerina settled**, before the build (`/kickoff`) or
   during it. The PR is reviewed against them, and where one contradicts older text
   in the description, the Decided line wins. A decision that lives only in a
@@ -64,8 +70,31 @@ SPEC sections and related issues.>
 ## Comments
 
 A comment lands in the project's conversation in Peek, where people who were not
-involved read it. **Open with one sentence anyone outside the project
+involved read it. Since 2026-10-09 (Miky) **that conversation is for real
+questions to Miky or Katerina**, and their answers. Progress and decisions go in
+the description — `## Progress` and `## Decided` — and findings in the PR
+description; a status change is never announced as a comment.
+
+A question **mentions who should answer** — Miky for product, protocol and
+business, Katerina for design, both when it is both — and carries the user
+moment, the options with their consequence, and the recommendation first, in one
+comment per issue under 600 characters. The answer is copied under `## Decided`.
+
+**Progress lines open with one sentence anyone outside the project
 understands** — what a person can now do, or what the change means for them: "You
 can now move a project to another Folder from its menu, and its conversation
-comes with it." Then the PR link and the technical detail. Under 600 characters;
-the rest goes in the PR description.
+comes with it." Then the PR link.
+
+## Assignee
+
+Whoever acts next: **the agent** when the issue is ready to build (top section
+complete, nothing open for a person to decide); **Miky or Katerina** when their
+input comes first, with the question posted as a comment mentioning them;
+nobody only until it is triaged. When the answer is recorded, it goes back to
+the agent.
+
+## Archiving
+
+An issue closed (`done` or `cancelled`) more than 14 days ago is archived by
+`/sweep`, with a one-line resolution. Archiving a project archives each of its
+issues too.
