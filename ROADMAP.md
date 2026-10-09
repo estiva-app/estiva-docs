@@ -41,7 +41,7 @@ The live projects after the sweep of 2026-10-08, which applied the size rule of 
 
 | project | Goal | first open work |
 | --- | --- | --- |
-| **Optimistic updates & caching for Peek** (`c6b4bb0b`) | *no Goal line yet* | OPT-2, reads over the open connection (in progress) |
+| **Optimistic updates & caching for Peek** (`c6b4bb0b`) | Peek feels instant | OPT-7 (a send that fails says so and its text comes back); milestone 1 and OPT-6 (a message shows as you press Enter) are done |
 | **Read / unread** (`f74534fe`) | Unread shows what is new for you, and what you have read stays read | REA-4 (Unread filter and Ship issues), REA-5 (cold load), SHI-47 (indicators blink) |
 | **People at the protocol level** (`c3636093`) | anyone's name in Ship, an agent's included, opens a page of what they are assigned | MAN-16 (a person in the SPEC), then the shared resolver |
 | **People in Peek: open and paste a person's link** (`852c45c0`) | a person's link opens them in Peek, and pasting it mentions them | after People's stage 1 |
