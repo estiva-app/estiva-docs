@@ -80,9 +80,9 @@ A question **mentions who should answer** — Miky for product, protocol and
 business, Katerina for design, both when it is both — and carries the user
 moment, the options with their consequence, and the recommendation first, in one
 comment per issue under 600 characters. The answer is copied under `## Decided`.
-Until the agent's mention ticket ships, `ship comment` writes a name as plain
-text and notifies nobody, so the agent also says in its session which issues
-wait on whom.
+The agent mentions them with `ship comment --mention miky|katerina`, a plain
+mention (never urgent) that lights the issue on their Desk in Peek, and still
+says in its session which issues wait on whom.
 
 Writing Progress edits the description. Until AGE-8 lands, `ship edit-issue`
 flattens a description written in Ship's editor and detaches its anchored
