@@ -2727,6 +2727,34 @@ Block types: `paragraph`, `heading` (`attrs.level` 1–3), `bulletList`,
 `horizontalRule`, `attachment`, and `widget` — which names a widget from §7.5 and
 follows that section's fallback chain.
 
+A `listItem`'s and a `blockquote`'s `content` is inline runs, never blocks: a
+second line of either is a `\n` in the text.
+
+#### An indented list item
+
+A list is **flat**: a `bulletList`'s or `orderedList`'s `content` is its items,
+and an item indented under the one above carries `attrs.indent`, a whole number
+(absent means 0). A list does not hold a list.
+
+```json
+{ "type": "bulletList", "id": "l1", "content": [
+  { "type": "listItem", "id": "i1", "content": [ { "type": "text", "text": "intro" } ] },
+  { "type": "listItem", "id": "i2", "attrs": { "indent": 1 }, "content": [ { "type": "text", "text": "after" } ] }
+] }
+```
+
+A reader MUST place an item at most one level below the item before it, and
+the first item at 0; a value that is not a whole number ≥ 0 is 0. So the
+children of a deleted parent hang from the item above. Every indented item is of
+its list's type, and an `orderedList` numbers each level from 1, starting again
+under each item of the level above.
+
+A reader that does not know `indent` draws every item, level — nothing is lost,
+which is why the list is flat rather than nested: an older reader expecting
+inline runs in a `listItem` would draw a nested list as an empty item, and its
+editor's save would erase the text. Indenting or outdenting an item changes one
+attribute, so the item keeps its id and every comment anchored to it.
+
 #### The `attachment` block
 
 A file placed in the document. Its `attrs` are NIP-92's `imeta` fields, as a
