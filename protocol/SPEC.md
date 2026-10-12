@@ -138,6 +138,7 @@ consulted. **A consumer MUST NOT let a `kind:31990` claim `39000`.**
 | conversation | `kind:9` messages carrying the Folder's `h` — the Folder's own conversation, §6.4's chat, §11.1's general stream. An `a` on one is a mention (§6.4) and does not take it out of the Folder's conversation. Threads and replies follow §6.4 |
 | `archived` | the `archived` field of `kind:1851` changes on its address (§6.2), counting only a change carrying the Folder's own `h` whose author the relay lists as the Folder's owner or admin (`kind:39001`) — the same people who may rename it (Miky, 2026-10-03) |
 | open in | the `web` template of the generic app declaring the `conversation` aspect (§7.8) |
+| actions | built in, declared by this section and by no manifest: `create-file` — §3.3's **place** for a bare file: a `kind:30840` with a `title` and this Folder's `h` (§6.7, never `buzz-channel`), then the `kind:1852` `add` (`emits.listed`, §7.3). Its `declaredBy` is `spec:3.2`; another app's manifest declaring a `30840` creation on a Folder is not offered beside it (and no manifest may claim `39000` to offer one as its owner). A consumer offers it only on a `39000` whose relay-signed `kind:30890` it has read — one without state is a conversation space, not a Folder (§7.3) — and only if it may sign `30840` and `1852`, and calls it by the opener's `fileNoun` (§7.8) — Peek's "Create topic" (INT-12, 2026-10-12) |
 
 Both the `kind:30890` and the `kind:39000` are signed by the relay. A consumer
 MUST keep either only when its signer is the relay's own key — the
