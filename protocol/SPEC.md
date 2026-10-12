@@ -2745,7 +2745,10 @@ and an item indented under the one above carries `attrs.indent`, a whole number
 
 A reader MUST place an item at most one level below the item before it, and
 the first item at 0; a value that is not a whole number ≥ 0 is 0. So the
-children of a deleted parent hang from the item above. Every indented item is of
+children of a deleted parent hang from the item above. A reader MUST NOT nest
+deeper than 8: an item deeper than that is drawn at 8, and an editor's save
+writes 8. A list one level deeper per item would otherwise fit thousands of
+levels inside §12.3's cap, and an editor walking that tree runs out of stack. Every indented item is of
 its list's type, and an `orderedList` numbers each level from 1, starting again
 under each item of the level above.
 
