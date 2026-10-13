@@ -1894,6 +1894,7 @@ throwaway relay or a fake query.
 | C18 | **Unread for a member.** Someone mentioned for the first time on a year-old file has one unread message, the mention. The person's own messages are never unread. A reply is read once its thread's marker or the reply floor passes it, or the file's marker passes it and it is at or before T0; the channel's marker never reads a file. A muted file shows only the messages that mention the person (§11.3, §11.8) |
 | C19 | **Urgent mention.** A message urgent for `P` carries `["urgent", P]` and `["p", P]` and names `P` in its body as published as an ordinary reference. It is urgent for `P` and for nobody else it names. An `urgent` tag for a person the body does not name is not urgent. An app that does not draw urgency renders it as an ordinary mention (§13.1) |
 | C20 | **Card fold.** A message with `["embed", V, "compact"]` whose body names `V` draws `V`'s row under it. An edit with `["embed", V, "none"]` removes it and, with a byte-identical body, does not mark the message edited. A later edit with no `embed` leaves it removed. An `embed` for a value the folded body does not name draws nothing, and one for a value first named in an edit draws, with no `a` on the edit. With a `part` and an `embed` on the same address, the part wins. An unknown layout draws as `compact`. A reader that does not know `embed` draws the reference (§6.8, §13.6.2) |
+| C21 | **Chip by default.** A message with no `embed` whose body is only `nostr:naddr1…` for `V`, or only an app URL that names `V` by §7.7, with `["a", V]`, draws `V`'s chip and no card. So does a body that names `V` in a sentence. A link on words to `V` draws its words as a link and no card (§13.6.2) |
 
 C11 and C12 both have a failure that is invisible from the app that has it.
 A merged mention looks like somebody said it here. A forged edit looks like an
@@ -3155,10 +3156,17 @@ under a message follows the author's layout, not the manifest's `widget`.
 - An `embed` gives no strength (§6.4) and no membership.
 
 **No `embed` is not `none`.** A reference with no `embed` is drawn by the
-reader's default, which is its chip (§13.1). An `embed` for a value is
-authoritative over any default for it. A known divergence, as of 2026-10-13:
-Peek and Ship draw a reference alone on its line as a card. An `embed` for that
-value replaces that card, and `none` leaves only the chip.
+reader's default, which is its chip (§13.1), wherever it sits, alone on its
+line included. An `embed` for a value is authoritative over any default for it.
+Nothing else gives a message a card: not its `a` tags, not a reference alone on
+its line, not an app link. *Decided 2026-10-13 (OPT-18).*
+
+**A bare app link reads as a reference.** A URL written as itself, not as the
+target of a link on words, that names an object by §7.7 is drawn as that
+object's chip, the same as a `nostr:` reference to it. A link on words keeps its
+words, a URL in code is literal (§13.1), and a URL that names nothing stays a
+link. `linksAsReferences` in `@estiva-app/protocol` applies this rule.
+A reader that cannot resolve links draws the URL.
 
 **Edits change it.** `embed` folds like `imeta` (§6.8): a message's set is the
 `embed` set of its latest edit carrying at least one, and an edit carrying none
