@@ -2782,9 +2782,9 @@ the whole field, by someone who may write it.
 
 A `blockquote` with `attrs.tone` is a callout, a quote drawn to stand out. The
 tones are GitHub's alert kinds: `note`, `tip`, `important`, `warning` and
-`caution`. A `tone` that is not a string is a plain quote; a string a reader
-does not know is still a callout and is drawn as `note`, and an editor keeps it
-as written.
+`caution`, written in lowercase and read without regard to case. A `tone` that
+is not a string is a plain quote; a string a reader does not know is still a
+callout and is drawn as `note`, and an editor keeps it as written.
 
 ```json
 { "type": "blockquote", "id": "q1", "attrs": { "tone": "warning" }, "content": [ { "type": "text", "text": "Blocked on the relay deploy." } ] }
