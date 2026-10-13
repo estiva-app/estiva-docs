@@ -3152,10 +3152,9 @@ under a message follows the author's layout, not the manifest's `widget`.
 
 **No `embed` is not `none`.** A reference with no `embed` is drawn by the
 reader's default, which is its chip (§13.1). An `embed` for a value is
-authoritative over any default for it. Until the Widgets project's second
-milestone, Peek and Ship still draw a reference alone on its line as its card
-(`standaloneReference`); an `embed` for that value replaces that card, and
-`none` leaves only the chip.
+authoritative over any default for it. A known divergence, as of 2026-10-13:
+Peek and Ship draw a reference alone on its line as a card. An `embed` for that
+value replaces that card, and `none` leaves only the chip.
 
 **Edits change it.** `embed` folds like `imeta` (§6.8): a message's set is the
 `embed` set of its latest edit carrying at least one, and an edit carrying none
