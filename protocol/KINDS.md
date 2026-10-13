@@ -39,7 +39,7 @@ nobody held the whole list.
 
 | Kind | Name | Notes |
 | --- | --- | --- |
-| `30850` | Project | Addressable. Root event carries immutable facts only |
+| `30850` | Project | Addressable. Root event carries immutable facts only. Its `key` (3–6 letters, root seed + `1851` override) prefixes its issues' refs — SPEC §6.1 |
 | `30851` | Issue | Addressable. **Status and assignee are not on it** — see §4 |
 | `1851` | Change | Regular, append-only. Authored by whoever acts, not by the object's author |
 | `1111` | Comment | NIP-22 |
