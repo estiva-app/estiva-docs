@@ -2751,6 +2751,11 @@ follows that section's fallback chain.
 A `listItem`'s and a `blockquote`'s `content` is inline runs, never blocks: a
 second line of either is a `\n` in the text.
 
+A reader MUST ignore an `attrs` key it does not know and draw the block as its
+type. The attributes below rely on it: each adds meaning to a block an older
+reader already draws. An editor that does not know one drops it on save and
+keeps the block's text and id.
+
 #### An indented list item
 
 A list is **flat**: a `bulletList`'s or `orderedList`'s `content` is its items,
@@ -2778,6 +2783,40 @@ which is why the list is flat rather than nested: an older reader expecting
 inline runs in a `listItem` would draw a nested list as an empty item, and its
 editor's save would erase the text. Indenting or outdenting an item changes one
 attribute, so the item keeps its id and every comment anchored to it.
+
+#### A checklist item
+
+A `listItem` with `attrs.checked` is a checklist item: `true` is ticked, `false`
+is not. Absent, or any value that is not `true` or `false`, is a plain item; a
+reader MUST NOT reject the document over it. It is per item, on either list
+type, and a list may mix checklist and plain items, as GFM's task lists do. It
+is independent of `indent`: an indented item does not take its parent's tick.
+
+```json
+{ "type": "listItem", "id": "i1", "attrs": { "checked": true }, "content": [ { "type": "text", "text": "ship it" } ] }
+```
+
+Ticking an item is an edit of the document like any other: a new revision of
+the whole field, by someone who may write it.
+
+#### A callout
+
+A `blockquote` with `attrs.tone` is a callout, a quote drawn to stand out. The
+tones are GitHub's alert kinds: `note`, `tip`, `important`, `warning` and
+`caution`, written in lowercase and read without regard to case. A `tone` that
+is not a string is a plain quote; a string a reader does not know is still a
+callout and is drawn as `note`, and an editor keeps it as written.
+
+```json
+{ "type": "blockquote", "id": "q1", "attrs": { "tone": "warning" }, "content": [ { "type": "text", "text": "Blocked on the relay deploy." } ] }
+```
+
+A reader that knows neither attribute draws a plain list item and a plain
+quote, with all their text. Turning an item into a checklist item or a quote
+into a callout changes one attribute, so the block keeps its id. Where a
+description is edited as text, a checklist item is spelled `- [ ] ` / `- [x] `
+and a callout as a quote whose first line is `[!WARNING]`; a message's §13.2
+dialect has neither, and `[x]` there is text.
 
 #### The `attachment` block
 
