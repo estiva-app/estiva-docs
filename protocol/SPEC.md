@@ -3129,7 +3129,11 @@ under a message follows the author's layout, not the manifest's `widget`.
   does not name, and writes the matching `a`/`q` on the original message only:
   an edit carries none (§6.8). A reader draws a card for a value only while the
   folded body names it, by a `nostr:` reference or by an app URL that resolves
-  to it (§7.7), and checks nothing else. There is no `a`/`q` match, so a
+  to it (§7.7), and checks nothing else. A reader MUST resolve such a URL by
+  §7.7 (the host and `<type>` against a published `urls` pattern, and one
+  author for the identity), never by its trailing identifier alone: otherwise a
+  link to any site wears a real object's card. A reader that cannot resolve
+  links draws no card for one. There is no `a`/`q` match, so a
   reference first named in an edit can carry a card. This is §13.6.1's rule for
   `part`. Text in a code span names nothing (§13.1).
 - **First per value.** A reader takes the first `embed` for a value and ignores
