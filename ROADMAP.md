@@ -41,7 +41,7 @@ The live projects after the sweep of 2026-10-13. The sweep of 2026-10-08 applied
 
 | project | Goal | first open work |
 | --- | --- | --- |
-| **Peek opens instantly** (`2924e38d`) | opening Peek is instant: Desk and Topics are on screen within 0.2 s of the page, and what you open next from Desk is already loaded | `0490dd15` (Desk draws from a copy on the device; peek#487 open), then `309612cb` (signed in across tabs) |
+| **Peek opens instantly** (`2924e38d`) | opening Peek is instant: Desk and Topics are on screen within 0.2 s of the page, and what you open next from Desk is already loaded | `0490dd15` (Desk draws from a copy on the device; peek#487 merged, not yet checked on production), then `309612cb` (signed in across tabs) |
 | **Read / unread** (`f74534fe`) | Unread shows what is new for you, and what you have read stays read | REA-4 (Unread filter and Ship issues), REA-5 (cold load), SHI-47 (indicators blink) |
 | **People at the protocol level** (`c3636093`) | anyone's name in Ship, an agent's included, opens a page of what they are assigned | MAN-16 (a person in the SPEC), then the shared resolver |
 | **People in Peek: open and paste a person's link** (`852c45c0`) | a person's link opens them in Peek, and pasting it mentions them | after People's stage 1 |
@@ -105,7 +105,7 @@ Open decisions only. Everything settled is in *Finished* or in the RFC it amende
 | **Association and facets** (RFC 0.5 §2, §3) | parked 2026-09-05; facets withdrawn (§10) | a panel needing §2 |
 | **The upstream NIP proposal** (RFC 0.4 §10.2) | not happening — FOL-1 chose fork | kept as the list to propose if revisited |
 | **The intelligence layer** — cross-app agent actions, per-app harnesses | what it protects is the *persistence*, not the reasoning; see *Highlights on the relay* | the first time a second app's harness needs another app's memories |
-| **Composition beyond the pointer** (RFC 0.6 §6, §7) | RFCs are retired (COM-1 cancelled 2026-10-06); transcluding *one* block shipped (COM-2, SPEC §13.6.1) and a run of blocks is *Composition 2* | a real need for more than a run of blocks |
+| **Composition beyond the pointer** (RFC 0.6 §6, §7) | RFCs are retired (the RFC 0.6 ticket was cancelled 2026-10-06); transcluding *one* block shipped (the finished *Composition*, SPEC §13.6.1) and a run of blocks is *Composition 2* | a real need for more than a run of blocks |
 
 ## Finished — and what each one taught
 
