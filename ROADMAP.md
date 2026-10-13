@@ -37,7 +37,7 @@ A file's **description is the file**, not a document beneath it. Nesting **organ
 
 ## Where things stand
 
-The live projects after the sweep of 2026-10-08, which applied the size rule of 2026-10-07: a project is about 1–2 weeks, at most ~8 issues, with a one-line Goal and a Done when; anything that does not block that Goal is a line in the project's **Later** list, not an issue. **Counts are deliberately not here** — `ship issues --project "…"` is the only place they can be right (OTH-4). Since SHI-4 (2026-10-13) every project has its own key and a new ref names one issue; refs minted before then can still collide, so address an old issue by short id.
+The live projects after the sweep of 2026-10-08, which applied the size rule of 2026-10-07: a project is about 1–2 weeks, at most ~8 issues, with a one-line Goal and a Done when; anything that does not block that Goal is a line in the project's **Later** list, not an issue. **Counts are deliberately not here** — `ship issues --project "…"` is the only place they can be right (OTH-4). Since SHI-4 (2026-10-13) every new project gets its own key, and a new ref is unique among the issues its writer can see. Refs minted before then can still collide, so address an old issue by short id.
 
 | project | Goal | first open work |
 | --- | --- | --- |
