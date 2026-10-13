@@ -353,7 +353,7 @@ Reference root events:
 
 | Kind | Object | Tag order (normative — it is part of the id preimage) |
 | --- | --- | --- |
-| `30850` | Project | `d`, `title`, `h`, `[lead]` |
+| `30850` | Project | `d`, `title`, `h`, `[lead]`, `[key]` |
 | `30851` | Issue | `d`, `title`, `h`, `[a]`, `[ref]` |
 | `30840` | Bare file | `d`, `title`, `h`, `[a]` — §6.7 |
 
@@ -364,9 +364,30 @@ a bare file is the address of the file it sits under, **of any kind**.
 (§5.2), and it MUST NOT be used for addressing. Like `title`, the root tag is
 only its seed: a `kind:1851` with `field` `ref` aimed at a `30851:` address
 overrides it, and the fold (§6.3) gives the current one. That is also how an
-issue created without a ref gets one. **A ref is not unique**: it is numbered
-by whoever assigns it, from what that client can see, so in practice two
-issues share one. A reader that shows an issue by ref MUST show its project beside it, and a
+issue created without a ref gets one. A ref is `<key>-<n>`: the issue's
+project's key (below), and one past the highest `n` under that key on any issue
+the assigning client can see, in any project, so an issue that moved keeps a
+number nobody reuses.
+
+`key` on a Project is that prefix: 3–6 letters `A`–`Z` (`^[A-Z]{3,6}$`). Like
+`ref`, the root tag is only its seed and a `kind:1851` with `field` `key` aimed
+at a `30850:` address overrides it; the root tag comes last, so adding it moves
+no other tag in the id preimage. A writer MUST NOT give a project a key that any
+project it can see holds, or that any ref it can see already starts with. A
+project with no key gets one from the first client that numbers an issue in
+it, as a `kind:1851`, before that issue's ref. A reader shows a value that does
+not match the pattern rather than dropping it, and does not number from it.
+The relay does not check keys (*decided 2026-10-13, SHI-4*).
+
+**Two claims on one key or one ref.** A writer can still collide, with a
+project or issue in a Folder it cannot read, or with another client at the same
+moment. The earlier claim keeps the value: a claim's time is the `created_at`
+of the event that set it (the root's, or the winning `kind:1851`'s), and on a
+tie the lower address keeps it. Only the client that made the later claim moves
+it, by a `kind:1851` to the next free value, after it has published and read
+back. Every other reader shows both and repairs nothing, so a duplicate written
+before keys stays. **So a ref is unique only among what its writer could see**:
+a reader that shows an issue by ref MUST show its project beside it, and a
 lookup by ref returns every issue that carries it (*decided 2026-10-03,
 CON-33*).
 
