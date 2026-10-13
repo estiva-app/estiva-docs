@@ -520,6 +520,7 @@ discussion. The rule, which is what both apps already publish:
 | a `nostr:naddr…` in the body with no tag | **mention** — written before the index existed; a reader that wants it reads the body |
 | a `q` (§13.1) | nothing — it says which *message* this one points at, and a message is not an object a thread attaches to |
 | a `part` (§13.6.1) | nothing — it says which block to show; the `a` beside it is the mention |
+| an `embed` (§13.6.2) | nothing — it says how to draw a reference the body names |
 | any tag on a reply | nothing — a reply's lowercase tags name its parent, or repeat the root's; only the root decides how the thread attaches |
 
 A `kind:1111` with no `A` at all is malformed. A reader that meets one reads
@@ -1052,7 +1053,7 @@ is what the relay validates against, plus `ts`:
 
 | Kind | Tag order | Content |
 | --- | --- | --- |
-| `40003` | `h`, `e`, `ts`, `[imeta…]` | the **new body**, in the target's own format |
+| `40003` | `h`, `e`, `ts`, `[imeta…]`, `[embed…]` | the **new body**, in the target's own format |
 
 - **`h`** is REQUIRED. `40003` is in the relay's `requires_h_channel_scope`, so
   an edit without one is refused with `accepted: false`, and the relay refuses
@@ -1087,10 +1088,12 @@ purpose, since a second ordering rule would be a second thing to get wrong. An
 edit whose target the reader cannot see is held, not dropped: the target may
 arrive later, and a dropped edit is not recovered by a re-read.
 
-**An edit changes the body and the attachments, and nothing else.** It does not
-change the target's kind, channel, place in a thread or author. An edit that
-appears to change any of those is folded for its content and its `imeta` tags,
-and ignored for the rest.
+**An edit changes the body, the attachments and the cards, and nothing else.**
+It does not change the target's kind, channel, place in a thread or author. An
+edit that appears to change any of those is folded for its content and its
+`imeta` and `embed` tags, and ignored for the rest. Cards (`embed`, §13.6.2)
+fold exactly as attachments do below, and are matched against the folded body,
+not against an `a` or `q`: an edit carries none (amended 2026-10-13, OPT-16).
 
 The indexes a body earns — `p`, `urgent`, `a`, `q` and `part` (§6.4, §13.1,
 §13.6.1) — stay as first published (added 2026-10-02, CON-25). An edit carries
@@ -1119,8 +1122,8 @@ repair a non-replaceable message in place is the one that already targets it.
 **What a reader shows.** An app that renders an edited message MUST show the
 current text and MUST mark it as edited. The mark is about the **body**. An
 edit whose content is byte-identical to the body it replaces, judged against
-the body as it then stood, changes attachments only, and a reader SHOULD NOT
-mark the message edited for it. "Edited at" is the last edit that changed the
+the body as it then stood, changes attachments or cards only, and a reader
+SHOULD NOT mark the message edited for it. "Edited at" is the last edit that changed the
 body. Whether earlier versions are reachable is the app's call, because every
 event stays on the relay either way.
 
@@ -1655,6 +1658,11 @@ A widget names a *kind of thing to draw*, never how to draw it. The consumer
 owns the layout throughout — an owner that could specify it would be designing
 another app's product, which is the objection that rules out iframes.
 
+A card under a message follows the layout its author chose (`compact` draws
+the closed `row`, `detailed` the closed `card`, §13.6.2), not the manifest's
+`widget`. The manifest's `widget` still applies everywhere else a file is
+drawn, such as a Folder listing.
+
 ---
 
 ### 7.6 Not every object has an address
@@ -1885,6 +1893,7 @@ throwaway relay or a fake query.
 | C17 | **Membership fold.** The file's author is a member from the earliest root version. Writing in the stream, a body mention, an assignee change carrying `["p", P]`, and `member:<P>`=`true` by anyone each make the person a member. A comment's `p` tag alone does not, nor an assignee change without a `p`, nor an unassign, nor a `kind:9` with an `a`. An edit of the root after the author left does not re-join them. A `member:<P>`=`false` signed by someone else is ignored. One signed by `P` ends membership until a later trigger, and member-since is then that trigger's second. Two changes inside one second order by `ts` (§11.8) |
 | C18 | **Unread for a member.** Someone mentioned for the first time on a year-old file has one unread message, the mention. The person's own messages are never unread. A reply is read once its thread's marker or the reply floor passes it, or the file's marker passes it and it is at or before T0; the channel's marker never reads a file. A muted file shows only the messages that mention the person (§11.3, §11.8) |
 | C19 | **Urgent mention.** A message urgent for `P` carries `["urgent", P]` and `["p", P]` and names `P` in its body as published as an ordinary reference. It is urgent for `P` and for nobody else it names. An `urgent` tag for a person the body does not name is not urgent. An app that does not draw urgency renders it as an ordinary mention (§13.1) |
+| C20 | **Card fold.** A message with `["embed", V, "compact"]` whose body names `V` draws `V`'s row under it. An edit with `["embed", V, "none"]` removes it and, with a byte-identical body, does not mark the message edited. A later edit with no `embed` leaves it removed. An `embed` for a value the folded body does not name draws nothing, and one for a value first named in an edit draws, with no `a` on the edit. With a `part` and an `embed` on the same address, the part wins. An unknown layout draws as `compact`. A reader that does not know `embed` draws the reference (§6.8, §13.6.2) |
 
 C11 and C12 both have a failure that is invisible from the app that has it.
 A merged mention looks like somebody said it here. A forged edit looks like an
@@ -2602,7 +2611,8 @@ that survives a rename. A message that mentions a person MUST also carry the
 corresponding `p` tag; the tags say who was mentioned, the URI says where in the
 text. A reader that cannot resolve a reference MUST render the URI's own label
 or its shortened form, never blank. A reference to an object MAY also show one
-block of it, live, through a `part` tag (§13.6.1).
+block of it, live, through a `part` tag (§13.6.1), and any reference MAY ask
+for a card under the message through an `embed` tag (§13.6.2).
 
 #### An urgent mention — decided 2026-10-02 (CON-17)
 
@@ -3088,3 +3098,82 @@ reading a pasted link then recovers the block as well as the object. A writer
 turns such a link into the `a` and `part` above. `@estiva-app/protocol` 0.28.1
 (`partsOf`, `resolvePart`, `absenceOf`) and `@estiva-app/interop` 0.52.0
 (`matchObjectUrl`'s `block`, `blockUrlOf`) implement this section.
+
+### 13.6.2 Showing a reference as a card
+
+*Decided 2026-10-13 (OPT-16, Widgets).*
+
+A reference reads as a chip in the sentence (§13.1). A message asks for a card
+under it, for any reference its body names, by carrying an `embed` tag:
+
+```
+content: "the plan is in nostr:naddr1… for now"
+tags:    ["h", <folder>], ["a", "30851:<pubkey>:<d>"],
+         ["embed", "30851:<pubkey>:<d>", "compact"]
+```
+
+`["embed", <value>, <layout>]`. `<value>` is what an `a` or `q` carries for the
+same thing: an address, or a 64-hex event id. `<layout>` is how much to show:
+
+| layout | what a reader draws under the message |
+| --- | --- |
+| `compact` | the object's closed `row` (§7.5) |
+| `detailed` | the object's closed `card` (§7.5) |
+| `none` | no card; the reference stays a chip |
+
+The values are a density, not a widget name, so a richer `detailed` can later
+walk a manifest chain that ends in `card` without changing the wire. A card
+under a message follows the author's layout, not the manifest's `widget`.
+
+- **The body names it.** A writer MUST NOT write an `embed` for a value the body
+  does not name, and writes the matching `a`/`q` on the original message only:
+  an edit carries none (§6.8). A reader draws a card for a value only while the
+  folded body names it, by a `nostr:` reference or by an app URL that resolves
+  to it (§7.7), and checks nothing else. There is no `a`/`q` match, so a
+  reference first named in an edit can carry a card. This is §13.6.1's rule for
+  `part`. Text in a code span names nothing (§13.1).
+- **First per value.** A reader takes the first `embed` for a value and ignores
+  the rest. When a `part` and an `embed` name the same address, the part wins,
+  and a writer MUST NOT write both.
+- **Unknown layout.** A reader draws a layout value it does not know as
+  `compact`: the author asked for a card, and the smallest is the safe reading.
+  `none` is defined from the start, so no reader ever draws it.
+- **Order.** Cards are drawn in the order their references first appear in the
+  body.
+- **Pointer, never copy.** A card is resolved as the viewer and never written
+  into the message, as for a part (§13.6.1). Deleted and unreadable are
+  different states, and an unreadable card shows no title.
+- **A message reference** (`q`, an event id) has no projection (§7.6). It is
+  drawn as the reader draws a quoted message (§13.1), for either layout.
+- It applies to a `kind:9`, a `kind:1111` and their `40003` edits. A reader
+  ignores `embed` on any other kind. A block document puts a card in a block,
+  not in this tag.
+- An `embed` gives no strength (§6.4) and no membership.
+
+**No `embed` is not `none`.** A reference with no `embed` is drawn by the
+reader's default, which is its chip (§13.1). An `embed` for a value is
+authoritative over any default for it. Until the Widgets project's second
+milestone, Peek and Ship still draw a reference alone on its line as its card
+(`standaloneReference`); an `embed` for that value replaces that card, and
+`none` leaves only the chip.
+
+**Edits change it.** `embed` folds like `imeta` (§6.8): a message's set is the
+`embed` set of its latest edit carrying at least one, and an edit carrying none
+leaves it. A set replaces: an edit that changes one card carries an `embed` for
+every value whose card it keeps, and `none` for each it removes. So "remove
+every card, keep the chips" is expressible.
+
+A reader that does not know `embed` draws the reference as it always has. A
+NIP-C7 chat client draws every `q` as a quote whatever its `embed` says.
+
+**Not `link-preview`.** The reference relay validates an upstream Buzz tag,
+`link-preview`, on `kind:9`: `["link-preview", "none"]` suppresses previews for
+the whole message, and a snapshot form copies an https page's title and
+description into the event. It is for external pages and is a copy, so it
+cannot carry this meaning, and the relay refuses any other shape of it. `embed`
+is for references to Nostr-for-Business objects and messages. A reader does
+not read one as the other. Precedents: NIP-92 (a tag saying how to present what
+the content names) and NIP-18 (`q` holds an id or an address).
+
+`@estiva-app/protocol` 0.31.0 (`embedsOf`, `embedTag`, `cardsIn`) and
+`@estiva-app/conversation` 0.11.0 (`foldEmbeds`) implement this section.
