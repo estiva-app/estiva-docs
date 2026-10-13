@@ -37,7 +37,7 @@ A file's **description is the file**, not a document beneath it. Nesting **organ
 
 ## Where things stand
 
-The live projects after the sweep of 2026-10-08, which applied the size rule of 2026-10-07: a project is about 1–2 weeks, at most ~8 issues, with a one-line Goal and a Done when; anything that does not block that Goal is a line in the project's **Later** list, not an issue. **Counts are deliberately not here** — `ship issues --project "…"` is the only place they can be right (OTH-4). Refs collide across projects (SHI-4, the open blocker in *Ship: Feedback & Bugs*), so address issues by short id.
+The live projects after the sweep of 2026-10-08, which applied the size rule of 2026-10-07: a project is about 1–2 weeks, at most ~8 issues, with a one-line Goal and a Done when; anything that does not block that Goal is a line in the project's **Later** list, not an issue. **Counts are deliberately not here** — `ship issues --project "…"` is the only place they can be right (OTH-4). Since SHI-4 (2026-10-13) every new project gets its own key, and a new ref is unique among the issues its writer can see. Refs minted before then can still collide, so address an old issue by short id.
 
 | project | Goal | first open work |
 | --- | --- | --- |
@@ -56,7 +56,7 @@ The live projects after the sweep of 2026-10-08, which applied the size rule of 
 | **Composition** (`fa6af533`) | *no Goal line yet* | COM-2 (peek#457 awaits Katerina) |
 | **UI Guardrails** (`24684889`) | *no Goal line yet*; its done-when closed 2026-09-30 (UIG-26) | seven next-phase tickets; whether to close it is Katerina's call |
 | **Catch up the Buzz fork** (`5b2701f3`) | *no Goal line yet* | CAT-12, on the next upstream merge |
-| **Peek / Ship: Feedback & Bugs**, **Agent: Feedback & Improvements** | *intake, no Goal*: a blocker is fixed from there, the rest is a Later line | SHI-4 (refs collide); `9142ac3b` (`edit-issue` flattens a Ship-editor description) |
+| **Peek / Ship: Feedback & Bugs**, **Agent: Feedback & Improvements** | *intake, no Goal*: a blocker is fixed from there, the rest is a Later line | `9142ac3b` (`edit-issue` flattens a Ship-editor description) |
 
 Parked, with their ideas in their descriptions: *Private folders / topic / files* (FOL-10, FOL-44, MAN-20), *Transforming file types*, *Navigation & structure in Nostr for Business* (`0527cd72`, no issues yet), *Huddles* and *Highlights on the relay* (archived). Peek's highlights stay an experiment and must not be published to `kind:9802` while the model is unsettled: 9802 is append-only.
 
