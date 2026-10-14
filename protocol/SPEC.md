@@ -2122,7 +2122,7 @@ throwaway relay or a fake query.
 | C22 | **A description's card.** A block document whose paragraph holds a `reference` mark for `V` with `attrs.embed` `detailed` draws `V`'s chip in the paragraph and `V`'s card after it. The same paragraph with no `embed`, or `none`, draws the chip and no card, alone on its line included. A second reference to `V` in another block with `compact` draws its own row after that block. An unknown `embed` value draws as `compact`. A reader that does not know `embed` draws the chip. Inside a card's `body`, the same reference draws its chip and no card (§13.3) |
 | C23 | **An editor keeps the card.** A document with a `reference` mark carrying `embed` and a key the editor does not know, opened in the editor and saved after an edit to another block, comes back with both keys on the mark and the block's id unchanged (§13.3) |
 | C24 | **A description's URL.** A block document whose paragraph is only an app URL that names `V` by §7.7, as plain text, draws `V`'s chip and no card. The same run marked `{"type":"link","attrs":{"href":<the URL>,"embed":"compact"}}` draws the chip and `V`'s row after the paragraph; an editor that opens it and saves after an edit to another block writes the same run back, and one that removes the card writes the URL as plain text — never a `nostr:` reference. A URL no app claims stays a link, with no card (§13.3) |
-| C25 | **A message's URL.** A message written with an app URL that names `V` by §7.7 — pasted alone, mid-sentence or typed — has that URL in its body as written, never a `nostr:` reference, and carries `["a", V]` (for a message's URL, `["q", <id>]`); on `V`'s conversation itself it carries no second `a`. A reader draws `V`'s chip, and `V` lists the message as a mention (C11). A URL over chosen words is written `[words](url)` and draws as a link. A link to one block carries its `part`, and a URL no app claims carries no tag and stays a link (§13.1, §6.4) |
+| C25 | **A message's URL.** A message written with an app URL that names `V` by §7.7 — pasted alone, mid-sentence or typed — has that URL in its body as written, never a `nostr:` reference, and carries `["a", V]` (for a message's URL, `["q", <id>]`); on `V`'s conversation itself it carries no second `a`. A reader draws `V`'s chip, and `V` lists the message as a mention (C11). A URL over chosen words is written `[words](url)` and draws as a link. A link to one block carries its `part`, and a URL no app claims, or whose identity two authors hold, carries no tag and stays a link (§13.1, §6.4) |
 
 C11 and C12 both have a failure that is invisible from the app that has it.
 A merged mention looks like somebody said it here. A forged edit looks like an
@@ -2849,7 +2849,8 @@ OPT-19: the URL is how a person addresses a file, in a message as in a
 description). A writer MUST keep that URL as written, never rewrite it into a
 `nostr:` reference, and MUST carry the tag the reference would earn: the
 object's `a`, or a message's `q` (§6.4). A reader draws it as the reference's
-chip. A URL that names nothing by §7.7 earns no tag and stays a link, and a link
+chip. A URL that names nothing by §7.7 — an identity two authors hold included,
+as §13.6.2 resolves one — earns no tag and stays a link, and a link
 to one block earns its `part` (§13.6.1). A writer's editor MAY draw the URL as
 its chip while it is written; what it sends is the URL.
 
