@@ -192,7 +192,7 @@ One that was registered *for* NfB, went unused, and now has a use:
 
 | Kind | Name | Status |
 | --- | --- | --- |
-| `30840` | **Bare file** | **The file no app owns — SPEC §6.7, decided 2026-09-11.** A Peek topic is one. Registered on `nfb-demo-kinds` as `KIND_FILE`, `MessagesWrite`; `h` is SHOULD at ingest and MUST in SPEC. Granted to `estiva-peek` (estiva-id#66). Built by `buildBareFile` in `@estiva-app/protocol` 0.20.0; resolved without a manifest by `@estiva-app/interop` 0.19.0 |
+| `30840` | **Bare file** | **The file no app owns — SPEC §6.7, decided 2026-09-11.** A Peek topic is one. Registered on `nfb-demo-kinds` as `KIND_FILE`, `MessagesWrite`; `h` is SHOULD at ingest and MUST in SPEC. Granted to `estiva-peek` (estiva-id#66). Built by `buildBareFile` in `@estiva-app/protocol` 0.20.0; resolved without a manifest by `@estiva-app/interop` 0.19.0. **Its text is the `1851` `description` fold, seeded from `content`** (SPEC §6.7, 2026-10-14): anyone in its Folder saves it, the author included, with interop 0.55's `describe` action; last save wins; a change whose `h` is not the file's Folder is ignored (§6.2) |
 
 ### Retired numbers
 
