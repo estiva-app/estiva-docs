@@ -1973,7 +1973,7 @@ consumer find it. It MAY declare that aspect in `content`:
 
 `aspect` is one of `conversation` or `document`. A specialized app omits it.
 
-*Added 2026-10-14 (Leaf 1; Miky).* `document` stays reserved, and no app
+*Added 2026-10-14 (Leaf 1; follows from §6.11).* `document` stays reserved, and no app
 declares it today. An app owning documents (`kind:30842`, §6.11) owns a kind,
 so it is specialized and omits `aspect`; Leaf declares none.
 

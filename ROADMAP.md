@@ -19,7 +19,7 @@ Last updated 2026-10-13. Not published to the docs site (`site/nav.mjs` is opt-i
 
 A file's **description is the file**, not a document beneath it. Nesting **organises and never grants access**: everything in a Folder is visible to that Folder's members.
 
-**Two kinds of app** ([RFC 0.5 §10.7](protocol/RFC-0.5-ASSOCIATION.md), decided 2026-09-11). A **specialized** app owns kinds and its navigation lists only its own files — Ship lists projects and issues. A **generic** app owns no kinds and renders *one aspect of every file* — Peek the conversation, Leaf the document. **Navigation is by kind; nesting is by intent.** A subject no specialized app claims is a bare file, which the generic apps handle completely. *2026-10-14 (Miky, Leaf 1):* Leaf is specialized after all — it owns the document kind, `30842` (SPEC §6.11), and no app declares the `document` aspect yet.
+**Two kinds of app** ([RFC 0.5 §10.7](protocol/RFC-0.5-ASSOCIATION.md), decided 2026-09-11). A **specialized** app owns kinds and its navigation lists only its own files — Ship lists projects and issues. A **generic** app owns no kinds and renders *one aspect of every file* — Peek the conversation; the `document` aspect is reserved, and no app declares it. **Navigation is by kind; nesting is by intent.** A subject no specialized app claims is a bare file, which the generic apps handle completely. *2026-10-14 (Leaf 1):* Leaf is a specialized app: it owns the document kind, `30842` (SPEC §6.11; Miky decided a document is its own type).
 
 ---
 
