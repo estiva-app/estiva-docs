@@ -45,13 +45,19 @@ nobody held the whole list.
 | `1111` | Comment | NIP-22 |
 | `31989` / `31990` | Handler recommendation / information | NIP-89 manifest. Global, not channel-scoped — discovery must work before you are a member of anything |
 
+### Documents — owned through a manifest; Leaf the first owner
+
+| Kind | Name | Notes |
+| --- | --- | --- |
+| `30842` | Document | **A file type an app owns — SPEC §6.11, decided 2026-10-14 (Miky).** Addressable, the bare file's shape (`d`, `title`, `h`, `[a]`); claimed by an app's `kind:31990` `k` tag, not built in, so any app may own it. `MessagesWrite`; `h` required at ingest. Its text is the `1851` `description` fold (SPEC §6.10). Not a topic: a `30840` never becomes one, nor the reverse. Taken after `30841`, which is retired (§6) |
+
 ### Folders — written by every app, owned by none ([SPEC §3](SPEC.md))
 
 | Kind | Name | Notes |
 | --- | --- | --- |
 | `9007` | Folder create (NIP-29 create group) | The container. Followed by a `1852` so the Folder has state from birth. See §3 |
 | `9002` | Folder rename (NIP-29 edit metadata) | The only rename: owners and admins only (relay). The Folder's title is the `39000` name; a `1852` never carries one |
-| `9008` | Folder delete (NIP-29 delete group) | **Refused by the relay while the Folder holds a file** (`30840`/`30850`/`30851` under its `h`, or anything its listing names); channel owner, the owner of its owner-role agent, or a workspace owner/admin. An accepted one hides every event under the `h` |
+| `9008` | Folder delete (NIP-29 delete group) | **Refused by the relay while the Folder holds a file** (`30840`/`30842`/`30850`/`30851` under its `h`, or anything its listing names); channel owner, the owner of its owner-role agent, or a workspace owner/admin. An accepted one hides every event under the `h` |
 | `1852` | Folder command | `add` / `remove` / `set` addresses; any member may send one, so it carries no name. Never names a `39000:` address — Folders do not nest |
 | `30890` | Folder state | **Relay-signed**, never an app's. What a Folder lists. A NIP-29 group without one is a conversation space, not a Folder |
 | `39000` | Group metadata | Relay-signed, NIP-29. The Folder's address; no `kind:31990` may claim it |
@@ -93,6 +99,7 @@ listing never changes who can read a file.
 | --- | --- |
 | `30850` Project | the Folder it was filed in (or `buzz-channel`, SPEC §7.3) |
 | `30851` Issue | the Folder it was filed in |
+| `30840` Bare file / `30842` Document | the Folder it was filed in |
 | `1851` change | the Folder of the object it changes |
 | `1111` comment / `9` message | the Folder it was filed in |
 
@@ -117,14 +124,14 @@ of the three.
 | Scope | Meaning | Estiva kinds |
 | --- | --- | --- |
 | `UsersWrite` | User-owned global state | `0`, `31989`, `31990` |
-| `MessagesWrite` | A write into a channel | `5`, `7`, `9`, `1111`, `1851`, `30850`, `30851` |
+| `MessagesWrite` | A write into a channel | `5`, `7`, `9`, `1111`, `1851`, `30840`, `30842`, `30850`, `30851` |
 | `AdminChannels` | Channel administration | `9007` |
 | `AdminUsers` | Membership administration | `9030`, `9031` |
 
 `MessagesWrite` on `1851` is doing real work: it is what lets one member set a
 field on another member's object, which is the normal case in a tracker.
 
-`30850` / `30851` / `1851` **require `h` at ingest.** The Folder is not
+`30842` / `30850` / `30851` / `1851` **require `h` at ingest.** The Folder is not
 optional — several apps write these kinds, and one of them forgetting would put
 an unreachable object into the shared space that nobody can unpublish.
 
@@ -134,7 +141,7 @@ migrations 0035 and 0036):
 | Kind | Searchable by |
 | --- | --- |
 | `0`, `9`, `1111` | `content` |
-| `30850`, `30840`, any object kind `30000`–`39999` except `39000`–`39009` and the private kinds below | root `title` |
+| `30850`, `30840`, `30842`, any object kind `30000`–`39999` except `39000`–`39009` and the private kinds below | root `title` |
 | `30851` | root `title` and root `ref` |
 | `1851` | `value`, only for a `title` change aimed at an object or a `ref` change aimed at a `30851` |
 | `5`, `7`, `9007`, `9030`, `9031`, `30078`, the author-only or ciphertext kinds `30179`, `30300`, `30350`, `30622` (and a `1851` aimed at one), any other `1851` | not searchable |
@@ -153,12 +160,16 @@ Source of truth: `SEED_APPS` in `estiva-id/src/db/seed.ts`, stored in the
 | --- | --- | --- |
 | Estiva Peek | `estiva-peek` | `9, 7, 5, 9007, 27235, 1851, 9101, 9002, 9008, 1111, 30078, 41010, 41011, 41012, 22242, 30851, 40003, 1852, 24242, 30840, 30850` |
 | Estiva Ship | `estiva-ship` | `30850, 30851, 1851, 9, 5, 9007, 9002, 31989, 27235, 1111, 30078, 7, 40003, 1852, 24242, 22242` |
-| Estiva Leaf | `estiva-leaf` | `27235, 22242` |
+| Estiva Leaf | `estiva-leaf` | `27235, 22242, 30842, 1852, 1851, 1111, 40003, 5, 24242` |
 
-*Copied from `seed.ts` on origin/main, 2026-10-03 (MAN-3).* Against SPEC §3.3's
-Folder set (`9007, 9002, 9008, 1852, 1851, 9, 5`): Peek holds all of it; Ship
-all but `9008`, so Ship does not offer deleting a Folder ("deleting a Folder
-stays Peek's", the seed's own note); Leaf none yet.
+*Copied from `seed.ts` on origin/main, 2026-10-03 (MAN-3); Leaf's row
+2026-10-14 (Leaf 1).* Against SPEC §3.3's Folder set (`9007, 9002, 9008, 1852,
+1851, 9, 5`): Peek holds all of it; Ship all but `9008`, so Ship does not offer
+deleting a Folder ("deleting a Folder stays Peek's", the seed's own note); Leaf
+only `1852, 1851, 5`, enough to place a document in a Folder and change it, not
+to make, rename or delete a Folder. Leaf does not sign `30840`: it offers no
+bare-file creation (SPEC §3.2), and its `31990` (claiming `30842`) is signed by
+a dedicated manifest key the relay admits as a member (`9030`), not here.
 
 Two things this table teaches:
 
@@ -192,7 +203,7 @@ One that was registered *for* NfB, went unused, and now has a use:
 
 | Kind | Name | Status |
 | --- | --- | --- |
-| `30840` | **Bare file** | **The file no app owns — SPEC §6.7, decided 2026-09-11.** A Peek topic is one. Registered on `nfb-demo-kinds` as `KIND_FILE`, `MessagesWrite`; `h` is SHOULD at ingest and MUST in SPEC. Granted to `estiva-peek` (estiva-id#66). Built by `buildBareFile` in `@estiva-app/protocol` 0.20.0; resolved without a manifest by `@estiva-app/interop` 0.19.0. **Its text is the `1851` `description` fold, seeded from `content`** (SPEC §6.7, 2026-10-14): anyone in its Folder saves it, the author included, with interop 0.55's `describe` action; last save wins; a change whose `h` is not the file's Folder is ignored (§6.2) |
+| `30840` | **Bare file** | **The file no app owns — SPEC §6.7, decided 2026-09-11.** A Peek topic is one. Registered on `nfb-demo-kinds` as `KIND_FILE`, `MessagesWrite`; `h` is SHOULD at ingest and MUST in SPEC. Granted to `estiva-peek` (estiva-id#66). Built by `buildBareFile` in `@estiva-app/protocol` 0.20.0; resolved without a manifest by `@estiva-app/interop` 0.19.0. **Its text is the `1851` `description` fold, seeded from `content`** (SPEC §6.10, 2026-10-14): anyone in its Folder saves it, the author included, with interop 0.55's `describe` action; last save wins; a change whose `h` is not the file's Folder is ignored (§6.2) |
 
 ### Retired numbers
 
