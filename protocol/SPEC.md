@@ -418,7 +418,9 @@ per attachment after `ts` (§13.4) — the order Ship's `buildChange` and
 target root's `h`, or its §7.3 placement tag (`buzz-channel`) where the root
 carries that instead, or the Folder itself when the target is a `kind:39000`
 (§3.3). **A reader MUST ignore any other change**, including one with no `h` —
-for every field and every kind.
+for every field and every kind. A change's Folder is its first `h` tag with a
+value, which is the one the relay checks the signer's membership against; a
+`buzz-channel` on a change, or an empty `["h"]`, names nothing.
 
 The relay checks a change only against its own `h`: the signer must be a member
 of *that* Folder (§3.1). Nothing on the relay ties it to the target's Folder, so
@@ -429,8 +431,11 @@ accepted). Without this rule every reader who is in both Folders would fold it
 in — a rename, a move, an archive or a rewritten text from outside. Measured
 before it was written: of 2,790 changes on production whose roots were
 readable, none was in another Folder but two duplicated project changes and
-four Folder archives §3.3 already ignored. A reader holding only an address,
-and not the root, cannot apply it, and folds as before.
+four Folder archives §3.3 already ignored. Two cases cannot apply it and fold
+as before: a reader holding only an address and not the root (an archived
+parent in another Folder, read by address), and a root that names no Folder at
+all (a bare file published before its `h` was required, §6.7). A reader that
+holds several versions of a root checks against the newest.
 
 A relay MAY refuse such a change at ingest; this one does not yet.
 
