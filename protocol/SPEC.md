@@ -399,7 +399,10 @@ CON-33*).
 
 A move — a change to a `movedBy` field (§7.2) — also carries `A` after `ts`,
 naming the new parent. It is an index, not a second target: `a` is the only
-tag a change targets.
+tag a change targets. A change whose value is a §13.3 block document carries
+`["content-format","estiva-blocks-1"]` between `h` and `ts`, and one `imeta`
+per attachment after `ts` (§13.4) — the order Ship's `buildChange` and
+`@estiva-app/interop` write.
 
 - A change event is authored by **whoever acts**, not by the object's author.
 - A change event MUST set exactly **one** field. Two fields in one event would
@@ -409,6 +412,32 @@ tag a change targets.
   readable.
 - The kind MUST be in the regular range (1000–9999), so every change is stored
   and append-only. A replaceable kind would destroy the history.
+
+**The `h` names the target's Folder.** *Added 2026-10-14 (Leaf 1; Miky,
+2026-10-13).* A change's `h` MUST name the Folder its target is filed in: the
+target root's `h`, or its §7.3 placement tag (`buzz-channel`) where the root
+carries that instead, or the Folder itself when the target is a `kind:39000`
+(§3.3). **A reader MUST ignore any other change**, including one with no `h` —
+for every field and every kind. A change's Folder is its first `h` tag with a
+value, which is the one the relay checks the signer's membership against; a
+`buzz-channel` on a change, or an empty `["h"]`, names nothing.
+
+The relay checks a change only against its own `h`: the signer must be a member
+of *that* Folder (§3.1). Nothing on the relay ties it to the target's Folder, so
+a member of any Folder can sign a change aimed at a file in a Folder they cannot
+read, and the relay accepts it (probed on production 2026-10-13: a
+`description` change to a page, signed with another Folder's `h`, was
+accepted). Without this rule every reader who is in both Folders would fold it
+in — a rename, a move, an archive or a rewritten text from outside. Measured
+before it was written: of 2,790 changes on production whose roots were
+readable, none was in another Folder but two duplicated project changes and
+four Folder archives §3.3 already ignored. Two cases cannot apply it and fold
+as before: a reader holding only an address and not the root (an archived
+parent in another Folder, read by address), and a root that names no Folder at
+all (a bare file published before its `h` was required, §6.7). A reader that
+holds several versions of a root checks against the newest.
+
+A relay MAY refuse such a change at ingest; this one does not yet.
 
 **The `ts` tag.** Epoch **milliseconds**. A reader MUST honour `ts` only when it
 agrees with `created_at` to the second, and MUST ignore it otherwise. That
@@ -641,7 +670,7 @@ and available to anyone in the Folder.
 - **One concept for every kind.** A project, an issue, a topic, a bare file and
   a Folder are all archived the same way: `archived` set to `true` on the
   file's address, and an empty value to restore it. A Folder is archived on its
-  channel's address, published in the Folder that lists it.
+  channel's address, with `h` the Folder itself (§3.3, and §6.2's `h` rule).
 - **An archived file hides its subtree, computed when reading.** A project's
   issues, a file's sub-files and a Folder's contents leave every list with it,
   and nothing is written to them, so unarchiving the parent restores exactly
@@ -658,6 +687,13 @@ and available to anyone in the Folder.
   the correction below.
 - It removes the **record**, not the work. Children are separate events with
   their own authors; they remain in the Folder.
+- **It does not remove the changes.** *Added 2026-10-14 (Leaf 1; Miky,
+  2026-10-13).* A `kind:5` naming a file's address hides the root, and every
+  `kind:1851` aimed at it stays readable to its Folder — for a bare file or an
+  issue, the full text at every save (§6.7). Deleting a page therefore does not
+  delete what was written in it. A relay hiding the changes to a deleted
+  address is the later fix; until then an app MUST NOT tell a person that
+  deleting a file erases its text.
 
 #### Corrected 2026-09-06: who a relay accepts a deletion from
 
@@ -972,15 +1008,52 @@ replies (§6.4). Reactions, edits, deletions and drafts follow §6.5, §6.6 and
 channel (§3.2): chat is talking *in* a room, a comment is talking *about* a file, and
 the line between them is the kind.
 
-**Changes.** `kind:1851` under §6.2, targeted by `a` at the file. Two fields are
-defined: `title` and `parent`, each seeded by the root tag of the same name and
-overridden by the change stream — the way an issue's `project` field works. A
-consumer MUST read `parent` before the `a` tag.
+**Changes.** `kind:1851` under §6.2, targeted by `a` at the file, in the file's
+own Folder (§6.2's `h` rule). The fields: `title` and `parent`, each seeded by
+the root tag of the same name and overridden by the change stream — the way an
+issue's `project` field works; `description`, the file's text, below;
+`archived` (§6.5); and `member:<p>` (§11.8). A consumer MUST read `parent` before
+the `a` tag.
+
+**The text.** *Added 2026-10-14 (Leaf 1; decided by Miky 2026-10-13).* A bare
+file's text is its **`description` fold, seeded from `content`** — the field
+Ship's projects and issues already use, so the suite has one rule: a file's
+body is its `description`. Anyone who may write in the file's Folder changes it
+with a `kind:1851` whose tags are, in order: `a` (the file), `["field",
+"description"]`, `value` (the whole §13.3 document), `h` (the file's own `h`,
+never the Folder an app opened it from), `["content-format",
+"estiva-blocks-1"]`, `ts`, then one `imeta` per attachment block (§13.4).
+
+- **The author saves this way too, never by republishing the root.** A
+  republished root seeds a fold that any older change still overrides, so the
+  author's newer text would lose silently.
+- **Last write wins** (§6.3: `ts`, then `created_at`, then the higher `id`).
+  The format is read from the event the value came from (§13.4). Two people
+  saving at once lose one save; until a live layer exists, they take turns.
+- **Version 1 is a snapshot.** Every save is a full copy of the document. Live
+  merging between open windows is a later layer on top of this, not a change to
+  it: the snapshot stays the stored truth every app can read.
+- **Size.** The text travels in a tag, so neither the relay's 256 KiB `content`
+  cap nor any advertised NIP-11 number (§12.5) bounds it. What does is the
+  websocket frame, `max_message_length` 524,288 bytes for the whole message: a
+  reader subscribed over a websocket receives the event inside one. Measured
+  2026-10-14, the sign-and-publish path accepted a 531,582-byte event over HTTP
+  — larger than a websocket can carry back. So **a writer keeps the signed event
+  under 512,000 bytes and refuses the save with a message** rather than publish
+  one some readers cannot receive. Files go in `attachment` blocks (Blossom,
+  `24242`), never inline.
+- **Cost.** `{kinds:[1851], "#a":[file]}` returns every save, since NIP-01
+  cannot filter on `field`. A writer saves when a person leaves the text, never
+  per keystroke. A body kind of its own, read with `limit`, is the long-term
+  shape.
+- **Delete** hides the root and not its saves (§6.5).
 
 **Projection.** A bare file has no `kind:31990`, and **a consumer MUST NOT let
 one claim it**. Its projection is this section: `title` from the tag with the
-`title` fold over it; `body` from `content`; the `comment` action emitting
-`kind:1111` at its address; widget `card`; a `list` of bare files beneath it.
+`title` fold over it; `body` from `content` with the `description` fold over
+it; the `comment` action emitting `kind:1111` at its address, `rename`,
+`describe` (the text, input format `estiva-blocks-1`), `move`, `archive` and
+`delete`; widget `card`; a `list` of bare files beneath it.
 `@estiva-app/interop` carries exactly that and answers it before consulting
 NIP-89 at all. The test of a conformant consumer is that **with every manifest
 removed from the relay, a bare file still resolves, lists its comments and
@@ -2970,6 +3043,15 @@ says whose block the tag names. A `kind:9` has no `A`, so a reader MUST ignore a
 `block` tag on one. Resolving it against whatever page the message happens to be
 drawn on gives a confident "deleted" about the wrong document. A message that
 shows a block of another object uses `part` (§13.6.1).
+
+**A reply carries no `block`, and an anchor resolves against the folded body.**
+*Added 2026-10-14 (Leaf 1).* The anchor belongs to the top-level comment: a
+NIP-22 reply (`e` naming that comment, no lowercase `a`) inherits it and MUST
+NOT carry a `block` tag of its own. And the document a `block` id is looked up
+in is the object's **current** body — its `description` fold over the root
+(§6.7, §6.2's `h` rule) — never the root's `content` alone. A block somebody
+added in a later save is present; resolving against the root would call it
+detached.
 
 **A `block` tag is meaningful only against a block document.** Marker text has
 no addressable sub-unit (§13.1), so an anchor on an object whose body is marker
