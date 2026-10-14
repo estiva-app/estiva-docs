@@ -541,7 +541,8 @@ the two are split.
 **Which tag carries which strength** (added 2026-09-21, CON-13). The table
 above left the mention's *data* as "referenced inside a message", and two apps
 read the same tag two ways: since RIC-11 and peek#272 a message carries every
-`nostr:naddr…` its body names as an `a` tag too — the body is what the person
+`nostr:naddr…` its body names as an `a` tag too — and since OPT-19 every app
+URL its body holds that names an address by §7.7 (§13.1) — the body is what the person
 wrote, the tag is the index that lets one `#a` filter answer *who named this
 file* without reading every conversation — and Ship read a root's `a` as a
 comment, which put a Peek comment written on a file inside a Ship issue's own
@@ -2121,6 +2122,7 @@ throwaway relay or a fake query.
 | C22 | **A description's card.** A block document whose paragraph holds a `reference` mark for `V` with `attrs.embed` `detailed` draws `V`'s chip in the paragraph and `V`'s card after it. The same paragraph with no `embed`, or `none`, draws the chip and no card, alone on its line included. A second reference to `V` in another block with `compact` draws its own row after that block. An unknown `embed` value draws as `compact`. A reader that does not know `embed` draws the chip. Inside a card's `body`, the same reference draws its chip and no card (§13.3) |
 | C23 | **An editor keeps the card.** A document with a `reference` mark carrying `embed` and a key the editor does not know, opened in the editor and saved after an edit to another block, comes back with both keys on the mark and the block's id unchanged (§13.3) |
 | C24 | **A description's URL.** A block document whose paragraph is only an app URL that names `V` by §7.7, as plain text, draws `V`'s chip and no card. The same run marked `{"type":"link","attrs":{"href":<the URL>,"embed":"compact"}}` draws the chip and `V`'s row after the paragraph; an editor that opens it and saves after an edit to another block writes the same run back, and one that removes the card writes the URL as plain text — never a `nostr:` reference. A URL no app claims stays a link, with no card (§13.3) |
+| C25 | **A message's URL.** A message written with an app URL that names `V` by §7.7 — pasted alone, mid-sentence or typed — has that URL in its body as written, never a `nostr:` reference, and carries `["a", V]` (for a message's URL, `["q", <id>]`); on `V`'s conversation itself it carries no second `a`. A reader draws `V`'s chip, and `V` lists the message as a mention (C11). A URL over chosen words is written `[words](url)` and draws as a link. A link to one block carries its `part`, and a URL no app claims, or whose identity two authors hold, carries no tag and stays a link (§13.1, §6.4) |
 
 C11 and C12 both have a failure that is invisible from the app that has it.
 A merged mention looks like somebody said it here. A forged edit looks like an
@@ -2832,14 +2834,25 @@ Bold, italic and underline MAY combine on one run. `code` MUST NOT combine with
 any other mark, and its content MUST NOT be parsed for further marks.
 
 A **reference** is NIP-27: a `nostr:` URI naming a pubkey, an event or an
-address. It is the only specified way to write a mention, because it is the only
-form that is resolvable by an app that does not hold the writer's directory and
-that survives a rename. A message that mentions a person MUST also carry the
+address. It is the only specified way to mention a person, because it is the
+only form that is resolvable by an app that does not hold the writer's directory
+and that survives a rename. A message that mentions a person MUST also carry the
 corresponding `p` tag; the tags say who was mentioned, the URI says where in the
 text. A reader that cannot resolve a reference MUST render the URI's own label
 or its shortened form, never blank. A reference to an object MAY also show one
 block of it, live, through a `part` tag (§13.6.1), and any reference MAY ask
 for a card under the message through an `embed` tag (§13.6.2).
+
+An object or a message is mentioned the same way by **an app URL that names
+it** by §7.7 — the link as the person pasted or typed it (decided 2026-10-14,
+OPT-19: the URL is how a person addresses a file, in a message as in a
+description). A writer MUST keep that URL as written, never rewrite it into a
+`nostr:` reference, and MUST carry the tag the reference would earn: the
+object's `a`, or a message's `q` (§6.4). A reader draws it as the reference's
+chip. A URL that names nothing by §7.7 — an identity two authors hold included,
+as §13.6.2 resolves one — earns no tag and stays a link, and a link
+to one block earns its `part` (§13.6.1). A writer's editor MAY draw the URL as
+its chip while it is written; what it sends is the URL.
 
 #### An urgent mention — decided 2026-10-02 (CON-17)
 
