@@ -3165,7 +3165,9 @@ its line, not an app link. *Decided 2026-10-13 (OPT-18).*
 target of a link on words, that names an object by §7.7 is drawn as that
 object's chip, the same as a `nostr:` reference to it. A link on words keeps its
 words, a URL in code is literal (§13.1), and a URL that names nothing stays a
-link. `linksAsReferences` in `@estiva-app/protocol` applies this rule.
+link — as does one whose object has not resolved yet, or resolves as one the
+reader cannot read, so a reader never draws an empty chip in place of what was
+written. `linksAsReferences` in `@estiva-app/protocol` applies this rule.
 A reader that cannot resolve links draws the URL.
 
 **Edits change it.** `embed` folds like `imeta` (§6.8): a message's set is the
