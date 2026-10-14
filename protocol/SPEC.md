@@ -1968,6 +1968,8 @@ throwaway relay or a fake query.
 | C19 | **Urgent mention.** A message urgent for `P` carries `["urgent", P]` and `["p", P]` and names `P` in its body as published as an ordinary reference. It is urgent for `P` and for nobody else it names. An `urgent` tag for a person the body does not name is not urgent. An app that does not draw urgency renders it as an ordinary mention (§13.1) |
 | C20 | **Card fold.** A message with `["embed", V, "compact"]` whose body names `V` draws `V`'s row under it. An edit with `["embed", V, "none"]` removes it and, with a byte-identical body, does not mark the message edited. A later edit with no `embed` leaves it removed. An `embed` for a value the folded body does not name draws nothing, and one for a value first named in an edit draws, with no `a` on the edit. With a `part` and an `embed` on the same address, the part wins. An unknown layout draws as `compact`. A reader that does not know `embed` draws the reference (§6.8, §13.6.2) |
 | C21 | **Chip by default.** A message with no `embed` whose body is only `nostr:naddr1…` for `V`, or only an app URL that names `V` by §7.7, with `["a", V]`, draws `V`'s chip and no card. So does a body that names `V` in a sentence. A link on words to `V` draws its words as a link and no card (§13.6.2) |
+| C22 | **A description's card.** A block document whose paragraph holds a `reference` mark for `V` with `attrs.embed` `detailed` draws `V`'s chip in the paragraph and `V`'s card after it. The same paragraph with no `embed`, or `none`, draws the chip and no card, alone on its line included. A second reference to `V` in another block with `compact` draws its own row after that block. An unknown `embed` value draws as `compact`. A reader that does not know `embed` draws the chip. Inside a card's `body`, the same reference draws its chip and no card (§13.3) |
+| C23 | **An editor keeps the card.** A document with a `reference` mark carrying `embed` and a key the editor does not know, opened in the editor and saved after an edit to another block, comes back with both keys on the mark and the block's id unchanged (§13.3) |
 
 C11 and C12 both have a failure that is invisible from the app that has it.
 A merged mention looks like somebody said it here. A forged edit looks like an
@@ -2836,9 +2838,12 @@ A `listItem`'s and a `blockquote`'s `content` is inline runs, never blocks: a
 second line of either is a `\n` in the text.
 
 A reader MUST ignore an `attrs` key it does not know and draw the block as its
-type. The attributes below rely on it: each adds meaning to a block an older
-reader already draws. An editor that does not know one drops it on save and
-keeps the block's text and id.
+type, and likewise a mark's (§13.1): an unknown key on a mark's `attrs` leaves
+the mark drawn as its type. The attributes below rely on it: each adds meaning
+to a block or a mark an older reader already draws. An editor that does not
+know one drops it on save and keeps the block's text and id; an editor SHOULD
+carry a mark's unknown keys through a save, since a mark has no id to say
+something was lost.
 
 #### An indented list item
 
@@ -2901,6 +2906,56 @@ into a callout changes one attribute, so the block keeps its id. Where a
 description is edited as text, a checklist item is spelled `- [ ] ` / `- [x] `
 and a callout as a quote whose first line is `[!WARNING]`; a message's §13.2
 dialect has neither, and `[x]` there is text.
+
+#### A reference's card
+
+*Decided 2026-10-14 (Widgets).*
+
+A reference in a block document reads as its chip (§13.1). The writer asks for
+a card for it with `attrs.embed` on the mark itself, the values a message's
+`embed` tag carries (§13.6.2):
+
+```json
+{ "type": "paragraph", "id": "p1", "content": [
+  { "type": "text", "text": "Blocked by " },
+  { "type": "text", "text": "nostr:naddr1…", "marks": [ { "type": "reference", "attrs": { "uri": "nostr:naddr1…", "embed": "detailed" } } ] },
+  { "type": "text", "text": " until the relay ships." }
+] }
+```
+
+A `link` mark takes the same attribute, `{"type":"link","attrs":{"href":…,"embed":…}}`,
+and draws a card only when its `href` names an object by §7.7, resolved as for
+a message; otherwise it stays a link. A bare app URL in a run has no mark to
+carry it, so a writer who chooses a card for one writes it as a reference to
+what it names, or as a `link` mark whose `href` is the URL.
+
+- **Where.** The card is drawn after the innermost block holding the mark — the
+  paragraph, heading or list item (at its indent), or the table cell — and the
+  cards of one block in the order their marks appear. It sits with its link:
+  moving or deleting the link moves or deletes the card, and choosing or
+  changing it changes one attribute, so the block keeps its id and every
+  comment anchored to it.
+- **Each occurrence is its own.** The same object referenced twice may carry two
+  cards, or one, unlike a message's one per value: a document is many blocks,
+  and the block holding the link is where its card belongs.
+- **Runs.** A reference split across runs (part of it bold) takes `embed` from
+  its first run.
+- **Values.** `compact` draws the object's closed `row`, `detailed` its closed
+  `card` (§7.5). `none` means the same as no attribute, and a writer omits it. A
+  reader draws a value it does not know as `compact`, and one that is not a
+  string as no card.
+- **Pointer, never copy.** The card is resolved as the viewer (§13.6.2): a
+  deleted and an unreadable object are different states, and an unreadable card
+  shows no title.
+- **No cards inside a card.** Inside a card's `body` (§7.2) and inside a part
+  (§13.6.1), a reader draws every reference as its chip and no card, whatever its
+  `embed` says. Without it, two objects that card each other nest forever.
+
+A reader that does not know `embed` draws the chip, which is the default
+anyway. An editor that drops the attribute on save loses the card and keeps
+the reference, which is why an editor carries a mark's unknown keys through.
+Where a description is edited as text there is no spelling for a card: a block
+holding one is kept as written and is not edited as text.
 
 #### The `attachment` block
 
@@ -3229,12 +3284,13 @@ under a message follows the author's layout, not the manifest's `widget`.
   body.
 - **Pointer, never copy.** A card is resolved as the viewer and never written
   into the message, as for a part (§13.6.1). Deleted and unreadable are
-  different states, and an unreadable card shows no title.
+  different states, and an unreadable card shows no title. A card's own `body`
+  draws its references as chips, never cards (§13.3, "A reference's card").
 - **A message reference** (`q`, an event id) has no projection (§7.6). It is
   drawn as the reader draws a quoted message (§13.1), for either layout.
 - It applies to a `kind:9`, a `kind:1111` and their `40003` edits. A reader
-  ignores `embed` on any other kind. A block document puts a card in a block,
-  not in this tag.
+  ignores `embed` on any other kind. A block document puts it on the reference
+  itself, not in this tag (§13.3, "A reference's card").
 - An `embed` gives no strength (§6.4) and no membership.
 
 **No `embed` is not `none`.** A reference with no `embed` is drawn by the
