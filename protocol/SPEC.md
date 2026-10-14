@@ -1283,9 +1283,21 @@ existing subsections for the reason §7.5 gives; it belongs beside §6.7.*
 **A document is a file an app owns, written first and talked about second.**
 `kind:30842`, from §8's provisional range (`30841` is retired). It has the bare
 file's shape and none of its ownerlessness: an app claims the kind with a
-`kind:31990` `k` tag, as Ship claims `30850` and `30851`, and that app opens and
-edits it. Leaf is the first owner. The kind is not Leaf's: any app MAY claim it
-the same way.
+`kind:31990` `k` tag, as Ship claims `30850` and `30851`, and that app decides
+how it is drawn, what it is called and where it opens. Owning the kind grants
+no write: anyone in the document's Folder may change it through any app that
+signs `1851` (§6.10). Leaf is the first owner, with protocol 0.34.0's
+`buildDocument` and interop 0.56.0 as the reference. The kind is not Leaf's:
+any app MAY claim it the same way.
+
+**Competing claims are not yet settled.** A document's author publishes no
+`kind:31989` recommendation today, so a consumer takes the newest manifest
+claiming `30842`, from any author — the rule §7.8 already states for the
+bare file's opener, with the same exposure: a workspace member publishing a
+newer claim changes every document's noun, actions and "Open in" link. The
+fix is the workspace naming the apps it trusts (the roster role `app`, decided
+2026-10-03 and not yet built); until then a consumer SHOULD prefer a claim from
+a key the workspace has named, where it can tell.
 
 **Why a type and not a bare file.** A topic (`30840`, §6.7) is
 conversation-first and owned by nobody: a generic app shows its conversation,
@@ -1314,8 +1326,8 @@ projection to a `30840`.
 which the `description` fold overrides (§6.10).
 
 **Conversation.** `kind:1111` anchored at the document's address, with the same
-`h` (§6.4), as on a bare file. Reactions, edits, deletions and drafts follow
-§6.5, §6.6 and §6.8. A comment MAY anchor to one block of the text (§13.6),
+`h` (§6.4), as on a bare file. Deletions, reactions and edits follow §6.5,
+§6.6 and §6.8. A comment MAY anchor to one block of the text (§13.6),
 unchanged: the block is looked up in the current `description` fold.
 
 **Changes.** `kind:1851` under §6.2, in the document's own Folder. The fields
@@ -1535,8 +1547,15 @@ kind" above reads "of any addressable kind": the `via` tag, the folded
 The bare file's built-in projection behaves as if it declared it; the document
 is the first owned kind to declare it (§6.11).
 
-The parent's owner declares nothing, so a parent's own list never names these
-children. A consumer drawing what is under a file reads it from the Folder's
+Three rules a consumer MUST keep, as interop 0.56.0 does: only the JSON value
+`true` turns it on (nothing validates a published manifest, and a string
+`"false"` is not `true`); it is ignored with `match: "identifier"`; and it is
+read only from the manifest resolved for the *child's* kind, so one app's
+manifest cannot change where another app's files sit.
+
+A parent of another kind declares nothing, so its own list never names these
+children; a list of the same kind (a document's list of documents) still
+names its own. A consumer drawing what is under a file reads it from the Folder's
 listing (§6.7), which folds every child whatever its kind; a consumer reading
 by tag asks for each child kind whose list declares `anyParent`, by `#via` and
 `#A` as above. A move's target is a choice among files in the same Folder's

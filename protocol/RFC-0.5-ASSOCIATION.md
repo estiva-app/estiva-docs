@@ -673,7 +673,8 @@ A file has three parts, and each app renders the ones it owns:
 An app shows every file in a Folder and renders **its own aspect** of each. Peek
 lists a Ship project beside a Peek topic and a Leaf document, and draws the
 conversation of all three. It does not render the document; that is Leaf's
-aspect, and a link takes you there.
+aspect, and a link takes you there. *(2026-10-14: a Leaf document is now its own
+kind, `30842`, which Leaf owns — see the note at §10.7 and SPEC §6.11.)*
 
 **A Peek topic is then a file whose document is empty.** It carries only the
 conversation every other file already has. That is not a special kind of thing —
@@ -762,6 +763,12 @@ stay nearly identical for ever.
 > specialized apps own theirs.
 
 ### 10.7 Two kinds of app, and the bare file — decided 2026-09-11
+
+> **Superseded in part, 2026-10-14 (Leaf 1):** Leaf is not the generic app for
+> the `document` aspect. It owns the document kind, `30842` (SPEC §6.11), so it
+> is a specialized app; the `document` aspect is reserved and no app declares it
+> (SPEC §7.8). The rest of this section — the bare file, and Peek as the
+> generic `conversation` app — stands.
 
 **An app is generic or specialized.** A specialized app owns kinds, renders every
 aspect of them, and its navigation lists only its own files. A generic app owns

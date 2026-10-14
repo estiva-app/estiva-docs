@@ -50,7 +50,6 @@ nobody held the whole list.
 | Kind | Name | Notes |
 | --- | --- | --- |
 | `30842` | Document | **A file type an app owns — SPEC §6.11, decided 2026-10-14 (Miky).** Addressable, the bare file's shape (`d`, `title`, `h`, `[a]`); claimed by an app's `kind:31990` `k` tag, not built in, so any app may own it. `MessagesWrite`; `h` required at ingest. Its text is the `1851` `description` fold (SPEC §6.10). Not a topic: a `30840` never becomes one, nor the reverse. Taken after `30841`, which is retired (§6) |
-| `31990` | Leaf's manifest | Leaf publishes its own `31990`, claiming `30842`, signed by a **dedicated manifest key** the relay admits as a member (`9030`), not through Estiva ID's `/sign` — so `31990` is not in Leaf's ceiling (§5) |
 
 ### Folders — written by every app, owned by none ([SPEC §3](SPEC.md))
 
@@ -169,8 +168,8 @@ Source of truth: `SEED_APPS` in `estiva-id/src/db/seed.ts`, stored in the
 deleting a Folder ("deleting a Folder stays Peek's", the seed's own note); Leaf
 only `1852, 1851, 5`, enough to place a document in a Folder and change it, not
 to make, rename or delete a Folder. Leaf does not sign `30840`: it offers no
-bare-file creation (SPEC §3.2), and its `31990` is signed by its own manifest
-key (§1), not here.
+bare-file creation (SPEC §3.2), and its `31990` (claiming `30842`) is signed by
+a dedicated manifest key the relay admits as a member (`9030`), not here.
 
 Two things this table teaches:
 
