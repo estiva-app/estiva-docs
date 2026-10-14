@@ -3054,8 +3054,7 @@ callout and is drawn as `note`, and an editor keeps it as written.
 A reader that knows neither attribute draws a plain list item and a plain
 quote, with all their text. Turning an item into a checklist item or a quote
 into a callout changes one attribute, so the block keeps its id. Where a
-description is edited as text, a checklist item is spelled `- [ ] ` / `- [x] `
-and a callout as a quote whose first line is `[!WARNING]`; a message's §13.2
+description is edited as text, both have a spelling (below); a message's §13.2
 dialect has neither, and `[x]` there is text.
 
 #### A reference's card
@@ -3108,8 +3107,45 @@ object, and it stays what they wrote (Miky, 2026-10-14).
 A reader that does not know `embed` draws the chip, which is the default
 anyway. An editor that drops the attribute on save loses the card and keeps
 the reference, which is why an editor carries a mark's unknown keys through.
-Where a description is edited as text there is no spelling for a card: a block
-holding one is kept as written and is not edited as text.
+Where a description is edited as text there is no spelling for a card (below).
+
+#### A description as text
+
+An agent or a script edits a description as text, not as JSON. This is the
+text a description's block document is spelled as, and read back from, so an
+edit of one part keeps every other block, and its id, as it was. It is §13.2's
+marker dialect plus what a description holds and a message does not, so it is
+**for a description only**: a message's text stays §13.2, where none of the
+following means anything and an indented `- ` is text. A writer turning
+text into a block document SHOULD read it this way, and a reader printing one
+for editing SHOULD spell it this way.
+
+- **Blocks** are §13.2's — `# `/`## ` headings, `- ` and `1. ` lists, `> `
+  quotes, fenced code, paragraphs — one block per run, a blank line between.
+- **An indented list item** is spelled two spaces a level. It is read relative
+  to the item above, not as a count of columns, so two, three or four spaces
+  all mean "under the item above": an item indented further than the one above
+  is one level below it; any other sits at the level of the nearest item above
+  it at the same or a lesser indentation; none deeper than 8. Only a line at
+  the left edge opens a list, and while one is open an indented item of either
+  marker is an item of it, because a list is flat and of one type.
+- **A checklist item** is spelled `- [ ] ` / `- [x] ` (`X` read as `x`), and
+  **a callout** as a quote whose first line is `[!WARNING]` — the tone in
+  capitals, read back lowercased; an unknown one is kept as written.
+- **An escape.** A plain item whose text would read as a box, and a plain quote
+  whose first line would read as a callout line, are spelled with one more `\`
+  in front of that text, and reading takes exactly one `\` off: `- \[ ] x` is a
+  plain item whose text is `[ ] x`, and `- \\[ ] x` one whose text is `\[ ] x`.
+- **A table** with a header row and each cell one line of text is spelled as a
+  GFM pipe table — a header row, a `| --- |` row, then rows, `\|` for a pipe in
+  a cell — and read back as a `table` of `tableRow`s, the first row's cells
+  `tableHeader` and the rest `tableCell`, each cell one paragraph with
+  `colspan` and `rowspan` 1.
+- **No spelling**: a card, an attachment, any other table, an item the editor
+  would not write (an indented first item, a jump of two levels), and an inline
+  node §13.1 has no marker for. A block holding one is printed as its text, kept
+  exactly as written while that text comes back unchanged, and refused rather
+  than edited when it does not — writing it from text would quietly drop it.
 
 #### The `attachment` block
 
