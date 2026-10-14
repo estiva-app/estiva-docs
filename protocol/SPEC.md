@@ -2925,9 +2925,12 @@ a card for it with `attrs.embed` on the mark itself, the values a message's
 
 A `link` mark takes the same attribute, `{"type":"link","attrs":{"href":…,"embed":…}}`,
 and draws a card only when its `href` names an object by §7.7, resolved as for
-a message; otherwise it stays a link. A bare app URL in a run has no mark to
-carry it, so a writer who chooses a card for one writes it as a reference to
-what it names, or as a `link` mark whose `href` is the URL.
+a message; otherwise it stays a link. A bare app URL in a run reads as the chip
+of what it names, as in a message (§13.6.2, `linksAsReferences`), and has no
+mark to carry a card, so a writer who chooses one for it marks that run with a
+`link` whose `href` is the URL and keeps the text as written. It never rewrites
+the URL into a `nostr:` reference: the URL is how a person addresses the
+object, and it stays what they wrote (Miky, 2026-10-14).
 
 - **Where.** The card is drawn after the innermost block holding the mark — the
   paragraph, heading or list item (at its indent), or the table cell — and the
