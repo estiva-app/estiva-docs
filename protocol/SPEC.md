@@ -138,7 +138,7 @@ consulted. **A consumer MUST NOT let a `kind:31990` claim `39000`.**
 | conversation | `kind:9` messages carrying the Folder's `h` — the Folder's own conversation, §6.4's chat, §11.1's general stream. An `a` on one is a mention (§6.4) and does not take it out of the Folder's conversation. Threads and replies follow §6.4 |
 | `archived` | the `archived` field of `kind:1851` changes on its address (§6.2), counting only a change carrying the Folder's own `h` whose author the relay lists as the Folder's owner or admin (`kind:39001`) — the same people who may rename it (Miky, 2026-10-03) |
 | open in | the `web` template of the generic app declaring the `conversation` aspect (§7.8) |
-| actions | built in, declared by this section and by no manifest: `create-file` — §3.3's **place** for a bare file: a `kind:30840` with a `title` and this Folder's `h` (§6.7, never `buzz-channel`), then the `kind:1852` `add` (`emits.listed`, §7.3). Its `declaredBy` is `spec:3.2`; another app's manifest declaring a `30840` creation on a Folder is not offered beside it (and no manifest may claim `39000` to offer one as its owner). A consumer offers it only on a `39000` whose relay-signed `kind:30890` it has read — one without state is a conversation space, not a Folder (§7.3) — and only if it may sign `30840` and `1852`, and calls it by the opener's `fileNoun` (§7.8) — Peek's "Create topic" (INT-12, 2026-10-12) |
+| actions | built in, declared by this section and by no manifest: `create-file` — §3.3's **place** for a bare file: a `kind:30840` with a `title` and this Folder's `h` (§6.7, never `buzz-channel`), then the `kind:1852` `add` (`emits.listed`, §7.3). Its `declaredBy` is `spec:3.2`; another app's manifest declaring a `30840` creation on a Folder is not offered beside it (and no manifest may claim `39000` to offer one as its owner). A consumer offers it only on a `39000` whose relay-signed `kind:30890` it has read — one without state is a conversation space, not a Folder (§7.3) — and only if it may sign `30840` and `1852`, and calls it by the opener's `fileNoun` (§7.8) — Peek's "Create topic" (INT-12, 2026-10-12). It makes a bare file and never a document: an app owning documents (§6.11) leaves it out of its own interface and offers its own creation instead (Miky, 2026-10-14) |
 
 Both the `kind:30890` and the `kind:39000` are signed by the relay. A consumer
 MUST keep either only when its signer is the relay's own key — the
@@ -160,7 +160,7 @@ produce the same events in the same order.
 | **create** | `kind:9007` with a new id and its `name`; then `kind:1852` `add` with no addresses and no `name`, so the Folder has state from birth | — |
 | **rename** | `kind:9002` with the new `name`. Nothing else: a `kind:1852` never carries a name | by the relay, to anybody but the channel's owners and admins |
 | **archive** / **restore** | `kind:1851` on the Folder's address, `field` `archived`, `value` `true` (or empty to restore), `h` the Folder itself; `content` MAY carry what the person said about it | by the consumer, to anybody but the Folder's owners and admins; a reader ignores one from anybody else (§3.2) |
-| **delete** | `kind:9008` with the Folder's `h` | by the relay, while the Folder holds a file — a `30840`, `30850` or `30851` under its `h`, or any address its listing names — and to anybody but the channel's owner, the person who owns an owner-role agent in the channel, or an owner or admin of the workspace on the relay's roster |
+| **delete** | `kind:9008` with the Folder's `h` | by the relay, while the Folder holds a file — a `30840`, `30842`, `30850` or `30851` under its `h`, or any address its listing names — and to anybody but the channel's owner, the person who owns an owner-role agent in the channel, or an owner or admin of the workspace on the relay's roster |
 | **place** a new file | the file's root, with this Folder's `h` (or the tag its owner's `placement` names, §7.3); then `kind:1852` `add` naming its address | — |
 | **unlist** a deleted file | the `kind:5`; then `kind:1852` `remove` naming its address, in each Folder whose state names it (§7.3) | — |
 | **move** a file to another Folder | `kind:1852` `add` in the target; then `kind:1852` `remove` in the source — one pair for the file and one for each file listed beneath it (§6.7), so a subtree moves whole. The file's `h` does not change | by the consumer, when the target is private and the file's `h` names any other channel (§3.1: the move would look private and not be) |
@@ -171,7 +171,7 @@ produce the same events in the same order.
   count ("folder holds N file(s) … remove them first"), and a consumer shows
   that reason. An accepted delete still hides **every** event under the `h` —
   the Folder's conversation, and any comment, change or other app's kind filed
-  there — because only the three file kinds are counted. A relay that does not refuse a Folder with files hides
+  there — because only the four file kinds are counted. A relay that does not refuse a Folder with files hides
   those too — what happened to the `Folders` Folder on 2026-09-14 — so the
   refusal is a conformance requirement of the relay, not a courtesy. **Archive** is the
   reversible way to put a Folder away: its state, contents and channel are
@@ -356,9 +356,15 @@ Reference root events:
 | `30850` | Project | `d`, `title`, `h`, `[lead]`, `[key]` |
 | `30851` | Issue | `d`, `title`, `h`, `[a]`, `[ref]` |
 | `30840` | Bare file | `d`, `title`, `h`, `[a]` — §6.7 |
+| `30842` | Document | `d`, `title`, `h`, `[a]` — §6.11 |
 
 `a` on an Issue is the parent project's address, `30850:<pubkey>:<d>`. `a` on
-a bare file is the address of the file it sits under, **of any kind**.
+a bare file or a document is the address of the file it sits under, **of any
+kind**.
+
+A file's text is not a root fact either. A project's or an issue's
+description, a bare file's text and a document's are all the same field,
+`description`, seeded from `content` and changed by `kind:1851` (§6.10).
 
 `ref` is a display key such as `SHIP-12` that people type and search for
 (§5.2), and it MUST NOT be used for addressing. Like `title`, the root tag is
@@ -689,8 +695,9 @@ and available to anyone in the Folder.
   their own authors; they remain in the Folder.
 - **It does not remove the changes.** *Added 2026-10-14 (Leaf 1; Miky,
   2026-10-13).* A `kind:5` naming a file's address hides the root, and every
-  `kind:1851` aimed at it stays readable to its Folder — for a bare file or an
-  issue, the full text at every save (§6.7). Deleting a page therefore does not
+  `kind:1851` aimed at it stays readable to its Folder — for a bare file, a
+  document or an issue, the full text at every save (§6.10). Deleting a file
+  therefore does not
   delete what was written in it. A relay hiding the changes to a deleted
   address is the later fix; until then an app MUST NOT tell a person that
   deleting a file erases its text.
@@ -988,6 +995,9 @@ adds none, and that absence is why it is ownerless: NIP-89 keys ownership by
 kind, and an app that owned the bare file would own every subject nobody has an
 app for.
 
+*Added 2026-10-14 (Leaf 1).* A document is not a bare file. It is its own kind,
+`30842`, with this shape and an owning app (§6.11); a topic stays a `30840`.
+
 **Shape.** `kind:30840`, addressable. Tag order is normative, as §6.1 says:
 
 | tag | | |
@@ -1011,42 +1021,13 @@ the line between them is the kind.
 **Changes.** `kind:1851` under §6.2, targeted by `a` at the file, in the file's
 own Folder (§6.2's `h` rule). The fields: `title` and `parent`, each seeded by
 the root tag of the same name and overridden by the change stream — the way an
-issue's `project` field works; `description`, the file's text, below;
+issue's `project` field works; `description`, the file's text (§6.10);
 `archived` (§6.5); and `member:<p>` (§11.8). A consumer MUST read `parent` before
 the `a` tag.
 
-**The text.** *Added 2026-10-14 (Leaf 1; decided by Miky 2026-10-13).* A bare
-file's text is its **`description` fold, seeded from `content`** — the field
-Ship's projects and issues already use, so the suite has one rule: a file's
-body is its `description`. Anyone who may write in the file's Folder changes it
-with a `kind:1851` whose tags are, in order: `a` (the file), `["field",
-"description"]`, `value` (the whole §13.3 document), `h` (the file's own `h`,
-never the Folder an app opened it from), `["content-format",
-"estiva-blocks-1"]`, `ts`, then one `imeta` per attachment block (§13.4).
-
-- **The author saves this way too, never by republishing the root.** A
-  republished root seeds a fold that any older change still overrides, so the
-  author's newer text would lose silently.
-- **Last write wins** (§6.3: `ts`, then `created_at`, then the higher `id`).
-  The format is read from the event the value came from (§13.4). Two people
-  saving at once lose one save; until a live layer exists, they take turns.
-- **Version 1 is a snapshot.** Every save is a full copy of the document. Live
-  merging between open windows is a later layer on top of this, not a change to
-  it: the snapshot stays the stored truth every app can read.
-- **Size.** The text travels in a tag, so neither the relay's 256 KiB `content`
-  cap nor any advertised NIP-11 number (§12.5) bounds it. What does is the
-  websocket frame, `max_message_length` 524,288 bytes for the whole message: a
-  reader subscribed over a websocket receives the event inside one. Measured
-  2026-10-14, the sign-and-publish path accepted a 531,582-byte event over HTTP
-  — larger than a websocket can carry back. So **a writer keeps the signed event
-  under 512,000 bytes and refuses the save with a message** rather than publish
-  one some readers cannot receive. Files go in `attachment` blocks (Blossom,
-  `24242`), never inline.
-- **Cost.** `{kinds:[1851], "#a":[file]}` returns every save, since NIP-01
-  cannot filter on `field`. A writer saves when a person leaves the text, never
-  per keystroke. A body kind of its own, read with `limit`, is the long-term
-  shape.
-- **Delete** hides the root and not its saves (§6.5).
+**The text.** A bare file's text is its `description` fold, seeded from
+`content`, saved and read by §6.10's rules — which were written here first
+(2026-10-14) and are every file's.
 
 **Projection.** A bare file has no `kind:31990`, and **a consumer MUST NOT let
 one claim it**. Its projection is this section: `title` from the tag with the
@@ -1067,7 +1048,10 @@ tie-break is not yet read.
 kind may sit under a bare file, by the `a` tag above. The parent's owner does
 not declare this and does not need to: for every other kind `parentRef` is
 derived from the *parent's* declared child list; for a bare file it is the file
-naming its own parent. Both directions exist and a consumer reads both.
+naming its own parent. Both directions exist and a consumer reads both. A kind
+an app owns names its own parent this way when its list declares `anyParent`
+(§7.2), as the document's does (§6.11); the bare file's built-in projection
+behaves as if it declared it.
 Nesting organises and never grants access (§3.1): a bare file's readers are
 its Folder's, at any depth.
 
@@ -1104,7 +1088,9 @@ its Folder's, at any depth.
 - **No "may nest" field in a manifest.** Whether a kind may hold bare files is
   answered here — every kind may — and whether it holds its own kinds is its
   projection's `list.children` (§7.2). A consumer offers "start a file under
-  this" on any file it can address.
+  this" on any file it can address. `anyParent` (§7.2, 2026-10-14) is not such
+  a field: the child's owner declares how its kind names a parent, and the
+  parent's owner still declares nothing.
 
 **No migration.** An existing Peek topic is a channel and stays one: a
 conversation space (§3), its `kind:9` messages that space's conversation. New
@@ -1246,6 +1232,128 @@ longer count a mention as a comment. `delete-issue`'s warning and
 `edit-comment`'s candidate set still take mentions too, on purpose: both are
 about every message that names the object.
 
+### 6.10 A file's text: the `description` field
+
+*Added 2026-10-14 (Leaf 1; decided by Miky 2026-10-13 and 2026-10-14). Written
+first in §6.7 for the bare file and lifted here because it is every file's
+rule. Numbered after the existing subsections for the reason §7.5 gives.*
+
+A file's text is its **`description` fold, seeded from `content`**, whatever
+its kind: a Ship project's or issue's description (§6.1), a bare file's text
+(§6.7), a document's (§6.11). So the suite has one rule: a file's body is its
+`description`. An owner MAY seed the fold from a root tag before `content`, as
+Ship's project does (§7.2, rule 2); the change stream overrides either.
+
+Anyone who may write in the file's Folder changes it with a `kind:1851` whose
+tags are, in order: `a` (the file), `["field", "description"]`, `value` (the
+whole §13.3 document), `h` (the file's own Folder, §6.2 — never the Folder an
+app opened it from), `["content-format", "estiva-blocks-1"]`, `ts`, then one
+`imeta` per attachment block (§13.4). A value written before block documents
+carries no `content-format` and is read by §13.4's rule.
+
+- **The author saves this way too, never by republishing the root.** A
+  republished root seeds a fold that any older change still overrides, so the
+  author's newer text would lose silently.
+- **Last write wins** (§6.3: `ts`, then `created_at`, then the higher `id`).
+  The format is read from the event the value came from (§13.4). Two people
+  saving at once lose one save; until a live layer exists, they take turns.
+- **Version 1 is a snapshot.** Every save is a full copy of the document. Live
+  merging between open windows is a later layer on top of this, not a change to
+  it: the snapshot stays the stored truth every app can read.
+- **Size.** The text travels in a tag, so neither the relay's 256 KiB `content`
+  cap nor any advertised NIP-11 number (§12.5) bounds it. What does is the
+  websocket frame, `max_message_length` 524,288 bytes for the whole message: a
+  reader subscribed over a websocket receives the event inside one. Measured
+  2026-10-14, the sign-and-publish path accepted a 531,582-byte event over HTTP
+  — larger than a websocket can carry back. So **a writer keeps the signed event
+  under 512,000 bytes and refuses the save with a message** rather than publish
+  one some readers cannot receive. Files go in `attachment` blocks (Blossom,
+  `24242`), never inline.
+- **Cost.** `{kinds:[1851], "#a":[file]}` returns every save, since NIP-01
+  cannot filter on `field`. A writer saves when a person leaves the text, never
+  per keystroke. A body kind of its own, read with `limit`, is the long-term
+  shape.
+- **Delete** hides the root and not its saves (§6.5).
+
+### 6.11 The document
+
+*Added 2026-10-14 (Leaf 1; decided by Miky 2026-10-14). Numbered after the
+existing subsections for the reason §7.5 gives; it belongs beside §6.7.*
+
+**A document is a file an app owns, written first and talked about second.**
+`kind:30842`, from §8's provisional range (`30841` is retired). It has the bare
+file's shape and none of its ownerlessness: an app claims the kind with a
+`kind:31990` `k` tag, as Ship claims `30850` and `30851`, and that app opens and
+edits it. Leaf is the first owner. The kind is not Leaf's: any app MAY claim it
+the same way.
+
+**Why a type and not a bare file.** A topic (`30840`, §6.7) is
+conversation-first and owned by nobody: a generic app shows its conversation,
+and a text at its top is incidental. A document is document-first: the text is
+the point, and some app is answerable for opening and editing it — which is
+what NIP-89's ownership by kind says. A kind of its own lets an app own
+documents without owning every subject nobody built an app for, which is why
+the bare file has no owner.
+
+**No conversion, in either direction.** A topic does not become a document when
+somebody writes a long text at its top, and a document does not become a topic
+when its conversation grows. Existing `30840`s stay topics. A reader MUST NOT
+apply §6.7's built-in projection to a `30842`, nor a document owner's
+projection to a `30840`.
+
+**Shape.** `kind:30842`, addressable. Tag order is normative, as §6.1 says:
+
+| tag | | |
+| --- | --- | --- |
+| `d` | REQUIRED | an opaque uuid (RFC 0.4 §4.3), never a slug |
+| `title` | REQUIRED | seeds the `title` field; a rename is a change event |
+| `h` | REQUIRED | the Folder it is filed in (§3). MUST, and the relay refuses a `30842` without one at ingest ([KINDS §4](KINDS.md)) |
+| `a` | at most one | the address of the file this one sits under, of any kind. Seeds the `parent` field; a move is a change event |
+
+`content` is a §13.3 block document, or empty: the first version of the text,
+which the `description` fold overrides (§6.10).
+
+**Conversation.** `kind:1111` anchored at the document's address, with the same
+`h` (§6.4), as on a bare file. Reactions, edits, deletions and drafts follow
+§6.5, §6.6 and §6.8. A comment MAY anchor to one block of the text (§13.6),
+unchanged: the block is looked up in the current `description` fold.
+
+**Changes.** `kind:1851` under §6.2, in the document's own Folder. The fields
+are the bare file's (§6.7): `title` and `parent`, each seeded by the root tag of
+the same name; `description`, the text (§6.10); `archived` (§6.5); and
+`member:<p>` (§11.8). A consumer MUST read `parent` before the `a` tag.
+
+**Projection: the owner's.** Unlike a bare file, a document's projection is not
+written in this document. It comes from its owner's manifest (§7), and with no
+manifest published it has none, as a project has none without Ship's. An
+owner's projection for `30842`:
+
+- declares `records` (§7.1), and `body` as the `description` fold over
+  `content` (`{"fold": "description", "field": "content"}`, §7.2);
+- declares the actions `comment` (`kind:1111` at its address), `rename`,
+  `describe` (the text, input format `estiva-blocks-1`, §7.3), `move`, `archive`
+  and `delete`, and a creation with `placement` `"h"` and `listed: true` (§7.3);
+- declares `list: { "children": { "kind": 30842, "via": "a", "movedBy":
+  "parent", "anyParent": true } }` (§7.2);
+- MAY declare a `noun` (§7.9). The word is the owner's: Leaf's is
+  `"document"`.
+
+A consumer names a document by the owning manifest's `noun` and opens it with
+that manifest's `web` template — "Open in Leaf". §7.8's opener and its
+`fileNoun` are for files nobody owns and do not apply.
+
+**Nesting.** A document may sit under a file of any kind, by its `a` tag and
+its `parent` field, as a bare file does; a bare file or another document may
+sit under it. Its owner says so with `anyParent` (§7.2). Every rule under
+§6.7's Nesting — same Folder, the move, reading from the Folder's listing,
+cycles, depth — applies unchanged.
+
+**Placement.** A document is created as any listed file is (§3.3 **place**):
+its root with the Folder's `h`, then the Folder's `kind:1852` `add` naming its
+address. §3.2's built-in `create-file` makes a bare file, not a document; an
+app owning documents leaves it out of its own interface and offers its own
+creation. A Folder holding a document cannot be deleted (§3.3).
+
 ---
 
 ## 7. Cross-app interoperability: the projection manifest
@@ -1325,6 +1433,7 @@ source:
 | `{"fold": "description", "field": "content"}` | folded, **seeded** from the event body |
 | `{"children": {"kind": 30851, "via": "a", "limit": 200}}` | child objects, found by the tag **on the child** that names this one |
 | `{"children": {"kind": 30851, "via": "a", "movedBy": "project"}}` | the same, where a child **moves** by a change to the named field (below) |
+| `{"children": {"kind": 30842, "via": "a", "movedBy": "parent", "anyParent": true}}` | the same, where a child of this kind names its own parent with its `via` tag, **of any kind**, as a bare file does (§6.7 Nesting; below) |
 
 **`children` is the only source that does not read the root event.** The others
 answer *"what does this event say?"*; it answers *"what points at it?"* The
@@ -1415,6 +1524,24 @@ The bare file declares `movedBy: "parent"` on its own list, naming the field
 unchanged, and is why its `via` tag is not matched on the declaring kind. Absent
 `movedBy`, the `via` tag is the only parent, so every manifest published before
 this field reads exactly as it did.
+
+**`anyParent` — a child that names a parent of any kind.** *Added 2026-10-14
+(Leaf 1; decided by Miky).* A `children` source MAY declare `"anyParent":
+true`: a child of this kind names its own parent with its `via` tag, of any
+kind, as a bare file does (§6.7 Nesting). With it, every "of the declaring
+kind" above reads "of any addressable kind": the `via` tag, the folded
+`movedBy` value and a move's `A` each name an address of any kind
+`30000`–`39999`, and `movedBy` names the field without limiting the parent.
+The bare file's built-in projection behaves as if it declared it; the document
+is the first owned kind to declare it (§6.11).
+
+The parent's owner declares nothing, so a parent's own list never names these
+children. A consumer drawing what is under a file reads it from the Folder's
+listing (§6.7), which folds every child whatever its kind; a consumer reading
+by tag asks for each child kind whose list declares `anyParent`, by `#via` and
+`#A` as above. A move's target is a choice among files in the same Folder's
+listing (§6.7), not among objects of one kind. Absent `anyParent`, nothing
+above changes.
 
 Measured on production 2026-09-29, the 1,000 newest `kind:1851`: 41 set
 `project` on a `kind:30851`, and all 41 values are a `kind:30850` address.
@@ -1846,6 +1973,10 @@ consumer find it. It MAY declare that aspect in `content`:
 
 `aspect` is one of `conversation` or `document`. A specialized app omits it.
 
+*Added 2026-10-14 (Leaf 1; Miky).* `document` stays reserved, and no app
+declares it today. An app owning documents (`kind:30842`, §6.11) owns a kind,
+so it is specialized and omits `aspect`; Leaf declares none.
+
 **This is how a bare file gets a link.** §6.7 gives it no handler, so no `web`
 template is its own. A consumer resolving one takes the `naddr` template from
 the manifest declaring `conversation` — newest first, among manifests that
@@ -2103,8 +2234,8 @@ NIP-RS blobs are grow-only, reconciling later means tolerating both keys
 permanently or migrating published blobs.
 
 **The file context is the bare address** (added 2026-09-13, FOL-16). One rule
-covers every kind of file — a Ship issue, a Ship project, a bare file (§7.8), a
-Leaf document — because every one of them is the target of the same `a` tag,
+covers every kind of file — a Ship issue, a Ship project, a bare file (§6.7), a
+document (§6.11) — because every one of them is the target of the same `a` tag,
 and nothing about the rule is shaped by which app owns the file. Only an
 addressable kind has an address, so the kind is 30000–39999; a key that looks
 like an address outside that range is not a file context. The `d` segment is
@@ -3049,7 +3180,7 @@ shows a block of another object uses `part` (§13.6.1).
 NIP-22 reply (`e` naming that comment, no lowercase `a`) inherits it and MUST
 NOT carry a `block` tag of its own. And the document a `block` id is looked up
 in is the object's **current** body — its `description` fold over the root
-(§6.7, §6.2's `h` rule) — never the root's `content` alone. A block somebody
+(§6.10, §6.2's `h` rule) — never the root's `content` alone. A block somebody
 added in a later save is present; resolving against the root would call it
 detached.
 
