@@ -27,13 +27,13 @@ conversations.
   label (Peek).
 - No Ship change. Ship following Peek was a separate decision.
 - The apps were expected to converge on one answer once they shared a base
-  library for the conversation standard, rather than be reconciled by fiat.
+  library for the conversation standard.
 
 ## Rejected alternatives
 
 - **Make Ship match Peek now**, or **revert Peek to match SPEC.** Miky chose
-  neither: with no shared implementation, forcing one rule would pick a side
-  that nothing could keep in place.
+  neither, and to converge once the apps share a library. No further reason is
+  on record.
 
 ## Consequences
 

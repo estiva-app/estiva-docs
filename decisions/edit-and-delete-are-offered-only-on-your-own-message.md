@@ -23,7 +23,7 @@ The relay accepts an edit or a delete from the message's author, and from the
 NIP-OA owner of an agent that wrote it. No app can tell who an agent's owner
 is, because nothing a client can verify says so.
 
-The apps had tried three rules before this one, recorded in SPEC §6.5:
+The apps had tried two rules before this one, recorded in SPEC §6.5:
 
 - 21 Sep: Peek hid both controls on any message not the viewer's (PEE-32,
   Miky's call), while Ship offered them to everyone and let the relay refuse.
@@ -61,8 +61,8 @@ The apps had tried three rules before this one, recorded in SPEC §6.5:
 
 ## Consequences
 
-- No one sees a control that the relay will refuse them, except the rare
-  owner of somebody else's agent.
+- No one is shown Edit or Delete on someone else's message, an agent's
+  included, so the control that always failed for them is gone.
 - An agent's owner loses the control in the apps, not the right: they can still
   edit or delete through the relay, and an agent edits its own messages.
 - Showing the controls to an agent's verified owner needs ownership a client

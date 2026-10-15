@@ -8,9 +8,11 @@
 ## Who it affects
 
 Miky, Katerina and anyone reading the apps, the docs or an agent's message see
-one word for the place that holds people, permissions and a conversation: a
-Folder. Estiva HQ, Peek, Ship, Leaf and Steer are Folders, not teams. An
-outside company reading SPEC learns one name.
+one word for what the apps call a Folder. Estiva HQ, Peek, Ship, Leaf and Steer
+are Folders, not teams. An outside company reading SPEC learns one name. This
+record is about the word only; what a Folder is for, and whether it decides who
+can read a file, is open ([folders-are-labels](folders-are-labels.md),
+Proposed).
 
 ## Context
 

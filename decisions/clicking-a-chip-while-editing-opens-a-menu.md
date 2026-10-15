@@ -12,7 +12,7 @@ clicks a chip and gets a small menu instead of being taken away: Open, then
 Card: None, Compact or Detailed. Right after they paste a link or pick a file
 with `[`, the same menu opens by itself without taking focus, so the card can
 be chosen at once. If they just keep typing, it closes and the link stays a
-chip with no card. Reading a description, a click on a chip still opens it.
+chip with no card.
 
 ## Context
 
@@ -37,13 +37,14 @@ reachable at the chip itself.
 
 - **The card choice on the selection toolbar.** It hides on blur, so it cannot
   hold the menu.
-- **A click follows the chip, as when reading.** Then a writer has no way to
-  reach the card. No other reason is on record.
+- **A click while editing follows the chip.** Miky chose the menu instead; no
+  reason beyond the choice is on record.
 
 ## Consequences
 
-- One menu for a chip in every description editor, so Leaf's page editor takes
-  the same one when it is built.
+- One menu for a chip in Ship's and Peek's description editors. Leaf offers
+  the card choice in its page editor too (LEAF-3, decided on OPT-20); how is
+  for that ticket.
 - The message composer still uses Peek's own card button. Unifying it with this
   menu is not decided.
 - Opening a link while editing takes a second click, on Open.

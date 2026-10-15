@@ -38,9 +38,9 @@ Peek's case it's Topic."
 
 ## Rejected alternatives
 
-- **Label by the app's name.** It told a person which app, not what the thing
-  is.
-- **"File" for everything.** True and useless.
+- **Label by the app's name, or "File", even when the type is known** (what
+  Ship did before PRO-24). Miky's
+  answer was the type name; no further reason is on record.
 - **Hardcode "topic" in the protocol for bare files.** Miky rejected it, so
   another company's conversation app can call these something else.
 

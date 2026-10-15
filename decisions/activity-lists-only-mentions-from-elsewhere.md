@@ -19,8 +19,8 @@ thing.
 CON-9 built Activity as one surface for a file's related conversations, and as
 an experiment it rolled a child's threads up onto its parent: every issue's
 comments appeared on the project (the `sub-file` relation). Katerina filed
-PEE-26 on 8 Sep about Activity loading in the wrong order and the noise it
-brought. On 20 Sep Miky answered there: "the activity should simply remove the
+PEE-26 on 8 Sep: Activity items loaded first in a topic and only then
+appeared on the Folder panel. On 20 Sep Miky answered there: "the activity should simply remove the
 replies from child files. It was experiment, and I don't think it make much
 sense."
 

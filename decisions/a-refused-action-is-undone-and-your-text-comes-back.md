@@ -33,8 +33,9 @@ refusal was simply an error.
 - A refused action is removed or undone. A note says what did not happen, and
   any text the person typed goes back where they can use it: a message to its
   topic's composer, a new topic's title to Start and its text to a draft.
-- Carried out in Peek by the two projects above. Ship and Leaf are to adopt
-  the same store, so this becomes the rule for all three apps.
+- Carried out in Peek by the two projects above. Ship's adoption of the same
+  store is a follow-up project; an app that shows an action before the relay
+  accepts it follows this rule.
 
 ## Rejected alternatives
 
@@ -47,5 +48,5 @@ refusal was simply an error.
 
 - Writing feels instant, and a refusal never costs the person their words.
 - A refused message leaves no trace in the thread; the note is the only sign.
-- Every write path in every app needs a pending state and an undo, which is
-  real work in Ship and Leaf when they adopt it.
+- Every write path that shows at once needs a pending state and an undo, which
+  is real work in each app that adopts it.
