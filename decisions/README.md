@@ -95,6 +95,7 @@ heading here.
 - [Moving a file to another Folder never changes who can read it, and its sub-files move with it](moving-a-file-never-changes-who-can-read-it.md) — Accepted, 2026-10-02
 - [A conversation belongs to the file it is about, not to the Folder it was filed in](a-thread-belongs-to-what-it-is-about.md) — Accepted, 2026-10-02
 - [Only a Folder's owners and admins can rename or archive it, and its name is the relay's channel name](only-owners-and-admins-rename-or-archive-a-folder.md) — Accepted, 2026-10-03
+- [It is called a Folder; "team" is not a second name for it](a-folder-is-called-a-folder-never-a-team.md) — Accepted, 2026-09-25
 - [Who can read a file is decided on the file, and Folders are labels](folders-are-labels.md) — Proposed, 2026-10-14; parked until the navigation rework
 
 ## Read state
@@ -108,6 +109,10 @@ heading here.
 
 - [An urgent mention is a tag beside the person's mention, and the text stays an ordinary mention](an-urgent-mention-is-a-tag-beside-the-mention.md) — Accepted, 2026-10-02
 - [@, !@, [ and / are one shared kit for every app's composer, not built inside an app](composer-triggers-are-one-shared-kit.md) — Accepted, 2026-10-02
+- [Edit and Delete are offered only on your own message, in every app](edit-and-delete-are-offered-only-on-your-own-message.md) — Accepted, 2026-10-06
+- [Peek and Ship may each choose when to offer Edit and Delete, and converge once they share one library](each-app-chooses-its-own-edit-and-delete-rule.md) — Superseded by the one above, 2026-09-21
+- [What you do shows at once; if the relay refuses it, it is taken back with a note and what you typed comes back to you](a-refused-action-is-undone-and-your-text-comes-back.md) — Accepted, 2026-10-07
+- [A file's Activity lists only the places that mention it, never the conversations of the files under it](activity-lists-only-mentions-from-elsewhere.md) — Accepted, 2026-09-20
 
 ## Links & widgets
 
@@ -115,6 +120,8 @@ heading here.
 - [A link pasted into a message is sent as Estiva's internal reference, not the link](a-pasted-link-in-a-message-is-sent-as-the-reference.md) — Superseded by the one above, 2026-10-13
 - [Every link draws as a chip, and its author chooses a card with an `embed` tag they can change after sending](the-author-chooses-a-links-card.md) — Accepted, 2026-10-13
 - [A shared part of a page is a selected run of whole blocks, and it stays live as the page changes](a-shared-part-of-a-page-is-a-selected-run-of-blocks.md) — Accepted, 2026-10-09
+- [While editing a description, clicking a chip opens a menu, Open and its card, and a fresh link opens it by itself](clicking-a-chip-while-editing-opens-a-menu.md) — Accepted, 2026-10-14
+- [Another app's file is labelled by its type ("Topic", "Issue"), and the app's name only says where it opens](a-file-is-labelled-by-its-type-not-its-app.md) — Accepted, 2026-10-02
 
 ## Documents
 
