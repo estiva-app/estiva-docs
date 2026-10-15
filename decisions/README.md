@@ -49,6 +49,14 @@ accept or reject settles the bar too.
   brief Miky decided on goes in `briefs/` beside it, as the HTML page it was,
   and the record links it, after the same check for unfixed gaps. A brief still
   waiting on Miky stays out of the repository (Miky, 2026-10-15).
+- **A brief asked of Miky is a Proposed record.** It is written when the brief
+  is asked, under the name it will keep. His answer makes it Accepted, with
+  `Decided by` naming the brief and where he answered; the options he turned
+  down become its Rejected alternatives; the brief goes in `briefs/` and the
+  record links it. The issue's Decided line links the record.
+- **A brief that describes an unfixed gap waits for the fix.** Its record is
+  written now, and the brief is published by the issue that closes the gap.
+  A brief whose call is below the bar for a record is published on its own.
 
 ## The template
 
