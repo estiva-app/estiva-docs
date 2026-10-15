@@ -1,0 +1,22 @@
+name: decisions
+
+# The rules of decisions/ (decisions/README.md), checked on every pull request.
+# No dependencies, so no npm ci.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Decision records follow their rules
+        run: node --test scripts/decisions.test.mjs

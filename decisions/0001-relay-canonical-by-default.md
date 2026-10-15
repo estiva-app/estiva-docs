@@ -1,7 +1,9 @@
 # ADR 0001 — Relay-canonical by default; an app database is an exception
 
-- **Status:** accepted
-- **Date:** 2026-08-22
+- Date: 2026-08-22
+- Status: Accepted
+- Decided by: Miky, by merging estiva-docs#1
+- Area: Architecture
 - **Applies to:** every app-layer product in the suite — Peek, Ship, Leaf, and any app after them
 - **Does not apply to:** Estiva ID (see §4)
 

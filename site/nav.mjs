@@ -96,14 +96,6 @@ export const INTERNAL = new Set([
   // A living plan: ticket refs, gate ordering, and the psql that verifies a
   // re-seed. It changes weekly and would be stale on a public host within days.
   'ROADMAP.md',
-  // The decision itself is stable and would be publishable; it is held back
-  // because it cites the roadmap and the ticket tracker throughout, and a
-  // decision record whose every reference is internal reads as half a document.
-  'decisions/0001-relay-canonical-by-default.md',
-  // Same reasoning, and it additionally names a registry scope, a token
-  // layout and work nobody has done yet. Publishable once the packages are
-  // real and the ticket references are gone.
-  'decisions/0002-foundation-packages.md',
   // Design debate rather than specification — written as a response to a
   // proposal that is not restated, in the first person. The conclusion it
   // reaches (documents use relay git) belongs in the spec if it is ever wanted
@@ -126,6 +118,16 @@ export const INTERNAL = new Set([
   'process/PROJECT.md',
   'process/ISSUE.md',
 ])
+
+/**
+ * Folders whose every document is INTERNAL. decisions/ is read in the repo,
+ * never on the site (Miky, 2026-10-15), and a new record must not need a line
+ * here before a published page may mention it. The Dockerfile does not copy it
+ * either.
+ */
+export const INTERNAL_DIRS = ['decisions/']
+
+export const isInternal = (file) => INTERNAL.has(file) || INTERNAL_DIRS.some((dir) => file.startsWith(dir))
 
 /**
  * Maps a repo-relative markdown path to its published slug, so cross-document
