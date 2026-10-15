@@ -1,9 +1,10 @@
 # Where a link sits decides how it draws: a chip in a sentence, a row alone on its line, and one file's card under the message by default
 
 - Date: 2026-10-15
-- Status: Proposed
-- Area: Links & widgets
+- Status: Accepted
+- Decided by: Miky, in the WID-3 session (Widgets 2), on the brief "Where a Link Sits" — "agree with all recommendation"
 - Supersedes: the-author-chooses-a-links-card.md
+- Area: Links & widgets
 
 ## Who it affects
 
@@ -30,6 +31,10 @@ attachment, but the user would have option to remove similarly like in Slack".
 In the WID-2 session he narrowed the card to messages that link exactly one
 file, and said old messages drawing differently under the new rule is fine.
 
+The brief Miky decided on:
+[briefs/where-a-link-sits.html](briefs/where-a-link-sits.html). Katerina,
+whose model this replaces, was asked in WID-3's conversation the same day.
+
 ## Context
 
 Since 2026-10-13 every link draws as a chip, alone on its line included, and
@@ -44,8 +49,8 @@ card as `attrs.embed` on the link's mark and draws it after the block (SPEC
 
 ## Decision
 
-Proposed, as the brief "Where a Link Sits" recommends (option A, with the card
-replacing the row for a single lone link):
+Option A of the brief, with the card replacing the row for a single lone link,
+and the documents rule below — every recommendation the brief made:
 
 - **Messages** (`kind:9`, `kind:1111` and their `40003` edits). A reference in
   a sentence draws as its chip. A line that is only a reference (`nostr:` or an
@@ -72,8 +77,6 @@ The SPEC change (§13.6.2, §13.3 "A reference's card", conformance C21, C22,
 C24) ships with *Widgets 2: build*.
 
 ## Rejected alternatives
-
-Proposed; these are the brief's other options, not yet turned down.
 
 - **B. The place sets the default, and a mark in the message records each
   row** (a new `embed` value written at send). Old messages stay as sent and a
