@@ -21,12 +21,15 @@ import { parse } from './decisions.mjs'
 const POINTER = /estiva-docs\/(?:blob\/([^/\s]+)\/)?decisions\/([A-Za-z0-9._-]+)(\/)?/g
 const GREP = 'estiva-docs/(blob/[^/ ]+/)?decisions/[A-Za-z0-9._-]+'
 const NOT_RECORDS = new Set(['README.md', 'template.md'])
+// This check's own tests hold bad pointers on purpose, so that each kind is
+// seen to fail; scanning estiva-docs itself must not report them.
+const NOT_SCANNED = [':(exclude)scripts/decision-pointers.test.mjs']
 
 /** Every pointer in `repo`'s tracked files: { file, line, ref, branch }. */
 export function findPointers(repo) {
   let out
   try {
-    out = execFileSync('git', ['-C', repo, 'grep', '-nIE', GREP], { encoding: 'utf8', maxBuffer: 64e6, stdio: 'pipe' })
+    out = execFileSync('git', ['-C', repo, 'grep', '-nIE', GREP, '--', '.', ...NOT_SCANNED], { encoding: 'utf8', maxBuffer: 64e6, stdio: 'pipe' })
   } catch (e) {
     if (e.status === 1) return [] // git grep found nothing
     throw new Error(`cannot search ${repo}: ${String(e.stderr || e.message).trim()}`)

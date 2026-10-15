@@ -88,6 +88,11 @@ test('a path that is not a repository says so in one line', () => {
   assert.throws(() => findPointers(join(tmpdir(), 'no-such-repo-' + process.pid)), /^Error: cannot search /)
 })
 
+test("this repository's own scan skips the bad pointers this file holds on purpose", () => {
+  const pointers = findPointers(join(import.meta.dirname, '..'))
+  assert.deepEqual(pointers.filter((p) => p.file === 'scripts/decision-pointers.test.mjs'), [])
+})
+
 test('two pointers on one line are both checked', () => {
   const pointers = pointersIn([`// ${URL}folders-are-labels.md and ${URL}person-links-carry-the-key.md`])
   assert.equal(pointers.length, 2)
