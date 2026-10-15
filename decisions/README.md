@@ -40,8 +40,15 @@ accept or reject settles the bar too.
   `Superseded by <new>.md`. A fix that changes no meaning may be made: a
   typo, a link moved to where the same document now lives, or the metadata
   lines brought to this folder's format.
-- **Never describe a security gap that is not fixed yet.** Link its issue, and
-  write the record once the fix has shipped.
+- **Never describe a security gap that is not fixed yet.** A decision that
+  closes one can be recorded now, linking the issue that carries it out and
+  saying nothing about how things stand until then. Anything that would
+  describe the gap, such as the earlier call the decision replaces, is written
+  once the fix has shipped (Miky, 2026-10-15).
+- **A brief is published once it is answered.** When a record is decided, the
+  brief Miky decided on goes in `briefs/` beside it, as the HTML page it was,
+  and the record links it, after the same check for unfixed gaps. A brief still
+  waiting on Miky stays out of the repository (Miky, 2026-10-15).
 
 ## The template
 
@@ -61,6 +68,13 @@ section, an unknown Status, a bad Date, no person in `Decided by`, a numbered
 name, a link that goes nowhere, or a record superseded by one that is not
 Accepted. It also checks that every record is listed below, under its Area.
 
+Code points to its record with a comment, `why:
+https://github.com/estiva-app/estiva-docs/blob/main/decisions/<name>.md`. The
+app repositories are private, so this CI cannot see them:
+`node scripts/decision-pointers.mjs <repo>` checks that every pointer in a
+repository names a record on `main` that is Accepted. Run it on the pull
+request's repository before merging one that adds or moves a pointer.
+
 # Records by area
 
 An Area is what the call is about, not what kind of call it is: a product call
@@ -69,11 +83,13 @@ heading here.
 
 ## People
 
-None yet.
+- [Someone you remove loses access the moment the removal lands](someone-you-remove-loses-access-at-once.md) — Accepted, 2026-10-14
+- [A person's link carries their key: /person/katerina-npub1…](person-links-carry-the-key.md) — Accepted, 2026-10-14
+- [A person's link names their handle: /person/katerina](person-links-name-the-handle.md) — Superseded by the one above, 2026-10-03
 
 ## Folders
 
-None yet.
+- [Who can read a file is decided on the file, and Folders are labels](folders-are-labels.md) — Proposed, 2026-10-14; parked until the navigation rework
 
 ## Links & widgets
 
@@ -82,6 +98,11 @@ None yet.
 ## Documents
 
 None yet.
+
+## Devices & sessions
+
+- [Peek keeps a plain copy of what it read on the device, until you sign out](peek-keeps-a-plain-copy-on-the-device-until-sign-out.md) — Accepted, 2026-10-14
+- [Peek keeps no copy of what it read once the page reloads](peek-keeps-nothing-after-a-reload.md) — Superseded by the one above, 2026-10-07
 
 ## Infrastructure
 

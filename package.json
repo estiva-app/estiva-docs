@@ -5,7 +5,7 @@
   "scripts": {
     "build": "node site/build.mjs",
     "serve": "node site/build.mjs && node site/serve.mjs",
-    "test": "node --test scripts/decisions.test.mjs"
+    "test": "node --test scripts/decisions.test.mjs scripts/decision-pointers.test.mjs"
   },
   "dependencies": {
     "markdown-it": "^14.1.0",
