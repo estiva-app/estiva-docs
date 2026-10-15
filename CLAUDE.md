@@ -11,7 +11,9 @@ in `NAV` and the `Dockerfile` copies.
 - **Writing a record:** copy `decisions/template.md`, follow the rules in
   `decisions/README.md`, and list it there under its Area. An agent writes
   records as Proposed and never fills in `Decided by` for itself; only Miky (or
-  Katerina, for how a screen looks) accepts one. `npm test` checks the folder,
+  Katerina, for how a screen looks) accepts one. Writing down an answer Miky
+  has already given is not accepting it: that record is Accepted, and its
+  `Decided by` says where he gave it. `npm test` checks the folder,
   and CI runs it on every pull request.
 - **`decisions/` stays off the site.** Do not add it to the `Dockerfile` or to
   `NAV`, and do not list records in the root `README.md`, which is published.
