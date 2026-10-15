@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unit Tests Review</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+.sub { color: var(--muted); margin: 0 0 20px; }
+.pick { background: var(--ok-bg); border-left: 4px solid var(--ok); padding: 12px 14px; border-radius: 6px; margin: 16px 0; }
+.warn { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 12px 14px; border-radius: 6px; margin: 16px 0; }
+.tbl { overflow-x: auto; margin: 12px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; }
+th, td { text-align: left; vertical-align: top; padding: 6px 8px; border-bottom: 1px solid var(--line); }
+th { background: var(--box); font-weight: 600; }
+td.n { text-align: right; white-space: nowrap; }
+.yes { color: var(--ok); font-weight: 600; }
+.no { color: var(--warn); font-weight: 600; }
+code { font-size: 0.88em; background: var(--box); padding: 1px 4px; border-radius: 4px; }
+svg { width: 100%; height: auto; display: block; margin: 12px 0; }
+svg text { fill: var(--ink); font: 13px -apple-system, "Segoe UI", Roboto, sans-serif; }
+svg .muted { fill: var(--muted); }
+small, .rec { color: var(--muted); font-size: 0.88rem; }
+</style>
+</head>
+<body>
+<main>
+<h1>Should we prune our unit tests?</h1>
+<p class="sub">PEE-50 · Peek and Ship · measured 14 Oct 2026 at origin/main · about a 5-minute read</p>
+
+<div class="pick">
+<strong>Short answer: keep them, and change how new tests get in.</strong> We planted 26 realistic bugs; the
+tests caught 23 and never broke on a harmless refactor. Pruning would save seconds of CI. The real
+problems are elsewhere: four gaps the planting found, tests that fail falsely when the machine is
+busy, and no step that checks whether a new test protects anything.
+</div>
+
+<h2>1. What we measured</h2>
+<div class="tbl"><table>
+<tr><th></th><th>Peek</th><th>Ship</th></tr>
+<tr><td>Tests</td><td>2,125 in 174 files</td><td>744 in 79 files + ~300 checks in 11 wire-level scripts</td></tr>
+<tr><td>Local run</td><td>~65 s</td><td>~33 s + ~8 s scripts</td></tr>
+<tr><td>CI, test step (median, critical path)</td><td>73 s of a 112 s run</td><td>45 s of an 85 s run (smoke test is just as long)</td></tr>
+<tr><td>Test step failed in CI</td><td>8 of 200 runs, all on PRs, none on main</td><td>8 of 171 runs, all on PRs, none on main</td></tr>
+<tr><td>Random failures in CI (failed, then passed on the same code)</td><td>0</td><td>0</td></tr>
+<tr><td>Tests that check behaviour (sample)</td><td>~24 of 31 files</td><td>~22 of 31 vitest files; all 11 scripts</td></tr>
+<tr><td>Written by an agent (test-touching commits, 90 days)</td><td>379 of 433</td><td>215 of 249</td></tr>
+</table></div>
+<p>Nearly every CI test failure was a PR that needed a package version not yet published. That is real
+but cheap: in Ship the type check already says the same thing.</p>
+
+<h2>2. Do they catch bugs? We planted some</h2>
+<p>Following the research Miky brought: a test suite is only worth its keep if it fails on a plausible
+bug and stays green on a harmless refactor. So we planted defects modelled on bugs we have actually
+had (read state published partially, a move that keeps going after the add was refused, raw HTML in a
+description, a muted stream lighting a dot…), ran the suites, and reverted each.</p>
+
+<svg viewBox="0 0 720 150" role="img">
+<title>Caught versus missed planted bugs, per repo</title>
+<text x="0" y="28">Peek</text>
+<rect x="60" y="12" width="545" height="24" rx="3" style="fill: var(--ok)"/>
+<rect x="605" y="12" width="55" height="24" rx="3" style="fill: var(--warn)"/>
+<text x="670" y="29">10 / 11</text>
+<text x="0" y="76">Ship</text>
+<rect x="60" y="60" width="200" height="24" rx="3" style="fill: var(--ok)"/>
+<rect x="260" y="60" width="171" height="24" rx="3" style="fill: var(--ok); opacity: .55"/>
+<rect x="431" y="60" width="72" height="24" rx="3" style="fill: var(--warn)"/>
+<text x="512" y="77">13 / 15</text>
+<rect x="60" y="112" width="14" height="14" style="fill: var(--ok)"/><text x="80" y="124">caught by vitest</text>
+<rect x="210" y="112" width="14" height="14" style="fill: var(--ok); opacity: .55"/><text x="230" y="124">caught only by Ship's wire-level scripts</text>
+<rect x="510" y="112" width="14" height="14" style="fill: var(--warn)"/><text x="530" y="124">missed</text>
+</svg>
+
+<p><strong>Controls:</strong> 4 harmless refactors (renaming a private helper, reordering independent
+lines): 0 tests failed. The tests are not glued to the implementation.</p>
+
+<h3>The four misses: real gaps</h3>
+<div class="tbl"><table>
+<tr><th>App</th><th>What slipped through</th><th>What a person would see</th></tr>
+<tr><td>Peek</td><td>A link followed by words counted as a "lone link"</td><td>A message with a link and text turns into just a card</td></tr>
+<tr><td>Peek</td><td>The conversation re-reads while the write is still in flight</td><td>Your just-sent comment briefly vanishes (Ship guards this exact bug; Peek does not)</td></tr>
+<tr><td>Ship</td><td>The unread rule treats anyone who can read a file as a member</td><td>Unread dots on projects you never joined</td></tr>
+<tr><td>Ship</td><td>A comment elsewhere that mentions an issue gets rolled into the project</td><td>Another project's thread shows up in this project's conversation</td></tr>
+</table></div>
+<p><strong>Ship's scripts earn their place:</strong> 6 of Ship's 13 catches came only from the small
+scripts that run the real store against a fake relay and check the events it sends. They are 2,400 lines
+against 10,300 of vitest. Peek has no equivalent layer.</p>
+
+<div class="warn"><strong>Found on the way: the suites fail falsely when the machine is busy.</strong> With a
+few agent sessions running at once (load 20–60), a full run produced up to 37 failures in tests
+unrelated to the change, all timeouts in screen tests; each passed when rerun alone. CI's quiet runners
+never see it. Our agents do: a red run that is not real teaches "rerun until green", which is exactly
+how a real failure gets waved through. Neither repo sets a test timeout, so it is 5 s.</div>
+
+<h2>3. What the research says, and what we took from it</h2>
+<ul>
+<li><strong>Agent-written tests barely change whether an agent solves the task</strong> (study of six models on
+SWE-bench Verified). Writing more tests during a task is not where the value is.</li>
+<li><strong>Tests generated from existing code can lock bugs in</strong>: they assert what the code does, faults
+included (SciPy / Qiskit / pandas study: several times more "fault-enforcing" than "fault-revealing" tests).</li>
+<li><strong>What holds up:</strong> tests that check behaviour and contracts, a check that tests fail on plausible bugs,
+and end-to-end checks as ground truth.</li>
+</ul>
+<p>Our suites mostly pass that bar already: they catch planted bugs and survive refactors. The risk the
+research names is real for us, though: nearly every test is written by the same agent that writes the
+code, and nothing checks the test itself. That is a process gap, not a suite problem.
+<small>Both studies confirmed to exist; numbers taken from summaries, not the full papers.</small></p>
+
+<h2>4. Recommendation: the current tests</h2>
+<p><strong>Do not prune broadly. One small project, about five issues:</strong></p>
+<ol>
+<li><strong>Close the four gaps</strong> the planting found (one test each).</li>
+<li><strong>Fix false failures under load:</strong> a sensible timeout for screen tests and a worker cap for local runs,
+then re-run the planting on a busy box to prove it.</li>
+<li><strong>Speed:</strong> Peek's device-copy test sleeps ~8 s on real timers on the slowest CI shard; switch
+to fake timers. Slim the file-page test's ~380 lines of mock setup.</li>
+<li><strong>Targeted cuts (~75 tests, ~3%):</strong> Peek's tests of debugging instruments (~51; keep the few
+<code>probe.mjs</code> reads), near-duplicate command-launcher and relay-read cases. Ship's tests that restate
+constants, re-exports or CSS class names, a finished-rewrite parity check, and mocked-store write tests the
+scripts already cover at the wire.</li>
+<li><strong>Give Peek a wire-level layer like Ship's scripts</strong> for its writes (Folder moves, comments,
+read state), where the planting shows the most value per line. <small>Could be a Later line instead.</small></li>
+</ol>
+
+<h2>5. Recommendation: the process</h2>
+<svg viewBox="0 0 720 120" role="img">
+<title>Where the new checks sit in a ticket's flow</title>
+<rect x="0" y="30" width="120" height="44" rx="6" style="fill: var(--box); stroke: var(--line)"/><text x="60" y="57" text-anchor="middle">/kickoff</text>
+<rect x="150" y="30" width="120" height="44" rx="6" style="fill: var(--box); stroke: var(--line)"/><text x="210" y="57" text-anchor="middle">build</text>
+<rect x="300" y="30" width="170" height="44" rx="6" style="fill: var(--ok-bg); stroke: var(--ok)"/><text x="385" y="50" text-anchor="middle">/land: revert check</text><text x="385" y="66" text-anchor="middle" class="muted">+ plant 2 bugs if risky</text>
+<rect x="500" y="30" width="110" height="44" rx="6" style="fill: var(--box); stroke: var(--line)"/><text x="555" y="57" text-anchor="middle">3 reviewers</text>
+<rect x="630" y="30" width="90" height="44" rx="6" style="fill: var(--box); stroke: var(--line)"/><text x="675" y="57" text-anchor="middle">merge</text>
+<path d="M120 52 H150 M270 52 H300 M470 52 H500 M610 52 H630" style="stroke: var(--ink); stroke-width: 1.5"/>
+<text x="210" y="100" text-anchor="middle" class="muted">house test rules apply here</text>
+</svg>
+<div class="tbl"><table>
+<tr><th>Option</th><th>What it does</th><th>Cost per ticket</th><th>Pick?</th></tr>
+<tr><td><strong>A. Revert check in /land</strong></td><td>Run the PR's new or changed tests against the code before the change. A test that still passes there protects nothing the PR changed: rewrite it or drop it.</td><td>~1–2 min, mechanical</td><td class="yes">Yes</td></tr>
+<tr><td><strong>B. Plant 2 bugs in risky PRs</strong></td><td>When a PR touches read state, access, membership or what goes on the wire, /land plants two plausible bugs in the changed lines and requires a test to fail on each. This is exactly what found the four gaps today.</td><td>~3–5 min, only on those PRs</td><td class="yes">Yes</td></tr>
+<tr><td><strong>C. House test rules</strong> in each repo's CLAUDE.md</td><td>Test what a person or the relay sees; no tests of constants, class names, re-exports or debugging instruments; fake timers, never real sleeps; writes are tested at the wire.</td><td>None</td><td class="yes">Yes</td></tr>
+<tr><td>D. Tests written from the ticket by a separate agent at /kickoff</td><td>Removes "same agent writes code and its judge".</td><td>One more agent per ticket</td><td class="no">Not now</td></tr>
+<tr><td>E. A fourth reviewer for tests</td><td>Judges new tests by reading them.</td><td>~25% more review per PR</td><td class="no">No</td></tr>
+</table></div>
+<p class="rec"><strong>Why A + B + C:</strong> they check the test against a real defect, which is the one thing
+reading a test cannot tell you. D answers the research's worry, but 88% caught with today's process says it is
+not needed yet. Revisit it if B keeps finding gaps. E is a softer opinion on the same diff. A full planting
+run (like today's) once per milestone in <code>/sweep</code> keeps the number honest.</p>
+
+<h2>Checked</h2>
+<ul class="rec">
+<li>Counts and local timings: our own runs at origin/main (Peek 3e40ca4, Ship 00fae6c), both green.</li>
+<li>CI numbers: GitHub Actions job timings and logs of the last 200 (Peek) and 171 (Ship) runs.</li>
+<li>Planting: 26 bugs and 4 controls, each type-checked, run and reverted; failures counted only if they came back when rerun alone. Worktrees confirmed clean afterwards.</li>
+<li>/land today: none of its three reviewers looks at whether a test protects anything (checked in the skill and agent files).</li>
+<li>Not verified: whether the tests stopped bugs <em>before</em> merge in earlier months. Squash merges hide it.</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="rec">Ticket PEE-50 (Peek: Feedback &amp; Bugs). Misses: Peek <code>extensions/pastedUrl.ts</code> loneUrl anchor,
+<code>api/useFileConversation.ts</code> reload after write; Ship <code>api/useFeedJudges.ts</code> member judge,
+<code>nostr/references.ts</code> commentsOnAny anchors. Prune candidates: Peek <code>promptContextDiagnostic</code>,
+<code>teamUnreadDiagnostic</code>, <code>readStateDiagnostic</code>, <code>openWork/starred.relayRead</code>, <code>CommandLauncher.*</code>,
+<code>promptApi</code>; Ship <code>config.test</code>, <code>slashMenu.test</code>, <code>shell</code> NavItem, <code>LiveHeader</code> vs <code>ShipRichText</code>,
+<code>projects.test</code> parity, <code>writes.test</code> mocked blocks. Prior prune: Ship PER-18 (6b78647).
+Research: arXiv 2602.07900; Charoosaei, Richter &amp; Papadakis 2026 (fault-enforcing tests).</p>
+</main>
+</body>
+</html>
