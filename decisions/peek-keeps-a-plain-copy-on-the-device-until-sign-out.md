@@ -61,7 +61,8 @@ Carried out by the project "Peek opens instantly" (Peek, and
 
 - Peek opens at once from the copy (Desk in about 100 ms on production).
 - Signing out of Peek is what removes the copy, and Peek draws from it only for
-  the person signed in. Until then it stays on the device.
+  the person signed in. What an open app drops when someone is removed is
+  [Someone you remove loses access at once](someone-you-remove-loses-access-at-once.md).
 - Ship and Leaf are to adopt the same copy, so this becomes the rule for all
   three apps.
 - Two-way on devices: a release can wipe or seal every copy the next time it

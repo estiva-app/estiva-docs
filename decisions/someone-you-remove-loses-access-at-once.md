@@ -9,8 +9,8 @@
 
 When Miky or an admin removes someone from the workspace, or from a Folder,
 nothing written after that moment reaches them, in any app, whether or not the
-app was built by Estiva. Their open apps are told their access has ended. What
-already reached their device before the removal stays there.
+app was built by Estiva. Their open apps are told their access has ended, say
+so, and drop what they hold.
 
 For an outside company running the protocol, this is what it can promise when
 someone leaves: one removal on the relay ends their access everywhere, without

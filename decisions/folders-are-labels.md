@@ -8,8 +8,9 @@
 
 When Miky, Katerina or a customer opens a file (an issue, a topic, a page),
 something decides whether they may read it. Today that is the Folder it was
-filed in. This record proposes that the file decides, and that a Folder only
-organises. It is not decided: Miky parked it on 14 Oct until the navigation
+filed in. This record writes down the option the brief recommended: the file
+decides, and a Folder only organises. The recommendation is the agent's, not
+Miky's; he has not chosen between the three options. He parked it on 14 Oct until the navigation
 across the apps is reworked, because that work is related. **Nothing is built
 on it.**
 
@@ -18,15 +19,15 @@ on it.**
 On the wire a Folder is a group: it is what the relay checks a read or a write
 against, and the unit a live connection watches. Miky said on 8 Oct that this
 steers the architecture to many odd places and asked whether a Folder should
-work more like a label. On 2 Oct he had already ruled that, for a person, a
-Folder is a label ("a thread is the project's by anchor, in any Folder"), and
-SPEC separates a listing from access. Only the relay's check still points at
+work more like a label. On 2 Oct he had ruled that "a thread is the project's
+by anchor, any Folder", and SPEC separates a listing from access. Only the relay's check still points at
 the Folder. A brief with three options was put to him on 14 Oct, and he
 parked it.
 
 ## Decision
 
-Proposed: access lives on the file, and Folders are labels. A new file's
+Proposed (the brief's recommendation): access lives on the file, and Folders
+are labels. A new file's
 default readers, whether readers have levels (view, comment, edit), and where a
 conversation about no file lives would each still be Miky's call.
 
