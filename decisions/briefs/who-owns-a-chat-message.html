@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who Owns Messages</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.q { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); padding: 12px 14px; border-radius: 6px; font-size: 1.05rem; }
+.rec { background: var(--ok-bg); border-left: 4px solid var(--ok); padding: 12px 14px; border-radius: 6px; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+svg { width: 100%; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .chip { fill: var(--chip); stroke: var(--accent); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .ad { stroke: var(--muted); fill: none; stroke-width: 1.2; stroke-dasharray: 4 3; marker-end: url(#arr); }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 640px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+.rec-row td { background: var(--ok-bg); }
+</style>
+</head>
+<body>
+<main>
+<h1>Who owns a chat message</h1>
+<p class="sub">A brief for Miky · 15 Oct 2026 · from shaping "Decision records 2" · nobody has decided this before</p>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+</defs></svg>
+
+<h2>The question</h2>
+<p class="q">Is a chat message something Peek owns, or something the protocol defines for every app, the way a comment and a topic already are?</p>
+
+<h2>Today</h2>
+<p>A chat message is one shape. It is what you write in a Peek topic, in a DM, in a Folder's chat, and in a chat thread on a Ship project. Ship writes them as well as Peek.</p>
+<p>When someone links to a message from a Ship issue or a Leaf page, the app asks the relay which app owns chat messages. Peek's app listing says "these are mine", so Peek's listing decides how the message draws there and where it opens.</p>
+<p>Comments and topics already work the other way. Since September, the Specification says how a comment or a topic draws, and every app has that built in. Each one opens in whichever app says it handles conversations, which is Peek today.</p>
+<p>Nobody decided that messages are Peek's. The claim dates from Peek's first app listing, and the Specification already says that an app like Peek, which shows a conversation about everybody's files, owns no kind of its own.</p>
+<p>This came up because the project you just approved makes Folders belong to no app. A Folder's chat is chat messages, so the next question is whose those are.</p>
+
+<h2>Why it reaches beyond this ticket</h2>
+<ul>
+<li><strong>It is the rule for every company's chat.</strong> Under one answer, a company that brings its own chat app has to replace Peek as the owner of messages in its workspace. Under the other, it writes the same messages any app reads, and only says it opens conversations.</li>
+<li><strong>It decides who may change what a message is.</strong> An owner can add fields and actions to messages through its own listing. With the protocol as owner, adding anything to a message is a change to the Specification.</li>
+<li><strong>Two-way door.</strong> No stored message changes either way; only Peek's app listing and the shared library do. Undoing it later means republishing one listing and changing the library again, and every app built in between would change twice.</li>
+</ul>
+
+<h2>The picture</h2>
+<figure>
+<svg viewBox="0 0 720 230" role="img"><title>Today: a link to a message in Ship is drawn by asking Peek</title>
+<text x="10" y="20" class="h">Today, and option A</text>
+<rect x="10" y="40" width="160" height="56" rx="6" class="w"/><text x="22" y="62" class="h">Ship issue</text><text x="22" y="82" class="m">a link to a message</text>
+<rect x="10" y="140" width="160" height="56" rx="6" class="w"/><text x="22" y="162" class="h">Leaf page</text><text x="22" y="182" class="m">a link to a message</text>
+<rect x="270" y="80" width="180" height="76" rx="6" class="chip"/><text x="282" y="104" class="h">Peek's app listing</text><text x="282" y="124" class="m">"chat messages are mine"</text><text x="282" y="142" class="m">how it draws · where it opens</text>
+<rect x="550" y="40" width="160" height="56" rx="6" class="b"/><text x="562" y="62" class="h">Message, drawn</text><text x="562" y="82" class="m">as Peek describes it</text>
+<rect x="550" y="140" width="160" height="56" rx="6" class="b"/><text x="562" y="162" class="h">Opens in Peek</text><text x="562" y="182" class="m">Peek's own link</text>
+<path d="M170 68 L268 108" class="a"/><path d="M170 168 L268 132" class="a"/>
+<path d="M450 108 L548 68" class="a"/><path d="M450 132 L548 168" class="a"/>
+</svg>
+<figcaption>Every app asks the owner. A company with its own chat app has to become the owner in its workspace, in place of Peek.</figcaption>
+</figure>
+
+<figure>
+<svg viewBox="0 0 720 230" role="img"><title>Option B: a message is drawn the same way by every app, from the Specification</title>
+<text x="10" y="20" class="h">Option B: the protocol's, like comments</text>
+<rect x="10" y="40" width="160" height="56" rx="6" class="w"/><text x="22" y="62" class="h">Ship issue</text><text x="22" y="82" class="m">a link to a message</text>
+<rect x="10" y="140" width="160" height="56" rx="6" class="w"/><text x="22" y="162" class="h">Leaf page</text><text x="22" y="182" class="m">a link to a message</text>
+<rect x="270" y="40" width="180" height="76" rx="6" class="ok"/><text x="282" y="64" class="h">Built into every app</text><text x="282" y="84" class="m">from the Specification:</text><text x="282" y="102" class="m">author, text, time, thread</text>
+<rect x="270" y="150" width="180" height="56" rx="6" class="chip"/><text x="282" y="172" class="h">"I open conversations"</text><text x="282" y="192" class="m">Peek, or a company's app</text>
+<rect x="550" y="40" width="160" height="56" rx="6" class="b"/><text x="562" y="62" class="h">Message, drawn</text><text x="562" y="82" class="m">the same everywhere</text>
+<rect x="550" y="150" width="160" height="56" rx="6" class="b"/><text x="562" y="172" class="h">Opens there</text><text x="562" y="192" class="m">Peek today</text>
+<path d="M170 68 L268 76" class="a"/><path d="M170 168 L268 92" class="a"/>
+<path d="M450 78 L548 68" class="a"/><path d="M450 178 L548 178" class="a"/>
+<path d="M360 116 L360 148" class="ad"/>
+</svg>
+<figcaption>No app owns messages. The app that says it opens conversations only decides where a message opens, as it already does for comments and topics.</figcaption>
+</figure>
+
+<h2>Options</h2>
+<h3>A. A message belongs to the workspace's chat app (Peek here)</h3>
+<ul>
+<li><strong>What you and Katerina see:</strong> nothing changes. A message linked from a Ship issue draws as Peek describes it and opens in Peek.</li>
+<li><strong>An outside company:</strong> brings its chat app as the owner of messages in its workspace, once workspaces can name their apps. Its app decides how messages draw in every other app there.</li>
+<li><strong>Locks in:</strong> the Specification's line that an app like Peek owns nothing gets an exception for messages. Ship goes on writing a kind that another app owns.</li>
+</ul>
+<h3>B. A message belongs to the protocol, like a comment (recommended)</h3>
+<ul>
+<li><strong>What you and Katerina see:</strong> nothing changes. The same message card, and it still opens in Peek.</li>
+<li><strong>An outside company:</strong> gets chat messages from the Specification alone. Its own chat app only has to say it opens conversations to become where messages open.</li>
+<li><strong>Locks in:</strong> Peek can't give messages anything extra in other apps on its own. A new part of a message goes through the Specification, as it does for comments.</li>
+</ul>
+<p class="sub">Not an option here: whether a Folder's chat should be comments rather than messages at all. That belongs to the parked "Folders as labels" question and stays parked.</p>
+
+<h2>Trade-offs</h2>
+<div class="tw"><table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td>A. Peek's</td><td>A shared, upstream chat shape owned by one app. An exception to "an app like Peek owns nothing".</td><td>No change.</td><td>Must replace Peek as the owner in its workspace.</td><td>Republish one listing; the library changes again.</td><td>None now. The exception goes into the Specification.</td></tr>
+<tr class="rec-row"><td>B. The protocol's</td><td>Messages, comments and topics all drawn from the Specification. One rule, no exception.</td><td>No change.</td><td>Chat works from the Specification; its app only opens conversations.</td><td>Republish Peek's listing with the claim again.</td><td>A built-in message drawing in the shared library. Peek drops its claim. A few lines of Specification. Same release order as the Folder change.</td></tr>
+</table></div>
+
+<h2>How others do it</h2>
+<ul>
+<li><strong>Nostr (NIP-29):</strong> the group chat message is defined by the standard, and any client draws it. Peek owning it is the odd one out.</li>
+<li><strong>Matrix:</strong> a room message is defined by the spec, and every client renders it. Clients compete on how they show it, not on owning it.</li>
+<li><strong>Slack:</strong> messages are the platform's, and apps extend them through attachments the platform defines. That is closer to B, with the platform playing the Specification's part.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<p class="rec"><strong>B: a chat message belongs to the protocol, like a comment.</strong> It is already a shared shape: Ship writes it, and the upstream standard defines it. Comments and topics already work this way, and the Specification already says an app like Peek owns nothing. An outside company then gets chat from the Specification alone, with no app to replace. You and Katerina see no change. The one thing given up, Peek extending messages on its own, is the right thing to give up for a shape every app writes.</p>
+
+<h2>Checked</h2>
+<ul>
+<li>Peek's live app listing claims messages and says how they draw. All four listings on the relay were read on 15 Oct 2026 by the protocol pre-review.</li>
+<li>A link to a message is resolved by asking which app claims its kind: interop <code>projection.ts</code>, <code>resolveForeignEvent</code>, lines ~3160–3195. Comments and topics resolve through a built-in instead (<code>projection.ts:1874-1876</code>).</li>
+<li>The Specification says an app like Peek "owns none" (SPEC §7.8, on <code>origin/main</code>).</li>
+<li>Ship writes chat messages: <code>estiva-ship src/api/writes.ts:407</code> and <code>src/nostr/events.ts:334</code>. KINDS lists a topic message, a DM and a Ship project conversation as the same kind.</li>
+<li>No decision record says who owns messages (all 38 Accepted ones searched).</li>
+<li><strong>Not checked:</strong> how a linked message looks in Ship and Leaf on production today. With the 13 Oct card decision, it is a chip unless its author chose a card.</li>
+</ul>
+
+<h2>For the record</h2>
+<ul>
+<li>The kind is <code>kind:9</code> (NIP-29 group message).</li>
+<li>Peek's listing is <code>31990:…:estiva-peek</code>, with <code>["k","9"]</code> and <code>projections["9"]</code>.</li>
+<li>Under B:
+  <ul>
+  <li>interop gives kind 9 the built-in path that comments use, opening through the <code>conversation</code> aspect's <code>nevent</code> template;</li>
+  <li>Peek drops <code>k 9</code> and <code>projections["9"]</code> only after Ship, Leaf, Peek and the agent are on that interop;</li>
+  <li>SPEC §7 lists messages beside the bare file and the Folder;</li>
+  <li>KINDS §1's heading stops saying "written by Estiva Peek".</li>
+  </ul></li>
+<li>Records: <code>folders-belong-to-the-protocol</code> (Accepted), <code>an-app-counts-only-once-the-workspace-adds-it</code> (Accepted), <code>folders-are-labels</code> (Proposed, parked).</li>
+<li>Found by the protocol pre-review of the project "Decision records 2: the code does what the records say".</li>
+</ul>
+</main>
+</body>
+</html>

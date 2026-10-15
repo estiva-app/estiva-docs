@@ -1,7 +1,8 @@
 # A chat message belongs to the protocol, like a comment, and no app owns it
 
 - Date: 2026-10-15
-- Status: Proposed
+- Status: Accepted
+- Decided by: Miky, in the shaping session of "Decision records 2: the code does what the records say" (2026-10-15), on the brief "Who owns a chat message"
 - Area: Messages
 
 ## Who it affects
@@ -30,10 +31,10 @@ Folders were made to belong to no app: a Folder's chat is chat messages.
 - SPEC §7.8 says a generic app such as Peek "owns none". No record decided that
   messages are Peek's; the claim dates from Peek's first listing.
 
-## Decision
+The brief Miky decided on:
+[briefs/who-owns-a-chat-message.html](briefs/who-owns-a-chat-message.html).
 
-Proposed, not decided. Asked of Miky as the brief "Who owns a chat message"
-(15 Oct 2026). The option written here is the brief's recommendation.
+## Decision
 
 - A chat message belongs to no app. The Specification says how it draws
   (author, text, time, its thread), and every app has that built in, as for a
@@ -42,17 +43,19 @@ Proposed, not decided. Asked of Miky as the brief "Who owns a chat message"
   company's own chat app in its workspace.
 - Peek's listing drops its claim on messages only after Ship, Leaf, Peek and
   the agent run the interop that has the built-in, the same release order as
-  the Folder change in "Decision records 2".
+  the Folder change in "Decision records 2", which carries it out.
 
 ## Rejected alternatives
 
-Not decided yet; these are the options still open.
-
 - **A message belongs to the workspace's chat app (Peek here).** Nothing
-  changes now, and an app can extend messages through its own listing. But a
-  shared, upstream shape that Ship also writes would be owned by one app. The
-  Specification would need an exception to "a generic app owns none". An
-  outside company would have to replace Peek as the owner to bring its own chat.
+  would change now, and an app could extend messages through its own listing.
+  But a shared, upstream shape that Ship also writes would be owned by one app.
+  The Specification would need an exception to "a generic app owns none". An
+  outside company would have to replace Peek as the owner in its workspace to
+  bring its own chat. Build cost: none now.
+- **Not asked here:** whether a Folder's chat should be comments rather than
+  messages at all. That belongs to [folders-are-labels](folders-are-labels.md),
+  which stays Proposed and parked.
 
 ## Consequences
 

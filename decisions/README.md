@@ -129,7 +129,7 @@ heading here.
 - [Peek and Ship may each choose when to offer Edit and Delete, and converge once they share one library](each-app-chooses-its-own-edit-and-delete-rule.md) — Superseded by the one above, 2026-09-21
 - [What you do shows at once; if the relay refuses it, it is taken back with a note and what you typed comes back to you](a-refused-action-is-undone-and-your-text-comes-back.md) — Accepted, 2026-10-07
 - [A file's Activity lists only the places that mention it, never the conversations of the files under it](activity-lists-only-mentions-from-elsewhere.md) — Accepted, 2026-09-20
-- [A chat message belongs to the protocol, like a comment, and no app owns it](a-chat-message-belongs-to-the-protocol.md) — Proposed, 2026-10-15
+- [A chat message belongs to the protocol, like a comment, and no app owns it](a-chat-message-belongs-to-the-protocol.md) — Accepted, 2026-10-15
 
 ## Links & widgets
 
