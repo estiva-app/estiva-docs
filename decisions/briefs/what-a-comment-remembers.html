@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What a Comment Remembers</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+  --hl: #f6e3a1;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+    --hl: #5a4a17;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  --hl: #5a4a17;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.q { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); padding: 12px 14px; border-radius: 6px; font-size: 1.05rem; }
+.rec { background: var(--ok-bg); border-left: 4px solid var(--ok); padding: 12px 14px; border-radius: 6px; }
+.warn { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+svg { width: 100%; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .hl { fill: var(--hl); stroke: none; }
+svg .chip { fill: var(--chip); stroke: var(--accent); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 640px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+.rec-row td { background: var(--ok-bg); }
+blockquote { margin: 8px 0; padding: 4px 12px; border-left: 3px solid var(--line); color: var(--muted); }
+mark { background: var(--hl); color: inherit; padding: 0 2px; border-radius: 2px; }
+</style>
+</head>
+<body>
+<main>
+<h1>What a comment remembers about its selection</h1>
+<p class="sub">A brief for Miky · 15 Oct 2026 · Leaf 1, "Comment on a word, a sentence or several blocks" · it makes the 13 Oct decision exact before anything is written to the relay</p>
+
+<h2>The question</h2>
+<p class="q">When you comment on a selection that runs across several paragraphs, should the comment remember <b>every word you selected</b>, or only <b>where your selection starts and ends</b>?</p>
+
+<h2>Today</h2>
+<p>Leaf has no comments yet. In Ship and Peek a comment can point at one paragraph and remembers no words. Peek also reads the comments on a Leaf document and shows the paragraph each one points at.</p>
+<p>On 13 Oct, shaping Leaf 1, you decided that a comment has one anchor: the same run of paragraphs that Composition 2 shares, <q>narrowed by the words quoted at its ends</q>. That is an Accepted record now. It did not say which words count as "the ends", and it was written without alternatives. Katerina's prototype keeps the selected words of the <em>first</em> paragraph only. When those words change, it treats the comment as if its paragraph were gone. Both differ from the record. Nothing she built is approved yet, and the drawing waits for her.</p>
+
+<h2>Why it reaches beyond this ticket</h2>
+<ul>
+<li><b>The rule for every app.</b> Whatever a comment remembers is all that Leaf, Peek, Ship or an outside company's app has to find the highlight again after the page is edited. Every reader has to match it the same way, or two apps disagree about the same comment.</li>
+<li><b>It decides when a comment says "the words have changed".</b> That message is new: the paragraphs are still there, but the words are not. The more the comment remembers, the more often it appears.</li>
+<li><b>It copies the page's text into the comment.</b> The remembered words stay in the comment after the page changes, and after someone loses access to the page. A short copy is safer than a long one.</li>
+<li><b>Door: one-way.</b> Once comments carrying the words are on the relay, every reader has to understand that shape for good. Nothing is on the relay yet, so this is the moment to choose.</li>
+</ul>
+
+<h2>The picture: one selection, two edits</h2>
+<p>QA-1 selects from the middle of the first paragraph to the middle of the third and comments. Then two edits happen: Katerina fixes a typo in the <b>middle</b> paragraph, and later somebody rewrites <b>"on Friday"</b>, where the selection starts.</p>
+<figure>
+<svg viewBox="0 0 720 150" role="img" aria-labelledby="t0">
+<title id="t0">The page and the selection: from "on Friday." in paragraph 1 to "Then we" in paragraph 3</title>
+<rect class="w" x="10" y="10" width="700" height="130" rx="6"/>
+<rect class="hl" x="98" y="26" width="72" height="20" rx="3"/>
+<rect class="hl" x="44" y="58" width="100" height="20" rx="3"/>
+<rect class="hl" x="44" y="90" width="58" height="20" rx="3"/>
+<text x="24" y="40">¶1  We ship <tspan class="h">on Friday.</tspan></text>
+<text x="24" y="72">¶2  QA signs off.</text>
+<text x="24" y="104">¶3  <tspan class="h">Then we</tspan> announce it.</text>
+<text x="380" y="40" class="m">selection starts here: "on Friday."</text>
+<text x="380" y="72" class="m">edit 1: typo fixed in the middle paragraph</text>
+<text x="380" y="104" class="m">selection ends here: "Then we"</text>
+<text x="24" y="130" class="m">edit 2 (later): "on Friday" is rewritten as "next week"</text>
+</svg>
+<figcaption>Highlighted: what QA-1 selected.</figcaption>
+</figure>
+
+<figure>
+<svg viewBox="0 0 720 330" role="img" aria-labelledby="t1">
+<title id="t1">What each option stores and what the reader shows after each edit</title>
+<text x="10" y="20" class="h">Option</text><text x="190" y="20" class="h">The comment remembers</text><text x="410" y="20" class="h">After edit 1 (middle)</text><text x="570" y="20" class="h">After edit 2 (start)</text>
+
+<rect class="b" x="10" y="32" width="170" height="86" rx="6"/>
+<text x="20" y="54" class="h">A · every word</text>
+<text x="20" y="74" class="m">Linear's way</text>
+<rect class="w" x="190" y="32" width="210" height="86" rx="6"/>
+<text x="200" y="54">¶1–¶3, plus</text>
+<text x="200" y="74">"on Friday. QA signs</text>
+<text x="200" y="94">off. Then we"</text>
+<rect class="bad" x="410" y="32" width="150" height="86" rx="6"/>
+<text x="420" y="54">"The words have</text><text x="420" y="74">changed"</text><text x="420" y="98" class="m">no highlight</text>
+<rect class="bad" x="570" y="32" width="140" height="86" rx="6"/>
+<text x="580" y="54">"The words have</text><text x="580" y="74">changed"</text>
+
+<rect class="b" x="10" y="128" width="170" height="86" rx="6"/>
+<text x="20" y="150" class="h">B · where it starts</text>
+<text x="20" y="168" class="h">and ends</text>
+<text x="20" y="190" class="m">the web's own link-to-text</text>
+<rect class="w" x="190" y="128" width="210" height="86" rx="6"/>
+<text x="200" y="150">¶1–¶3, plus</text>
+<text x="200" y="170">starts at "on Friday."</text>
+<text x="200" y="190">ends at "Then we"</text>
+<rect class="ok" x="410" y="128" width="150" height="86" rx="6"/>
+<text x="420" y="150">Still highlighted,</text><text x="420" y="170">fix included</text>
+<rect class="bad" x="570" y="128" width="140" height="86" rx="6"/>
+<text x="580" y="150">"The words have</text><text x="580" y="170">changed", shows</text><text x="580" y="190" class="m">"on Friday. …</text><text x="580" y="206" class="m">Then we"</text>
+
+<rect class="b" x="10" y="224" width="170" height="86" rx="6"/>
+<text x="20" y="246" class="h">C · whole paragraphs</text>
+<text x="20" y="266" class="h">across paragraphs</text>
+<rect class="w" x="190" y="224" width="210" height="86" rx="6"/>
+<text x="200" y="246">¶1–¶3 only</text>
+<text x="200" y="266" class="m">(words are kept only when</text>
+<text x="200" y="284" class="m">the selection is in one ¶)</text>
+<rect class="ok" x="410" y="224" width="150" height="86" rx="6"/>
+<text x="420" y="246">All three ¶</text><text x="420" y="266">highlighted</text>
+<rect class="ok" x="570" y="224" width="140" height="86" rx="6"/>
+<text x="580" y="246">All three ¶</text><text x="580" y="266">highlighted</text><text x="580" y="290" class="m">never "changed"</text>
+</svg>
+<figcaption>A selection inside one paragraph ("a few words") remembers exactly those words in every option. The options differ only when a selection crosses paragraphs.</figcaption>
+</figure>
+
+<h2>Options</h2>
+<h3>A · Every word you selected</h3>
+<p><b>What you see:</b> any edit anywhere inside a multi-paragraph selection, including a typo fix in the middle, turns the comment to "The words have changed", and its highlight disappears. The note can show the whole original passage. Selecting two whole paragraphs stores both in full, so editing either one later flips the comment.</p>
+<p><b>Outside company:</b> has to join paragraphs into one string exactly as we do (spaces, line breaks, list bullets). Only we define that rule.</p>
+<p><b>Locks in:</b> the longest copy of the page's text in every comment. It also goes against the 13 Oct record, which says the comment lives with its run of paragraphs the way a shared part does, and a shared part shows edits in the middle.</p>
+
+<h3>B · Where it starts and where it ends <i>(recommended)</i></h3>
+<p><b>What you see:</b> a few words or a sentence inside one paragraph: the comment keeps exactly those words. Across paragraphs: it keeps the selected words in the first paragraph and the selected words in the last. Edits in between keep the highlight, and a paragraph added in the middle joins it, like a shared part. Only an edit to the words where it starts or ends turns it to "The words have changed", and the note shows those two ends. Selecting whole paragraphs keeps no words at all: the comment is about those paragraphs and grows with them, and it never turns to "changed".</p>
+<p><b>Outside company:</b> gets the same model as the web's "link to text" (Chrome's and Safari's <code>#:~:text=start,end</code>). Each remembered string sits inside one paragraph, so no joining rule is needed.</p>
+<p><b>Locks in:</b> two short strings per comment at most, and exactly what the record says.</p>
+
+<h3>C · Whole paragraphs once it crosses one</h3>
+<p><b>What you see:</b> a word or a sentence works as in B. A selection from mid-sentence to mid-sentence across paragraphs widens to whole paragraphs, so the highlight covers more than you selected, and the comment never says its words changed.</p>
+<p><b>Outside company:</b> the simplest to read.</p>
+<p><b>Locks in:</b> the least. The two ends could be added later. But it falls short of "narrowed by the words at its ends", and Miky's "a sentence" spanning two paragraphs would light up both whole paragraphs.</p>
+
+<p><b>In every option, repeated words.</b> If you comment on "the" in a paragraph that has five of them, the comment must not light up the first one. When the words repeat inside their paragraph, the comment also remembers a few characters before and after them, and a reader uses those to pick the right one. The words are never searched for outside the commented paragraphs.</p>
+
+<h2>A second, smaller question: where the run of paragraphs is written</h2>
+<p class="q">Should a comment about several paragraphs list them in the same place that today names its one paragraph, so an app that knows only one paragraph still shows the first?</p>
+<figure>
+<svg viewBox="0 0 720 150" role="img" aria-labelledby="t2">
+<title id="t2">Leaf writes a comment on paragraphs 1 to 3; an updated reader shows the run; Peek today shows the first paragraph</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+<rect class="chip" x="10" y="50" width="185" height="50" rx="6"/>
+<text x="22" y="72" class="h">Leaf writes a comment</text><text x="22" y="90" class="m">on ¶1, ¶2, ¶3</text>
+<path class="a" d="M195 64 L330 30"/>
+<path class="a" d="M195 86 L330 120"/>
+<rect class="ok" x="330" y="8" width="380" height="46" rx="6"/>
+<text x="342" y="28">Leaf, and Peek once it is updated: ¶1–¶3</text><text x="342" y="46" class="m">the whole run, including paragraphs added in between</text>
+<rect class="bad" x="330" y="96" width="380" height="46" rx="6"/>
+<text x="342" y="116">Peek today: ¶1 only</text><text x="342" y="134" class="m">and "this part was deleted" if ¶1 is gone while ¶2–¶3 remain</text>
+</svg>
+<figcaption>Either way, Peek must learn the run before Leaf writes one. Nothing writes runs yet, so no comment is affected today.</figcaption>
+</figure>
+<ul>
+<li><b>Same place (recommended).</b> One anchor, written the way a shared part in a message already lists its paragraphs (decided for Composition 2 on 9 Oct). Older apps show the first paragraph.</li>
+<li><b>A new place beside today's one.</b> Older apps see no change. But the two can disagree, and an outside company gets two ways to say one thing for good.</li>
+</ul>
+
+<h2>Trade-offs</h2>
+<div class="tw">
+<table>
+<tr><th>Option</th><th>Protocol shape</th><th>What Miky and Katerina see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td><b>A · every word</b></td><td>The run plus one long copy of the selected text.</td><td>Any edit inside the selection, even a typo in the middle, says "words changed".</td><td>Must copy our rule for joining paragraphs.</td><td>One-way.</td><td>Lowest.</td></tr>
+<tr class="rec-row"><td><b>B · start and end</b></td><td>The run plus the words at each end, each inside one paragraph. Whole paragraphs keep no words.</td><td>The highlight survives middle edits and grows with the run. "Changed" only when its own start or end words change.</td><td>The web's link-to-text model; no joining rule.</td><td>One-way.</td><td>Moderate: a matcher for two ends.</td></tr>
+<tr><td><b>C · whole ¶ across</b></td><td>The run; words only inside one paragraph.</td><td>Cross-paragraph selections widen to whole paragraphs; never "changed".</td><td>Simplest.</td><td>Two-way: ends can be added later.</td><td>Lowest.</td></tr>
+</table>
+</div>
+
+<h2>How others do it</h2>
+<ul>
+<li><b>Linear</b> stores the selected text (<q>quotedText</q>) on an inline comment. That is A. It works because Linear alone draws the page.</li>
+<li><b>Google Docs</b> keeps the position inside its own document model, which no other app can read. That does not work on an open protocol.</li>
+<li><b>The web's link-to-text</b> (<code>#:~:text=start,end</code>, in Chrome and Safari) names a long passage by its first and last words, with optional context before and after. That is B.</li>
+<li><b>W3C Web Annotation / Hypothesis</b> store the exact words plus context and a position, and fall back to fuzzy matching. That is A, with a repair step that works only because Hypothesis controls the reader.</li>
+<li><b>Nostr highlights (NIP-84)</b> are a separate event with the quoted text and a context tag. They are not a comment thread and have no paragraph ids, so they cannot carry a Leaf discussion.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<div class="rec">
+<p><b>B, and the run listed in the same place as today's one paragraph.</b></p>
+<p>The protocol reason: the 13 Oct record made a comment and a shared part one shape, and a shared part stays live through edits in its middle. B is the only option where the comment does too. It is what the record already says, it gives an outside company the web's own model, and it copies the least of the page into a comment. The person reason: "The words have changed" then means what it says, that the words you were looking at changed. It does not fire because a colleague fixed a typo two paragraphs away during the call.</p>
+</div>
+
+<h2>Checked</h2>
+<ul>
+<li>The record says <q>narrowed by the words quoted at its ends</q> and <q>the same run of blocks Composition 2 shares</q>: <code>decisions/a-comment-points-at-blocks-and-the-words-quoted.md</code>, <code>estiva-docs</code> <code>origin/main</code>, Accepted 13 Oct.</li>
+<li>A shared part's run is live and includes paragraphs inserted in the middle: <code>decisions/a-shared-part-of-a-page-is-a-selected-run-of-blocks.md</code>, Accepted 9 Oct. Its wire ("keep `part`, list every selected id, read as a span") is a Decided line on "Show a run of blocks in a Ship conversation", 9 Oct. It is not yet in the protocol spec or the code: all three Composition 2 issues are todo.</li>
+<li>Peek reads the comments of any file, Leaf documents included, and shows the first listed paragraph: <code>peek-app</code> <code>origin/main</code>, <code>src/nostr/fileConversation.ts:170</code>.</li>
+<li>No app on <code>origin/main</code> writes remembered words on a comment (Peek, Ship, foundation, Leaf), and Leaf has no comment code. Checked in code, not by a relay read. So no existing comment changes meaning.</li>
+<li>Katerina's prototype keeps one paragraph and its words, and treats words not found as "deleted": <code>estiva-ui</code> <code>proto/text-comments</code>, <code>src/CommentHighlights.ts</code>.</li>
+<li>The relay stores comment tags without checking them (Buzz, <code>nfb-demo-kinds</code>), so a remembered quote is the commenter's claim. A reader shows "changed" words as what the commenter quoted, not as what the page said.</li>
+<li><b>Not measured:</b> how often a real edit touches a selection's ends. Leaf has no comments yet to measure.</li>
+</ul>
+
+<h2>For the record</h2>
+<ul>
+<li>Makes exact the Accepted record <code>decisions/a-comment-points-at-blocks-and-the-words-quoted.md</code>. B keeps it as written; A would supersede it. Proposed record: <code>decisions/a-comment-remembers-where-its-selection-starts-and-ends.md</code>.</li>
+<li>B on the wire: <code>kind:1111</code> <code>["block", id1, id2, …]</code> (the run, read with the span rule decided for <code>part</code>), plus <code>["quote", &lt;exact&gt;]</code> inside one block, <code>["quote", &lt;start words&gt;, &lt;end words&gt;]</code> across blocks or when longer than ~1,000 characters (~150 characters each end), and <code>["quote", start, end|"", prefix, suffix]</code> only when the words repeat. No <code>quote</code> for a whole-block selection. Each string is an exact substring of one block's wire text, never trimmed and never a rendered label.</li>
+<li>New §13.6 state <code>reworded</code>: the run resolves, the quote does not. A reader MUST NOT draw it as <code>detached</code>, and MUST NOT highlight a guessed place as resolved.</li>
+<li>SPEC: §13.3 gains "A run of blocks" (shared by <code>block</code> and <code>part</code>); §13.6 is retitled to a run and gains the five states; §13.6.1 cites the run and drops the index-3 reservation. <code>@estiva-app/protocol</code> minor (0.36 → 0.37). Peek takes it before Leaf writes a run.</li>
+<li>Ticket LEAF-7 (Leaf 1). The drawing waits on Katerina's approved prototype.</li>
+</ul>
+</main>
+</body>
+</html>
