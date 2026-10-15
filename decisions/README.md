@@ -49,9 +49,9 @@ accept or reject settles the bar too.
   brief Miky decided on goes in `briefs/` beside it, as the HTML page it was,
   and the record links it, after the same check for unfixed gaps. A brief still
   waiting on Miky stays out of the repository (Miky, 2026-10-15).
-- **A brief asked of Miky is a Proposed record.** The record is written when
-  the brief is asked, under the name it will keep, and follows the rule on
-  security gaps above. His answer makes it Accepted, with `Decided by` naming
+- **A brief asked of Miky is a Proposed record.** The record is written and
+  merged when the brief page is asked, under the name it will keep, so it is
+  listed as waiting on him; it follows the rule on security gaps above. His answer makes it Accepted, with `Decided by` naming
   the brief and where he answered; the options he turned down become its
   Rejected alternatives; the brief goes in `briefs/` and the record links it.
   The issue's Decided line links the record. A brief that describes a gap not
