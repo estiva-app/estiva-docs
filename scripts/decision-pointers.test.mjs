@@ -6,9 +6,9 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
-import { mkdtempSync, writeFileSync, rmSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import { findPointers, judge } from './decision-pointers.mjs'
 
 const URL = 'https://github.com/estiva-app/estiva-docs/blob/main/decisions/'
@@ -22,12 +22,15 @@ const RECORDS = {
 const names = Object.keys(RECORDS)
 const read = (name) => `# A record\n\n- Date: 2026-10-15\n- Status: ${RECORDS[name]}\n- Area: People\n`
 
-function pointersIn(lines) {
+function pointersIn(lines, file = 'code.ts', more = {}) {
   const repo = mkdtempSync(join(tmpdir(), 'pointers-'))
   try {
     execFileSync('git', ['init', '-q', repo])
-    writeFileSync(join(repo, 'code.ts'), lines.join('\n') + '\n')
-    execFileSync('git', ['-C', repo, 'add', 'code.ts'])
+    for (const [path, text] of Object.entries({ [file]: lines.join('\n') + '\n', ...more })) {
+      mkdirSync(dirname(join(repo, path)), { recursive: true })
+      writeFileSync(join(repo, path), text)
+      execFileSync('git', ['-C', repo, 'add', path])
+    }
     return findPointers(repo)
   } finally {
     rmSync(repo, { recursive: true, force: true })
@@ -89,8 +92,9 @@ test('a path that is not a repository says so in one line', () => {
 })
 
 test("this repository's own scan skips the bad pointers this file holds on purpose", () => {
-  const pointers = findPointers(join(import.meta.dirname, '..'))
-  assert.deepEqual(pointers.filter((p) => p.file === 'scripts/decision-pointers.test.mjs'), [])
+  const bad = `// ${URL}no-such-record.md`
+  const pointers = pointersIn([bad], 'scripts/decision-pointers.test.mjs', { 'other.ts': bad + '\n' })
+  assert.deepEqual(pointers.map((p) => p.file), ['other.ts'])
 })
 
 test('two pointers on one line are both checked', () => {
