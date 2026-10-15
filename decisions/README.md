@@ -136,6 +136,7 @@ heading here.
 - [A link pasted into a message is sent as Estiva's internal reference, not the link](a-pasted-link-in-a-message-is-sent-as-the-reference.md) — Superseded by the one above, 2026-10-13
 - [Where a link sits decides how it draws: a chip in a sentence, a row alone on its line, and one file's card under the message by default](where-a-link-sits-decides-how-it-draws.md) — Accepted, 2026-10-15
 - [Every link draws as a chip, and its author chooses a card with an `embed` tag they can change after sending](the-author-chooses-a-links-card.md) — Superseded by the one above, 2026-10-15
+- [A file's summary is its own short field beside the title, not part of its description](a-files-summary-is-its-own-field.md) — Accepted, 2026-10-15
 - [A shared part of a page is a selected run of whole blocks, and it stays live as the page changes](a-shared-part-of-a-page-is-a-selected-run-of-blocks.md) — Accepted, 2026-10-09
 - [While editing a description, clicking a chip opens a menu, Open and its card, and a fresh link opens it by itself](clicking-a-chip-while-editing-opens-a-menu.md) — Accepted, 2026-10-14
 - [Another app's file is labelled by its type ("Topic", "Issue"), and the app's name only says where it opens](a-file-is-labelled-by-its-type-not-its-app.md) — Accepted, 2026-10-02
