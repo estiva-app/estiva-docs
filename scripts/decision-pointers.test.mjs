@@ -47,6 +47,19 @@ test('a pointer to an Accepted record passes, in either form', () => {
   assert.deepEqual(judge(pointers, names, read), [])
 })
 
+test('a pointer to a fork or another host fails, even with a real record name', () => {
+  const pointers = pointersIn([
+    '// why: https://github.com/someone/estiva-docs/blob/main/decisions/person-links-carry-the-key.md',
+    '// why: https://evil.example/estiva-docs/decisions/person-links-carry-the-key.md',
+    '// why: (https://github.com/estiva-app/estiva-docs/blob/main/decisions/person-links-carry-the-key.md)',
+    '// see ../../estiva-docs/decisions/0001',
+  ])
+  const problems = judge(pointers, names, read)
+  assert.equal(problems.length, 2)
+  assert.match(problems[0], /under https:\/\/github\.com\/someone\//)
+  assert.match(problems[1], /under https:\/\/evil\.example\//)
+})
+
 test('a pointer to a superseded record fails and names its replacement', () => {
   const problems = judge(pointersIn([`// why: ${URL}person-links-name-the-handle.md`]), names, read)
   assert.equal(problems.length, 1)
