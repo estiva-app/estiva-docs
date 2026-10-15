@@ -1409,7 +1409,10 @@ NIP-99's.
   `kind:1851` whose tags are, in order: `a` (the file), `["field", "summary"]`,
   `value`, `h`, `ts` (§6.2). The `h` is the Folder the root names — its `h`,
   or a project's `buzz-channel` value, written as `h`; never a `buzz-channel`
-  tag on the change. A reader ignores one in any other Folder (§6.2).
+  tag on the change. A reader ignores one in any other Folder (§6.2), and,
+  unlike §6.2's older fields, **also one it cannot check**: a change aimed at a
+  root that names no Folder, or at a root the reader does not hold. No summary
+  change predates this rule, so neither of §6.2's two exceptions applies.
 - **Last write wins** (§6.3). The author changes it this way too, never by
   republishing the root: a republished seed loses to any older change, as
   §6.10 says of the text.
