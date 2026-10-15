@@ -18,15 +18,23 @@ import { parse } from './decisions.mjs'
 
 // The GitHub URL form, and the older path form ("estiva-docs/decisions/0001…").
 // A path that goes on into a subfolder (research/, briefs/) is not a record.
-const POINTER = /estiva-docs\/(?:blob\/([^/\s]+)\/)?decisions\/([A-Za-z0-9._-]+)(\/)?/g
+// What comes before "estiva-docs/" is kept: only this repository counts, as
+// github.com/estiva-app/… or the path to the sibling checkout ("../estiva-docs/…").
+// A session follows a pointer, so one to a fork or another host with a real
+// record's name is a problem, not a pass.
+const POINTER = /([^\s'"`(<[]*)estiva-docs\/(?:blob\/([^/\s]+)\/)?decisions\/([A-Za-z0-9._-]+)(\/)?/g
+const OURS = /^(?:(?:https?:\/\/)?github\.com\/estiva-app\/|(?:\.\.\/)+|~\/estiva\/)?$/
 const GREP = 'estiva-docs/(blob/[^/ ]+/)?decisions/[A-Za-z0-9._-]+'
 const NOT_RECORDS = new Set(['README.md', 'template.md'])
+// This check's own tests hold bad pointers on purpose, so that each kind is
+// seen to fail; scanning estiva-docs itself must not report them.
+const NOT_SCANNED = [':(exclude)scripts/decision-pointers.test.mjs']
 
 /** Every pointer in `repo`'s tracked files: { file, line, ref, branch }. */
 export function findPointers(repo) {
   let out
   try {
-    out = execFileSync('git', ['-C', repo, 'grep', '-nIE', GREP], { encoding: 'utf8', maxBuffer: 64e6, stdio: 'pipe' })
+    out = execFileSync('git', ['-C', repo, 'grep', '-nIE', GREP, '--', '.', ...NOT_SCANNED], { encoding: 'utf8', maxBuffer: 64e6, stdio: 'pipe' })
   } catch (e) {
     if (e.status === 1) return [] // git grep found nothing
     throw new Error(`cannot search ${repo}: ${String(e.stderr || e.message).trim()}`)
@@ -37,8 +45,10 @@ export function findPointers(repo) {
     if (!m) continue
     for (const p of m[3].matchAll(POINTER)) {
       // A pointer that ends a sentence keeps its full stop out of the name.
-      const ref = p[2].replace(/\.+$/, '')
-      if (!p[3] && !NOT_RECORDS.has(ref)) pointers.push({ file: m[1], line: Number(m[2]), ref, branch: p[1] ?? null })
+      const ref = p[3].replace(/\.+$/, '')
+      if (!p[4] && !NOT_RECORDS.has(ref)) {
+        pointers.push({ file: m[1], line: Number(m[2]), ref, branch: p[2] ?? null, ...(OURS.test(p[1]) ? {} : { foreign: p[1] }) })
+      }
     }
   }
   return pointers
@@ -56,8 +66,12 @@ export function judge(pointers, names, read) {
     if (!statuses.has(name)) statuses.set(name, parse(read(name)).fields.Status ?? '(no Status)')
     return statuses.get(name)
   }
-  for (const { file, line, ref, branch } of pointers) {
+  for (const { file, line, ref, branch, foreign } of pointers) {
     const at = `${file}:${line}`
+    if (foreign !== undefined) {
+      problems.push(`${at}: points to decisions/${ref} under ${foreign}, not github.com/estiva-app/estiva-docs; a session would read a page we do not control`)
+      continue
+    }
     if (branch && branch !== 'main') {
       problems.push(`${at}: points to decisions/${ref} on ${branch}, not main; a branch link breaks once it is deleted`)
       continue

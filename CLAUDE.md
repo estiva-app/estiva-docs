@@ -7,7 +7,16 @@ in `NAV` and the `Dockerfile` copies.
 - **Read `decisions/` before proposing a shape.** It holds why things are the
   way they are, including ideas that were turned down: a Rejected record means
   do not rebuild it without new facts. A Proposed record binds nobody and is
-  never built.
+  never built. An assumption that no Accepted record states is a question to
+  ask, not a fact to build on.
+- **Stop and ask when a task goes against an Accepted record.** Name the
+  record, say what the task would change, and ask the person you are working
+  with; do not write around it. Changing a decided call is a new record that
+  supersedes it, written as Proposed.
+- **The app repositories point here.** Their CLAUDE.md files tell their
+  sessions to read records from GitHub, and their code points to a record with
+  `why: https://github.com/estiva-app/estiva-docs/blob/main/decisions/<name>.md`.
+  Renaming or deleting a record breaks those links; supersede it instead.
 - **Writing a record:** copy `decisions/template.md`, follow the rules in
   `decisions/README.md`, and list it there under its Area. An agent writes
   records as Proposed and never fills in `Decided by` for itself; only Miky (or

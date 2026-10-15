@@ -6,9 +6,9 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 import { execFileSync } from 'node:child_process'
-import { mkdtempSync, writeFileSync, rmSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 import { findPointers, judge } from './decision-pointers.mjs'
 
 const URL = 'https://github.com/estiva-app/estiva-docs/blob/main/decisions/'
@@ -22,12 +22,15 @@ const RECORDS = {
 const names = Object.keys(RECORDS)
 const read = (name) => `# A record\n\n- Date: 2026-10-15\n- Status: ${RECORDS[name]}\n- Area: People\n`
 
-function pointersIn(lines) {
+function pointersIn(lines, file = 'code.ts', more = {}) {
   const repo = mkdtempSync(join(tmpdir(), 'pointers-'))
   try {
     execFileSync('git', ['init', '-q', repo])
-    writeFileSync(join(repo, 'code.ts'), lines.join('\n') + '\n')
-    execFileSync('git', ['-C', repo, 'add', 'code.ts'])
+    for (const [path, text] of Object.entries({ [file]: lines.join('\n') + '\n', ...more })) {
+      mkdirSync(dirname(join(repo, path)), { recursive: true })
+      writeFileSync(join(repo, path), text)
+      execFileSync('git', ['-C', repo, 'add', path])
+    }
     return findPointers(repo)
   } finally {
     rmSync(repo, { recursive: true, force: true })
@@ -42,6 +45,19 @@ test('a pointer to an Accepted record passes, in either form', () => {
   ])
   assert.equal(pointers.length, 3)
   assert.deepEqual(judge(pointers, names, read), [])
+})
+
+test('a pointer to a fork or another host fails, even with a real record name', () => {
+  const pointers = pointersIn([
+    '// why: https://github.com/someone/estiva-docs/blob/main/decisions/person-links-carry-the-key.md',
+    '// why: https://evil.example/estiva-docs/decisions/person-links-carry-the-key.md',
+    '// why: (https://github.com/estiva-app/estiva-docs/blob/main/decisions/person-links-carry-the-key.md)',
+    '// see ../../estiva-docs/decisions/0001',
+  ])
+  const problems = judge(pointers, names, read)
+  assert.equal(problems.length, 2)
+  assert.match(problems[0], /under https:\/\/github\.com\/someone\//)
+  assert.match(problems[1], /under https:\/\/evil\.example\//)
 })
 
 test('a pointer to a superseded record fails and names its replacement', () => {
@@ -86,6 +102,12 @@ test('a pointer to a branch other than main fails', () => {
 
 test('a path that is not a repository says so in one line', () => {
   assert.throws(() => findPointers(join(tmpdir(), 'no-such-repo-' + process.pid)), /^Error: cannot search /)
+})
+
+test("this repository's own scan skips the bad pointers this file holds on purpose", () => {
+  const bad = `// ${URL}no-such-record.md`
+  const pointers = pointersIn([bad], 'scripts/decision-pointers.test.mjs', { 'other.ts': bad + '\n' })
+  assert.deepEqual(pointers.map((p) => p.file), ['other.ts'])
 })
 
 test('two pointers on one line are both checked', () => {
