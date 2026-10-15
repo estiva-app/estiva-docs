@@ -11,7 +11,7 @@ import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import MarkdownIt from 'markdown-it'
 import anchor from 'markdown-it-anchor'
-import { NAV, PAGES, SITE, BY_FILE, INTERNAL } from './nav.mjs'
+import { NAV, PAGES, SITE, BY_FILE, isInternal } from './nav.mjs'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const OUT = join(ROOT, 'dist')
@@ -56,7 +56,7 @@ function linkTarget(href, fromFile) {
  * Four cases, and the last is the one that matters:
  *   - external / anchor-only → untouched
  *   - points at a published doc → its slug
- *   - points at a doc listed in INTERNAL → caller marks it as plain text
+ *   - points at a doc listed in INTERNAL or under INTERNAL_DIRS → caller marks it as plain text
  *   - points at a doc in NEITHER list → recorded as a problem
  *
  * The last case is not rewritten to a 404. A published page linking to a page
@@ -76,7 +76,7 @@ function rewriteLink(href, fromFile) {
   const page = BY_FILE.get(target)
   if (page) return `/${page.slug === 'index' ? '' : page.slug + '/'}${hash ? '#' + hash : ''}`
 
-  if (INTERNAL.has(target)) return { internal: true }
+  if (isInternal(target)) return { internal: true }
 
   problems.push({ from: fromFile, href, target })
   return href

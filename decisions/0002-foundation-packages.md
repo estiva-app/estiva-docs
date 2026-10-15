@@ -1,7 +1,9 @@
 # ADR 0002 — Foundation packages: one repo, public npm, built ESM, and a named owner for a break
 
-- **Status:** accepted
-- **Date:** 2026-08-26
+- Date: 2026-08-26
+- Status: Accepted
+- Decided by: Miky, by merging estiva-docs#14; confirmed in the kickoff session of 2026-10-15
+- Area: Infrastructure
 - **Applies to:** `@estiva-app/protocol`, `@estiva-app/platform`, `@estiva-app/identity`, `@estiva-app/ui`, and every repo that consumes them — `peek`, `ship`, `estiva-agent`, and the scaffold REW-1 produces
 - **Supersedes:** nothing. This is the first decision about the shared layer
 

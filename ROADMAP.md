@@ -144,7 +144,7 @@ Two documents sit under all of it:
 
 > **The RFC numbers are not a version sequence.** 0.3→0.4 was supersession; everything after 0.4 takes a *topic* the previous left open, and the earlier document stays current for what it covers.
 
-Failure shapes worth reading before building anything: [SILENT-FAILURES.md](operations/SILENT-FAILURES.md). The Screener and Desk research: [`decisions/SHR-7-screener-and-desk.md`](decisions/SHR-7-screener-and-desk.md).
+Failure shapes worth reading before building anything: [SILENT-FAILURES.md](operations/SILENT-FAILURES.md). The Screener and Desk research: [`decisions/research/SHR-7-screener-and-desk.md`](decisions/research/SHR-7-screener-and-desk.md).
 
 ---
 
