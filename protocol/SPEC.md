@@ -388,8 +388,9 @@ number nobody reuses.
 
 `key` on a Project is that prefix: 3–6 letters `A`–`Z` (`^[A-Z]{3,6}$`). Like
 `ref`, the root tag is only its seed and a `kind:1851` with `field` `key` aimed
-at a `30850:` address overrides it; the root tag comes last, so adding it moves
-no other tag in the id preimage. A writer MUST NOT give a project a key that any
+at a `30850:` address overrides it; the root tag comes after every tag written
+before it existed, so adding it moved no other tag in the id preimage (only
+`summary`, §6.12, comes after it). A writer MUST NOT give a project a key that any
 project it can see holds, or that any ref it can see already starts with. A
 project with no key gets one from the first client that numbers an issue in
 it, as a `kind:1851`, before that issue's ref. A reader shows a value that does
@@ -1664,13 +1665,14 @@ constructing output from a parsed model: a slice of a block document is not a
 block document, and a consumer cannot tell that what it drew is wrong.
 
 **`subtitle` is the file's summary** (§6.12): one line of plain text under the
-title. *Added 2026-10-15 (decided by Miky).* On every file kind — every
-addressable kind `30000`–`39999` but NIP-29's `39000`–`39009` — it comes from
+title. *Added 2026-10-15 (decided by Miky).* On every addressable kind
+`30000`–`39999` but NIP-29's `39000`–`39009` — the file kinds among them — it
+comes from
 `{"tag": "summary", "fold": "summary"}` **by default**: a consumer resolving a
 projection gives the slot that source, so an app's files, an outside company's
 included, show their summary on cards with nothing in its manifest. A manifest
 need not declare it, and **MUST NOT point it at any other source**; a consumer
-ignores a `subtitle` declared otherwise on a file kind and uses the default. A
+ignores a `subtitle` declared otherwise on such a kind and uses the default. A
 value empty after trimming whitespace is no subtitle, and a consumer draws none
 (§6.12) — not an empty line. A consumer draws it as literal text with line
 breaks folded to spaces, and clamps it, with no §13 model applied. A Folder's
