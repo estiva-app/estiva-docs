@@ -89,15 +89,46 @@ heading here.
 
 ## Folders
 
+- [Folders belong to the protocol, not to any app: every app gets the same Folder operations from SPEC](folders-belong-to-the-protocol.md) — Accepted, 2026-09-25
+- [A Folder is a group the relay keeps a listing for; every other group is only a conversation space](a-folder-is-a-group-the-relay-lists.md) — Accepted, 2026-10-02
+- [A Folder never holds another Folder: there is one level](folders-are-one-level-deep.md) — Accepted, 2026-10-02
+- [Moving a file to another Folder never changes who can read it, and its sub-files move with it](moving-a-file-never-changes-who-can-read-it.md) — Accepted, 2026-10-02
+- [A conversation belongs to the file it is about, not to the Folder it was filed in](a-thread-belongs-to-what-it-is-about.md) — Accepted, 2026-10-02
+- [Only a Folder's owners and admins can rename or archive it, and its name is the relay's channel name](only-owners-and-admins-rename-or-archive-a-folder.md) — Accepted, 2026-10-03
 - [Who can read a file is decided on the file, and Folders are labels](folders-are-labels.md) — Proposed, 2026-10-14; parked until the navigation rework
+
+## Read state
+
+- [You are told about the files you are a member of, the same in every app, and following is retired](membership-replaces-following.md) — Accepted, 2026-09-30
+- [A Folder has no read state of its own: its chat is unread for you only when a message names you](a-folders-own-chat-is-unread-only-for-a-mention.md) — Accepted, 2026-10-01
+- [A reply is read only when you open its thread, not when you read the conversation it sits in](a-reply-is-read-only-when-its-thread-is-opened.md) — Accepted, 2026-10-03
+- [Anyone may add a person to a file, including someone who left it](anyone-may-add-a-person-to-a-file.md) — Accepted, 2026-10-06
+
+## Messages
+
+- [An urgent mention is a tag beside the person's mention, and the text stays an ordinary mention](an-urgent-mention-is-a-tag-beside-the-mention.md) — Accepted, 2026-10-02
+- [@, !@, [ and / are one shared kit for every app's composer, not built inside an app](composer-triggers-are-one-shared-kit.md) — Accepted, 2026-10-02
 
 ## Links & widgets
 
-None yet.
+- [A link to a file is stored as the URL a person wrote, in descriptions and in messages](a-link-is-stored-as-the-url-a-person-wrote.md) — Accepted, 2026-10-14
+- [A link pasted into a message is sent as Estiva's internal reference, not the link](a-pasted-link-in-a-message-is-sent-as-the-reference.md) — Superseded by the one above, 2026-10-13
+- [Every link draws as a chip, and its author chooses a card with an `embed` tag they can change after sending](the-author-chooses-a-links-card.md) — Accepted, 2026-10-13
+- [A shared part of a page is a selected run of whole blocks, and it stays live as the page changes](a-shared-part-of-a-page-is-a-selected-run-of-blocks.md) — Accepted, 2026-10-09
 
 ## Documents
 
-None yet.
+- [A document is its own type of file, which any app may own; Leaf owns it first](a-document-is-its-own-type-of-file.md) — Accepted, 2026-10-14
+- [A file's text is stored as a readable snapshot, and the last save wins; live co-editing comes later, on top](a-files-text-is-a-readable-snapshot.md) — Accepted, 2026-10-13
+- [A comment points at a run of blocks, narrowed by the words quoted at its ends](a-comment-points-at-blocks-and-the-words-quoted.md) — Accepted, 2026-10-13
+
+## Apps & agents
+
+- [An app speaks for a file type only once the workspace has added it, and with no app added, nobody does](an-app-counts-only-once-the-workspace-adds-it.md) — Accepted, 2026-10-03
+- [A file's id is unique across every file type and author, deleted files included](a-files-id-is-unique-across-every-kind.md) — Accepted, 2026-10-03
+- [Claude learns each app from the app's own manifest, and what it must know about the app goes in a guide there](claude-learns-each-app-from-its-manifest.md) — Accepted, 2026-10-13
+- [Which kinds an agent may sign is an admin's explicit grant per app, never derived from the apps](an-agent-signs-for-an-app-only-by-an-admin-grant.md) — Accepted, 2026-10-13
+- [An agent says it is an agent in its own profile (NIP-24 `bot`), and Estiva ID publishes it](an-agent-says-it-is-a-bot-in-its-profile.md) — Accepted, 2026-09-24
 
 ## Devices & sessions
 
@@ -108,6 +139,13 @@ None yet.
 
 - [Relay-canonical by default; an app database is an exception](0001-relay-canonical-by-default.md) — Accepted, 2026-08-22
 - [Foundation packages: one repo, public npm, built ESM, and a named owner for a break](0002-foundation-packages.md) — Accepted, 2026-08-26
+- [The block editor is shared: its translation lives in @estiva-app/protocol and its editor nodes in @estiva-app/ui/editor](the-block-editor-kit-lives-in-protocol-and-ui.md) — Accepted, 2026-09-30
+
+## Protocol
+
+- [A shape left over from early experiments is migrated or deleted, never kept on the relay for compatibility](early-shapes-are-migrated-or-deleted.md) — Accepted, 2026-09-15
+- [The Specification states what a relay and an identity service must do, and Estiva hosts the only deployment](estiva-hosts-the-only-deployment.md) — Accepted, 2026-10-02
+- [RFCs are no longer a kind of document: what is still true moves into the Specification and a builder's guide](rfcs-are-retired.md) — Accepted, 2026-10-02
 
 # Research
 

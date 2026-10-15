@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pasted Link Storage</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.q { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); padding: 12px 14px; border-radius: 6px; font-size: 1.05rem; }
+.rec { background: var(--ok-bg); border-left: 4px solid var(--ok); padding: 12px 14px; border-radius: 6px; }
+.warn { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+svg { width: 100%; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .ad { stroke: var(--warn); fill: none; stroke-width: 1.4; stroke-dasharray: 4 3; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 620px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+.rec-row td { background: var(--ok-bg); }
+</style>
+</head>
+<body>
+<main>
+<h1>What a pasted link becomes in a message</h1>
+<p class="sub">Decision brief · 14 Oct 2026 · Widgets project, ticket "Ship's comment box turns a pasted link into its chip"</p>
+
+<p class="q"><strong>The question.</strong> When someone pastes a link to an issue into a message, in Peek or in Ship, does the sent message keep the link they pasted, or swap it for Estiva's internal reference? Either way it shows as the issue's chip.</p>
+
+<h2>Today</h2>
+<ul>
+  <li><strong>Peek's message box</strong> turns a pasted issue link into the issue's chip. It sends the internal reference (<code>nostr:naddr1…</code>), not the link. You decided this on 13 Oct, at the kickoff of "The composer resolves a URL as you paste it". This ticket copied that line.</li>
+  <li><strong>Descriptions</strong> keep the link. A pasted link draws as its chip, but what is saved is the https link. You decided this on 14 Oct: <em>"everything should be unified about URL, so it's not confusing for users to address the same file with different things. URL is recognizable and understandable."</em> That answer was recorded for descriptions only; nobody asked it for messages.</li>
+  <li><strong>Ship's comment box</strong> does neither. A pasted link stays text until it is sent, then reads as a chip.</li>
+  <li><strong>A gap found while checking:</strong> a Ship comment that holds a pasted link does not tell the issue it was mentioned. So the comment is missing from that issue's "Mentioned in" list, in both apps. Peek's messages do tell it. This gets fixed in this ticket whatever you choose.</li>
+</ul>
+
+<h2>Why it reaches beyond this ticket</h2>
+<p>This sets what every app, and any outside company's client, writes when a person pastes a link into a message. It is also the first message-side reading of your 14 Oct "URL is the one address" rule.</p>
+<p><strong>Mostly a two-way door.</strong> Every sent message keeps the form it was sent with. But readers in both apps already draw both forms as the same chip, and they must keep doing that for old messages anyway. So changing course later only means changing what the two message boxes write; nothing already on the relay needs rewriting.</p>
+
+<h2>The picture</h2>
+<figure>
+<svg viewBox="0 0 720 300" role="img">
+  <title>Option A: the message keeps the link</title>
+  <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="currentColor" style="fill: var(--ink)"/></marker></defs>
+  <text x="10" y="20" style="font-weight:600">A — The message keeps the link (descriptions already do)</text>
+  <rect class="b" x="10" y="40" width="150" height="56" rx="6"/><text x="22" y="64">Person pastes</text><text class="m" x="22" y="82">ship.estiva.app/issue/…</text>
+  <rect class="ok" x="210" y="40" width="210" height="56" rx="6"/><text x="222" y="62">Message box shows a chip</text><text class="m" x="222" y="80">Ship and Peek, same code</text>
+  <path class="a" d="M160 68 H208"/>
+  <rect class="ok" x="470" y="30" width="240" height="96" rx="6"/><text x="482" y="52" style="font-weight:600">Sent message</text>
+  <text x="482" y="74">text: the https link, as pasted</text><text x="482" y="94">index: "this names issue X"</text><text class="m" x="482" y="114">(the tag apps search by)</text>
+  <path class="a" d="M420 68 H468"/>
+  <rect class="b" x="40" y="170" width="190" height="56" rx="6"/><text x="52" y="192">Peek and Ship read it</text><text class="m" x="52" y="210">link → chip, by the app's link rules</text>
+  <rect class="b" x="260" y="170" width="200" height="56" rx="6"/><text x="272" y="192">"Mentioned in" on issue X</text><text class="m" x="272" y="210">found through the index</text>
+  <rect class="b" x="490" y="170" width="220" height="56" rx="6"/><text x="502" y="192">Outside client / copy text</text><text class="m" x="502" y="210">gets a link anyone can open</text>
+  <path class="a" d="M520 126 L140 168"/><path class="a" d="M560 126 L360 168"/><path class="a" d="M600 126 L600 168"/>
+  <text class="m" x="10" y="262">Descriptions: same — the link is kept, the chip is drawn from it.</text>
+  <text class="m" x="10" y="282">One address for one file, in every box.</text>
+</svg>
+<figcaption>A: what you paste is what is stored; the index tag is what machines search by.</figcaption>
+</figure>
+
+<figure>
+<svg viewBox="0 0 720 300" role="img">
+  <title>Option B: messages swap the link for the internal reference</title>
+  <defs><marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill: var(--ink)"/></marker></defs>
+  <text x="10" y="20" style="font-weight:600">B — Messages swap it for the internal reference (Peek today)</text>
+  <rect class="b" x="10" y="40" width="150" height="56" rx="6"/><text x="22" y="64">Person pastes</text><text class="m" x="22" y="82">ship.estiva.app/issue/…</text>
+  <rect class="ok" x="210" y="40" width="210" height="56" rx="6"/><text x="222" y="62">Message box shows a chip</text><text class="m" x="222" y="80">Ship copies Peek</text>
+  <path d="M160 68 H208" style="stroke: var(--ink); fill:none; stroke-width:1.4" marker-end="url(#arr2)"/>
+  <rect class="bad" x="470" y="30" width="240" height="96" rx="6"/><text x="482" y="52" style="font-weight:600">Sent message</text>
+  <text x="482" y="74">text: nostr:naddr1qq…</text><text x="482" y="94">index: "this names issue X"</text><text class="m" x="482" y="114">(the pasted link is gone)</text>
+  <path d="M420 68 H468" style="stroke: var(--ink); fill:none; stroke-width:1.4" marker-end="url(#arr2)"/>
+  <rect class="b" x="40" y="170" width="190" height="56" rx="6"/><text x="52" y="192">Peek and Ship read it</text><text class="m" x="52" y="210">reference → chip, no link rules</text>
+  <rect class="b" x="260" y="170" width="200" height="56" rx="6"/><text x="272" y="192">"Mentioned in" on issue X</text><text class="m" x="272" y="210">found through the index</text>
+  <rect class="bad" x="490" y="170" width="220" height="56" rx="6"/><text x="502" y="192">Outside client / copy text</text><text class="m" x="502" y="210">gets an naddr1… string</text>
+  <path d="M520 126 L140 168" style="stroke: var(--ink); fill:none; stroke-width:1.4" marker-end="url(#arr2)"/>
+  <path d="M560 126 L360 168" style="stroke: var(--ink); fill:none; stroke-width:1.4" marker-end="url(#arr2)"/>
+  <path d="M600 126 L600 168" style="stroke: var(--ink); fill:none; stroke-width:1.4" marker-end="url(#arr2)"/>
+  <text class="m" x="10" y="262">Descriptions: still keep the link (14 Oct).</text>
+  <text class="m" x="10" y="282">Two addresses for one file, depending on which box you pasted into.</text>
+</svg>
+<figcaption>B: messages and descriptions store the same paste differently. C (not drawn) is B everywhere, descriptions too.</figcaption>
+</figure>
+
+<h2>Options</h2>
+<h3>A. The message keeps the link, in Peek and Ship</h3>
+<p>Katerina pastes an issue link into a Peek message; she sees the chip. Later she selects the message's text and copies it into an email: the email gets a working link. The same paste into a description stores the same link. The message also carries the index tag, so the issue's "Mentioned in" finds it. Peek's message box changes to match. An outside company's client sees an ordinary link it can open, and draws a chip if it reads our apps' link rules.</p>
+<p><em>Locks in:</em> a message's chip relies on the app's link rules (which address belongs to which app). If an app ever moved its domain, old links would need the old address kept as an alias; the index tag still names the object either way.</p>
+
+<h3>B. Messages store the internal reference; descriptions keep the link</h3>
+<p>Ship copies what Peek does today. Same chip on screen. Copying a message's text gives <code>nostr:naddr1…</code> instead of the link, while the same paste in a description keeps the link. That split is exactly what your 14 Oct rule was against. An outside client needs nothing of ours to know what the reference names, and it survives a domain move.</p>
+
+<h3>C. The internal reference everywhere, descriptions included</h3>
+<p>One address again, but the hidden one. It reverses yesterday's description decision and the removal of "Copy reference".</p>
+
+<h2>Trade-offs</h2>
+<div class="tw">
+<table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr class="rec-row"><td><strong>A</strong> keep the link</td><td>One rule everywhere: the text is what the person wrote, the tag is the index (already the protocol's rule for mentions)</td><td>Chip on screen; a real link when copied; same as descriptions</td><td>A standard https link plus the tag; drawing the chip needs our link rules</td><td>Low: readers already read both forms</td><td>Medium: shared paste code for both apps; Peek's box changes; SPEC wording</td></tr>
+<tr><td><strong>B</strong> reference in messages</td><td>Two forms for one paste, by box</td><td>Chip on screen; an <code>naddr1…</code> string when copied</td><td>Plain Nostr reference; nothing of ours needed</td><td>Low</td><td>Small: copy Peek's code into Ship</td></tr>
+<tr><td><strong>C</strong> reference everywhere</td><td>One form, the hidden one</td><td>Chip; no readable link anywhere</td><td>Plain Nostr reference</td><td>Low, but reverses 14 Oct</td><td>Medium: descriptions change back</td></tr>
+</table>
+</div>
+
+<h2>How others do it</h2>
+<ul>
+  <li><strong>Linear / Slack / Notion:</strong> a pasted link is kept as the link and drawn as a mention or unfurl. The stored text stays the URL. That matches A.</li>
+  <li><strong>Upstream Nostr (NIP-27):</strong> writes <code>nostr:</code> references in text. That matches B, but upstream has no app link rules and no web addresses for files. We have both, and we already keep the index in a tag.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<div class="rec">
+<p><strong>A: the message keeps the link, in Peek and Ship, built in this ticket.</strong> It is the same rule you set for descriptions on 14 Oct. It also matches what the protocol already says about mentions: the text is what the person wrote, and the tag is the machine index. Since the tag carries the durable machine form, B's one real advantage (no link rules needed) is already covered. Doing both apps in one pass keeps the two message boxes from ever writing different things for the same paste, which is what this ticket is for.</p>
+<p>Picking from the <code>[</code> menu, or from Cmd+K, still inserts the reference as it does today. Those picks have no link to keep. If you want them to write the link too, that is a separate question.</p>
+</div>
+
+<h2>Checked</h2>
+<ul>
+  <li>Peek sends the reference for a pasted link: <code>peek-app src/extensions/pastedUrl.ts</code>, <code>chipUriOf</code> (origin/main).</li>
+  <li>Descriptions keep the link: <code>estiva-ui src/LinkChips.ts</code> ("Never a nostr: reference in its place"), and your 14 Oct line on "Choose a link's card in a description".</li>
+  <li>Ship's comment send adds the index tag only for a reference, not for a pasted link: <code>estiva-ship src/nostr/events.ts</code> ~402–411. Peek adds it for links too: <code>peek-app src/nostr/fileConversation.ts</code> ~582 (<code>urlReferenceTagsAsViewer</code>).</li>
+  <li>Both apps' "Mentioned in" find messages through that tag (Peek <code>fileMentions.ts</code>; Ship <code>fold.ts</code>).</li>
+  <li>Both readers already draw a bare app link in a message as its chip (shipped 14 Oct, peek#497, ship#287), and a link can carry a chosen card (SPEC §13.6.2).</li>
+  <li>On production as QA-1, Ship's comment box today keeps every pasted link as plain text: an issue link, an unknown link, a block link, and a link over selected words.</li>
+  <li><strong>Not checked:</strong> how many existing Peek messages already store a link plus the tag (Peek has added the tag for links since 21 Sep). It does not change the choice.</li>
+</ul>
+
+<h2>For the record</h2>
+<p>A: body <code>https://ship.estiva.app/issue/…</code> + <code>["a","30851:&lt;pk&gt;:&lt;d&gt;"]</code> (or <code>["q",&lt;id&gt;]</code> for a message link), optional <code>["embed",V,layout]</code>. B: body <code>nostr:naddr1…</code> + the same tags. SPEC: §13.1 still says a <code>nostr:</code> reference is "the only specified way to write a mention", and §6.4's table counts only an naddr as "body names". Under A both are reworded, and a conformance case goes beside C21/C24. Ship send fix (tag a pasted link) in either option. Decided 13 Oct line on OPT-19 (30851:…:365d2607) would be superseded.</p>
+</main>
+</body>
+</html>
