@@ -2,7 +2,7 @@
 
 - Date: YYYY-MM-DD
 - Status: Proposed
-- Area: Protocol | Architecture | Product | Design | Process
+- Area: <one of the headings under "Records by area" in README.md>
 
 <!--
 Copy this file to decisions/<kebab-case-name>.md and replace every line.

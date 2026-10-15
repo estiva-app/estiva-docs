@@ -20,10 +20,11 @@ public repository and is not published on docs.estiva.app.
 
 ## When to write one
 
-Write a record when a decision is **hard to undo**, would be **surprising
-without its context**, or was **a real trade-off** between options that each had
-something going for them. A choice nobody would question, or one undone in an
-afternoon, does not need one. When unsure, write it as Proposed.
+Write a record only for a decision that is **hard to undo**, would be
+**surprising without its context**, and was **a real trade-off** between options
+that each had something going for them. Anything else stays a comment at the
+code or a Decided line on its issue. When unsure, write it as Proposed: Miky's
+accept or reject settles the bar too.
 
 ## The rules
 
@@ -36,7 +37,9 @@ afternoon, does not need one. When unsure, write it as Proposed.
 - **Rejected records are kept.**
 - **A decided record is never rewritten, only superseded.** Write a new record
   with `- Supersedes: <old>.md`, and change only the old one's Status, to
-  `Superseded by <new>.md`. A typo or a dead link may be fixed.
+  `Superseded by <new>.md`. A fix that changes no meaning may be made: a
+  typo, a link moved to where the same document now lives, or the metadata
+  lines brought to this folder's format.
 - **Never describe a security gap that is not fixed yet.** Link its issue, and
   write the record once the fix has shipped.
 
@@ -58,28 +61,34 @@ section, an unknown Status, a bad Date, no person in `Decided by`, a numbered
 name, a link that goes nowhere, or a record superseded by one that is not
 Accepted. It also checks that every record is listed below, under its Area.
 
-## Protocol
+# Records by area
+
+An Area is what the call is about, not what kind of call it is: a product call
+and a protocol call about Folders both go under Folders. A new area is a new
+heading here.
+
+## People
 
 None yet.
 
-## Architecture
+## Folders
+
+None yet.
+
+## Links & widgets
+
+None yet.
+
+## Documents
+
+None yet.
+
+## Infrastructure
 
 - [Relay-canonical by default; an app database is an exception](0001-relay-canonical-by-default.md) — Accepted, 2026-08-22
 - [Foundation packages: one repo, public npm, built ESM, and a named owner for a break](0002-foundation-packages.md) — Accepted, 2026-08-26
 
-## Product
-
-None yet.
-
-## Design
-
-None yet.
-
-## Process
-
-None yet.
-
-## Research
+# Research
 
 Spikes and measurements a decision leaned on. They are not records and have no
 status.

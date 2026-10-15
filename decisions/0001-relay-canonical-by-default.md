@@ -3,7 +3,7 @@
 - Date: 2026-08-22
 - Status: Accepted
 - Decided by: Miky, by merging estiva-docs#1
-- Area: Architecture
+- Area: Infrastructure
 - **Applies to:** every app-layer product in the suite — Peek, Ship, Leaf, and any app after them
 - **Does not apply to:** Estiva ID (see §4)
 

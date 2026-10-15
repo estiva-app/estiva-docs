@@ -15,7 +15,8 @@ export const HEADINGS = [
   'Consequences',
 ]
 
-export const AREAS = ['Protocol', 'Architecture', 'Product', 'Design', 'Process']
+// A record's Area is one of the "## " headings under this one in decisions/README.md.
+export const AREAS_HEADING = '# Records by area'
 
 // Written before the template and never rewritten, only superseded: they keep
 // their numbered names and their own section headings. Their metadata lines
@@ -32,21 +33,27 @@ const NAME = /^[a-z][a-z0-9]*(-[a-z0-9]+)*\.md$/
 const STATUS = /^(Proposed|Accepted|Rejected|Superseded by (\S+\.md))$/
 const DECIDER = /^(Miky|Katerina)\b[^,]*, \S/
 
-/** Markdown without fenced blocks, inline code and HTML comments, so a link or field inside an example is not one. */
-function prose(text) {
-  return text
-    .replace(/<!--[\s\S]*?-->/g, '')
-    .replace(/^(```|~~~)[\s\S]*?^\1.*$/gm, '')
-    .replace(/`[^`\n]*`/g, '')
+/** Markdown without fenced blocks and HTML comments, so a field or heading inside an example is not one. */
+function blocks(text) {
+  return text.replace(/<!--[\s\S]*?-->/g, '').replace(/^(```|~~~)[\s\S]*?^\1.*$/gm, '')
 }
 
-/** Relative link targets in a markdown file (no scheme, no bare anchor). */
+/** …and without inline code, so a link inside an example is not one. */
+function prose(text) {
+  return blocks(text).replace(/`[^`\n]*`/g, '')
+}
+
+/** Relative link targets in a markdown file (no scheme, no bare anchor), inline and reference-style. */
 export function links(text) {
   const out = []
-  for (const m of prose(text).matchAll(/\]\(\s*<?([^)\s>]+)>?(?:\s+"[^"]*")?\s*\)/g)) {
-    const href = m[1]
+  const body = prose(text)
+  const hrefs = [
+    ...[...body.matchAll(/\]\(\s*<?((?:[^()\s>]|\([^()\s]*\))+)>?(?:\s+"[^"]*")?\s*\)/g)].map((m) => m[1]),
+    ...[...body.matchAll(/^ {0,3}\[[^\]]+\]:\s*<?(\S+?)>?(?:\s+"[^"]*")?\s*$/gm)].map((m) => m[1]),
+  ]
+  for (const href of hrefs) {
     if (/^([a-z][a-z0-9+.-]*:|#)/i.test(href)) continue
-    out.push(href.split('#')[0])
+    out.push(href.split('#')[0].replace(/^\.\//, ''))
   }
   return out
 }
@@ -59,7 +66,7 @@ export function parse(text) {
   const headings = []
   const bodies = []
   let inHead = true
-  for (const line of prose(text).split('\n')) {
+  for (const line of blocks(text).split('\n')) {
     const h = line.match(/^## (.+?)\s*$/)
     if (h) {
       inHead = false
@@ -69,8 +76,9 @@ export function parse(text) {
     }
     if (inHead) {
       const f = line.match(/^- (Date|Status|Decided by|Area|Supersedes): (.+?)\s*$/)
-      if (f) fields[f[1]] = f[2]
-    } else if (bodies.length) {
+      if (f) fields[f[1]] = f[2].replace(/`/g, '')
+    } else if (bodies.length && !/^#{3,} /.test(line)) {
+      // A subheading alone does not make a section say something.
       bodies[bodies.length - 1] += line.trim()
     }
   }
@@ -99,6 +107,36 @@ export function check(root) {
   const dir = join(root, 'decisions')
   const problems = []
   const say = (file, msg) => problems.push(`${relative(root, file)}: ${msg}`)
+
+  const missing = [...NOT_RECORDS].filter((n) => !existsSync(join(dir, n)))
+  if (missing.length) return missing.map((n) => `decisions/${n}: is missing; the other checks need it`)
+
+  // One folder: records sit directly in decisions/, and only research/ is nested.
+  for (const file of walk(dir)) {
+    const rel = relative(dir, file)
+    if (rel.includes('/') && !rel.startsWith('research/')) {
+      say(file, 'a record goes directly in decisions/ (research in decisions/research/); its Area groups it in the README')
+    }
+  }
+
+  // The areas are the "## " headings under the README's "# Records by area", each with its text.
+  const readmeFile = join(dir, 'README.md')
+  const areas = new Map()
+  let current = null
+  let inAreas = false
+  for (const line of prose(readFileSync(readmeFile, 'utf8')).split('\n')) {
+    const h2 = line.match(/^## (.+?)\s*$/)
+    if (/^# /.test(line)) {
+      inAreas = line.trim() === AREAS_HEADING
+      current = null
+    } else if (h2) {
+      current = inAreas ? h2[1] : null
+      if (current) areas.set(current, '')
+    } else if (current) {
+      areas.set(current, areas.get(current) + line + '\n')
+    }
+  }
+  if (!areas.size) say(readmeFile, `needs a "${AREAS_HEADING}" heading with one "## <Area>" heading per area`)
 
   const names = readdirSync(dir).filter((n) => n.endsWith('.md') && !NOT_RECORDS.has(n))
   const records = new Map()
@@ -133,8 +171,9 @@ export function check(root) {
     if (!date) say(r.file, 'missing "- Date: YYYY-MM-DD"')
     else if (!validDate(date)) say(r.file, `Date "${date}" is not a YYYY-MM-DD date`)
 
-    if (!area) say(r.file, `missing "- Area:" (one of ${AREAS.join(', ')})`)
-    else if (!AREAS.includes(area)) say(r.file, `Area "${area}" is not one of ${AREAS.join(', ')}`)
+    const known = [...areas.keys()].join(', ')
+    if (!area) say(r.file, `missing "- Area:" (one of ${known})`)
+    else if (!areas.has(area)) say(r.file, `Area "${area}" is not one of ${known}; a new area is a "## " heading under "${AREAS_HEADING}" in the README`)
 
     const s = status?.match(STATUS)
     if (!status) say(r.file, 'missing "- Status:"')
@@ -173,19 +212,10 @@ export function check(root) {
   }
 
   // The README lists every record under the heading of its area.
-  const readmeFile = join(dir, 'README.md')
-  const readme = readFileSync(readmeFile, 'utf8')
-  const sections = new Map()
-  let current = null
-  for (const line of prose(readme).split('\n')) {
-    const h = line.match(/^## (.+?)\s*$/)
-    if (h) current = h[1]
-    else if (current) sections.set(current, (sections.get(current) ?? '') + line + '\n')
-  }
   for (const [name, r] of records) {
     const area = r.fields.Area
-    if (!AREAS.includes(area)) continue
-    if (!links(sections.get(area) ?? '').includes(name)) say(readmeFile, `does not list ${name} under "## ${area}"`)
+    if (!areas.has(area)) continue
+    if (!links(areas.get(area)).includes(name)) say(readmeFile, `does not list ${name} under "## ${area}"`)
   }
 
   // Relative links resolve: every link inside decisions/, and every link from
@@ -194,7 +224,14 @@ export function check(root) {
     const inside = file.startsWith(dir + '/')
     for (const href of links(readFileSync(file, 'utf8'))) {
       if (!href) continue
-      const target = resolve(dirname(file), decodeURIComponent(href))
+      let path
+      try {
+        path = decodeURIComponent(href)
+      } catch {
+        if (inside) say(file, `links to ${href}, which is not a valid path`)
+        continue
+      }
+      const target = resolve(dirname(file), path)
       if (!inside && !target.startsWith(dir + '/') && target !== dir) continue
       if (!existsSync(target)) say(file, `links to ${href}, which does not exist`)
     }

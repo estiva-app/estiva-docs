@@ -3,7 +3,7 @@
 - Date: 2026-08-26
 - Status: Accepted
 - Decided by: Miky, by merging estiva-docs#14
-- Area: Architecture
+- Area: Infrastructure
 - **Applies to:** `@estiva-app/protocol`, `@estiva-app/platform`, `@estiva-app/identity`, `@estiva-app/ui`, and every repo that consumes them — `peek`, `ship`, `estiva-agent`, and the scaffold REW-1 produces
 - **Supersedes:** nothing. This is the first decision about the shared layer
 

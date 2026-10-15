@@ -38,7 +38,7 @@ function fixture(files, { readme } = {}) {
   copyFileSync(join(ROOT, 'decisions/template.md'), join(root, 'decisions/template.md'))
   for (const [name, text] of Object.entries(files)) writeFileSync(join(root, 'decisions', name), text)
   const list = Object.keys(files).map((n) => `- [${n}](${n})`).join('\n')
-  writeFileSync(join(root, 'decisions/README.md'), readme ?? `# Decisions\n\n## Process\n\n${list}\n`)
+  writeFileSync(join(root, 'decisions/README.md'), readme ?? `# Records by area\n\n## Process\n\n${list}\n`)
   return root
 }
 
@@ -114,8 +114,46 @@ test('a proper supersession passes', () => {
   assert.deepEqual(problemsOf({ 'old-way.md': old, 'new-way.md': next }), [])
 })
 
+test('a reference-style link to a record that does not exist fails', () => {
+  const text = record().replace('Something true.', 'See [the old one][old].\n\n[old]: gone.md')
+  assertFlags(problemsOf({ 'one-folder.md': text }), /links to gone\.md, which does not exist/)
+})
+
+test('a section holding only a subheading is empty', () => {
+  const text = record().replace('## Rejected alternatives\n\nSomething true.', '## Rejected alternatives\n\n### None')
+  assertFlags(problemsOf({ 'one-folder.md': text }), /"## Rejected alternatives" is empty/)
+})
+
+test('a backticked Supersedes is still read', () => {
+  const old = record({ title: 'Old', fields: { Status: 'Superseded by new-way.md' } })
+  const next = record({ title: 'New', fields: { Supersedes: '`old-way.md`' } })
+  assert.deepEqual(problemsOf({ 'old-way.md': old, 'new-way.md': next }), [])
+})
+
+test('a record in a subfolder fails', () => {
+  const root = fixture({ 'one-folder.md': record() })
+  try {
+    mkdirSync(join(root, 'decisions/product'))
+    writeFileSync(join(root, 'decisions/product/hidden.md'), '# Not checked otherwise\n')
+    assertFlags(check(root), /decisions\/product\/hidden\.md: a record goes directly in decisions\//)
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
+test('an Area that is not a README heading under "Records by area" fails', () => {
+  assertFlags(problemsOf({ 'one-folder.md': record({ fields: { Area: 'Folders' } }) }), /Area "Folders" is not one of Process/)
+  const readme = '# Decisions\n\n## Process\n\n- [x](one-folder.md)\n'
+  assertFlags(problemsOf({ 'one-folder.md': record() }, { readme }), /needs a "# Records by area" heading/)
+})
+
+test('a README listing with ./ counts', () => {
+  const files = { 'one-folder.md': record() }
+  assert.deepEqual(problemsOf(files, { readme: '# Records by area\n\n## Process\n\n- [x](./one-folder.md)\n' }), [])
+})
+
 test('a record missing from the README, or under the wrong area, fails', () => {
   const files = { 'one-folder.md': record() }
-  assertFlags(problemsOf(files, { readme: '# Decisions\n\n## Process\n\nNone yet.\n' }), /does not list one-folder\.md under "## Process"/)
-  assertFlags(problemsOf(files, { readme: '# Decisions\n\n## Product\n\n- [x](one-folder.md)\n' }), /under "## Process"/)
+  assertFlags(problemsOf(files, { readme: '# Records by area\n\n## Process\n\nNone yet.\n' }), /does not list one-folder\.md under "## Process"/)
+  assertFlags(problemsOf(files, { readme: '# Records by area\n\n## Process\n\nNone yet.\n\n## Product\n\n- [x](one-folder.md)\n' }), /does not list one-folder\.md under "## Process"/)
 })
