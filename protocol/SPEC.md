@@ -3335,7 +3335,8 @@ today.
   selection lists its first 32 and its last 32.
 - **A reader** takes every id matching `[A-Za-z0-9_-]{1,64}`, drops a repeat,
   and keeps at most the first 32 and last 32. An invalid *first* id voids the
-  list: there is nothing to start from.
+  list: there is nothing to start from. A reader reads no further than the
+  first 1,024 entries, so a list no writer would send costs it little.
 - **Against the document as it is now**, the run is the children of the parent
   under which most of the listed ids still sit (on a tie, the parent of the
   earliest listed one), from the earliest to the latest of those ids, in
@@ -3463,7 +3464,10 @@ joining blocks into one string is needed:
   characters. A writer adds them **only when** the words repeat in their block,
   so that a comment on one "the" does not light up the first.
 - An absent value is an empty string where a later one needs its index, and
-  omitted at the end. An empty `<start>` voids the tag.
+  omitted at the end. An empty `<start>` voids the tag, and so does a `<start>`
+  or `<end>` over 1,000 characters; a `<prefix>` or `<suffix>` over 32 is
+  ignored. These are a reader's limits, so one stranger's comment cannot stall
+  every reader of the page.
 - A writer MUST NOT trim the words or replace a reference with its drawn name:
   they are the block's text as stored.
 - A `quote` without a `block` tag is ignored. A **reply** inherits its root's
