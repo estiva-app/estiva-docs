@@ -3222,6 +3222,42 @@ block silently.
 The document is JSON in `content`, so §12.3's 256 KiB ingest cap applies to its
 serialised form.
 
+#### A run of blocks
+
+*Added 2026-10-15 (LEAF-7), from the rule decided for a shared part (COM-2,
+2026-10-09).*
+
+Several whole blocks are named by listing their ids, and the list is read as a
+**span**, not a set. A comment's anchor (§13.6) is the one tag that reads it
+today.
+
+- **A writer** lists the selected blocks' ids in document order, all children
+  of one parent (the document, a list, a table row). A selection that crosses
+  levels is widened to the outer blocks it touches. At most 64 ids: a longer
+  selection lists its first 32 and its last 32.
+- **A reader** takes every id matching `[A-Za-z0-9_-]{1,64}`, drops a repeat,
+  and keeps at most the first 32 and last 32. An invalid *first* id voids the
+  list: there is nothing to start from.
+- **Against the document as it is now**, the run is the children of the parent
+  under which most of the listed ids still sit (on a tie, the parent of the
+  earliest listed one), from the earliest to the latest of those ids, in
+  current order. A block inserted between them belongs to the run. A listed id
+  that has moved under another parent is not in it.
+- **None present** is the run's own absence, which each use names (§13.6's
+  `detached`).
+
+One id is a run of one block, so a list of one is exactly a one-block tag. A
+reader that knows only one block reads the first id and gets the run's first
+block.
+
+#### A block's text, for matching words
+
+Words quoted from a document (§13.6) are matched against one block's **wire
+text**: the concatenated `text` of its inline runs, a block with child blocks
+being its children's text joined by `\n`, compared after Unicode NFC. It is the
+text as stored, not as drawn: a mention is its `nostr:` text (§13.1), never the
+name a reader draws for it, and nothing is trimmed.
+
 ### 13.4 Reading what is already published
 
 Measured against production on **2026-09-02**:
@@ -3271,13 +3307,14 @@ An app MAY render any body as plain text. Doing so is conformant: what this
 section forbids is *interpreting* a body as markup, not declining to format it.
 
 
-### 13.6 Anchoring a comment to one block
+### 13.6 Anchoring a comment to a run of blocks and the words in it
 
 *Added 2026-09-02 (RIC-7). This is the answer to RFC 0.4 §6, and the reason
-§13.3 requires a block id at all.*
+§13.3 requires a block id at all. Widened 2026-10-15 (LEAF-7) from one block to
+a run of blocks and the words where a selection starts and ends.*
 
-A comment MAY name a single block of the object it addresses, by carrying that
-block's id in a `block` tag:
+A comment MAY name a part of the object it addresses: one block, by carrying
+that block's id in a `block` tag,
 
 ```jsonc
 {
@@ -3292,9 +3329,58 @@ block's id in a `block` tag:
 }
 ```
 
-The address says which object; the `block` tag says which part of it. The id is
-§13.3's — unique within the document and stable across every edit that does not
-replace the block.
+or several whole blocks and the words a person selected in them, by listing
+every selected id — a run (§13.3) — and carrying the words in a `quote` tag:
+
+```jsonc
+["block", "8373a025427f", "1c0e9b7d22aa", "f04d5e6a9b31"],
+["quote", "on Friday.", "Then we"]
+```
+
+The address says which object; the `block` tag says which part of it. The ids
+are §13.3's — unique within the document and stable across every edit that does
+not replace the block — and the tag is read as §13.3's run, so a one-block tag
+is a run of one.
+
+#### The words: where a selection starts and where it ends
+
+`["quote", <start>, <end>, <prefix>, <suffix>]`. Each string lies inside **one**
+block's wire text (§13.3, "A block's text, for matching words"), so no rule for
+joining blocks into one string is needed:
+
+| selection | `quote` |
+| --- | --- |
+| inside one block, up to 1,000 characters | `<start>` is exactly the selected words |
+| across blocks | `<start>`: the selected words in the first listed block; `<end>`: those in the last; at most about 150 characters each, cut at a word boundary (the start keeps its front, the end its back) |
+| inside one block, longer | as across blocks, both in that block |
+| whole blocks, from the start of the first to the end of the last | **no `quote`** — the comment is about the blocks and grows with the run |
+
+- `<prefix>` is the text just before `<start>` and `<suffix>` the text just
+  after the words (after `<end>` when there is one), each at most 32
+  characters. A writer adds them **only when** the words repeat in their block,
+  so that a comment on one "the" does not light up the first.
+- An absent value is an empty string where a later one needs its index, and
+  omitted at the end. An empty `<start>` voids the tag.
+- A writer MUST NOT trim the words or replace a reference with its drawn name:
+  they are the block's text as stored.
+- A `quote` without a `block` tag is ignored. A **reply** inherits its root's
+  anchor and carries neither tag; a comment **edit** (§6.8) carries neither, so
+  an anchor cannot be re-pointed after posting.
+
+**A reader matches exactly.** It looks for `<start>` in the first listed block
+and `<end>` in the last listed block, both of them inside the run, the end after
+the start; when the words repeat it takes the occurrence whose `<prefix>` and
+`<suffix>` match, otherwise the first. It never searches outside the run.
+A reader MAY suggest where reworded words might now be, but MUST NOT highlight a
+guess as found: two apps would disagree about the same comment.
+
+**The quote is a copy, on purpose.** §13.6.1 forbids copying an object's
+content into a message; a quote is allowed because, like the `block` id, it is
+the record of what the author was looking at, and it is what lets a reader tell
+words that changed from blocks that went. It is the commenter's claim, not the
+page's: the relay does not check it against the document, so a reader shows
+reworded words as what the commenter quoted, never as what the page said.
+Quoting at most the two ends keeps the copy short.
 
 **Only a `kind:1111` anchors** (narrowed 2026-10-07, COM-2). Its `A` is what
 says whose block the tag names. A `kind:9` has no `A`, so a reader MUST ignore a
@@ -3316,20 +3402,25 @@ no addressable sub-unit (§13.1), so an anchor on an object whose body is marker
 text does not resolve and never will. That is not a defect to repair: it is what
 "two content models" means, and it is why §13.3 is JSON.
 
-#### Four states, and a reader MUST tell them apart
+#### Five states, and a reader MUST tell them apart
 
-Resolving an anchor has four outcomes, and **collapsing any two of them is the
+Resolving an anchor has five outcomes, and **collapsing any two of them is the
 failure this section exists to prevent**:
 
 | | when | what a reader owes the person |
 | --- | --- | --- |
 | **unanchored** | no `block` tag | nothing — it is a comment about the whole object |
-| **resolved** | the tag names a block that is present | show what it points at |
+| **resolved** | the run is present, and its `quote` is found or it has none | show what it points at: the words, or the whole blocks |
+| **reworded** | the run is present, and its `quote` is not found in order | the comment beside its blocks, no highlight, and the quoted words as what the commenter quoted, marked as changed |
 | **unaddressable** | the body is not a block document | say the comment refers to a part of something that has no parts |
-| **detached** | the tag names a block that is gone | **say so** |
+| **detached** | none of the run's blocks is present | **say so** |
 
 **A reader MUST NOT render a detached anchor as if the comment were
-unanchored.** The two look identical on screen and mean opposite things: one is
+unanchored**, and **MUST NOT render a reworded anchor as detached**: the blocks
+the comment is about are still there; only the words changed. Nor may it list a
+reworded comment with the detached ones.
+
+Detached and unanchored look identical on screen and mean opposite things: one is
 a remark about the object, the other is a remark about a paragraph somebody has
 since deleted. A reader that cannot tell them apart silently converts the second
 into the first, and nothing reports it.
@@ -3349,10 +3440,19 @@ and a description is replaced wholesale on every edit. An implementation
 reconstructing blocks from text carries a further limit — a block that is moved
 *and* edited in one save may not be recognisable as the same block at all.
 
-So **detachment is a normal state, not an error condition.** An implementation
-MUST NOT delete a comment whose anchor no longer resolves, and MUST NOT rewrite
-the comment to drop its `block` tag: the tag is the record of what the author
-was looking at, and it is still true that they were looking at it.
+So **detachment is a normal state, not an error condition**, and neither is
+rewording. An implementation MUST NOT delete a comment whose anchor no longer
+resolves, and MUST NOT rewrite the comment to drop its `block` or `quote` tag:
+the tags are the record of what the author was looking at, and it is still true
+that they were looking at it.
+
+What edits do to a run and its words: an edit between a selection's ends, or a
+block inserted or deleted in its middle, keeps it `resolved`, and an inserted
+block joins the run. An edit to the quoted words at either end, a split of a
+block inside them, deleting the first or last listed block while others remain,
+or moving the first listed block after the last makes it `reworded`. A merge
+keeps it when the surviving block's id is listed. Undoing a delete brings the id
+back, and the state with it. Only every listed block gone is `detached`.
 
 ### 13.6.1 Showing one block of another object in a message
 
