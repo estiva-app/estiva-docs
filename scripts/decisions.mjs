@@ -165,10 +165,9 @@ export function check(root) {
     const old = r.fields.Supersedes
     if (old) {
       if (!records.has(old)) say(r.file, `Supersedes ${old}, which does not exist`)
+      // The other direction (old says Superseded by a record that is not Accepted) is reported above.
       else if (statusOf(name)?.[1] === 'Accepted' && statusOf(old)?.[2] !== name) {
         say(records.get(old).file, `must say "- Status: Superseded by ${name}"`)
-      } else if (statusOf(name)?.[1] !== 'Accepted' && statusOf(old)?.[2] === name) {
-        say(records.get(old).file, `is Superseded by ${name}, which is not Accepted`)
       }
     }
   }
