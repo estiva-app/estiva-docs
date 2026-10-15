@@ -53,8 +53,8 @@ accept or reject settles the bar too.
   brief Miky decided on goes in `briefs/` beside it, as the HTML page it was,
   and the record links it, after the same check for unfixed gaps. A brief still
   waiting on Miky stays out of the repository (Miky, 2026-10-15).
-- **A brief asked of Miky is a Proposed record.** The record is written and
-  merged when the brief page is asked, under the name it will keep, so it is
+- **A brief asked of Miky is a Proposed record.** The record is written, and its
+  pull request handed to Miky to merge, when the brief page is asked, under the name it will keep, so it is
   listed as waiting on him; it follows the rule on security gaps above. On his
   answer the record goes Accepted in a pull request, and his merge of it is the
   accept, with `Decided by` naming the brief and where he answered; the options he turned down become its
