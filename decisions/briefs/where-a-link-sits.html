@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where a Link Sits</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.q { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); padding: 12px 14px; border-radius: 6px; font-size: 1.05rem; }
+.rec { background: var(--ok-bg); border-left: 4px solid var(--ok); padding: 12px 14px; border-radius: 6px; }
+.warn { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+svg { width: 100%; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .chip { fill: var(--chip); stroke: var(--accent); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .x { fill: var(--warn); font-weight: 700; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 640px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+.rec-row td { background: var(--ok-bg); }
+blockquote { margin: 8px 0; padding: 4px 12px; border-left: 3px solid var(--line); color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+<h1>Where a link sits decides how it draws</h1>
+<p class="sub">A brief for Miky and Katerina · 15 Oct 2026 · Widgets 2 · it would replace a decision you both made on 13 Oct</p>
+
+<h2>The question</h2>
+<p class="q">Should a link's place decide how it looks — a chip inside a sentence, a row when it is alone on its line, and one card under the message added for you when the message links a single file — instead of the author choosing chip, row or card for each link?</p>
+
+<h2>Today</h2>
+<p>Every link draws as a small chip, even alone on its line. To show more, you open the chip's menu and choose a row or a card, which draws <em>under</em> the message; you can change it after sending. Peek's message box lets you choose; Ship draws the choice but its comment box can't make one; Leaf has no cards yet.</p>
+<p>That was Katerina's proposal in PEE-2's thread (5 Oct) — <q>simply displaying the inline (chip) variant instead by default</q>, with <q>none, compact or detailed card</q> — and Miky agreed when Widgets was shaped on 13 Oct. It is an Accepted decision today.</p>
+<p>On 15 Oct, after the widget prototype, Miky proposed a simpler model:</p>
+<blockquote>Chip that can be placed inline inside a sentence · compact which acts as a single row · detailed which acts as card attachment … What if we allow compact row as a block (similar to heading) inside the conversation … the detailed would be only as attachment … we would always add the attachment, but the user would have option to remove similarly like in Slack. I feel that from user perspective this is easier than pushing user to choose between 3 formats.</blockquote>
+<p>In the WID-2 session he narrowed it: the card is added only when the message links exactly one file, removed with ✕, and old messages drawing differently under the new rule is fine.</p>
+
+<h2>Why it reaches beyond this ticket</h2>
+<ul>
+<li><b>The rule for every app.</b> Today the protocol says a link's place never matters: <q>not a reference alone on its line</q> gives a card. This makes place part of how any Estiva-compatible app reads a message — Peek, Ship, Leaf and an outside company's client alike.</li>
+<li><b>Documents too.</b> Ship descriptions, Peek's panel and Leaf pages have no area under them, so the rule has to say what a document does instead.</li>
+<li><b>Door:</b> with the recommended option it is <b>two-way</b>. Nothing new goes into messages: the row is a reading rule, and the default card is today's card choice, written for you at send. Undoing it is a protocol text change plus each app's drawing code; messages already sent go back to drawing the old way. The option that writes a new "row" mark into messages is <b>one-way</b>: every reader must understand it forever.</li>
+</ul>
+
+<h2>The picture: a message under the new model</h2>
+<figure>
+<svg viewBox="0 0 720 360" role="img">
+<title>Two messages drawn under the new model: one with a chip in a sentence and a row on its own line and no card; one linking a single file, with its card under the message and an ✕</title>
+<rect class="w" x="10" y="10" width="470" height="150" rx="8"/>
+<circle class="b" cx="34" cy="34" r="12"/><text x="54" y="39" class="h">Miky</text>
+<text x="54" y="66">Moved the relay part into</text>
+<rect class="chip" x="228" y="51" width="152" height="22" rx="11"/><text x="238" y="66">◆ WID-3 Prototype…</text>
+<text x="386" y="66">for next week.</text>
+<text x="54" y="96">Also blocked on:</text>
+<rect class="b" x="54" y="108" width="400" height="34" rx="6"/>
+<text x="66" y="130">◆ WID-2 · Prototype every widget</text><text x="330" y="130" class="m">● In progress  ◯ K</text>
+<text x="500" y="66" class="m">in a sentence → chip</text>
+<text x="500" y="122" class="m">alone on its line → row,</text>
+<text x="500" y="138" class="m">a block inside the message</text>
+<text x="500" y="154" class="m">two files linked → no card</text>
+
+<rect class="w" x="10" y="180" width="470" height="170" rx="8"/>
+<circle class="b" cx="34" cy="204" r="12"/><text x="54" y="209" class="h">Katerina</text>
+<text x="54" y="236">The look pass is in</text>
+<rect class="chip" x="188" y="221" width="152" height="22" rx="11"/><text x="198" y="236">◆ WID-2 Prototype…</text>
+<text x="346" y="236">— have a look.</text>
+<rect class="ok" x="54" y="254" width="400" height="84" rx="8"/>
+<text x="66" y="276" class="h">◆ Prototype every widget</text>
+<text x="66" y="296" class="m">WID-2 · Widgets 2</text>
+<text x="66" y="318" class="m">Short summary … · ● In progress · ◯ K · 4 comments</text>
+<text x="436" y="274" class="x">✕</text>
+<text x="500" y="236" class="m">one file linked →</text>
+<text x="500" y="252" class="m">its card is added under</text>
+<text x="500" y="268" class="m">the message at send</text>
+<text x="500" y="296" class="m">✕ removes it, before</text>
+<text x="500" y="312" class="m">or after sending</text>
+</svg>
+<figcaption>Peek and Ship. The card under the message shows in the message box before you send (decided 15 Oct), so the ✕ is there before anything goes out.</figcaption>
+</figure>
+
+<h2>Options</h2>
+
+<h3>A. The place decides, and the row is a reading rule <span style="color:var(--ok)">(recommended)</span></h3>
+<ul>
+<li><b>Miky and Katerina see:</b> you type or paste; a link in a sentence is a chip, a link on its own line becomes a row as you write. If the message links exactly one file, that file's card appears under the box; ✕ takes it away. There is no "choose a layout" step anywhere in a message.</li>
+<li><b>An outside company:</b> its app adds one reading rule — a line that is only a link draws as a row — and has nothing new to write. A message from any plain Nostr client draws the same way.</li>
+<li><b>Locks in:</b> a link alone on its line is always a row; to keep it a chip you put a word beside it. Old messages whose lone link was a chip now draw a row (Miky: fine).</li>
+</ul>
+
+<h3>B. The place sets the default, and a mark in the message records each row</h3>
+<ul>
+<li><b>Miky and Katerina see:</b> the same as A while writing, plus a menu on a row to turn it back into a chip. Old messages stay exactly as they were sent.</li>
+<li><b>An outside company:</b> must write the new mark to get rows; a message from any other client shows chips everywhere.</li>
+<li><b>Locks in:</b> a new value in every message from now on, that every reader must understand forever.</li>
+</ul>
+
+<h3>C. Keep today: the author chooses for each link</h3>
+<ul>
+<li><b>Miky and Katerina see:</b> every link a chip; a row or a card only when you choose it from the chip's menu; no card added for you. Katerina's model as accepted on 13 Oct.</li>
+<li><b>An outside company:</b> builds the three-way choice to match.</li>
+<li><b>Locks in:</b> nothing new; Miky's 15 Oct concern stays — three formats to choose from on every link.</li>
+</ul>
+
+<figure>
+<svg viewBox="0 0 720 250" role="img">
+<title>Who decides each look, per option: in A the reader's place rule draws chips and rows and only the one card is written; in B the writer marks rows and cards; in C the author picks every look</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="var(--ink)"/></marker></defs>
+<text x="10" y="20" class="h">A · place rule</text>
+<text x="250" y="20" class="h">B · marks in the message</text>
+<text x="490" y="20" class="h">C · author picks</text>
+<rect class="b" x="10" y="32" width="220" height="44" rx="6"/><text x="20" y="52">Message box writes the text</text><text x="20" y="68" class="m">+ the one card, if one file</text>
+<rect class="b" x="250" y="32" width="220" height="44" rx="6"/><text x="260" y="52">Message box writes the text</text><text x="260" y="68" class="m">+ a "row" mark per lone link</text>
+<rect class="b" x="490" y="32" width="220" height="44" rx="6"/><text x="500" y="52">Author opens each chip's menu</text><text x="500" y="68" class="m">picks chip, row or card</text>
+<path class="a" d="M120 76 L120 104"/><path class="a" d="M360 76 L360 104"/><path class="a" d="M600 76 L600 104"/>
+<rect class="w" x="10" y="106" width="700" height="30" rx="6"/><text x="300" y="126">The message on the relay</text>
+<path class="a" d="M120 136 L120 164"/><path class="a" d="M360 136 L360 164"/><path class="a" d="M600 136 L600 164"/>
+<rect class="ok" x="10" y="166" width="220" height="74" rx="6"/><text x="20" y="186">Any reader: chip or row</text><text x="20" y="202">from the place;</text><text x="20" y="218">card from the message</text><text x="20" y="234" class="m">nothing new on the wire</text>
+<rect class="bad" x="250" y="166" width="220" height="74" rx="6"/><text x="260" y="186">Reader draws rows only</text><text x="260" y="202">where a mark says so</text><text x="260" y="218" class="m">a new value, forever;</text><text x="260" y="234" class="m">other clients' links stay chips</text>
+<rect class="b" x="490" y="166" width="220" height="74" rx="6"/><text x="500" y="186">Reader draws what was</text><text x="500" y="202">chosen; chip otherwise</text><text x="500" y="218" class="m">today's wire</text>
+</svg>
+<figcaption>The card is the same thing on the wire in all three: today's card choice. Only A leaves the row out of the message entirely.</figcaption>
+</figure>
+
+<h2>A second, smaller question: a message that is just one link</h2>
+<p>Under A, a message that is only one link, alone on its line, links exactly one file — so it gets both a row and a card of the same file.</p>
+<figure>
+<svg viewBox="0 0 720 170" role="img">
+<title>Three ways to draw a message that is only one link on its own line: the card replaces the row; both; or no card</title>
+<text x="10" y="18" class="h">1 · card replaces the row</text><text x="250" y="18" class="h">2 · both</text><text x="490" y="18" class="h">3 · no card for a lone link</text>
+<rect class="w" x="10" y="28" width="220" height="132" rx="8"/>
+<rect class="ok" x="22" y="44" width="196" height="70" rx="6"/><text x="32" y="64" class="h">◆ Prototype every…</text><text x="32" y="82" class="m">WID-2 · Widgets 2</text><text x="32" y="100" class="m">summary · status · ◯</text><text x="202" y="60" class="x">✕</text>
+<text x="22" y="140" class="m">✕ brings the row back</text>
+<rect class="w" x="250" y="28" width="220" height="132" rx="8"/>
+<rect class="b" x="262" y="40" width="196" height="28" rx="6"/><text x="272" y="59">◆ WID-2 · Prototype…</text>
+<rect class="ok" x="262" y="76" width="196" height="70" rx="6"/><text x="272" y="96" class="h">◆ Prototype every…</text><text x="272" y="114" class="m">WID-2 · Widgets 2</text><text x="272" y="132" class="m">summary · status · ◯</text><text x="442" y="92" class="x">✕</text>
+<rect class="w" x="490" y="28" width="220" height="132" rx="8"/>
+<rect class="b" x="502" y="40" width="196" height="28" rx="6"/><text x="512" y="59">◆ WID-2 · Prototype…</text>
+<text x="502" y="96" class="m">no card is ever added</text><text x="502" y="112" class="m">for a link on its own line</text>
+</svg>
+<figcaption>1 is Slack's feel: paste one link, get its card. 2 shows the same file twice. 3 means a pasted lone link can never get the detailed card, since nothing adds one by hand.</figcaption>
+</figure>
+<p><b>Recommendation: 1.</b> The rule is one sentence for any reader: <em>a file with a card under the message draws no row in it</em>. A chip inside a sentence still draws, because the sentence needs its words.</p>
+
+<h2>Documents: descriptions and Leaf pages</h2>
+<p>A document has no area under it, so <b>no card is ever added for you</b>. The place rule is the same: a chip in a sentence, a row alone on its line. A link alone on its line can be switched to its card from the chip's menu, and the card takes that line's place — Miky's 15 Oct answer for Leaf (<q>a link is either an inline chip or rendered as a block, with the widget's card as that block</q>), here applied to Ship and Peek's panel too, since they read the same document format.</p>
+<figure>
+<svg viewBox="0 0 720 200" role="img">
+<title>A document under option A: a chip in a sentence, a row on its own line, and a card on its own line chosen from the chip menu, with nothing below the document</title>
+<rect class="w" x="10" y="10" width="470" height="180" rx="8"/>
+<text x="26" y="38">Blocked by</text><rect class="chip" x="110" y="23" width="152" height="22" rx="11"/><text x="120" y="38">◆ WID-3 Prototype…</text><text x="268" y="38">until Friday.</text>
+<rect class="b" x="26" y="56" width="430" height="32" rx="6"/><text x="38" y="77">◆ WID-2 · Prototype every widget</text><text x="340" y="77" class="m">● In progress</text>
+<rect class="ok" x="26" y="100" width="430" height="76" rx="8"/><text x="38" y="122" class="h">◆ Widgets 2</text><text x="38" y="142" class="m">Project · ◔ 3/8 · ◯ Miky · 2 comments</text><text x="38" y="162" class="m">chosen from the chip menu; same line, same place</text>
+<text x="500" y="38" class="m">in a sentence → chip</text>
+<text x="500" y="77" class="m">alone on its line → row</text>
+<text x="500" y="130" class="m">alone on its line, card chosen</text>
+<text x="500" y="146" class="m">→ the card is that block</text>
+<text x="500" y="180" class="m">nothing is added below</text>
+</svg>
+<figcaption>No new kind of block: the card is still the choice a document already stores on the link. A card asked for on a link inside a sentence (possible today) is no longer drawn; old descriptions with one show just the chip.</figcaption>
+</figure>
+
+<h2>Trade-offs</h2>
+<div class="tw">
+<table>
+<tr><th>Option</th><th>Protocol shape</th><th>What Miky and Katerina see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr class="rec-row"><td><b>A · place decides</b></td><td>How a link looks is reading, not data. One choice stays on the wire: the card.</td><td>No layout menu in messages; one card for one file, ✕ to remove. A lone link can't stay a chip.</td><td>One reading rule; nothing new to write; plain clients' messages draw the same.</td><td>Two-way: change the rule, old messages redraw.</td><td>Protocol text, three apps' drawing, the box adds the card at send.</td></tr>
+<tr><td><b>B · marks rows</b></td><td>A look written into every message.</td><td>Same as A, plus a row can go back to a chip. Old messages untouched.</td><td>Must write the mark; others' links stay chips.</td><td>One-way: the mark is on the relay for good.</td><td>As A, plus a new value and a row menu.</td></tr>
+<tr><td><b>C · author picks</b></td><td>Today's: one choice per link.</td><td>Chips until you choose; three formats to pick from.</td><td>Builds the three-way choice.</td><td>Nothing to undo.</td><td>None beyond the prototype.</td></tr>
+</table>
+</div>
+
+<h2>How others do it</h2>
+<ul>
+<li><b>Slack</b> unfurls a link under the message and the author removes it with ✕; the removal is stored on the message. That is A's card.</li>
+<li><b>Discord</b> draws embeds under a message; suppressing them is a flag on the message — again only the removal is data.</li>
+<li><b>Notion</b> turns a link mid-sentence into a mention, and a link pasted on an empty line offers mention, bookmark (a row) or embed: place sets the default, and the choice is stored as a block — that is B. It works there because one company draws every page; on an open protocol each reader would have to learn the mark.</li>
+<li><b>Linear</b> turns a pasted issue link into an inline mention; Miky pointed to it on 5 Oct.</li>
+<li><b>Nostr clients</b> already decide on their own how to draw a reference; nothing upstream records a layout.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<div class="rec">
+<p><b>A, with the card replacing the row for a single lone link (1), and the document rule above.</b></p>
+<p>The protocol reason: how a link looks is a reader's job, and the only thing the author actually decides — whether the one card is there — is the only thing that goes on the wire, as it already does today. An outside company gets the simplest deal: one reading rule and nothing new to write. The person reason is Miky's own: writing a message never asks you to pick a format, and what you typed is what people see. The cost is that a lone link can't stay a chip and old messages change look; Miky has said the second is fine. If keeping a chip on its own line turns out to matter, B is the way back — at the price of a mark in every message.</p>
+<p><b>Katerina:</b> this replaces your 13 Oct model (every link a chip, the author picks a card). Does it keep what you wanted from it — the URL never shown raw, the chip by default inside text?</p>
+</div>
+
+<h2>Checked</h2>
+<ul>
+<li>Today's rule: no card unless chosen, <q>not a reference alone on its line</q> — protocol spec §13.6.2 on <code>estiva-docs</code> <code>origin/main</code> (f71d619), decided 13 Oct.</li>
+<li>✕ after sending works on today's wire: a card can be removed by an edit, and an edit that only removes a card is not marked edited (spec conformance C20).</li>
+<li>Peek's message box writes the card choice, and its edits carry the whole set of cards (<code>peek-app</code> <code>origin/main</code>, <code>useFileConversation.ts</code>). Ship draws cards but its comment box can't choose one (Widgets' Later list). Leaf has no card code on <code>origin/main</code>.</li>
+<li>Documents store a card on the link itself and draw it after the line (spec §13.3, "A reference's card").</li>
+<li>Miky's model in his words: Widgets 2's project conversation, 15 Oct 14:03. "Exactly one file" and "old messages oddly is fine" come from the WID-2 session as written in the project description; I could not read them in his own words.</li>
+<li><b>Not measured:</b> how many sent messages hold a lone link that would turn into a row.</li>
+</ul>
+
+<h2>For the record</h2>
+<ul>
+<li>Supersedes <code>decisions/the-author-chooses-a-links-card.md</code> (Accepted 13 Oct, OPT-16/17/18). Proposed record: <code>decisions/where-a-link-sits-decides-how-it-draws.md</code>.</li>
+<li>A: no new tag. A line of a <code>kind:9</code> / <code>kind:1111</code> body that is only a reference (<code>nostr:</code> or an app URL by §7.7) draws the object's closed <code>row</code> in place. The default card is <code>["embed", V, "detailed"]</code>, written by the box at send when the body names exactly one value with a <code>card</code> (not a Folder, not a kind where detailed adds nothing, not a <code>part</code>); ✕ after send is a <code>40003</code> with <code>["embed", V, "none"]</code>. A value with a card draws no row in the body. Old <code>compact</code> tags keep drawing as a row under the message; writers stop writing it.</li>
+<li>Documents: a paragraph that is only a reference draws its row; with <code>attrs.embed: "detailed"</code> the card replaces it; <code>attrs.embed</code> on a reference inside a sentence draws nothing. Spec §13.3 "A reference's card", §13.6.2, conformance C21, C22, C24 change in the build.</li>
+<li>B would add a layout value such as <code>["embed", V, "row"]</code> meaning "in place".</li>
+<li>Tickets: WID-3 (places prototype) waits on this; WID-2 prototype on <code>estiva-ui</code> <code>concept/widgets-2</code> at 6269e51.</li>
+</ul>
+</main>
+</body>
+</html>

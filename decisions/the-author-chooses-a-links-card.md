@@ -1,7 +1,7 @@
 # Every link draws as a chip, and its author chooses a card with an `embed` tag they can change after sending
 
 - Date: 2026-10-13
-- Status: Accepted
+- Status: Superseded by where-a-link-sits-decides-how-it-draws.md
 - Decided by: Miky, agreeing to Katerina's proposal in PEE-2's thread (1–5 Oct), when shaping the Widgets project on 2026-10-13; editable after sending is Miky's own call, over the recommendation
 - Area: Links & widgets
 
