@@ -41,7 +41,7 @@ nobody held the whole list.
 | --- | --- | --- |
 | `30850` | Project | Addressable. Root event carries immutable facts only. Its `key` (3–6 letters, root seed + `1851` override) prefixes its issues' refs — SPEC §6.1 |
 | `30851` | Issue | Addressable. **Status and assignee are not on it** — see §4 |
-| `1851` | Change | Regular, append-only. Authored by whoever acts, not by the object's author |
+| `1851` | Change | Regular, append-only. Authored by whoever acts, not by the object's author. `field` `summary` is a file's one-line summary, plain text, on every file kind — SPEC §6.12 |
 | `1111` | Comment | NIP-22 |
 | `31989` / `31990` | Handler recommendation / information | NIP-89 manifest. Global, not channel-scoped — discovery must work before you are a member of anything |
 
@@ -131,9 +131,16 @@ of the three.
 `MessagesWrite` on `1851` is doing real work: it is what lets one member set a
 field on another member's object, which is the normal case in a tracker.
 
-`30842` / `30850` / `30851` / `1851` **require `h` at ingest.** The Folder is not
+`30842` / `30851` / `1851` **require `h` at ingest.** The Folder is not
 optional — several apps write these kinds, and one of them forgetting would put
 an unreachable object into the shared space that nobody can unpublish.
+
+A `30850` does not: its `h` is optional at ingest. A project carrying one is
+filed in that Folder, as every record written before SPEC §7.3's `placement`
+is; one carrying `buzz-channel` instead is stored for the whole workspace, so
+anybody can discover it, and its name and its seeded summary (SPEC §6.12) are
+readable outside its Folder. Its changes, comments and issues still carry `h`,
+naming the Folder its `buzz-channel` names.
 
 What a NIP-50 `search` matches, per kind ([SPEC §5.2](SPEC.md); buzz
 migrations 0035 and 0036):

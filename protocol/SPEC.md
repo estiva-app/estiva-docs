@@ -134,11 +134,12 @@ consulted. **A consumer MUST NOT let a `kind:31990` claim `39000`.**
 | --- | --- |
 | address | `39000:<relay pubkey>:<id>` — the channel record |
 | `title` | the `name` of its `kind:39000`, and only that. The relay lets only the channel's owners and admins change it (`kind:9002`), while any member may send a `kind:1852`; so a `name` in the state is never shown (Miky, 2026-10-03) |
+| `subtitle` | the `about` of its `kind:39000` (NIP-29), changed as the name is, by owners and admins with `kind:9002`. It is the Folder's one-liner, a file's summary (§6.12) is not: a reader ignores a `summary` change aimed at a `39000`. *Added 2026-10-15* |
 | list | the addresses its `kind:30890` names, folded with each file's own projection; an address the reader cannot resolve is not drawn, because the count is the disclosure |
 | conversation | `kind:9` messages carrying the Folder's `h` — the Folder's own conversation, §6.4's chat, §11.1's general stream. An `a` on one is a mention (§6.4) and does not take it out of the Folder's conversation. Threads and replies follow §6.4 |
 | `archived` | the `archived` field of `kind:1851` changes on its address (§6.2), counting only a change carrying the Folder's own `h` whose author the relay lists as the Folder's owner or admin (`kind:39001`) — the same people who may rename it (Miky, 2026-10-03) |
 | open in | the `web` template of the generic app declaring the `conversation` aspect (§7.8) |
-| actions | built in, declared by this section and by no manifest: `create-file` — §3.3's **place** for a bare file: a `kind:30840` with a `title` and this Folder's `h` (§6.7, never `buzz-channel`), then the `kind:1852` `add` (`emits.listed`, §7.3). Its `declaredBy` is `spec:3.2`; another app's manifest declaring a `30840` creation on a Folder is not offered beside it (and no manifest may claim `39000` to offer one as its owner). A consumer offers it only on a `39000` whose relay-signed `kind:30890` it has read — one without state is a conversation space, not a Folder (§7.3) — and only if it may sign `30840` and `1852`, and calls it by the opener's `fileNoun` (§7.8) — Peek's "Create topic" (INT-12, 2026-10-12). It makes a bare file and never a document: an app owning documents (§6.11) leaves it out of its own interface and offers its own creation instead (Miky, 2026-10-14) |
+| actions | built in, declared by this section and by no manifest: `create-file` — §3.3's **place** for a bare file: a `kind:30840` with a `title`, an optional `summary` (§6.12) and this Folder's `h` (§6.7, never `buzz-channel`), then the `kind:1852` `add` (`emits.listed`, §7.3). Its `declaredBy` is `spec:3.2`; another app's manifest declaring a `30840` creation on a Folder is not offered beside it (and no manifest may claim `39000` to offer one as its owner). A consumer offers it only on a `39000` whose relay-signed `kind:30890` it has read — one without state is a conversation space, not a Folder (§7.3) — and only if it may sign `30840` and `1852`, and calls it by the opener's `fileNoun` (§7.8) — Peek's "Create topic" (INT-12, 2026-10-12). It makes a bare file and never a document: an app owning documents (§6.11) leaves it out of its own interface and offers its own creation instead (Miky, 2026-10-14) |
 
 Both the `kind:30890` and the `kind:39000` are signed by the relay. A consumer
 MUST keep either only when its signer is the relay's own key — the
@@ -351,12 +352,22 @@ alone — the wrong shape for anything collaborative.
 
 Reference root events:
 
-| Kind | Object | Tag order (normative — it is part of the id preimage) |
+| Kind | Object | Tags, in the order the reference writers emit them |
 | --- | --- | --- |
-| `30850` | Project | `d`, `title`, `h`, `[lead]`, `[key]` |
-| `30851` | Issue | `d`, `title`, `h`, `[a]`, `[ref]` |
-| `30840` | Bare file | `d`, `title`, `h`, `[a]` — §6.7 |
-| `30842` | Document | `d`, `title`, `h`, `[a]` — §6.11 |
+| `30850` | Project | `d`, `name`, `[description]`, `buzz-channel`, `[lead, p]`, `[key]`, `[summary]` — records written before §7.3's `placement` carry `h` where `buzz-channel` is, and a reader takes `title` where `name` is missing (Ship's projection declares `tag: ["name", "title"]`, §7.2) |
+| `30851` | Issue | `d`, `title`, `h`, `[a]`, `[ref]`, `[summary]` |
+| `30840` | Bare file | `d`, `title`, `h`, `[a]`, `[summary]` — §6.7 |
+| `30842` | Document | `d`, `title`, `h`, `[a]`, `[summary]` — §6.11 |
+
+*Clarified 2026-10-15.* The order is part of each event's id preimage, so a
+writer adding a tag puts it last and moves no other. It is not a rule a reader
+may lean on: **a reader finds every tag by name, never by position.** Production
+roots already vary — a project's `name` or `title`, `h` or `buzz-channel` — and
+interop's generic creation (§7.3) writes a creation's properties in the order
+its manifest declares them.
+
+`summary` is the seed of the file's one-line summary (§6.12). Like `title`, the
+root tag is only its seed.
 
 `a` on an Issue is the parent project's address, `30850:<pubkey>:<d>`. `a` on
 a bare file or a document is the address of the file it sits under, **of any
@@ -999,7 +1010,8 @@ app for.
 *Added 2026-10-14 (Leaf 1).* A document is not a bare file. It is its own kind,
 `30842`, with this shape and an owning app (§6.11); a topic stays a `30840`.
 
-**Shape.** `kind:30840`, addressable. Tag order is normative, as §6.1 says:
+**Shape.** `kind:30840`, addressable. Its tags, in the order the reference
+writer emits them; a reader finds each by name (§6.1):
 
 | tag | | |
 | --- | --- | --- |
@@ -1007,6 +1019,7 @@ app for.
 | `title` | REQUIRED | seeds the `title` field; a rename is a change event |
 | `h` | REQUIRED | the Folder it was filed in (§3). The relay says SHOULD; **this document says MUST**, for the reason the relay already gives for issues — several apps write these, and one forgetting the `h` puts an unreachable object in the shared space that nobody can unpublish |
 | `a` | at most one | the address of the file this one sits under, of any kind. Seeds the `parent` field; a move is a change event |
+| `summary` | at most one | seeds the `summary` field, its one-line summary (§6.12) |
 
 `content` is a §13.3 block document, or empty. A topic that is only a
 conversation has nothing here; the day somebody writes a brief at the top, this
@@ -1023,8 +1036,8 @@ the line between them is the kind.
 own Folder (§6.2's `h` rule). The fields: `title` and `parent`, each seeded by
 the root tag of the same name and overridden by the change stream — the way an
 issue's `project` field works; `description`, the file's text (§6.10);
-`archived` (§6.5); and `member:<p>` (§11.8). A consumer MUST read `parent` before
-the `a` tag.
+`summary`, seeded by its root tag (§6.12); `archived` (§6.5); and `member:<p>`
+(§11.8). A consumer MUST read `parent` before the `a` tag.
 
 **The text.** A bare file's text is its `description` fold, seeded from
 `content`, saved and read by §6.10's rules — which were written here first
@@ -1032,10 +1045,12 @@ the `a` tag.
 
 **Projection.** A bare file has no `kind:31990`, and **a consumer MUST NOT let
 one claim it**. Its projection is this section: `title` from the tag with the
-`title` fold over it; `body` from `content` with the `description` fold over
-it; the `comment` action emitting `kind:1111` at its address, `rename`,
-`describe` (the text, input format `estiva-blocks-1`), `move`, `archive` and
-`delete`; widget `card`; a `list` of bare files beneath it.
+`title` fold over it; `subtitle` from the `summary` tag with the `summary`
+fold over it (§6.12, §7.2); `body` from `content` with the `description` fold
+over it; the `comment` action emitting `kind:1111` at its address, `rename`,
+`describe` (the text, input format `estiva-blocks-1`), `summarize` (the
+summary, a plain string with no format, §7.3), `move`, `archive` and `delete`;
+widget `card`; a `list` of bare files beneath it.
 `@estiva-app/interop` carries exactly that and answers it before consulting
 NIP-89 at all. The test of a conformant consumer is that **with every manifest
 removed from the relay, a bare file still resolves, lists its comments and
@@ -1314,7 +1329,8 @@ when its conversation grows. Existing `30840`s stay topics. A reader MUST NOT
 apply §6.7's built-in projection to a `30842`, nor a document owner's
 projection to a `30840`.
 
-**Shape.** `kind:30842`, addressable. Tag order is normative, as §6.1 says:
+**Shape.** `kind:30842`, addressable. Its tags, in the order the reference
+writer emits them; a reader finds each by name (§6.1):
 
 | tag | | |
 | --- | --- | --- |
@@ -1322,6 +1338,7 @@ projection to a `30840`.
 | `title` | REQUIRED | seeds the `title` field; a rename is a change event |
 | `h` | REQUIRED | the Folder it is filed in (§3). MUST, and the relay refuses a `30842` without one at ingest ([KINDS §4](KINDS.md)) |
 | `a` | at most one | the address of the file this one sits under, of any kind. Seeds the `parent` field; a move is a change event |
+| `summary` | at most one | seeds the `summary` field, its one-line summary (§6.12) |
 
 `content` is a §13.3 block document, or empty: the first version of the text,
 which the `description` fold overrides (§6.10).
@@ -1333,8 +1350,9 @@ unchanged: the block is looked up in the current `description` fold.
 
 **Changes.** `kind:1851` under §6.2, in the document's own Folder. The fields
 are the bare file's (§6.7): `title` and `parent`, each seeded by the root tag of
-the same name; `description`, the text (§6.10); `archived` (§6.5); and
-`member:<p>` (§11.8). A consumer MUST read `parent` before the `a` tag.
+the same name; `description`, the text (§6.10); `summary` (§6.12); `archived`
+(§6.5); and `member:<p>` (§11.8). A consumer MUST read `parent` before the `a`
+tag.
 
 **Projection: the owner's.** Unlike a bare file, a document's projection is not
 written in this document. It comes from its owner's manifest (§7), and with no
@@ -1344,8 +1362,10 @@ owner's projection for `30842`:
 - declares `records` (§7.1), and `body` as the `description` fold over
   `content` (`{"fold": "description", "field": "content"}`, §7.2);
 - declares the actions `comment` (`kind:1111` at its address), `rename`,
-  `describe` (the text, input format `estiva-blocks-1`, §7.3), `move`, `archive`
-  and `delete`, and a creation with `placement` `"h"` and `listed: true` (§7.3);
+  `describe` (the text, input format `estiva-blocks-1`, §7.3), a summary change
+  (§6.12), `move`, `archive` and `delete`, and a creation with `placement` `"h"`
+  and `listed: true` (§7.3);
+- needs no `subtitle`: every file kind's comes from its summary (§7.2);
 - declares `list: { "children": { "kind": 30842, "via": "a", "movedBy":
   "parent", "anyParent": true } }` (§7.2);
 - MAY declare a `noun` (§7.9). The word is the owner's: Leaf's is
@@ -1366,6 +1386,56 @@ its root with the Folder's `h`, then the Folder's `kind:1852` `add` naming its
 address. §3.2's built-in `create-file` makes a bare file, not a document; an
 app owning documents leaves it out of its own interface and offers its own
 creation. A Folder holding a document cannot be deleted (§3.3).
+
+### 6.12 A file's summary
+
+*Added 2026-10-15 (project "A short summary on every file"; decided by Miky
+2026-10-15). Numbered after the existing subsections for the reason §7.5
+gives.*
+
+**Every file, whatever its kind, may carry a summary: one or two sentences of
+plain text that say what it is**, read wherever a file is met in one line — a
+card, a row, a picker. It is its own field beside the title, never the opening
+of the description (§6.10): a list then reads one short value per file instead
+of every file's whole text. `30850`, `30851`, `30840` and `30842` are the
+reference set; an app's own file kind has it too. The tag name is NIP-23's and
+NIP-99's.
+
+- **The seed.** A root MAY carry `["summary", <text>]`, which seeds the
+  `summary` field as the `title` tag seeds `title` (§6.1). The reference
+  writers put it last; a reader finds it by name.
+- **The change.** Anyone who may write in the file's Folder changes it with a
+  `kind:1851` whose tags are, in order: `a` (the file), `["field", "summary"]`,
+  `value`, `h`, `ts` (§6.2). The `h` is the Folder the root names — its `h`,
+  or a project's `buzz-channel` value, written as `h`; never a `buzz-channel`
+  tag on the change. A reader ignores one in any other Folder (§6.2).
+- **Last write wins** (§6.3). The author changes it this way too, never by
+  republishing the root: a republished seed loses to any older change, as
+  §6.10 says of the text.
+- **Empty means none.** A folded value that is empty after trimming whitespace
+  MUST be read as "no summary", and the seed MUST NOT show through it. That is
+  how a summary is cleared, the one a file was created with included. A file
+  with no summary draws its title alone; a reader MUST NOT stand in the
+  opening of its description, which is mostly headings and markup.
+- **Plain text, always.** A summary is a scalar, outside §13.4's body rule. A
+  writer MUST NOT put `content-format` on a summary change. A reader MUST draw
+  the value as literal text — no §13.2 markers or links parsed, line breaks
+  folded to spaces — and MUST clamp it to the room it has. A writer SHOULD
+  stay at about 240 characters; the relay does not enforce that, so a reader
+  MUST NOT rely on it.
+- **A project's seed is readable workspace-wide.** A `30850` placed by
+  `buzz-channel` (§7.3) is stored for the whole workspace, so the summary it
+  was created with is read by people outside its Folder, and goes stale for
+  them after a change they cannot read — as a project's name already does
+  (decided by Miky 2026-10-15). Who may read a project's record is a question
+  of its own, not settled here.
+- **Not a Folder's.** A Folder's one-liner is the `about` of its `kind:39000`
+  (§3.2). A reader ignores a `summary` change aimed at a `39000`.
+- **Drawn as `subtitle`.** Every file kind's projection draws its summary in
+  the `subtitle` slot, by default and without its owner declaring it (§7.2).
+  An app writes it through the summary change action (§7.3).
+
+Search (§5.2) does not match a summary.
 
 ---
 
@@ -1593,6 +1663,20 @@ NOT read one as the other; rendering it as plain text is always available
 constructing output from a parsed model: a slice of a block document is not a
 block document, and a consumer cannot tell that what it drew is wrong.
 
+**`subtitle` is the file's summary** (§6.12): one line of plain text under the
+title. *Added 2026-10-15 (decided by Miky).* On every file kind — every
+addressable kind `30000`–`39999` but NIP-29's `39000`–`39009` — it comes from
+`{"tag": "summary", "fold": "summary"}` **by default**: a consumer resolving a
+projection gives the slot that source, so an app's files, an outside company's
+included, show their summary on cards with nothing in its manifest. A manifest
+need not declare it, and **MUST NOT point it at any other source**; a consumer
+ignores a `subtitle` declared otherwise on a file kind and uses the default. A
+value empty after trimming whitespace is no subtitle, and a consumer draws none
+(§6.12) — not an empty line. A consumer draws it as literal text with line
+breaks folded to spaces, and clamps it, with no §13 model applied. A Folder's
+`subtitle` is its `about` (§3.2), whatever its owner's manifest says. A regular
+event (a message, a comment) keeps whatever its manifest declares.
+
 The set is closed — a slot is semantic, so a consumer must know what it
 *means* to render it — but it **grows**, and producers and consumers upgrade at
 different times. **A consumer MUST ignore a slot it does not implement and MUST
@@ -1788,6 +1872,15 @@ make the value mandatory, and it does not refuse a plain one:
 
 A consumer SHOULD draw a prose field as a block editor and MAY draw a
 multi-line text box. `estiva-blocks-1` is the only format defined (§13.3).
+
+**A summary is not prose** (§6.12, 2026-10-15). The action that changes it
+emits `{ "kind": 1851, "field": "summary" }`, and its input is a plain string
+that declares **no `format`**; a consumer finds it by `emits.field ===
+"summary"`, never by its `id`, and draws a short text box. A creation takes a
+summary as an optional `summary` property, written to the root tag of that
+name. The bare file's built-in projection declares it as `summarize`, beside
+`rename` and `describe` (§6.7); an app owning a file kind SHOULD declare one
+the same way, or a consumer offers no way to change that kind's summary.
 
 Measured on production 2026-09-29, the 1,000 newest `kind:1851`: 234 set
 `description`, and 67 of those carry `estiva-blocks-1`. **0 of 452 `kind:30851`
@@ -3254,6 +3347,10 @@ working is not a fixed backlog to clear.
 and later edited into blocks is a root with no tag and a change with one; the
 fold takes the change's value, tag and all. An app MUST read the tag from the
 event it took the value from, never from the object's root.
+
+A file's summary (§6.12) is not a body: it is plain text whatever its event
+carries, no `content-format` applies to it, and §13.2's markers in it are drawn
+as the characters they are.
 
 This is `emits.alsoRead` (§7.3) one level down and exists for the same reason:
 published events are immutable and consumers upgrade at different times. It is
