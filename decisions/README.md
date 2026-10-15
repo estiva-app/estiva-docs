@@ -146,6 +146,7 @@ heading here.
 
 - [A document is its own type of file, which any app may own; Leaf owns it first](a-document-is-its-own-type-of-file.md) — Accepted, 2026-10-14
 - [A file's text is stored as a readable snapshot, and the last save wins; live co-editing comes later, on top](a-files-text-is-a-readable-snapshot.md) — Accepted, 2026-10-13
+- [A comment on a selection remembers the words where it starts and where it ends, and a comment on whole blocks remembers no words](a-comment-remembers-where-its-selection-starts-and-ends.md) — Accepted, 2026-10-15
 - [A comment points at a run of blocks, narrowed by the words quoted at its ends](a-comment-points-at-blocks-and-the-words-quoted.md) — Accepted, 2026-10-13
 
 ## Apps & agents
