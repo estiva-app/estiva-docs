@@ -3335,7 +3335,8 @@ today.
   selection lists its first 32 and its last 32.
 - **A reader** takes every id matching `[A-Za-z0-9_-]{1,64}`, drops a repeat,
   and keeps at most the first 32 and last 32. An invalid *first* id voids the
-  list: there is nothing to start from.
+  list: there is nothing to start from. A reader reads no further than the
+  first 1,024 entries, so a list no writer would send costs it little.
 - **Against the document as it is now**, the run is the children of the parent
   under which most of the listed ids still sit (on a tie, the parent of the
   earliest listed one), from the earliest to the latest of those ids, in
@@ -3352,8 +3353,9 @@ block.
 
 Words quoted from a document (§13.6) are matched against one block's **wire
 text**: the concatenated `text` of its inline runs, a block with child blocks
-being its children's text joined by `\n`, compared after Unicode NFC. It is the
-text as stored, not as drawn: a mention is its `nostr:` text (§13.1), never the
+being its children's text joined by `\n`, compared exactly, code unit for code
+unit, with no Unicode normalisation, so an offset into it is an offset into the
+block's own text. It is the text as stored, not as drawn: a mention is its `nostr:` text (§13.1), never the
 name a reader draws for it, and nothing is trimmed.
 
 ### 13.4 Reading what is already published
@@ -3462,7 +3464,10 @@ joining blocks into one string is needed:
   characters. A writer adds them **only when** the words repeat in their block,
   so that a comment on one "the" does not light up the first.
 - An absent value is an empty string where a later one needs its index, and
-  omitted at the end. An empty `<start>` voids the tag.
+  omitted at the end. An empty `<start>` voids the tag, and so does a `<start>`
+  or `<end>` over 1,000 characters; a `<prefix>` or `<suffix>` over 32 is
+  ignored. These are a reader's limits, so one stranger's comment cannot stall
+  every reader of the page.
 - A writer MUST NOT trim the words or replace a reference with its drawn name:
   they are the block's text as stored.
 - A `quote` without a `block` tag is ignored. A **reply** inherits its root's
@@ -3550,11 +3555,14 @@ that they were looking at it.
 
 What edits do to a run and its words: an edit between a selection's ends, or a
 block inserted or deleted in its middle, keeps it `resolved`, and an inserted
-block joins the run. An edit to the quoted words at either end, a split of a
-block inside them, deleting the first or last listed block while others remain,
-or moving the first listed block after the last makes it `reworded`. A merge
-keeps it when the surviving block's id is listed. Undoing a delete brings the id
-back, and the state with it. Only every listed block gone is `detached`.
+block joins the run. **For a comment with a `quote`**, an edit to the quoted
+words at either end, a split of a block inside them, deleting the first or last
+listed block while others remain, or moving the first listed block after the
+last makes it `reworded`. **A comment on whole blocks** carries no words, so it
+is never `reworded`: it stays `resolved` on whatever of its run is left. A merge
+keeps either kind when the surviving block's id is listed. Undoing a delete
+brings the id back, and the state with it. Only every listed block gone is
+`detached`.
 
 ### 13.6.1 Showing one block of another object in a message
 
@@ -3578,10 +3586,13 @@ tags:    ["h", <folder>], ["a", "30851:<pubkey>:<d>"],
   is now, and MUST NOT write the resolved content into the message, a draft, a
   notification or any store that outlives the view. A copy goes stale and keeps
   showing text to someone who has since lost access to the object's Folder.
-- One `part` per address. A reader takes the first and ignores the rest. A
-  block id outside `[A-Za-z0-9_-]{1,64}` is ignored, because it ends up in a
-  URL fragment and a selector. Index 3 is reserved for an extent (a section, a
-  range), which nothing writes yet.
+- One `part` per address. A reader takes the first and ignores the rest. Its
+  ids from index 2 are a run (§13.3, "A run of blocks"): one id is one block,
+  several are the span from the first to the last, live as the object changes.
+  A block id outside `[A-Za-z0-9_-]{1,64}` is ignored, because it ends up in a
+  URL fragment and a selector. A reader that knows only one block takes index 2
+  and draws the run's first block. *Several ids decided 2026-10-09 for
+  Composition 2; the index-3 extent this replaces was never written.*
 - A writer MUST NOT write a `part` for an address the body does not name. A
   reader draws a part only while the body, as edited (§6.8), still names its
   address.
