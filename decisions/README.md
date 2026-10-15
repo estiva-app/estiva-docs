@@ -34,6 +34,10 @@ accept or reject settles the bar too.
 - **A Proposed record binds nobody and is never built.**
 - **An agent never accepts its own record.** `Decided by` names the person who
   decided and where they said so: an issue, a session, a PR.
+- **Only Miky merges a change to `decisions/`.** An agent writes the record and
+  reviews the pull request, then gives him the link; it never merges one
+  itself, whatever the record's status. His merge is what puts a record on
+  `main` (Miky, 2026-10-15, DEC-7).
 - **Rejected records are kept.**
 - **A decided record is never rewritten, only superseded.** Write a new record
   with `- Supersedes: <old>.md`, and change only the old one's Status, to
@@ -49,10 +53,11 @@ accept or reject settles the bar too.
   brief Miky decided on goes in `briefs/` beside it, as the HTML page it was,
   and the record links it, after the same check for unfixed gaps. A brief still
   waiting on Miky stays out of the repository (Miky, 2026-10-15).
-- **A brief asked of Miky is a Proposed record.** The record is written and
-  merged when the brief page is asked, under the name it will keep, so it is
-  listed as waiting on him; it follows the rule on security gaps above. His answer makes it Accepted, with `Decided by` naming
-  the brief and where he answered; the options he turned down become its
+- **A brief asked of Miky is a Proposed record.** The record is written under
+  the name it will keep, and its pull request handed to Miky, when the brief
+  page is asked; once he merges it, it is listed as waiting on him; it follows the rule on security gaps above. On his
+  answer the record goes Accepted in a pull request, and his merge of it is the
+  accept, with `Decided by` naming the brief and where he answered; the options he turned down become its
   Rejected alternatives; the brief goes in `briefs/` and the record links it.
   The issue's Decided line links the record. A brief that describes a gap not
   fixed yet is published by the issue that closes the gap, which reads it again

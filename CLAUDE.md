@@ -24,6 +24,8 @@ in `NAV` and the `Dockerfile` copies.
   has already given is not accepting it: that record is Accepted, and its
   `Decided by` says where he gave it. `npm test` checks the folder,
   and CI runs it on every pull request.
+- **Never merge a pull request that changes `decisions/`.** Review it, then give
+  Miky the link: only his merge puts a record on `main` (DEC-7).
 - **`decisions/` stays off the site.** Do not add it to the `Dockerfile` or to
   `NAV`, and do not list records in the root `README.md`, which is published.
 - **Never describe a security gap that is not fixed yet,** here or anywhere in
