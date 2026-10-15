@@ -19,7 +19,7 @@ A Folder's name and its listing come from two events. The channel record
 (`kind:39000`) is the relay's, and the relay lets only the channel's owners and
 admins change its name (`kind:9002`). The listing's command (`kind:1852`) can
 be sent by any member, and archive is a `kind:1851` change, which the relay
-accepts from anybody. The relay refuses a client-signed `kind:39000` or
+accepts from any member who can write in the Folder. The relay refuses a client-signed `kind:39000` or
 `kind:39001` (checked 2026-10-03, MAN-17), so the owners and admins it lists in
 its `kind:39001` can be trusted. The security review at MAN-3's /land found
 these calls missing from the kickoff, and Miky made them there.

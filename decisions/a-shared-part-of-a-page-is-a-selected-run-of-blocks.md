@@ -13,7 +13,8 @@ make sense". He selects the blocks he wants, by dragging with the mouse button
 held or with Shift+arrows ("that's how Notion works"), and Copy link copies
 them all. Pasted into a message, the run shows live: if the page is updated
 during the discussion, the shared part shows the update, blocks added in the
-middle included.
+middle included. In his words: "you shared the block, then have discussion and
+you update it and then it should be updated".
 
 ## Context
 

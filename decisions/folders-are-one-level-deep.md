@@ -31,12 +31,14 @@ by a single `kind:1852`, and Peek, Ship and interop drew it as a row there.
 
 ## Rejected alternatives
 
-None is on record: the call was made without written alternatives.
+- **Folders inside Folders.** Interop could already draw them, and one existed
+  on production. Miky, confirming the call on 2026-10-03 while shaping the
+  docs site: one level is an "easier concept to grasp, at least now".
 
 ## Consequences
 
 - Navigation is the same in every app: a flat list of Folders, with any depth
   coming from files under files.
-- Hard to undo once outside apps assume one level: allowing nesting later is a
-  SPEC change every reader must follow, or nested Folders vanish in the apps
-  that do not.
+- Miky's "at least now" leaves nesting open to a later call. Allowing it then
+  is a SPEC change every reader must follow, or nested Folders vanish in the
+  apps that do not.

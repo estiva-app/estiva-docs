@@ -9,9 +9,10 @@
 
 When Miky or Katerina moves a file to another Folder, it shows up there with
 everything listed beneath it: a project moves with its issues, a page with its
-sub-pages. Nobody gains or loses access to it by the move. A move that would
-make a file look private when it is not is refused, so nobody is misled about
-who can read it. An outside company's app moves files the same way.
+sub-pages. Who can read the file does not change with the move. An app
+refuses a move that would make a file look private when it is not, so nobody
+is misled about who can read it. An outside company's app moves files the
+same way.
 
 ## Context
 
@@ -27,8 +28,8 @@ sub-files behind.
 
 - A listing never grants, widens or narrows access; a move changes only where
   a file is listed (SPEC §3.1).
-- A move into a private Folder of a file whose `h` names any other channel is
-  refused.
+- An app does not plan a move into a private Folder of a file whose `h` names
+  any other channel.
 - A file's sub-files move with it: one add-and-remove pair for the file and
   one for each file listed beneath it, so a subtree moves whole. The add comes
   before the remove (SPEC §3.3).
@@ -39,8 +40,10 @@ None is on record: the call was made without written alternatives.
 
 ## Consequences
 
-- A moved file can never quietly look private, and a moved project never
+- An app's move never makes a file look private, and a moved project never
   leaves its issues behind.
+- The move is about the file. Where its new comments are filed is the separate
+  call [a conversation belongs to the file it is about](a-thread-belongs-to-what-it-is-about.md).
 - A failure between the add and the remove leaves the file listed in both
   Folders, visible and fixed by moving again.
 - Whether access should follow a file rather than its Folder is the open

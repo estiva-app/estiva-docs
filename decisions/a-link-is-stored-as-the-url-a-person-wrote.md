@@ -59,8 +59,8 @@ Carried out in OPT-19 (Ship, Peek, estiva-ui) and SPEC §13.1 / C25.
   13 Oct call for Peek). Same chip on screen, but copying a message's text gives
   `nostr:naddr1…` while the same paste in a description keeps the link: two
   addresses for one file, depending on the box, which is what the 14 Oct rule
-  was against. Its one real advantage, that a reader needs none of our link
-  rules, is already covered by the tag.
+  was against. The brief he decided on weighed its one real advantage, that a
+  reader needs none of our link rules, as already covered by the tag.
 - **The internal reference everywhere, descriptions included.** One address
   again, but the hidden one; it would reverse the 14 Oct description call and
   the removal of "Copy reference".

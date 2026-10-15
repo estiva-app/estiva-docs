@@ -100,6 +100,9 @@ heading here.
 ## Read state
 
 - [You are told about the files you are a member of, the same in every app, and following is retired](membership-replaces-following.md) — Accepted, 2026-09-30
+- [A Folder has no read state of its own: its chat is unread for you only when a message names you](a-folders-own-chat-is-unread-only-for-a-mention.md) — Accepted, 2026-10-01
+- [A reply is read only when you open its thread, not when you read the conversation it sits in](a-reply-is-read-only-when-its-thread-is-opened.md) — Accepted, 2026-10-03
+- [Anyone may add a person to a file, including someone who left it](anyone-may-add-a-person-to-a-file.md) — Accepted, 2026-10-06
 
 ## Messages
 
@@ -140,7 +143,6 @@ heading here.
 
 ## Protocol
 
-- [What is already on the relay does not weigh against the right protocol shape](existing-content-does-not-weigh-against-the-right-shape.md) — Accepted, 2026-09-06
 - [A shape left over from early experiments is migrated or deleted, never kept on the relay for compatibility](early-shapes-are-migrated-or-deleted.md) — Accepted, 2026-09-15
 - [The Specification states what a relay and an identity service must do, and Estiva hosts the only deployment](estiva-hosts-the-only-deployment.md) — Accepted, 2026-10-02
 - [RFCs are no longer a kind of document: what is still true moves into the Specification and a builder's guide](rfcs-are-retired.md) — Accepted, 2026-10-02

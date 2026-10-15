@@ -16,6 +16,11 @@ moved was deleted.
 
 ## Context
 
+On 2026-09-06, choosing CON-9's model, Miky had already said: "we are in early
+stage and we are just having conversation me and Katerina. We should almost
+never take into consideration existing content. It's all about setting good
+architecture and protocol for the future."
+
 On 2026-09-15 the Folder system had two generations side by side: topics that
 were channels, and topics that were files. The ROADMAP had said since
 2026-09-11 that there would be no data migration, so the agent described the
@@ -58,5 +63,3 @@ SaaS world and must not carry early-experiment residue.
 - Migrations cost real work and lose things: a message cannot be re-signed by
   someone else, so a re-post can lose its author's signature.
 - One shape per thing keeps the Specification and the shared packages short.
-  See also [what is already on the relay does not weigh against the right
-  shape](existing-content-does-not-weigh-against-the-right-shape.md).

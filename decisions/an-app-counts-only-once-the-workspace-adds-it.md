@@ -10,7 +10,7 @@
 Miky, as a steward, decides which apps belong to the workspace. Only those apps
 name a file's type and offer "Open in …" for it, in Peek, in Ship and in every
 other app. Katerina sees the same names and links Miky does, because they come
-from the workspace's choice and not from whoever published last.
+from the workspace's choice.
 
 An outside company's app is added the same way: a steward adds its key, and
 from then on its manifest counts in that workspace.

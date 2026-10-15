@@ -18,9 +18,9 @@ which app or author made the file.
 ## Context
 
 A file's id is the `d` of its addressable event, an opaque uuid. A link such as
-`/<word>/<d>` names the id, not the author or the kind, so it means one file
-only if no two files share a `d`. The census of 3 October found no shared `d`
-among the workspace's files.
+`/<word>/<d>` names the id, not the author or the kind (SPEC §7). The question
+was whether an id names one file across every kind and author, or only within
+one.
 
 ## Decision
 

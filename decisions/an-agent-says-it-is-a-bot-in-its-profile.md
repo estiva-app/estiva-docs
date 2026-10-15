@@ -26,7 +26,6 @@ which accounts are agents (its role accounts).
 
 - An agent's profile carries NIP-24's **`"bot": true`**. Estiva ID adds it
   when it publishes a role account's profile, and republishes the existing ones.
-- A person's profile carries no `bot` key at all.
 - Apps read the marker. They never guess from the name, such as "steered by".
 
 ## Rejected alternatives

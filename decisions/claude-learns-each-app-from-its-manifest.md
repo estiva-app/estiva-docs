@@ -42,8 +42,7 @@ statuses mean or how a description is structured.
   filtered on the manifest's signer inside interop, on every read path. The
   Workspace apps issues "A steward can add an app to the workspace, and Ship
   and Peek are added" (WOR-1) and "Only an app the workspace added can publish
-  an app manifest" (WOR-2) are finished first, and nothing trusts other
-  members' manifests in the meantime.
+  an app manifest" (WOR-2) come first.
 - **What Claude signs follows each action's shape**: a change is the owner's
   change kind on the owner's object; a creation is what the declaring
   manifest's projections say; and a comment (`kind:1111`), a deletion
