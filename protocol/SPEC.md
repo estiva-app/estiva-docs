@@ -236,12 +236,28 @@ were mostly written by Peek, about people who have never opened Ship.
 An app MUST NOT hold a user's secret key. It builds an unsigned event and posts
 it to the identity service's `/sign` endpoint with the user's bearer token.
 
-Tokens are ES256 JWTs where:
+Tokens are JWTs where:
 
 - `sub` is the user's **pubkey**;
 - `aud` is the app's `client_id`, which selects the signing policy;
 - `iss` is the identity service origin, from which
-  `/.well-known/jwks.json` is discoverable in the standard way.
+  `/.well-known/jwks.json` is discoverable in the standard way;
+- `act`, when present, says a bot holds the token on the person's behalf, and
+  `sid` names the sign-in it came from (both in the discovery document's
+  `claims_supported`).
+
+Who reads a token, and how:
+
+- **An app's own code MUST NOT depend on the token's format or algorithm.** Who
+  signed in comes from the token response's `pubkey`, the token's lifetime from
+  its `expires_in`, and any `401` from `/sign` or another resource server means
+  "renew once" (§4.4), not "parse the token to find out why".
+- **A service that verifies the token** (a resource server) takes the algorithm
+  from the JWKS key matched by the token's `kid`, never from the token's own
+  header (RFC 8725 §3.1). It checks `iss`, `exp`, and that `aud` is its own
+  `client_id`, and reads `act` as "a bot holds this". The reference deployment
+  signs with RS256 today; a verifier that follows the JWKS needs no change when
+  that does.
 
 `/sign` enforces a per-app kind ceiling and returns
 `422 policy_violation / kind_not_allowed` for anything outside it. Two rules are
@@ -254,6 +270,56 @@ normative:
 **An app's kind ceiling MUST be the union of the kinds it writes for itself and
 the kinds declared by every app it offers actions on** (§7.3). Acting on another
 app's object means writing that app's kind.
+
+### 4.4 Signing in and staying signed in
+
+*Added 2026-10-16.* Signing in to the identity service is **plain OAuth 2.0**
+(RFC 6749) with PKCE (RFC 7636), following the OAuth 2.0 Security Best Current
+Practice (RFC 9700). An app signs people in with a standard OAuth library
+configured from `/.well-known/openid-configuration`, and needs no code specific
+to Estiva.
+
+- **Authorization code with PKCE, `S256` only.** `plain` is refused. `state` is
+  optional: PKCE carries the defence against cross-site request forgery
+  (RFC 9700 §2.1.1).
+- **The token endpoint takes the standard form request**
+  (`application/x-www-form-urlencoded`: `grant_type`, `code`, `redirect_uri`,
+  `code_verifier`, `refresh_token`, `client_id`) and refuses with RFC 6749
+  §5.2's errors: `invalid_request`, `invalid_client`, `invalid_grant`,
+  `unsupported_grant_type`. An app is a public client and sends only its
+  `client_id`.
+- **`prompt` accepts only `none`.** It works only as a top-level navigation:
+  the identity service's sign-in cookie is `SameSite=Lax` and `/authorize`
+  serves no CORS, so a renewal in a hidden iframe always fails. Any error from a
+  `prompt=none` request means "ask interactively" (`login_required` is the
+  usual one); `access_denied` means the app MUST NOT offer sign-in again in
+  that visit.
+- **Redirects match exactly.** `redirect_uri` and `post_logout_redirect_uri`
+  MUST equal a value registered for the app, never a prefix of one, and the
+  token endpoint answers a cross-origin request only from a registered origin.
+- **There is no ID token.** Who signed in is the access token's `sub` and the
+  token response's `pubkey` (§4.3).
+- **Renew with the `refresh_token` grant.** Refresh tokens rotate: each
+  renewal returns a new one and spends the old. Parts of an app that share one
+  chain (tabs, workers) SHOULD NOT present the same token twice. A spent token
+  presented again shortly after, while the new token it bought is unused, gets
+  that same new token, so a renewal whose answer was lost can be retried; any
+  other reuse of a spent token ends the sign-in (RFC 9700 §4.14.2).
+- **Any 4xx from the refresh grant ends renewal.** The app stops renewing and
+  asks the person to sign in on the page they are on, without losing it.
+- **The lifetime is the identity service's policy.** An app MUST NOT assume one:
+  it reads `expires_in` and renews when told to.
+- **Signing out** goes through the discovery document's `end_session_endpoint`,
+  with `client_id` and `post_logout_redirect_uri` (both required; there is no
+  `id_token_hint`). It ends the sign-in in that browser for every app and stops
+  renewal. The identity service MAY end a token before its `exp`, so an app
+  MUST handle a `401` at any time.
+
+*Informative.* The reference deployment's numbers: a sign-in ends after 7 days
+unused or 14 days after the passkey tap, whichever comes first; a spent refresh
+token can be retried for 30 seconds; and an access token is not ended before
+its `exp` today. A bot's sign-in, granted by its owner, keeps a fixed 24 hours
+with no idle end.
 
 ---
 
