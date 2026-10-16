@@ -1976,8 +1976,9 @@ A widget names a *kind of thing to draw*, never how to draw it. The consumer
 owns the layout throughout — an owner that could specify it would be designing
 another app's product, which is the objection that rules out iframes.
 
-A card under a message follows the layout its author chose (`compact` draws
-the closed `row`, `detailed` the closed `card`, §13.6.2), not the manifest's
+A card under a message follows its `embed` tag (`detailed` draws the closed
+`card`, and an old `compact` the closed `row`, §13.6.2), and a reference alone
+on its line in a message draws the closed `row` in place, not the manifest's
 `widget`. The manifest's `widget` still applies everywhere else a file is
 drawn, such as a Folder listing.
 
@@ -2215,12 +2216,14 @@ throwaway relay or a fake query.
 | C17 | **Membership fold.** The file's author is a member from the earliest root version. Writing in the stream, a body mention, an assignee change carrying `["p", P]`, and `member:<P>`=`true` by anyone each make the person a member. A comment's `p` tag alone does not, nor an assignee change without a `p`, nor an unassign, nor a `kind:9` with an `a`. An edit of the root after the author left does not re-join them. A `member:<P>`=`false` signed by someone else is ignored. One signed by `P` ends membership until a later trigger, and member-since is then that trigger's second. Two changes inside one second order by `ts` (§11.8) |
 | C18 | **Unread for a member.** Someone mentioned for the first time on a year-old file has one unread message, the mention. The person's own messages are never unread. A reply is read once its thread's marker or the reply floor passes it, or the file's marker passes it and it is at or before T0; the channel's marker never reads a file. A muted file shows only the messages that mention the person (§11.3, §11.8) |
 | C19 | **Urgent mention.** A message urgent for `P` carries `["urgent", P]` and `["p", P]` and names `P` in its body as published as an ordinary reference. It is urgent for `P` and for nobody else it names. An `urgent` tag for a person the body does not name is not urgent. An app that does not draw urgency renders it as an ordinary mention (§13.1) |
-| C20 | **Card fold.** A message with `["embed", V, "compact"]` whose body names `V` draws `V`'s row under it. An edit with `["embed", V, "none"]` removes it and, with a byte-identical body, does not mark the message edited. A later edit with no `embed` leaves it removed. An `embed` for a value the folded body does not name draws nothing, and one for a value first named in an edit draws, with no `a` on the edit. With a `part` and an `embed` on the same address, the part wins. An unknown layout draws as `compact`. A reader that does not know `embed` draws the reference (§6.8, §13.6.2) |
-| C21 | **Chip by default.** A message with no `embed` whose body is only `nostr:naddr1…` for `V`, or only an app URL that names `V` by §7.7, with `["a", V]`, draws `V`'s chip and no card. So does a body that names `V` in a sentence. A link on words to `V` draws its words as a link and no card (§13.6.2) |
+| C20 | **Card fold.** A message with `["embed", V, "compact"]` whose body names `V` draws `V`'s row under it, and one with `detailed` its card. An edit with `["embed", V, "none"]` removes it and, with a byte-identical body, does not mark the message edited. A later edit with no `embed` leaves it removed. An `embed` for a value the folded body does not name draws nothing, and one for a value first named in an edit draws, with no `a` on the edit. With a `part` and an `embed` on the same address, the part wins. An unknown layout draws as `compact`. A reader that does not know `embed` draws the reference (§6.8, §13.6.2) |
+| C21 | **Where a link sits.** A message with no `embed` whose body is only `nostr:naddr1…` for a file `V`, or only an app URL that names `V` by §7.7, or a bullet item that is only either, with `["a", V]`, draws `V`'s row in place and no card. A body that names `V` in a sentence, in a quote line, in a heading, inside `**…**` or beside a second reference on its line draws `V`'s chip and no card. A link on words to `V` draws its words as a link and no card. A line that is only a person's or a Folder's reference draws its chip. A line that is only an app URL that resolves to nothing, or to an object the reader cannot read, draws the URL; a line that is only a `nostr:` reference to an object the reader cannot read draws the unreadable row (§13.2, §13.6.2) |
 | C22 | **A description's card.** A block document whose paragraph holds a `reference` mark for `V` with `attrs.embed` `detailed` draws `V`'s chip in the paragraph and `V`'s card after it. The same paragraph with no `embed`, or `none`, draws the chip and no card, alone on its line included. A second reference to `V` in another block with `compact` draws its own row after that block. An unknown `embed` value draws as `compact`. A reader that does not know `embed` draws the chip. Inside a card's `body`, the same reference draws its chip and no card (§13.3) |
 | C23 | **An editor keeps the card.** A document with a `reference` mark carrying `embed` and a key the editor does not know, opened in the editor and saved after an edit to another block, comes back with both keys on the mark and the block's id unchanged (§13.3) |
 | C24 | **A description's URL.** A block document whose paragraph is only an app URL that names `V` by §7.7, as plain text, draws `V`'s chip and no card. The same run marked `{"type":"link","attrs":{"href":<the URL>,"embed":"compact"}}` draws the chip and `V`'s row after the paragraph; an editor that opens it and saves after an edit to another block writes the same run back, and one that removes the card writes the URL as plain text — never a `nostr:` reference. A URL no app claims stays a link, with no card (§13.3) |
-| C25 | **A message's URL.** A message written with an app URL that names `V` by §7.7 — pasted alone, mid-sentence or typed — has that URL in its body as written, never a `nostr:` reference, and carries `["a", V]` (for a message's URL, `["q", <id>]`); on `V`'s conversation itself it carries no second `a`. A reader draws `V`'s chip, and `V` lists the message as a mention (C11). A URL over chosen words is written `[words](url)` and draws as a link. A link to one block carries its `part`, and a URL no app claims, or whose identity two authors hold, carries no tag and stays a link (§13.1, §6.4) |
+| C25 | **A message's URL.** A message written with an app URL that names `V` by §7.7 — pasted alone, mid-sentence or typed — has that URL in its body as written, never a `nostr:` reference, and carries `["a", V]` (for a message's URL, `["q", <id>]`); on `V`'s conversation itself it carries no second `a`. A reader draws `V` by where the URL sits (C21), and `V` lists the message as a mention (C11). A URL over chosen words is written `[words](url)` and draws as a link. A link to one block carries its `part`, and a URL no app claims, or whose identity two authors hold, carries no tag and stays a link (§13.1, §6.4) |
+| C26 | **The card replaces the row.** A message whose body is only `V`'s reference, with `["embed", V, "detailed"]`, draws `V`'s card under it and nothing in its body; with `compact` or an unknown layout, `V`'s row under it and nothing in its body; with a `part` for `V`, the part and nothing in its body. A body with `V` alone on one line and in a sentence on another, with `detailed`, draws the chip in the sentence, nothing on the lone line, and the card. An edit with `["embed", V, "none"]` and the same body draws `V`'s row in place and no card. An old message with `compact` for `V` and `W`, edited with `["embed", V, "none"], ["embed", W, "compact"]`, draws `W`'s row under it and no card for `V` (§13.6.2) |
+| C27 | **The default card.** A writer that adds the default writes `["embed", V, "detailed"]` for a body naming one file `V`, also beside a Folder, a person or a message reference; none for a body naming two files, or a file and a block link (whose `part` it writes, with no `embed`); none for `V` on `V`'s own conversation; never `compact`. An edit that adds the first file to a body adds its default and carries the whole folded set; an edit that changes a word of a body whose card was removed before sending writes no `embed` (§13.6.2) |
 
 C11 and C12 both have a failure that is invisible from the app that has it.
 A merged mention looks like somebody said it here. A forged edit looks like an
@@ -3071,6 +3074,23 @@ producers were already writing. They are additions rather than a new dialect
 because backticks are the single most common construct in the message corpus and
 no renderer has ever handled them (§13.4).
 
+**A line that is only a reference** is what §13.6.2 draws as a row. It is a
+line whose text, with leading and trailing whitespace trimmed, is exactly one
+reference: a bare `nostr:` URI, or a bare http(s) URL. A plain line counts, and
+so does a bullet or numbered item (the text after its prefix). A quote, a
+heading and a fenced code line do not. Anything else on the line makes it a
+sentence: other words or punctuation, a second reference, or a marker around
+the reference (`**nostr:…**`). A reference in code names nothing (§13.1), and
+`[label](url)` is a link on words, never a reference alone.
+
+**Where a bare URL ends.** A bare URL is `http://` or `https://` followed by
+everything up to whitespace, `<`, `>`, a quote mark or a backtick; then any
+trailing `.`, `,`, `;`, `:`, `!`, `?`, `)` and `]` belong to the sentence, not
+to the URL. A writer resolves the URL so cut to choose its `a` (C25), and a
+reader resolves the same cut, so both name the same object.
+`isOnlyReferenceLine` and `urlRunsIn` in `@estiva-app/protocol` apply these two
+rules.
+
 ### 13.3 Rich text content: a block document
 
 A rich text field is a JSON document:
@@ -3187,7 +3207,9 @@ a card for it with `attrs.embed` on the mark itself, the values a message's
 A `link` mark takes the same attribute, `{"type":"link","attrs":{"href":…,"embed":…}}`,
 and draws a card only when its `href` names an object by §7.7, resolved as for
 a message; otherwise it stays a link. A bare app URL in a run reads as the chip
-of what it names, as in a message (§13.6.2, `linksAsReferences`), and has no
+of what it names, as in a sentence of a message (§13.6.2, `linksAsReferences`),
+alone in its paragraph included: a message's lone-line row (§13.6.2) does not
+apply to a block document, whose lone links follow in a later revision. It has no
 mark to carry a card, so a writer who chooses one for it marks that run with a
 `link` whose `href` is the URL and keeps the text as written. It never rewrites
 the URL into a `nostr:` reference: the URL is how a person addresses the
@@ -3655,25 +3677,54 @@ turns such a link into the `a` and `part` above. `@estiva-app/protocol` 0.28.1
 
 ### 13.6.2 Showing a reference as a card
 
-*Decided 2026-10-13 (OPT-16, Widgets).*
+*Decided 2026-10-13 (OPT-16, Widgets); where a link sits, 2026-10-15
+([where-a-link-sits-decides-how-it-draws](https://github.com/estiva-app/estiva-docs/blob/main/decisions/where-a-link-sits-decides-how-it-draws.md)).*
 
-A reference reads as a chip in the sentence (§13.1). A message asks for a card
-under it, for any reference its body names, by carrying an `embed` tag:
+In a message, where a reference sits decides how it draws:
+
+- **In a sentence**, it draws as its chip (§13.1).
+- **Alone on its line** (§13.2), a reference to a file draws the file's closed
+  `row` (§7.5) in place, as a block of the message, and a reference to a message
+  draws that message as a quote cut to one line. A person or a Folder alone on
+  its line draws its chip, as in a sentence. This is a reading rule: no tag asks
+  for it, and a message from any client draws the same way.
+- **Under the message**, a card draws when the message carries an `embed` tag
+  for a reference its body names:
 
 ```
 content: "the plan is in nostr:naddr1… for now"
 tags:    ["h", <folder>], ["a", "30851:<pubkey>:<d>"],
-         ["embed", "30851:<pubkey>:<d>", "compact"]
+         ["embed", "30851:<pubkey>:<d>", "detailed"]
 ```
+
+**A file with a card under the message draws nothing on its own line.** When
+the message's folded set holds an `embed` other than `none` for a value (an
+unknown layout included), or a `part` names it (§13.6.1), a line that is only a
+reference to that value draws nothing, so a message that is only one link shows
+only its card. A chip for it in a sentence still draws.
+
+**A lone link that does not resolve stays as written.** An app URL alone on its
+line that resolves to nothing, has not resolved yet, or resolves to an object
+the reader cannot read stays the URL as a link, never an empty row. A `nostr:`
+reference alone on its line to an object the reader cannot read draws the
+unreadable row: its kind is known from the reference, and it shows no title.
+
+**Excerpts draw chips.** Wherever a message is shown outside its own
+conversation, as a card's `body`, a part's blocks, a quoted message, a "Mentioned
+in" excerpt or any preview of it, every reference in it draws as its chip: no
+row, no card.
+
+Block documents (§13.3) keep the chip for a lone link until a later revision
+gives them the row.
 
 `["embed", <value>, <layout>]`. `<value>` is what an `a` or `q` carries for the
 same thing: an address, or a 64-hex event id. `<layout>` is how much to show:
 
 | layout | what a reader draws under the message |
 | --- | --- |
-| `compact` | the object's closed `row` (§7.5) |
 | `detailed` | the object's closed `card` (§7.5) |
-| `none` | no card; the reference stays a chip |
+| `compact` | the object's closed `row` (§7.5); written by older clients only |
+| `none` | no card; the reference draws by where it sits |
 
 The values are a density, not a widget name, so a richer `detailed` can later
 walk a manifest chain that ends in `card` without changing the wire. A card
@@ -3709,15 +3760,39 @@ under a message follows the author's layout, not the manifest's `widget`.
   itself, not in this tag (§13.3, "A reference's card").
 - An `embed` gives no strength (§6.4) and no membership.
 
-**No `embed` is not `none`.** A reference with no `embed` is drawn by the
-reader's default, which is its chip (§13.1), wherever it sits, alone on its
-line included. An `embed` for a value is authoritative over any default for it.
-Nothing else gives a message a card: not its `a` tags, not a reference alone on
-its line, not an app link. *Decided 2026-10-13 (OPT-18).*
+**A reader never adds a card.** A reference with no `embed` draws by where it
+sits: its chip in a sentence, its row alone on its line. An `embed` for a value
+is authoritative over any default for it. Nothing else gives a message a card:
+not its `a` tags, not a reference alone on its line, not an app link.
+*Decided 2026-10-13 (OPT-18).*
+
+**The default card is the writer's.** When a message's body names exactly one
+value that would draw under it, a writer MAY add `["embed", V, "detailed"]` for
+it as it sends, and Estiva's apps do, showing the card under the message box
+with a ✕ that removes it before sending (no tag is written). What counts:
+
+- a file named by a `nostr:` reference or by an app URL that resolves to it
+  (§7.7), except a Folder (a `39000` address);
+- a `part` (§13.6.1), which draws its block under the message. It counts, but
+  takes no `embed`: the part wins, and a writer MUST NOT write both;
+- not a person, and not a message (`q`).
+
+So a message linking an issue and a Folder gets the issue's card; one linking an
+issue and a block of a page gets no card, and shows the part. A writer adds no
+default for the object whose conversation the message is in. A writer MUST
+NOT write `compact`; a reader still draws one. An outside writer that adds no
+default is still correct.
+
+**The default on an edit.** An edit whose body names a value the previous
+folded body did not MAY add the default for it, counted as at sending over the
+edit's whole body, and then carries the whole folded set plus the new `embed`
+(a set replaces). A value already named keeps what its author left it: a card
+removed with ✕ before sending wrote no tag, and an edit that fixes a word does
+not bring it back.
 
 **A bare app link reads as a reference.** A URL written as itself, not as the
-target of a link on words, that names an object by §7.7 is drawn as that
-object's chip, the same as a `nostr:` reference to it. A link on words keeps its
+target of a link on words, that names an object by §7.7 is drawn as a `nostr:`
+reference to it would be: its chip in a sentence, its row alone on its line. A link on words keeps its
 words, a URL in code is literal (§13.1), and a URL that names nothing stays a
 link — as does one whose object has not resolved yet, or resolves as one the
 reader cannot read, so a reader never draws an empty chip in place of what was
@@ -3742,5 +3817,7 @@ is for references to Nostr-for-Business objects and messages. A reader does
 not read one as the other. Precedents: NIP-92 (a tag saying how to present what
 the content names) and NIP-18 (`q` holds an id or an address).
 
-`@estiva-app/protocol` 0.31.0 (`embedsOf`, `embedTag`, `cardsIn`) and
-`@estiva-app/conversation` 0.11.0 (`foldEmbeds`) implement this section.
+`@estiva-app/protocol` 0.38.0 (`embedsOf`, `embedTag`, `cardsIn`,
+`isOnlyReferenceLine`, `defaultCardOf`, `valueOfReference`, and `buildEdit`
+with `embeds`) and `@estiva-app/conversation` 0.11.0 (`foldEmbeds`) implement
+this section.
