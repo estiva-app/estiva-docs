@@ -41,7 +41,6 @@ nobody held the whole list.
 | `30850` | Project | Addressable. Root event carries immutable facts only. Its `key` (3–6 letters, root seed + `1851` override) prefixes its issues' refs — SPEC §6.1 |
 | `30851` | Issue | Addressable. **Status and assignee are not on it** — see §4 |
 | `1851` | Change | Regular, append-only. Authored by whoever acts, not by the object's author. `field` `summary` is a file's one-line summary, plain text, on every file kind — SPEC §6.12 |
-| `1111` | Comment | NIP-22 |
 | `31989` / `31990` | Handler recommendation / information | NIP-89 manifest. Global, not channel-scoped — discovery must work before you are a member of anything |
 
 ### Documents — owned through a manifest; Leaf the first owner
@@ -62,11 +61,12 @@ nobody held the whole list.
 | `39000` | Group metadata | Relay-signed, NIP-29. The Folder's address; no `kind:31990` may claim it |
 | `9000` / `9001` | Add / remove member | NIP-29, unchanged |
 
-### Messages — written by every app, owned by none ([SPEC §7.8](SPEC.md))
+### Messages and comments — written by every app, owned by none ([SPEC §7.8](SPEC.md))
 
 | Kind | Name | Notes |
 | --- | --- | --- |
 | `9` | Chat message | NIP-29 group message. A Folder's conversation, a DM, and a Ship project conversation are all this. Drawn from SPEC §7.8, noun "message"; no `kind:31990` may claim it. A Folder's built-in "Start a conversation" writes one with only the Folder's `h` (SPEC §3.2) |
+| `1111` | Comment | NIP-22. Drawn from SPEC §7.8, noun "comment"; written by every app on any file it can read (SPEC §6.4) |
 
 ---
 
