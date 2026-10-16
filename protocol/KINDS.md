@@ -30,7 +30,6 @@ nobody held the whole list.
 
 | Kind | Name | Notes |
 | --- | --- | --- |
-| `9` | Stream message | NIP-29 group message. A Topic message, a DM, and a Ship project conversation are all this |
 | `7` | Reaction | Emoji capped at 64 chars (`build_reaction`) |
 | `5` | Deletion | NIP-09. A *request* — relays may decline. Accepted from the author **or** the author's NIP-OA owner, which no client can evaluate ([SPEC §6.5](SPEC.md)) |
 | `9101` | **Estiva assertion** | A statement *about* something in the channel rather than a message in it. `resolution` is the first and currently only subtype, named by the `t` tag. Estiva-specific |
@@ -62,6 +61,12 @@ nobody held the whole list.
 | `30890` | Folder state | **Relay-signed**, never an app's. What a Folder lists. A NIP-29 group without one is a conversation space, not a Folder |
 | `39000` | Group metadata | Relay-signed, NIP-29. The Folder's address; no `kind:31990` may claim it |
 | `9000` / `9001` | Add / remove member | NIP-29, unchanged |
+
+### Messages — written by every app, owned by none ([SPEC §7.8](SPEC.md))
+
+| Kind | Name | Notes |
+| --- | --- | --- |
+| `9` | Chat message | NIP-29 group message. A Folder's conversation, a DM, and a Ship project conversation are all this. Drawn from SPEC §7.8, noun "message"; no `kind:31990` may claim it. A Folder's built-in "Start a conversation" writes one with only the Folder's `h` (SPEC §3.2) |
 
 ---
 

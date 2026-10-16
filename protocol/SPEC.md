@@ -135,11 +135,12 @@ consulted. **A consumer MUST NOT let a `kind:31990` claim `39000`.**
 | address | `39000:<relay pubkey>:<id>` — the channel record |
 | `title` | the `name` of its `kind:39000`, and only that. The relay lets only the channel's owners and admins change it (`kind:9002`), while any member may send a `kind:1852`; so a `name` in the state is never shown (Miky, 2026-10-03) |
 | `subtitle` | the `about` of its `kind:39000` (NIP-29), changed as the name is, by owners and admins with `kind:9002`. It is the Folder's one-liner, a file's summary (§6.12) is not: a reader ignores a `summary` change aimed at a `39000`. *Added 2026-10-15* |
-| list | the addresses its `kind:30890` names, folded with each file's own projection; an address the reader cannot resolve is not drawn, because the count is the disclosure |
+| `noun` | `folder` (§7.9), the protocol's own word as a comment's is (§7.8), so a consumer labels one "Folder" and never by the app that opens it. *Added 2026-10-16* |
+| list | the addresses its `kind:30890` names, folded with each file's own projection; an address the reader cannot resolve is not drawn, because the count is the disclosure. Never `kind:9` messages: they are the conversation, below. With no `kind:30890` the group has no list, not an empty one. Reading it costs a Folder page's read, so a consumer drawing only the Folder's name (a reference in a sentence) need not read it |
 | conversation | `kind:9` messages carrying the Folder's `h` — the Folder's own conversation, §6.4's chat, §11.1's general stream. An `a` on one is a mention (§6.4) and does not take it out of the Folder's conversation. Threads and replies follow §6.4 |
 | `archived` | the `archived` field of `kind:1851` changes on its address (§6.2), counting only a change carrying the Folder's own `h` whose author the relay lists as the Folder's owner or admin (`kind:39001`) — the same people who may rename it (Miky, 2026-10-03) |
-| open in | the `web` template of the generic app declaring the `conversation` aspect (§7.8) |
-| actions | built in, declared by this section and by no manifest: `create-file` — §3.3's **place** for a bare file: a `kind:30840` with a `title`, an optional `summary` (§6.12) and this Folder's `h` (§6.7, never `buzz-channel`), then the `kind:1852` `add` (`emits.listed`, §7.3). Its `declaredBy` is `spec:3.2`; another app's manifest declaring a `30840` creation on a Folder is not offered beside it (and no manifest may claim `39000` to offer one as its owner). A consumer offers it only on a `39000` whose relay-signed `kind:30890` it has read — one without state is a conversation space, not a Folder (§7.3) — and only if it may sign `30840` and `1852`, and calls it by the opener's `fileNoun` (§7.8) — Peek's "Create topic" (INT-12, 2026-10-12). It makes a bare file and never a document: an app owning documents (§6.11) leaves it out of its own interface and offers its own creation instead (Miky, 2026-10-14) |
+| open in | the `naddr` `web` template of the generic app declaring the `conversation` aspect (§7.8), as for a bare file; with no such app the Folder still draws, with nowhere to open |
+| actions | built in, declared by this section and by no manifest: `create-file` — §3.3's **place** for a bare file: a `kind:30840` with a `title`, an optional `summary` (§6.12) and this Folder's `h` (§6.7, never `buzz-channel`), then the `kind:1852` `add` (`emits.listed`, §7.3). Its `declaredBy` is `spec:3.2`; another app's manifest declaring a `30840` creation on a Folder is not offered beside it (and no manifest may claim `39000` to offer one as its owner). A consumer offers it only on a `39000` whose relay-signed `kind:30890` it has read — one without state is a conversation space, not a Folder (§7.3) — and only if it may sign `30840` and `1852`, and calls it by the opener's `fileNoun` (§7.8) — Peek's "Create topic" (INT-12, 2026-10-12). It makes a bare file and never a document: an app owning documents (§6.11) leaves it out of its own interface and offers its own creation instead (Miky, 2026-10-14). `start-a-conversation` — §3.3's **start a conversation**: a `kind:9` whose `content` is the message, carrying this Folder's `h` and no `a` naming the `39000` (an `a` is a mention, §6.4). Same `declaredBy`, same gate — a relay-signed `kind:30890` read, and only if the consumer may sign `kind:9` — and a manifest's own creation of a `kind:9` on a Folder is not offered beside it. A Folder holds a conversation; a DM or another conversation space is written to by its app's own composer, not through this action. *Added 2026-10-16; until then Peek's manifest declared it* |
 
 Both the `kind:30890` and the `kind:39000` are signed by the relay. A consumer
 MUST keep either only when its signer is the relay's own key — the
@@ -189,8 +190,7 @@ produce the same events in the same order.
   actions*: interop has no delete planner and moves a single address, not a
   subtree, and does not refuse a private move; Peek, Ship and interop still
   read a Folder listed in a Folder (one on production, under Estiva HQ) and
-  still show groups with no listing; Peek's manifest still declares
-  `start-a-conversation` and claims `39000`. Until those land, a difference
+  still show groups with no listing. Until those land, a difference
   from this section is a known gap, not a regression.
 - **The kinds an app signs** to offer all of the above: `9007`, `9002`, `9008`,
   `1852`, `1851` and `9`. (Unlisting follows a `kind:5`, which is the file's
@@ -1459,12 +1459,14 @@ An app that publishes objects other apps should render MUST publish a
 `31989` / `31990` MUST be global — not scoped to any Folder. Discovery has to
 work before you are a member of anything.
 
-**One kind has no handler, by design, and it is not an error.** The bare file
-(§6.7) is owned by no app; its projection is written in this document and a
-consumer MUST resolve it from here rather than from the relay, ignoring any
-`31990` that lists it. A consumer that treats "no handler found" as "cannot
-render" will render a Folder's topics as nothing. The Folder itself is the
-other such object (§3.2).
+**Some kinds have no handler, by design, and it is not an error.** The bare
+file (§6.7), the Folder (§3.2), the comment (`kind:1111`, §6.4) and the chat
+message (`kind:9`, §6.4) are owned by no app; each one's projection is written
+in this document and a consumer MUST resolve it from here rather than from the
+relay, ignoring any `31990` that lists the kind. A consumer that treats "no
+handler found" as "cannot render" will render a Folder's topics, the Folder
+itself and every linked message as nothing. Each of them opens in the generic
+app declaring the `conversation` aspect (§7.8).
 
 ### 7.1 `records` — how to fold this app's objects
 
@@ -2102,6 +2104,14 @@ the manifest declaring `conversation` — newest first, among manifests that
 carry a `web` template — and derives the file's open URL from it; with no such
 manifest published, the file still resolves and simply has nowhere to open.
 `@estiva-app/interop` 0.20.0 does exactly that, and Peek publishes the field.
+**A Folder (§3.2) takes the same `naddr` template, and a comment and a chat
+message the same manifest's `nevent` template** (§7.6): none of them is any
+app's, and the app showing every file's conversation is the one that can show
+them. *Messages and the Folder added 2026-10-16.*
+
+**A manifest declaring only `aspect` is a whole manifest.** A generic app MAY
+own no kind at all; its `kind:31990` then carries no `k` tag, and a consumer
+finds it by `content`, not by `#k`.
 
 A consumer MUST NOT read `aspect` as ownership: a manifest declaring it still
 claims no kind, and a `k` tag naming `30840` is ignored as §7 says.
@@ -2132,7 +2142,13 @@ that is not a short word (at most 32 letters, digits, spaces, hyphens or
 apostrophes) as absent, because it prints the noun inside its own sentences.
 
 A comment (`kind:1111`, §6.4) has a noun that is not an opener's: `"comment"`,
-the word NIP-22 and this specification already use.
+the word NIP-22 and this specification already use. A chat message (`kind:9`,
+§6.4) is the comment's case exactly: no app owns it, every app draws it from
+here — `widget` `["message", "card"]`, the author's `pubkey` as the title (the
+text carries structure and is no title), the `content` as the body, untruncated
+— and its noun is `"message"`. It has no actions (§7.6). A `31990` with a `k`
+tag naming `9` is ignored, as one naming `30840` is. *Added 2026-10-16;
+until then Peek's manifest claimed it.* A Folder's noun is `"folder"` (§3.2).
 
 ### 7.9 `noun` — what one of these is called
 
