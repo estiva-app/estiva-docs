@@ -189,7 +189,8 @@ export function check(root) {
   }
 
   // Supersession, both directions. A record is only replaced by an Accepted one,
-  // and the two records say so of each other.
+  // or by one replaced in turn (a chain, each link checked here, ending at an
+  // Accepted record), and the two records say so of each other.
   const statusOf = (name) => records.get(name)?.fields.Status?.match(STATUS)
   for (const [name, r] of records) {
     const by = statusOf(name)?.[2]
@@ -197,7 +198,7 @@ export function check(root) {
       const next = records.get(by)
       if (!next) say(r.file, `Superseded by ${by}, which does not exist`)
       else {
-        if (statusOf(by)?.[1] !== 'Accepted') say(r.file, `Superseded by ${by}, which is not Accepted`)
+        if (statusOf(by)?.[1] !== 'Accepted' && !statusOf(by)?.[2]) say(r.file, `Superseded by ${by}, which is not Accepted`)
         if (next.fields.Supersedes !== name) say(next.file, `must say "- Supersedes: ${name}", which it replaces`)
       }
     }
