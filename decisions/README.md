@@ -160,6 +160,7 @@ heading here.
 
 ## Devices & sessions
 
+- [Signing in to Estiva ID is plain OAuth 2.0 with PKCE, and Estiva's own request format is retired](sign-in-is-plain-oauth.md) — Accepted, 2026-10-16
 - [Peek keeps a plain copy of what it read on the device, until you sign out](peek-keeps-a-plain-copy-on-the-device-until-sign-out.md) — Accepted, 2026-10-14
 - [Peek keeps no copy of what it read once the page reloads](peek-keeps-nothing-after-a-reload.md) — Superseded by the one above, 2026-10-07
 
