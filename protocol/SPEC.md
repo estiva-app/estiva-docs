@@ -2223,7 +2223,7 @@ throwaway relay or a fake query.
 | C24 | **A description's URL.** A block document whose paragraph is only an app URL that names `V` by §7.7, as plain text, draws `V`'s chip and no card. The same run marked `{"type":"link","attrs":{"href":<the URL>,"embed":"compact"}}` draws the chip and `V`'s row after the paragraph; an editor that opens it and saves after an edit to another block writes the same run back, and one that removes the card writes the URL as plain text — never a `nostr:` reference. A URL no app claims stays a link, with no card (§13.3) |
 | C25 | **A message's URL.** A message written with an app URL that names `V` by §7.7 — pasted alone, mid-sentence or typed — has that URL in its body as written, never a `nostr:` reference, and carries `["a", V]` (for a message's URL, `["q", <id>]`); on `V`'s conversation itself it carries no second `a`. A reader draws `V` by where the URL sits (C21), and `V` lists the message as a mention (C11). A URL over chosen words is written `[words](url)` and draws as a link. A link to one block carries its `part`, and a URL no app claims, or whose identity two authors hold, carries no tag and stays a link (§13.1, §6.4) |
 | C26 | **The card replaces the row.** A message whose body is only `V`'s reference, with `["embed", V, "detailed"]`, draws `V`'s card under it and nothing in its body; with `compact` or an unknown layout, `V`'s row under it and nothing in its body; with a `part` for `V`, the part and nothing in its body. A body with `V` alone on one line and in a sentence on another, with `detailed`, draws the chip in the sentence, nothing on the lone line, and the card. An edit with `["embed", V, "none"]` and the same body draws `V`'s row in place and no card. An old message with `compact` for `V` and `W`, edited with `["embed", V, "none"], ["embed", W, "compact"]`, draws `W`'s row under it and no card for `V` (§13.6.2) |
-| C27 | **The default card.** A writer that adds the default writes `["embed", V, "detailed"]` for a body naming one file `V`, also beside a Folder, a person or a message reference; none for a body naming two files, or a file and a block link (whose `part` it writes, with no `embed`); none for `V` on `V`'s own conversation, where `V` does not count, so `V` and one other file `W` there give `W` the default; never `compact` for a value it adds. An edit that adds the first file to a body adds its default and carries the whole folded set; an edit that changes a word of a body whose card was removed before sending writes no `embed`; an edit that names `V` again after its card was removed with `["embed", V, "none"]` carries that `none`, not a default (§13.6.2) |
+| C27 | **The default card.** A writer that adds the default writes `["embed", V, "detailed"]` for a body naming one file `V`, also beside a Folder, a person or a message reference; none for a body naming two files, or a file and a block link (whose `part` it writes, with no `embed`); none for `V` on `V`'s own conversation, where `V` does not count, so `V` and one other file `W` there give `W` the default; never `compact` for a value it adds. An edit that adds the first file to a body adds its default and carries the whole folded set; an edit that changes a word of a body whose card was removed before sending writes no `embed`; an edit that puts `V` back into a body it was taken out of adds its default, also over an earlier `["embed", V, "none"]` (§13.6.2) |
 
 C11 and C12 both have a failure that is invisible from the app that has it.
 A merged mention looks like somebody said it here. A forged edit looks like an
@@ -3792,9 +3792,9 @@ folded body did not MAY add the default for it, counted as at sending over the
 edit's whole body, and then carries the whole folded set plus the new `embed`
 (a set replaces). A value already named keeps what its author left it: a card
 removed with ✕ before sending wrote no tag, and an edit that fixes a word does
-not bring it back. A value with an entry in the folded set keeps that entry
-too, so a card removed with ✕ after sending (`none`) stays off when its link is
-removed and added back.
+not bring it back, nor does one after a ✕ after sending (`none`). A link taken
+out of the body and put back in a later edit is named first again, and MAY get
+the default whichever ✕ removed its card (Miky, 2026-10-16).
 
 **A bare app link reads as a reference.** A URL written as itself, not as the
 target of a link on words, that names an object by §7.7 is drawn as a `nostr:`
@@ -3809,7 +3809,9 @@ A reader that cannot resolve links draws the URL.
 `embed` set of its latest edit carrying at least one, and an edit carrying none
 leaves it. A set replaces: an edit that changes one card carries an `embed` for
 every value whose card it keeps, and `none` for each it removes. So "remove
-every card, keep the chips" is expressible.
+every card, keep the chips" is expressible. An edit carries an `embed` whose
+layout its writer does not know as it was written, so a density added later is
+not rewritten by an older writer.
 
 A reader that does not know `embed` draws the reference as it always has. A
 NIP-C7 chat client draws every `q` as a quote whatever its `embed` says.
@@ -3823,7 +3825,7 @@ is for references to Nostr-for-Business objects and messages. A reader does
 not read one as the other. Precedents: NIP-92 (a tag saying how to present what
 the content names) and NIP-18 (`q` holds an id or an address).
 
-`@estiva-app/protocol` 0.38.0 (`embedsOf`, `embedTag`, `cardsIn`,
+`@estiva-app/protocol` 0.39.0 (`embedsOf`, `embedTag`, `cardsIn`,
 `lineDrawOf`, `isOnlyReferenceLine`, `valuesIn`, `defaultCardOf`, `withCard`,
 `valueOfReference`, and `buildEdit` with `embeds`) and `@estiva-app/conversation` 0.11.0 (`foldEmbeds`) implement
 this section.
