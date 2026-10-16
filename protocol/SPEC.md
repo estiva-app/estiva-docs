@@ -3776,7 +3776,8 @@ turns such a link into the `a` and `part` above. `@estiva-app/protocol` 0.28.1
 ### 13.6.2 Showing a reference as a card
 
 *Decided 2026-10-13 (OPT-16, Widgets); where a link sits, 2026-10-15
-([where-a-link-sits-decides-how-it-draws](https://github.com/estiva-app/estiva-docs/blob/main/decisions/where-a-link-sits-decides-how-it-draws.md)).*
+([where-a-link-sits-and-which-file-gets-the-card](https://github.com/estiva-app/estiva-docs/blob/main/decisions/where-a-link-sits-and-which-file-gets-the-card.md),
+which supersedes where-a-link-sits-decides-how-it-draws).*
 
 In a message, where a reference sits decides how it draws:
 
