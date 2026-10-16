@@ -2108,13 +2108,20 @@ the manifest declaring `conversation` — newest first, among manifests that
 carry a `web` template — and derives the file's open URL from it; with no such
 manifest published, the file still resolves and simply has nowhere to open.
 `@estiva-app/interop` 0.20.0 does exactly that, and Peek publishes the field.
-**A Folder (§3.2) takes the same `naddr` template, and a comment and a chat
-message the same manifest's `nevent` template** (§7.6): none of them is any
-app's, and the app showing every file's conversation is the one that can show
-them. So a manifest declaring `conversation` MUST publish both `web`
-templates, `naddr` and `nevent`, whatever kinds it owns: with only the first, every
-linked message and comment draws with nowhere to open. *Messages and the
-Folder added 2026-10-16.*
+**A Folder (§3.2) takes an `naddr` template the same way, and a comment and a
+chat message an `nevent` template** (§7.6) — newest first, among manifests
+declaring `conversation` that carry one: none of them is any app's, and the app
+showing every file's conversation is the one that can show them. So a manifest
+declaring `conversation` MUST publish both `web` templates, `naddr` and
+`nevent`, whatever kinds it owns: with only the first, every linked message and
+comment draws with nowhere to open. *Messages and the Folder added 2026-10-16.*
+
+The opener is not yet verified, for all four: any workspace member can publish
+a newer manifest declaring `conversation`, and with it every bare file's,
+Folder's, comment's and message's "Open in" link and app name, as §6.11 says of
+a document's claim. The fix is the workspace naming the apps it trusts (the
+roster role `app`, decided 2026-10-03 and not yet built); until then a consumer
+SHOULD prefer a manifest from a key the workspace has named, where it can tell.
 
 **A manifest declaring only `aspect` is a whole manifest.** A generic app MAY
 own no kind at all; its `kind:31990` then carries no `k` tag, and a consumer
