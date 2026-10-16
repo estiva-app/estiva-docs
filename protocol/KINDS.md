@@ -167,10 +167,11 @@ Source of truth: `SEED_APPS` in `estiva-id/src/db/seed.ts`, stored in the
 | --- | --- | --- |
 | Estiva Peek | `estiva-peek` | `9, 7, 5, 9007, 27235, 1851, 9101, 9002, 9008, 1111, 30078, 41010, 41011, 41012, 22242, 30851, 40003, 1852, 24242, 30840, 30850` |
 | Estiva Ship | `estiva-ship` | `30850, 30851, 1851, 9, 5, 9007, 9002, 31989, 27235, 1111, 30078, 7, 40003, 1852, 24242, 22242` |
-| Estiva Leaf | `estiva-leaf` | `27235, 22242, 30842, 1852, 1851, 1111, 40003, 5, 24242` |
+| Estiva Leaf | `estiva-leaf` | `27235, 22242, 30842, 1852, 1851, 1111, 40003, 5, 24242, 9101` |
 
 *Copied from `seed.ts` on origin/main, 2026-10-03 (MAN-3); Leaf's row
-2026-10-14 (Leaf 1).* Against SPEC §3.3's Folder set (`9007, 9002, 9008, 1852,
+2026-10-14 (Leaf 1), and its `9101` 2026-10-16 (LEAF-5: resolving a comment's
+thread, as Peek does).* Against SPEC §3.3's Folder set (`9007, 9002, 9008, 1852,
 1851, 9, 5`): Peek holds all of it; Ship all but `9008`, so Ship does not offer
 deleting a Folder ("deleting a Folder stays Peek's", the seed's own note); Leaf
 only `1852, 1851, 5`, enough to place a document in a Folder and change it, not
