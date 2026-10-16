@@ -288,9 +288,10 @@ to Estiva.
   §5.2's errors: `invalid_request`, `invalid_client`, `invalid_grant`,
   `unsupported_grant_type`. An app is a public client and sends only its
   `client_id`.
-- **`prompt` accepts only `none`.** It works only as a top-level navigation:
-  the identity service's sign-in cookie is `SameSite=Lax` and `/authorize`
-  serves no CORS, so a renewal in a hidden iframe always fails. Any error from a
+- **`prompt` accepts only `none`, as a top-level navigation.** An app MUST NOT
+  rely on a hidden iframe or a cross-origin `fetch` to `/authorize`: the
+  identity service's sign-in cookie is `SameSite=Lax` and `/authorize` serves
+  no CORS, so for an app on another site neither carries the sign-in. Any error from a
   `prompt=none` request means "ask interactively" (`login_required` is the
   usual one); `access_denied` means the app MUST NOT offer sign-in again in
   that visit.
@@ -304,7 +305,8 @@ to Estiva.
   chain (tabs, workers) SHOULD NOT present the same token twice. A spent token
   presented again shortly after, while the new token it bought is unused, gets
   that same new token, so a renewal whose answer was lost can be retried; any
-  other reuse of a spent token ends the sign-in (RFC 9700 §4.14.2).
+  other reuse of a spent token ends the sign-in (rotation and reuse detection
+  as in RFC 9700 §4.14.2; the short retry is the identity service's policy).
 - **Any 4xx from the refresh grant ends renewal.** The app stops renewing and
   asks the person to sign in on the page they are on, without losing it.
 - **The lifetime is the identity service's policy.** An app MUST NOT assume one:
