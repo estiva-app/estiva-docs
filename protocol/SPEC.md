@@ -3083,10 +3083,11 @@ sentence: other words or punctuation, a second reference, or a marker around
 the reference (`**nostr:…**`). A reference in code names nothing (§13.1), and
 `[label](url)` is a link on words, never a reference alone.
 
-**Where a bare URL ends.** A bare URL is `http://` or `https://` followed by
-everything up to whitespace, `<`, `>`, a quote mark or a backtick; then any
-trailing `.`, `,`, `;`, `:`, `!`, `?`, `)` and `]` belong to the sentence, not
-to the URL. A writer resolves the URL so cut to choose its `a` (C25), and a
+**Where a bare URL starts and ends.** A bare URL is `http://` or `https://`
+followed by everything up to whitespace, `<`, `>`, a quote mark or a backtick;
+then any trailing `.`, `,`, `;`, `:`, `!`, `?`, `)` and `]` belong to the
+sentence, not to the URL. One stuck to the end of a word (`seehttps://…`, a
+letter or digit just before it) is part of that word, not a URL. A writer resolves the URL so cut to choose its `a` (C25), and a
 reader resolves the same cut, so both name the same object.
 `isOnlyReferenceLine` and `urlRunsIn` in `@estiva-app/protocol` apply these two
 rules.
