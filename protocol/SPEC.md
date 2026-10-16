@@ -134,7 +134,7 @@ consulted. **A consumer MUST NOT let a `kind:31990` claim `39000`.**
 | --- | --- |
 | address | `39000:<relay pubkey>:<id>` — the channel record |
 | `title` | the `name` of its `kind:39000`, and only that. The relay lets only the channel's owners and admins change it (`kind:9002`), while any member may send a `kind:1852`; so a `name` in the state is never shown (Miky, 2026-10-03) |
-| `subtitle` | the `about` of its `kind:39000` (NIP-29), changed as the name is, by owners and admins with `kind:9002`. It is the Folder's one-liner, a file's summary (§6.12) is not: a reader ignores a `summary` change aimed at a `39000`. *Added 2026-10-15* |
+| `subtitle` | the `about` of its `kind:39000` (NIP-29), changed as the name is, by owners and admins with `kind:9002`. It is the Folder's one-liner, a file's summary (§6.12) is not: a reader ignores a `summary` change aimed at a `39000`. A consumer cuts it at 120 characters, as `@estiva-app/interop` does. *Added 2026-10-15* |
 | `noun` | `folder` (§7.9), the protocol's own word as a comment's is (§7.8), so a consumer labels one "Folder" and never by the app that opens it. *Added 2026-10-16* |
 | list | the addresses its `kind:30890` names, folded with each file's own projection; an address the reader cannot resolve is not drawn, because the count is the disclosure. Never `kind:9` messages: they are the conversation, below. With no `kind:30890` the group has no list, not an empty one. Reading it costs a Folder page's read, so a consumer drawing only the Folder's name (a reference in a sentence) need not read it |
 | conversation | `kind:9` messages carrying the Folder's `h` — the Folder's own conversation, §6.4's chat, §11.1's general stream. An `a` on one is a mention (§6.4) and does not take it out of the Folder's conversation. Threads and replies follow §6.4 |
@@ -190,7 +190,9 @@ produce the same events in the same order.
   actions*: interop has no delete planner and moves a single address, not a
   subtree, and does not refuse a private move; Peek, Ship and interop still
   read a Folder listed in a Folder (one on production, under Estiva HQ) and
-  still show groups with no listing. Until those land, a difference
+  still show groups with no listing; Peek's published manifest may still
+  claim `39000` and `9` until it is republished without them (2026-10-16), and
+  `@estiva-app/interop` 0.58 and later ignore both claims. Until those land, a difference
   from this section is a known gap, not a regression.
 - **The kinds an app signs** to offer all of the above: `9007`, `9002`, `9008`,
   `1852`, `1851` and `9`. (Unlisting follows a `kind:5`, which is the file's
@@ -2000,7 +2002,9 @@ consumer MUST be able to resolve one.
 | regular — has no `d` | its event id | `nevent` |
 
 A `kind:9` message is the case in hand: it carries no `d`, so no address exists
-for it and an address-keyed resolver cannot see it at all. NIP-22 already spans
+for it and an address-keyed resolver cannot see it at all. (Its projection is
+now this document's, §7.8, as a comment's is; the rules below apply the same
+to a built-in.) NIP-22 already spans
 both — uppercase `E` names an event root where `A` names an address — so the
 wire format was never the obstacle.
 
@@ -2107,7 +2111,10 @@ manifest published, the file still resolves and simply has nowhere to open.
 **A Folder (§3.2) takes the same `naddr` template, and a comment and a chat
 message the same manifest's `nevent` template** (§7.6): none of them is any
 app's, and the app showing every file's conversation is the one that can show
-them. *Messages and the Folder added 2026-10-16.*
+them. So a manifest declaring `conversation` MUST publish both `web`
+templates, `naddr` and `nevent`, whatever kinds it owns: with only the first, every
+linked message and comment draws with nowhere to open. *Messages and the
+Folder added 2026-10-16.*
 
 **A manifest declaring only `aspect` is a whole manifest.** A generic app MAY
 own no kind at all; its `kind:31990` then carries no `k` tag, and a consumer
