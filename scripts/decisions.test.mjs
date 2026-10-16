@@ -124,6 +124,15 @@ test('a section holding only a subheading is empty', () => {
   assertFlags(problemsOf({ 'one-folder.md': text }), /"## Rejected alternatives" is empty/)
 })
 
+test('a chain of supersessions passes when it ends at an Accepted record, and fails when it ends at a Proposed one', () => {
+  const first = record({ title: 'First', fields: { Status: 'Superseded by second-way.md' } })
+  const second = record({ title: 'Second', fields: { Status: 'Superseded by third-way.md', Supersedes: 'first-way.md' } })
+  const third = record({ title: 'Third', fields: { Supersedes: 'second-way.md' } })
+  assert.deepEqual(problemsOf({ 'first-way.md': first, 'second-way.md': second, 'third-way.md': third }), [])
+  const proposed = record({ title: 'Third', fields: { Status: 'Proposed', 'Decided by': undefined, Supersedes: 'second-way.md' } })
+  assertFlags(problemsOf({ 'first-way.md': first, 'second-way.md': second, 'third-way.md': proposed }), /Superseded by third-way\.md, which is not Accepted/)
+})
+
 test('a backticked Supersedes is still read', () => {
   const old = record({ title: 'Old', fields: { Status: 'Superseded by new-way.md' } })
   const next = record({ title: 'New', fields: { Supersedes: '`old-way.md`' } })

@@ -1,7 +1,7 @@
 # Where a link sits decides how it draws: a chip in a sentence, a row alone on its line, and one file's card under the message by default
 
 - Date: 2026-10-15
-- Status: Accepted
+- Status: Superseded by where-a-link-sits-and-which-file-gets-the-card.md
 - Decided by: Miky, in the WID-3 session (Widgets 2), on the brief "Where a Link Sits" — "agree with all recommendation"
 - Supersedes: the-author-chooses-a-links-card.md
 - Area: Links & widgets
