@@ -1,7 +1,7 @@
 # Where a link sits decides how it draws, and one file's card is added under a message: a part counts, a person or a Folder alone on its line stays a chip
 
 - Date: 2026-10-16
-- Status: Accepted
+- Status: Superseded by a-link-on-words-counts-toward-the-card.md
 - Decided by: Miky, in the shaping session of *Widgets 2: build 1 — messages* (15 Oct), the kickoff and `/land` sessions of "Links follow one rule" (16 Oct), and his merge of this record (estiva-app/estiva-docs#291)
 - Supersedes: where-a-link-sits-decides-how-it-draws.md
 - Area: Links & widgets

@@ -137,7 +137,8 @@ heading here.
 
 - [A link to a file is stored as the URL a person wrote, in descriptions and in messages](a-link-is-stored-as-the-url-a-person-wrote.md) — Accepted, 2026-10-14
 - [A link pasted into a message is sent as Estiva's internal reference, not the link](a-pasted-link-in-a-message-is-sent-as-the-reference.md) — Superseded by the one above, 2026-10-13
-- [Where a link sits decides how it draws, and one file's card is added under a message: a part counts, a person or a Folder alone on its line stays a chip](where-a-link-sits-and-which-file-gets-the-card.md) — Accepted, 2026-10-16
+- [Where a link sits decides how it draws, and one file's card is added under a message: a link on words counts as naming its file](a-link-on-words-counts-toward-the-card.md) — Accepted, 2026-10-17
+- [Where a link sits decides how it draws, and one file's card is added under a message: a part counts, a person or a Folder alone on its line stays a chip](where-a-link-sits-and-which-file-gets-the-card.md) — Superseded by the one above, 2026-10-16
 - [Where a link sits decides how it draws: a chip in a sentence, a row alone on its line, and one file's card under the message by default](where-a-link-sits-decides-how-it-draws.md) — Superseded by the one above, 2026-10-15
 - [Every link draws as a chip, and its author chooses a card with an `embed` tag they can change after sending](the-author-chooses-a-links-card.md) — Superseded by the one above, 2026-10-15
 - [A file's summary is its own short field beside the title, not part of its description](a-files-summary-is-its-own-field.md) — Accepted, 2026-10-15
