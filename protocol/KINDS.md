@@ -30,7 +30,6 @@ nobody held the whole list.
 
 | Kind | Name | Notes |
 | --- | --- | --- |
-| `7` | Reaction | Emoji capped at 64 chars (`build_reaction`) |
 | `5` | Deletion | NIP-09. A *request* — relays may decline. Accepted from the author **or** the author's NIP-OA owner, which no client can evaluate ([SPEC §6.5](SPEC.md)) |
 | `9101` | **Estiva assertion** | A statement *about* something in the channel rather than a message in it. `resolution` is the first and currently only subtype, named by the `t` tag. Estiva-specific |
 
@@ -67,6 +66,7 @@ nobody held the whole list.
 | --- | --- | --- |
 | `9` | Chat message | NIP-29 group message. A Folder's conversation, a DM, and a Ship project conversation are all this. Drawn from SPEC §7.8, noun "message"; no `kind:31990` may claim it. A Folder's built-in "Start a conversation" writes one with only the Folder's `h` (SPEC §3.2) |
 | `1111` | Comment | NIP-22. Drawn from SPEC §7.8, noun "comment"; written by every app on any file it can read (SPEC §6.4) |
+| `7` | Reaction | NIP-25, on a message or a comment; Peek, Ship and Leaf write it, and take their own back with a `5`. Emoji capped at 64 chars (`build_reaction`). No `h` from the client: the relay files it under its target's channel. Counted under the reaction horizon (SPEC §6.6) |
 
 ---
 
@@ -172,11 +172,12 @@ Source of truth: `SEED_APPS` in `estiva-id/src/db/seed.ts`, stored in the
 | --- | --- | --- |
 | Estiva Peek | `estiva-peek` | `9, 7, 5, 9007, 27235, 1851, 9101, 9002, 9008, 1111, 30078, 41010, 41011, 41012, 22242, 30851, 40003, 1852, 24242, 30840, 30850` |
 | Estiva Ship | `estiva-ship` | `30850, 30851, 1851, 9, 5, 9007, 9002, 31989, 27235, 1111, 30078, 7, 40003, 1852, 24242, 22242` |
-| Estiva Leaf | `estiva-leaf` | `27235, 22242, 30842, 1852, 1851, 1111, 40003, 5, 24242, 9101` |
+| Estiva Leaf | `estiva-leaf` | `27235, 22242, 30842, 1852, 1851, 1111, 40003, 5, 24242, 9101, 7` |
 
 *Copied from `seed.ts` on origin/main, 2026-10-03 (MAN-3); Leaf's row
-2026-10-14 (Leaf 1), and its `9101` 2026-10-16 (LEAF-5: resolving a comment's
-thread, as Peek does).* Against SPEC §3.3's Folder set (`9007, 9002, 9008, 1852,
+2026-10-14 (Leaf 1), its `9101` 2026-10-16 (LEAF-5: resolving a comment's
+thread, as Peek does), and its `7` 2026-10-17 (COMM-4: reacting to a comment,
+as Peek and Ship do).* Against SPEC §3.3's Folder set (`9007, 9002, 9008, 1852,
 1851, 9, 5`): Peek holds all of it; Ship all but `9008`, so Ship does not offer
 deleting a Folder ("deleting a Folder stays Peek's", the seed's own note); Leaf
 only `1852, 1851, 5`, enough to place a document in a Folder and change it, not
