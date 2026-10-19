@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who Edits Text</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.q { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); padding: 12px 14px; border-radius: 6px; font-size: 1.05rem; }
+.rec { background: var(--ok-bg); border-left: 4px solid var(--ok); padding: 12px 14px; border-radius: 6px; }
+.warn { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+svg { width: 100%; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .chip { fill: var(--chip); stroke: var(--accent); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); }
+svg .no { fill: var(--warn-bg); stroke: var(--warn); }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .ad { stroke: var(--muted); fill: none; stroke-width: 1.2; stroke-dasharray: 4 3; marker-end: url(#arr); }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 640px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+.rec-row td { background: var(--ok-bg); }
+</style>
+</head>
+<body>
+<main>
+<h1>Who edits a file's text</h1>
+<p class="sub">A brief for Miky · 19 Oct 2026 · from the issue you filed today, "Sidebar should not show Peek Topic and should allow to edit Ship Project/Issues" · it reopens part of a call you made on 14 Oct</p>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+</defs></svg>
+
+<h2>The question</h2>
+<p class="q">When a file has text — a Leaf page, a Ship project's or issue's description — may any app that has an editor open that text and change it, or does only the file's own app offer the editor?</p>
+<p>And behind it, the idea in your issue: is a file something that <em>grows</em> — a topic gains a text and becomes a page, a page gains a status and an assignee and becomes an issue — or are those three different kinds of file that never turn into each other?</p>
+
+<h2>Today</h2>
+<p>Open Leaf and the tree lists every file in your Folders: 24 Peek topics, 29 Ship projects (with about 150 issues under them), and 11 Leaf pages. Only the pages do anything. A topic or an issue opens a screen that says "Open in Peek" or "Open in Ship". That is your complaint: most of the tree is noise.</p>
+<p>That is how it was decided on 14 Oct, in "A document is its own type of file": a Leaf page and a Peek topic are two types ("Peek Topic is Peek Topic. Leaf doc is Leaf doc"), <strong>neither turns into the other</strong>, the app that owns a type decides how it is drawn and opened, and <strong>only that app offers the text editor</strong> — Peek and Ship show a Leaf page read-only. The record also says, in its first paragraph, that Leaf's tree shows a topic as a topic that opens in Peek.</p>
+<p>Underneath, the relay already treats text one way for every file. A Ship issue's description and a Leaf page's text are the same thing: one "description", which anyone in the file's Folder may change, from any app that is allowed to write changes. Leaf's sign-in is already allowed to, and the relay checks only that you are in the Folder, never which app's file it is. Ship's app listing even announces "describe this issue" and "describe this project" as actions other apps may take. So "only the owner edits" is a rule the apps keep, not one the relay keeps.</p>
+<p>A topic, on paper, may have a text too: the Specification gives every topic a "describe" action. In practice none does. Of the 31 topics on the relay, not one has ever had a text, and Peek has no place to write or show one. Your issue describes a topic as "just an empty file with conversations attached to it", which is how it is used, but not yet what the protocol says.</p>
+<p>The Specification already anticipates your Peek comparison. Peek says, in its app listing, "I show the <em>conversation</em> of every file", which is why every file opens in Peek. A second such role, "I show the <em>document</em> of every file", is reserved and unused.</p>
+
+<figure>
+<svg viewBox="0 0 720 230" role="img"><title>Today: Leaf edits only its own pages</title>
+<rect class="b" x="10" y="10" width="200" height="210" rx="8"/>
+<text class="h" x="24" y="34">Leaf's tree</text>
+<rect class="ok" x="24" y="48" width="172" height="34" rx="5"/><text x="36" y="70">Page — edit here</text>
+<rect class="w" x="24" y="92" width="172" height="34" rx="5"/><text x="36" y="114">Topic → "Open in Peek"</text>
+<rect class="w" x="24" y="136" width="172" height="34" rx="5"/><text x="36" y="158">Project → "Open in Ship"</text>
+<rect class="w" x="24" y="180" width="172" height="34" rx="5"/><text x="36" y="202">Issue → "Open in Ship"</text>
+<rect class="b" x="290" y="60" width="160" height="110" rx="8"/>
+<text class="h" x="304" y="84">The relay</text>
+<text class="m" x="304" y="106">every file's text is</text>
+<text class="m" x="304" y="122">one "description";</text>
+<text class="m" x="304" y="138">any Folder member</text>
+<text class="m" x="304" y="154">may change it</text>
+<rect class="w" x="530" y="40" width="180" height="60" rx="8"/><text class="h" x="544" y="64">Ship</text><text class="m" x="544" y="84">edits project &amp; issue text</text>
+<rect class="w" x="530" y="130" width="180" height="60" rx="8"/><text class="h" x="544" y="154">Peek</text><text class="m" x="544" y="174">conversation only</text>
+<path class="a" d="M196 65 H288"/>
+<path class="a" d="M530 70 H452"/>
+<path class="ad" d="M196 153 Q250 200 300 172"/>
+<text class="m" x="214" y="214">allowed by the relay, not offered</text>
+</svg>
+<figcaption>Today. Solid arrows: who writes text. The dashed one is allowed on the relay but no app offers it.</figcaption>
+</figure>
+
+<h2>Why it reaches beyond this ticket</h2>
+<ul>
+<li><strong>It sets what "owning a file type" means for every app, ours and an outside company's.</strong> Either owning a type means "your editor is the only one", or it means "you decide what the file is called, what extra fields it has and where it opens, and its text belongs to everyone". A company that brings its own issue tracker learns from this whether Leaf (or their own wiki) will edit their issue descriptions.</li>
+<li><strong>It decides whether a topic, a page and an issue are one kind of thing at different stages, or three.</strong> That is the file-evolution idea, and it reaches the shape of every file on the relay.</li>
+<li><strong>Door.</strong> Letting any editor write text (option B) is a two-way door: nothing new goes on the relay, and taking it back is an app change. Making files grow from one type into another (option C) is one-way: it changes what a file's address is, so every link, comment and card written afterwards depends on it.</li>
+</ul>
+
+<h2>Options</h2>
+
+<h3>A — Keep the record: each file is edited only in its own app</h3>
+<p>Leaf is a document app. Its tree shows Leaf pages and stops showing other files (topics, projects and issues alike), or keeps them as "Open in …" rows as today. Writing an issue's description stays in Ship.</p>
+<p><strong>You see:</strong> a clean Leaf tree of pages only. To fix a typo in an issue's description you go to Ship. <strong>An outside company gets:</strong> a simple promise — their files are edited only in their app. <strong>Locks in:</strong> nothing new; the record holds.</p>
+
+<h3>B — Leaf is to text what Peek is to conversation: it opens every file whose app shares its text</h3>
+<p>A file's text is shared. An app with an editor (Leaf, and later anyone's) may open and edit the text of any file whose own app says its text may be written by others, as Ship's listing already says for projects and issues. The file's own app still decides what it is called ("Issue"), its extra fields (status, assignee, lead) and where "Open in …" goes, and it can keep a file type's text to itself by not offering it. Leaf takes the reserved "document of every file" role, the way Peek holds "conversation of every file".</p>
+<p>A topic is a conversation and nothing else: it stops offering a text on the wire, which costs nothing, because none of the 31 ever had one. So Leaf leaves topics out by the rule, not by a filter it has to remember. Topics, pages and issues stay different types, and nothing turns into anything else.</p>
+<p><strong>You see:</strong> open LEAF-13 in Leaf, rewrite its description in Leaf's editor, and Ship shows the new text. The same rule would let Ship (and Peek, if you want) edit a Leaf page's text — that undoes your 13 Oct "read-only in Peek" scope line, so it is a question of its own below. <strong>An outside company gets:</strong> the text of every file is a common layer, and they choose per file type whether to share it — the same "declare what others may do" pattern Nostr apps already use. Any editor in the workspace, ours or a third one, works on the descriptions they share. <strong>Locks in:</strong> an owner can no longer count on being the only writer of its text, so an app that needs the text in a special form (a template, required headings) has to cope with edits made elsewhere. That is already true on the relay today.</p>
+
+<figure>
+<svg viewBox="0 0 720 206" role="img"><title>Option B: any editor writes the shared text; the owner keeps type and fields</title>
+<rect class="b" x="250" y="20" width="220" height="160" rx="8"/>
+<text class="h" x="264" y="44">An issue</text>
+<rect class="ok" x="264" y="56" width="192" height="34" rx="5"/><text x="276" y="78">Text — shared</text>
+<rect class="chip" x="264" y="100" width="192" height="34" rx="5"/><text x="276" y="122">Status, assignee — Ship's</text>
+<rect class="chip" x="264" y="140" width="192" height="30" rx="5"/><text x="276" y="160">Name, "Open in Ship" — Ship's</text>
+<rect class="w" x="20" y="50" width="160" height="50" rx="8"/><text class="h" x="34" y="80">Leaf</text>
+<rect class="w" x="540" y="50" width="160" height="50" rx="8"/><text class="h" x="554" y="80">Ship</text>
+<rect class="w" x="540" y="130" width="160" height="50" rx="8"/><text class="h" x="554" y="152">Outside wiki</text><text class="m" x="554" y="170">any editor app</text>
+<text class="m" x="264" y="196">Ship's listing: "others may describe this"</text>
+<path class="a" d="M180 73 H262"/>
+<path class="a" d="M540 73 H458"/>
+<path class="a" d="M540 117 H458"/>
+<path class="ad" d="M540 150 Q500 100 458 80"/>
+</svg>
+<figcaption>Option B. Text: everyone's. Fields, name, where it opens: the owner's. No file changes type.</figcaption>
+</figure>
+
+<h3>C — Files grow: a topic can gain a text, a page can gain fields</h3>
+<p>Your issue's full model. There is one kind of file. A topic is a file with only a conversation; add a text and it is a page; add a status and an assignee and it is an issue. Leaf shows any file with text, Ship any file with Ship's fields, Peek every file. Converting is something a person does, and the file keeps its link, its conversation and its place.</p>
+<p><strong>You see:</strong> a Peek topic that grew a long discussion becomes a Leaf page with one action, and a page becomes a Ship project when the work starts, without a copy. <strong>An outside company gets:</strong> Notion's model — every object is a page with optional properties — which is easy to explain. <strong>But</strong> on the relay a file's type is part of its address today: a topic, a page and an issue are told apart by the number in their link, and that number is also how an app claims "these files are mine". For a file to change type and keep its link, the type has to move out of the address into a field, and ownership has to be claimed by that field instead. That rewrites how every app finds, names and opens files: every comment, every link someone wrote and the Folder's listing point at the old address. It reverses "no conversion, in either direction" from 14 Oct, and its first step — a topic with a text is a page — is the shape you turned down that day ("Peek Topic is Peek Topic"). <strong>Locks in:</strong> one-way once files are written that way.</p>
+
+<figure>
+<svg viewBox="0 0 720 150" role="img"><title>Option C: one file that grows</title>
+<rect class="w" x="20" y="40" width="170" height="70" rx="8"/><text class="h" x="34" y="66">Topic</text><text class="m" x="34" y="88">conversation</text>
+<rect class="w" x="275" y="40" width="170" height="70" rx="8"/><text class="h" x="289" y="66">Page</text><text class="m" x="289" y="88">+ text</text>
+<rect class="w" x="530" y="40" width="170" height="70" rx="8"/><text class="h" x="544" y="66">Issue</text><text class="m" x="544" y="88">+ status, assignee</text>
+<path class="a" d="M190 75 H273"/><path class="a" d="M445 75 H528"/>
+<text class="m" x="200" y="132">same link, same conversation — needs the type to leave the address</text>
+</svg>
+<figcaption>Option C. One file, three stages.</figcaption>
+</figure>
+
+<h2>Trade-offs</h2>
+<div class="tw"><table>
+<tr><th></th><th>Protocol shape</th><th>What you and Katerina see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td><strong>A</strong> own app only</td><td>Unchanged. The app rule stays stricter than the relay's.</td><td>Leaf = pages only. Ship text edited in Ship.</td><td>"Only my app edits my files" — but the relay doesn't enforce it, so it's a courtesy.</td><td>None.</td><td>Small: filter Leaf's tree.</td></tr>
+<tr class="rec-row"><td><strong>B</strong> shared text, owner opts in</td><td>No new events. Leaf takes the reserved "document" role; a topic stops offering a text; the record's "only the owner offers the editor" is superseded. Matches what the relay and Ship's listing already allow.</td><td>Leaf opens and edits pages, projects and issues; Ship's fields stay Ship's; no topics in Leaf.</td><td>Text is a common layer; they choose per type whether to share it.</td><td>Low: app and Specification text, nothing on the relay to migrate (no topic has text).</td><td>Medium: Leaf opens Ship files as pages.</td></tr>
+<tr><td><strong>C</strong> files grow</td><td>New: type becomes a field, ownership claimed by field, conversion defined. Reverses "no conversion".</td><td>Convert topic → page → issue in place.</td><td>Notion-like, but every app's lookup changes.</td><td>High: one-way once written.</td><td>Large: SPEC, interop, every app.</td></tr>
+</table></div>
+
+<h2>How others do it</h2>
+<ul>
+<li><strong>Notion</strong> is C: a database row is a page with properties, and any page can gain them. It works because one company owns the one app; nobody else writes Notion pages.</li>
+<li><strong>Linear, Jira</strong> are A: an issue's description is edited only in the tracker.</li>
+<li><strong>Google Workspace</strong> is A by file type (a Doc opens in Docs), with "convert" making a copy rather than changing the file.</li>
+<li><strong>Nostr (NIP-89)</strong> names one app per kind for opening; any client may still publish any kind. B is the honest reading of that: the owner picks the opener, not the only writer.</li>
+<li><strong>AT Protocol</strong> types every record by its schema name, permanently; a record never changes type. Changing type there is a new record.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<div class="rec">
+<p><strong>B: Leaf becomes to text what Peek is to conversation. A file's text is shared with any editor app wherever the file's own app offers it (Ship already does), the owning app keeps its name, its fields and where it opens, and a topic is a conversation with no text. Topics, pages and issues stay three types.</strong></p>
+<p>It is the shape the relay already has, stated as the rule for apps too: every file's body is one shared text that any Folder member may change, and only the apps pretend otherwise. The owner's opt-in is how Nostr apps already declare what others may do with their files, so an outside company keeps control per file type. It is your Peek comparison made exact, using a role the Specification already set aside. And it gives you the part of file evolution you feel today: a Ship issue is a document with fields, and you can write it in Leaf.</p>
+<p>Making a topic text-free is what lets Leaf's tree follow a rule: Leaf shows files with a shared text, and a topic has none. It matches how every topic is used today and how your issue describes it.</p>
+<p>I do not recommend C as a protocol shape. It works in Notion because one company writes every page; on an open protocol, a file's type is how strangers' apps find and claim it, and moving it out of the address changes every app's lookup to buy conversion. If "turn this topic into a page" becomes a real moment, it can be an action that makes a new page and links the old topic, without changing what a file is — asked then, with that moment in hand.</p>
+</div>
+
+<h2>If B: two smaller calls</h2>
+<ul>
+<li><strong>The mirror.</strong> B lets Ship and Peek edit a Leaf page's text too. Do they offer it now, or does Leaf go first and they follow later?</li>
+<li><strong>A page filed under a topic.</strong> A Leaf page can sit under a Peek topic (none of the 11 pages does today). With topics gone from Leaf's tree, does that page move up to the Folder's level in Leaf, or does its topic stay as a plain row so the page keeps its place?</li>
+</ul>
+
+<h2>Checked</h2>
+<ul>
+<li>Every file's text is one "description" that any Folder member may change through any app that writes changes — Specification, "A file's text: the description field" (on <code>origin/main</code>).</li>
+<li>Leaf's sign-in may already write those changes — Leaf's kind list (<code>src/relay/client.ts</code>) and Estiva ID's seed for Leaf.</li>
+<li>Peek writes no text on a topic: "A topic has no description" (<code>peek-app ForeignObjectWidget.tsx</code>). The Specification gives a topic a "describe" action; on the relay, 0 of 31 topics have a text, at creation or by a later change (relay read as the agent, today).</li>
+<li>Ship's listing offers "describe issue" and "describe project" to other apps (<code>estiva-ship src/nostr/manifest.ts</code>), and the relay checks only Folder membership on a text change, not whose file it is (buzz ingest rules, per the protocol pre-review).</li>
+<li>Leaf would read the same text Ship shows: both fold the latest change, then the root's own text (interop's projection and Ship's fold, per the protocol pre-review).</li>
+<li>The "document of every file" role is reserved in the Specification and declared by no app ("aspect", §7.8).</li>
+<li>Leaf's tree draws every non-page file as a labelled row that opens elsewhere — <code>leaf src/folders/tree.tsx</code>.</li>
+<li>Counts from production today: 24 topics, 29 projects, 152 issues, 11 Leaf pages, none of them filed under a topic (Ship and Peek listings and a relay read, as the agent).</li>
+<li>A file's type is part of its address and is what an app claims to own — Specification, "The document", and NIP-89.</li>
+<li><em>Not yet verified:</em> that the relay accepts a Leaf-signed change to a Ship issue's text on production. To be probed before the build ticket is written.</li>
+</ul>
+
+<h2>For the record</h2>
+<p>Issue LEAF-13 (<code>30851:f3a38fa6…:b2d86f1f-d070-4c61-bcc4-37bfb856972a</code>). Record it would supersede in part: <code>decisions/a-document-is-its-own-type-of-file.md</code> (Accepted 2026-10-14) — its "only the owner offers the text editor" and "Leaf's tree shows a topic". New record: <code>decisions/a-files-text-is-shared-by-every-app.md</code> (Proposed). B in SPEC terms: Leaf declares <code>aspect: "document"</code> (§7.8) and offers the editor where the owner's projection declares <code>describe</code> in <code>estiva-blocks-1</code> (§7.3); the bare file's built-in projection (§6.7) drops <code>describe</code>. SPEC §6.10 (description field, <code>kind:1851</code> <code>field=description</code>), §6.11 (document <code>kind:30842</code>, "No conversion"), §6.7 (bare file <code>30840</code>), §7.2 (Ship project <code>30850</code>, issue <code>30851</code>). NIP-89 <code>kind:31990</code> <code>k</code> tags.</p>
+</main>
+</body>
+</html>
