@@ -153,7 +153,7 @@ heading here.
 - [A comment on a selection remembers the words where it starts and where it ends, and a comment on whole blocks remembers no words](a-comment-remembers-where-its-selection-starts-and-ends.md) — Accepted, 2026-10-15
 - [A comment points at a run of blocks, narrowed by the words quoted at its ends](a-comment-points-at-blocks-and-the-words-quoted.md) — Accepted, 2026-10-13
 - [A reply to a comment on part of a page remembers that part too, so its thread keeps its place when the comment is deleted](a-reply-on-a-page-keeps-its-threads-place.md) — Accepted, 2026-10-19
-- [Any app with an editor may edit a file's text; the file's own app keeps its name, its fields and where it opens](a-files-text-is-shared-by-every-app.md) — Proposed, 2026-10-19
+- [Leaf edits the text of any file whose own app shares it, as Peek shows every file's conversation; the file's own app keeps its name, its fields and where it opens](a-files-text-is-shared-by-every-app.md) — Accepted, 2026-10-19
 
 ## Apps & agents
 
