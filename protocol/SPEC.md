@@ -482,8 +482,8 @@ a bare file or a document is the address of the file it sits under, **of any
 kind**.
 
 A file's text is not a root fact either. A project's or an issue's
-description, a bare file's text and a document's are all the same field,
-`description`, seeded from `content` and changed by `kind:1851` (§6.10).
+description and a document's are the same field, `description`, seeded from
+`content` and changed by `kind:1851` (§6.10). A bare file has no text (§6.7).
 
 `ref` is a display key such as `SHIP-12` that people type and search for
 (§5.2), and it MUST NOT be used for addressing. Like `title`, the root tag is
@@ -644,6 +644,15 @@ middle.
 A thread belongs to whatever anyone in it referenced, at any point. A thread
 that mentions an object halfway through is from then on about that object, and
 the **whole** thread attaches, not only the message carrying the reference.
+
+**Which Folder a new comment goes into** (*added 2026-10-19*, LTX; record
+[a-thread-belongs-to-what-it-is-about](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-thread-belongs-to-what-it-is-about.md)).
+The same rule for every kind, and for every app writing it, the file's owner
+or not: a new `kind:1111` on a file takes as `h` the Folder whose listing
+(`kind:30890`, §3.3) names the file; otherwise the file's own Folder, read
+from its root's `h`, or `buzz-channel` on a record that names its Folder that
+way (§7.3). A reply copies its comment's `h` (C16). A reader reads a file's
+conversation by its address, whatever Folder each comment was filed in.
 
 **That rule is only defensible because attachment has two strengths, and an app
 MUST present them separately** (added 2026-08-31):
@@ -806,6 +815,12 @@ and available to anyone in the Folder.
 - **The resolution is the change's `content`**, optional, and a reader shows it
   first when the archived file is opened. A link still opens an archived file;
   it is out of lists, not gone.
+- **An archived file's own fields are not offered for change** (*added
+  2026-10-19*, LTX). While a file is archived, its own or inherited from a
+  parent, a writer SHOULD NOT offer to change its title, summary or text, in
+  its own app or in a document app (§7.8). Comments stay open. This is a client rule: archive is reversible by anyone
+  in the Folder, so a relay lock would protect nothing, and a reader folds any
+  change regardless of when it was made.
 
 **Delete** is a NIP-09 `kind:5`, and three properties are normative:
 
@@ -1116,7 +1131,7 @@ in the negative for blocks, and it is not settled for objects.
 
 *Added 2026-09-11, from [RFC 0.5 §10.7](RFC-0.5-ASSOCIATION.md).*
 
-**A bare file is a file no app owns.** It has a document, a conversation, and no
+**A bare file is a file no app owns.** It has a conversation, no text and no
 type-added properties. A Peek topic is one. So is any subject nobody has built a
 specialized app for — a job description in a workspace with no HR app. Typed
 kinds (a project, an issue) add properties on top of this shape; the bare file
@@ -1138,12 +1153,16 @@ writer emits them; a reader finds each by name (§6.1):
 | `a` | at most one | the address of the file this one sits under, of any kind. Seeds the `parent` field; a move is a change event |
 | `summary` | at most one | seeds the `summary` field, its one-line summary (§6.12) |
 
-`content` is a §13.3 block document, or empty. A topic that is only a
-conversation has nothing here; the day somebody writes a brief at the top, this
-is where it goes, and nothing about the file "converts".
+**A bare file has no text** (*decided 2026-10-19*, record
+[a-document-app-writes-what-a-files-app-shares](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-document-app-writes-what-a-files-app-shares.md)).
+A topic is a conversation. A writer leaves `content` empty, and a reader
+ignores it. A file that needs a text is a document (§6.11) or a kind whose app
+gives it one, never a topic that grows one: a file's type is part of its
+address. Until 2026-10-19 this section gave the bare file a text; none of the
+32 topics on the relay had one when it was taken out.
 
-**Conversation.** `kind:1111` anchored at the file's address (§6.4), with the
-same `h` — the shape an issue's comments already have. Threads are NIP-22
+**Conversation.** `kind:1111` anchored at the file's address, in the Folder
+§6.4 names (usually the file's own) — the shape an issue's comments already have. Threads are NIP-22
 replies (§6.4). Reactions, edits, deletions and drafts follow §6.5, §6.6 and
 §6.8 unchanged. A Folder's own conversation stays `kind:9` in the
 channel (§3.2): chat is talking *in* a room, a comment is talking *about* a file, and
@@ -1152,22 +1171,19 @@ the line between them is the kind.
 **Changes.** `kind:1851` under §6.2, targeted by `a` at the file, in the file's
 own Folder (§6.2's `h` rule). The fields: `title` and `parent`, each seeded by
 the root tag of the same name and overridden by the change stream — the way an
-issue's `project` field works; `description`, the file's text (§6.10);
-`summary`, seeded by its root tag (§6.12); `archived` (§6.5); and `member:<p>`
-(§11.8). A consumer MUST read `parent` before the `a` tag.
-
-**The text.** A bare file's text is its `description` fold, seeded from
-`content`, saved and read by §6.10's rules — which were written here first
-(2026-10-14) and are every file's.
+issue's `project` field works; `summary`, seeded by its root tag (§6.12);
+`archived` (§6.5); and `member:<p>` (§11.8). A consumer MUST read `parent`
+before the `a` tag. There is no `description`: a reader ignores a
+`description` change aimed at a `30840`.
 
 **Projection.** A bare file has no `kind:31990`, and **a consumer MUST NOT let
 one claim it**. Its projection is this section: `title` from the tag with the
 `title` fold over it; `subtitle` from the `summary` tag with the `summary`
-fold over it (§6.12, §7.2); `body` from `content` with the `description` fold
-over it; the `comment` action emitting `kind:1111` at its address, `rename`,
-`describe` (the text, input format `estiva-blocks-1`), `summarize` (the
-summary, a plain string with no format, §7.3), `move`, `archive` and `delete`;
-widget `card`; a `list` of bare files beneath it.
+fold over it (§6.12, §7.2); no `body`; the `comment` action emitting
+`kind:1111` at its address, `rename`, `summarize` (the summary, a plain string
+with no format, §7.3), `move`, `archive` and `delete`; widget `card`; a `list`
+of bare files beneath it. It declares no `describe`, so no app offers an editor
+on a topic's text and a document app (§7.8) lists no topics.
 `@estiva-app/interop` carries exactly that and answers it before consulting
 NIP-89 at all. The test of a conformant consumer is that **with every manifest
 removed from the relay, a bare file still resolves, lists its comments and
@@ -1372,10 +1388,19 @@ first in §6.7 for the bare file and lifted here because it is every file's
 rule. Numbered after the existing subsections for the reason §7.5 gives.*
 
 A file's text is its **`description` fold, seeded from `content`**, whatever
-its kind: a Ship project's or issue's description (§6.1), a bare file's text
-(§6.7), a document's (§6.11). So the suite has one rule: a file's body is its
-`description`. An owner MAY seed the fold from a root tag before `content`, as
-Ship's project does (§7.2, rule 2); the change stream overrides either.
+its kind: a Ship project's or issue's description (§6.1), a document's
+(§6.11). So the suite has one rule: a file's body is its `description`. An
+owner MAY seed the fold from a root tag before `content`, as Ship's project
+does (§7.2, rule 2); the change stream overrides either. A bare file has no
+text (§6.7, 2026-10-19).
+
+**Who offers an editor on it** (*decided 2026-10-19*, record
+[a-document-app-writes-what-a-files-app-shares](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-document-app-writes-what-a-files-app-shares.md)).
+The owning app, and the document app (§7.8) wherever the owner shares the text
+by declaring a `describe` action (§7.3's sharing test). An owner that does not
+declare one keeps its text to itself in every conforming app. The sharing is
+advisory, not access: the rule below lets any Folder member write the text
+through any app that signs `1851`, and a reader folds every such change.
 
 Anyone who may write in the file's Folder changes it with a `kind:1851` whose
 tags are, in order: `a` (the file), `["field", "description"]`, `value` (the
@@ -1434,14 +1459,14 @@ a key the workspace has named, where it can tell.
 
 **Why a type and not a bare file.** A topic (`30840`, §6.7) is
 conversation-first and owned by nobody: a generic app shows its conversation,
-and a text at its top is incidental. A document is document-first: the text is
+and it has no text. A document is document-first: the text is
 the point, and some app is answerable for opening and editing it — which is
 what NIP-89's ownership by kind says. A kind of its own lets an app own
 documents without owning every subject nobody built an app for, which is why
 the bare file has no owner.
 
-**No conversion, in either direction.** A topic does not become a document when
-somebody writes a long text at its top, and a document does not become a topic
+**No conversion, in either direction.** A topic does not become a document
+because somebody wants a text on it, and a document does not become a topic
 when its conversation grows. Existing `30840`s stay topics. A reader MUST NOT
 apply §6.7's built-in projection to a `30842`, nor a document owner's
 projection to a `30840`.
@@ -1460,16 +1485,17 @@ writer emits them; a reader finds each by name (§6.1):
 `content` is a §13.3 block document, or empty: the first version of the text,
 which the `description` fold overrides (§6.10).
 
-**Conversation.** `kind:1111` anchored at the document's address, with the same
-`h` (§6.4), as on a bare file. Deletions, reactions and edits follow §6.5,
+**Conversation.** `kind:1111` anchored at the document's address, in the Folder
+§6.4 names, as on a bare file. Deletions, reactions and edits follow §6.5,
 §6.6 and §6.8. A comment MAY anchor to one block of the text (§13.6),
 unchanged: the block is looked up in the current `description` fold.
 
-**Changes.** `kind:1851` under §6.2, in the document's own Folder. The fields
-are the bare file's (§6.7): `title` and `parent`, each seeded by the root tag of
-the same name; `description`, the text (§6.10); `summary` (§6.12); `archived`
-(§6.5); and `member:<p>` (§11.8). A consumer MUST read `parent` before the `a`
-tag.
+**Changes.** `kind:1851` under §6.2, in the document's own Folder. The fields:
+`title` and `parent`, each seeded by the root tag of the same name;
+`description`, the text (§6.10); `summary` (§6.12); `archived` (§6.5); and
+`member:<p>` (§11.8). They are the bare file's (§6.7) plus `description`, which
+the bare file does not have since 2026-10-19. A consumer MUST read `parent`
+before the `a` tag.
 
 **Projection: the owner's.** Unlike a bare file, a document's projection is not
 written in this document. It comes from its owner's manifest (§7), and with no
@@ -1481,7 +1507,9 @@ owner's projection for `30842`:
 - declares the actions `comment` (`kind:1111` at its address), `rename`,
   `describe` (the text, input format `estiva-blocks-1`, §7.3), a summary change
   (§6.12), `move`, `archive` and `delete`, and a creation with `placement` `"h"`
-  and `listed: true` (§7.3);
+  and `listed: true` (§7.3). Declaring `rename`, the summary change and
+  `describe` shares the title, summary and text with a document app (§7.3's
+  sharing test, §7.8), as for any owned kind;
 - needs no `subtitle`: every file kind's comes from its summary (§7.2);
 - declares `list: { "children": { "kind": 30842, "via": "a", "movedBy":
   "parent", "anyParent": true } }` (§7.2);
@@ -2002,8 +2030,29 @@ that declares **no `format`**; a consumer finds it by `emits.field ===
 "summary"`, never by its `id`, and draws a short text box. A creation takes a
 summary as an optional `summary` property, written to the root tag of that
 name. The bare file's built-in projection declares it as `summarize`, beside
-`rename` and `describe` (§6.7); an app owning a file kind SHOULD declare one
-the same way, or a consumer offers no way to change that kind's summary.
+`rename` (§6.7); an app owning a file kind SHOULD declare one the same way, or
+a consumer offers no way to change that kind's summary.
+
+**Declaring a field's action shares that field** (*added 2026-10-19*, LTX;
+record
+[a-document-app-writes-what-a-files-app-shares](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-document-app-writes-what-a-files-app-shares.md)).
+An owner shares a file field of one of its kinds with every consumer,
+generic editors and agents alike, by declaring the action that changes it. The
+test, applied per kind and per field, on the owner's projection for that kind:
+
+| Field | Shared when the projection has |
+| --- | --- |
+| `title` | an action with `emits.kind` `1851` and `emits.field` `"title"` whose `appliesTo` includes the kind |
+| `summary` | an action with `emits.kind` `1851` and `emits.field` `"summary"`, the same way |
+| `description` (the text) | an action with `emits.kind` `1851`, `emits.field` `"description"` and input format `estiva-blocks-1`, the same way, **and** a `body` slot that is the `description` fold (§7.2), so that nobody edits a text the owner does not show |
+
+A consumer finds each action by `emits.field`, never by its `id`. An owner
+keeps a field to itself by not declaring its action. The document app (§7.8)
+offers exactly the shared fields, and an owner's other fields (a Ship issue's
+status, assignee or project), its archive and its delete stay with the owner.
+The sharing is advisory: §6.10 lets any Folder member write any field through
+any app that signs `1851`, and a reader folds every change whoever wrote it.
+What the test settles is which apps *offer* the editor.
 
 Measured on production 2026-09-29, the 1,000 newest `kind:1851`: 234 set
 `description`, and 67 of those carry `estiva-blocks-1`. **0 of 452 `kind:30851`
@@ -2217,10 +2266,34 @@ consumer find it. It MAY declare that aspect in `content`:
 ```
 
 `aspect` is one of `conversation` or `document`. A specialized app omits it.
+**An app MAY own kinds and declare an aspect.** The two are read separately:
+the `k` tags for what it owns, `aspect` for what it renders of everybody
+else's files. Peek owns no kind; Leaf owns documents (`kind:30842`, §6.11) and
+declares `document`.
 
-*Added 2026-10-14 (Leaf 1; follows from §6.11).* `document` stays reserved, and no app
-declares it today. An app owning documents (`kind:30842`, §6.11) owns a kind,
-so it is specialized and omits `aspect`; Leaf declares none.
+**`document` — the app that writes other apps' shared fields** (*decided
+2026-10-19*, record
+[a-document-app-writes-what-a-files-app-shares](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-document-app-writes-what-a-files-app-shares.md);
+it replaces 2026-10-14's "`document` stays reserved, and Leaf declares none").
+It is the counterpart of `conversation`: where Peek shows every file's
+conversation, the document app writes every file's text. A manifest declaring
+`document`:
+
+- offers its editor on the title, summary and text of any file whose owner
+  shares each (§7.3's sharing test), and nothing else of that file: its own
+  fields, archive and delete stay the owner's, and its noun and "Open in" link
+  stay the owner's manifest's;
+- lists no bare file, since a bare file has no text (§6.7);
+- writes each change into the file's own Folder (§6.10) and each comment into
+  the Folder §6.4 names, and offers no change on an archived file (§6.5).
+
+"Open in" on a file still goes to its owner.
+
+The newest manifest declaring `document` is the document app, from any author,
+with the exposure the paragraph on the opener below names for `conversation`,
+until the workspace names the apps it trusts (record
+[an-app-counts-only-once-the-workspace-adds-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/an-app-counts-only-once-the-workspace-adds-it.md),
+not yet built).
 
 **This is how a bare file gets a link.** §6.7 gives it no handler, so no `web`
 template is its own. A consumer resolving one takes the `naddr` template from
