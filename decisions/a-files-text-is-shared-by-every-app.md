@@ -1,7 +1,7 @@
 # Leaf edits the text of any file whose own app shares it, as Peek shows every file's conversation; the file's own app keeps its name, its fields and where it opens
 
 - Date: 2026-10-19
-- Status: Accepted
+- Status: Superseded by a-document-app-writes-what-a-files-app-shares.md
 - Decided by: Miky, in the LEAF-13 kickoff session, on the brief "Who edits a file's text" ([page](briefs/who-edits-a-files-text.html))
 - Area: Documents
 
