@@ -149,7 +149,9 @@ readable outside its Folder. Its changes, comments and issues still carry `h`,
 naming the Folder its `buzz-channel` names.
 
 What a NIP-50 `search` matches, per kind ([SPEC §5.2](SPEC.md); buzz
-migrations 0035 and 0036):
+migrations 0035 and 0036). Every typed word matches the start of a word, `"…"`
+is an exact phrase and `-word` leaves a word out, the same over a `REQ` and
+`/query`:
 
 | Kind | Searchable by |
 | --- | --- |

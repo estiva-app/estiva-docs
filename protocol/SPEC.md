@@ -327,7 +327,10 @@ with no idle end.
 
 ## 5. Transport
 
-Apps talk to the relay over its **HTTP bridge**, not a websocket:
+Apps send events to the relay over its **HTTP bridge**. A read may use the
+bridge's `/query` or a NIP-01 `REQ` on the relay's websocket, authenticated with
+NIP-42; a relay MUST answer the same filters with the same events on both, for
+the same reader, `search` included (§5.2).
 
 | Endpoint | Body | Returns |
 | --- | --- | --- |
@@ -344,8 +347,10 @@ Three requirements that are not guessable:
   answer.
 - `/query` takes an **array** of filters. A single filter object is not valid.
 
-NIP-98 rather than NIP-42 is deliberate: there is no challenge/response, so the
-bridge is usable from a request-scoped server runtime that cannot hold a socket.
+NIP-98 rather than NIP-42 on the bridge is deliberate: there is no
+challenge/response, so the bridge is usable from a request-scoped server runtime
+that cannot hold a socket. A client that holds a socket reads there to spare a
+signature per read.
 
 ### 5.1 Timestamps
 
@@ -380,9 +385,29 @@ object ever had: a renamed object is found by its old title through the old
 `kind:1851`, and a deleted root's changes still match. A reader therefore
 resolves each hit to its object (the root itself, or the `kind:1851`'s `a`),
 folds it (§6.3), and shows it only if the object resolves and its *current*
-title or ref holds the words. It matches the way it asked: whole words, or
-with the last word as a prefix when it used prefix mode (below). A relay
-answers at most 500 events per filter.
+title or ref holds the words, by the rule below. A relay answers at most 500
+events per filter.
+
+**What a search matches** (*decided 2026-10-19*, record
+[search-matches-every-word-as-a-word-start](https://github.com/estiva-app/estiva-docs/blob/main/decisions/search-matches-every-word-as-a-word-start.md)).
+The `search` string is a person's typing, read by one rule:
+
+- **Every word matches the start of a word**, in any order, ignoring case:
+  `remov short` finds *Remove Short summary*. A word starts at the beginning of
+  the text or after any character that is not a letter or a digit, and
+  punctuation typed at either end of a word is ignored.
+- **`"…"`** matches those whole words, next to each other, in that order.
+  A quote with no closing partner is ignored.
+- **`-word`** leaves out anything with a word that starts that way. A search
+  that only leaves words out matches nothing.
+- **`or` is an ordinary word**, and so is a `key:value` pair.
+
+A relay MUST return every event that meets the rule and MAY return more (by
+stemming, or folding accents). It SHOULD rank a hit where a typed word is a
+whole word above one where it is only a word's start, since a two-letter
+search starts hundreds of words. The rule is the same for a `REQ` and for
+`/query`, and no client has to ask for it. A reader's check of a hit's current
+title (above) uses the same rule, so it never drops a hit the relay found.
 
 Access does not change. A hit is returned only if a plain read would return the
 event, so a title in a Folder the reader cannot read is not found. An object
@@ -400,10 +425,10 @@ search over a kind a relay does not index answers `[]` with `200`, exactly as if
 nobody had written the word, so a relay that lists `50` without this indexing
 is not conforming.
 
-**Typeahead.** The reference relay accepts `"search_mode": "prefix"` in a
-`/query` filter: the last word matches as a prefix, so `zebraf` finds
-`zebrafile`. It is an extension of the bridge, not NIP-50. A relay that ignores
-it matches whole words only, so typeahead gets worse but still works.
+**Typeahead needs no flag.** Every word is already a word's start, so `zebraf`
+finds `zebrafile`. A relay ignores `search_mode`: the reference relay used to
+read `"search_mode": "prefix"` on `/query` only, so the same search answered
+differently over the websocket, and clients from then may still send it.
 
 ---
 
@@ -2356,6 +2381,14 @@ reads the `accepted` field back, with two negative controls — a tampered event
 relay must refuse, and a `kind:0` the identity service must refuse — so "it works"
 is distinguishable from "the rule was removed". It needs a workspace credential,
 which is why it is a hand-run check rather than a CI job.
+
+**Search (§5.2)** is checked against a relay holding one object titled *Remove
+Short summary from few places*, asked once over `/query` and once by a `REQ`
+with the same filter. `Remov`, `remov short` and `short remov` each find it;
+`"short summary"` finds it and `"summary short"` does not; `remov -short` does
+not; a nonsense word such as `zqxj` answers `[]`, which tells a relay that
+honours `search` from one that drops the field and answers everything. The
+reference relay runs these in `crates/buzz-search/tests/fts_integration.rs`.
 
 ---
 
