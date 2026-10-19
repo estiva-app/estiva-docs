@@ -1,7 +1,7 @@
 # While editing a description, clicking a chip opens a menu, Open and its card, and a fresh link opens it by itself
 
 - Date: 2026-10-14
-- Status: Accepted
+- Status: Superseded by a-lone-links-chip-menu-offers-row-or-card.md
 - Decided by: Miky, at /land of OPT-20
 - Area: Links & widgets
 
