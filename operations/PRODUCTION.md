@@ -227,8 +227,13 @@ leaver's next read or write fails. Two things outlast the offboarding: what the
 tab already holds, and a relay socket that is already authenticated, which
 needs `/sign` again only when it reconnects.
 
-`JWT_TTL_SECONDS` is currently 3600. It was raised from 600 because no refresh
-grant exists yet.
+`JWT_TTL_SECONDS` is 600 (set 2026-10-19), the code's default. It was 3600
+while Ship and Leaf could not renew a token in place; since all three apps
+renew with the refresh grant before a token expires, a shorter token costs
+nobody a sign-in. It also bounds how long a held token stays useful after its
+sign-in ends: `/sign` checks the person's status, not the session, so a
+signed-out tab keeps signing for at most this long (an offboarded person is
+refused at once). It does not bound what the tab has already read.
 
 Offboarding the relay operator is refused outright — it would revoke its own
 admission and disable the capability for the whole workspace. See
