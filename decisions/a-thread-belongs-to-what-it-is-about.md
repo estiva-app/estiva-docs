@@ -1,7 +1,7 @@
 # A conversation belongs to the file it is about, not to the Folder it was filed in
 
 - Date: 2026-10-02
-- Status: Accepted
+- Status: Superseded by what-belongs-to-a-file-is-stored-with-it.md
 - Decided by: Miky, on MAN-5
 - Area: Folders
 

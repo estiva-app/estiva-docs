@@ -645,14 +645,17 @@ A thread belongs to whatever anyone in it referenced, at any point. A thread
 that mentions an object halfway through is from then on about that object, and
 the **whole** thread attaches, not only the message carrying the reference.
 
-**Which Folder a new comment goes into** (*added 2026-10-19*, LTX; record
-[a-thread-belongs-to-what-it-is-about](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-thread-belongs-to-what-it-is-about.md)).
+**Which Folder a new comment goes into** (*added 2026-10-19*, LTX; *corrected
+the same day*; record
+[what-belongs-to-a-file-is-stored-with-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/what-belongs-to-a-file-is-stored-with-it.md)).
 The same rule for every kind, and for every app writing it, the file's owner
-or not: a new `kind:1111` on a file takes as `h` the Folder whose listing
-(`kind:30890`, §3.3) names the file; otherwise the file's own Folder, read
+or not: a new `kind:1111` on a file takes as `h` the file's own Folder, read
 from its root's `h`, or `buzz-channel` on a record that names its Folder that
-way (§7.3). A reply copies its comment's `h` (C16). A reader reads a file's
-conversation by its address, whatever Folder each comment was filed in.
+way (§7.3) — never the Folder whose listing it was opened from. A comment's
+readers are therefore the file's readers, wherever the file is drawn (§3.1). A
+reply copies its comment's `h` (C16). A reader reads a file's conversation by
+its address, whatever Folder each comment was filed in: comments written
+before the correction may sit in a Folder that lists the file.
 
 **That rule is only defensible because attachment has two strengths, and an app
 MUST present them separately** (added 2026-08-31):
@@ -1207,10 +1210,13 @@ its Folder's, at any depth.
 *Added 2026-09-23 (FOL-4):*
 
 - **Same Folder.** A sub-file's `h` is its parent's: a consumer creating a
-  file under a bare file MUST copy that file's `h`, and one creating it under
-  any other kind MUST use the Folder whose listing it was offered from. A move
-  changes `parent` and never `h`, so a consumer MUST offer as targets only
-  files in the same Folder's listing. There is therefore no permission question
+  file under any file MUST give it its parent's own Folder (§6.4's rule: the
+  root's `h`, or `buzz-channel`), never the Folder whose listing it was offered
+  from (*corrected 2026-10-19*, record
+  [what-belongs-to-a-file-is-stored-with-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/what-belongs-to-a-file-is-stored-with-it.md)).
+  A move changes `parent` and never `h`, so a consumer MUST offer as targets
+  only files in the same Folder's listing whose own Folder is the moving
+  file's. There is therefore no permission question
   at any depth, and nothing to check. Moving a file to another *Folder* is
   §3.3's move, and takes its subtree with it.
 - **A move** is a `parent` change whose `value` is the new parent's address, or
@@ -2284,8 +2290,8 @@ conversation, the document app writes every file's text. A manifest declaring
   fields, archive and delete stay the owner's, and its noun and "Open in" link
   stay the owner's manifest's;
 - lists no bare file, since a bare file has no text (§6.7);
-- writes each change into the file's own Folder (§6.10) and each comment into
-  the Folder §6.4 names, and offers no change on an archived file (§6.5).
+- writes each change (§6.10) and each comment (§6.4) into the file's own
+  Folder, and offers no change on an archived file (§6.5).
 
 "Open in" on a file still goes to its owner.
 
