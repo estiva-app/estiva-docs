@@ -190,9 +190,7 @@ produce the same events in the same order.
   actions*: interop has no delete planner and moves a single address, not a
   subtree, and does not refuse a private move; Peek, Ship and interop still
   read a Folder listed in a Folder (one on production, under Estiva HQ) and
-  still show groups with no listing; Peek's published manifest may still
-  claim `39000` and `9` until it is republished without them (2026-10-16), and
-  `@estiva-app/interop` 0.58 and later ignore both claims. Until those land, a difference
+  still show groups with no listing. Until those land, a difference
   from this section is a known gap, not a regression.
 - **The kinds an app signs** to offer all of the above: `9007`, `9002`, `9008`,
   `1852`, `1851` and `9`. (Unlisting follows a `kind:5`, which is the file's
