@@ -56,6 +56,13 @@ comment, and SPEC §13.6.
   end of the column with no highlight. Free to build and to undo, but a reply
   about paragraph 3 would lose paragraph 3 the moment one other person's event
   was deleted, and an app holding only a reply could not place it.
+- **Deleting the comment takes its thread, as in Google Docs and Figma.**
+  Considered by Miky on 19 October 2026, after comparing Slack (the replies
+  stay under a note) with document apps (the thread goes). On the relay only
+  a reply's author can delete it, so deleting the thread could only hide other
+  people's words while they stay readable in the Folder, and an app that does
+  not hide them still shows them. Offering "Resolve instead" when you delete a
+  comment that has replies is kept for later.
 - **Blank the comment with an edit instead of deleting it.** It keeps the
   place, but the original words stay readable on the relay, which is not a
   delete, and it goes against "as Peek does". Ruled out before asking.
