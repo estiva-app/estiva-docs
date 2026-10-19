@@ -21,8 +21,13 @@ on a Folder and Peek was not allowed to sign one.
   ([A document is its own type of file](a-document-is-its-own-type-of-file.md)).
 - What an app may sign is set per app in Estiva ID (its allowed kinds,
   `estiva-id src/db/seed.ts`). Peek's list does not include `30842`.
-- Peek's launcher already reads Ship's New project from Ship's manifest and
-  opens Ship to make it, and Claude learns each app's actions from its manifest
+- Peek's launcher reads Ship's New project from Ship's manifest, but Peek signs
+  Ship's project kind (`30850`) itself, since it is in Peek's allowed kinds
+  (`estiva-id src/db/seed.ts`). *Correction, 2026-10-19: this line first said
+  that Peek "opens Ship to make it", which was not true. Peek does not open
+  Ship for it today; the new record
+  [An app that owns a "New …" declares a create link](an-app-declares-a-create-link-for-its-new-action.md)
+  decides that it will.* Claude learns each app's actions from its manifest
   ([Claude learns each app from its manifest](claude-learns-each-app-from-its-manifest.md)).
 - Which kinds an agent may sign is an explicit grant per app, never derived
   ([Which kinds an agent may sign](an-agent-signs-for-an-app-only-by-an-admin-grant.md)).
@@ -33,7 +38,9 @@ When someone picks another app's "New …" in an app's launcher, the app **hands
 off to the owning app**, and the owner writes the file with its own kind:
 
 - Peek reads Leaf's create action from Leaf's manifest, as it reads Ship's New
-  project, and opens Leaf's link in a new tab. It signs nothing.
+  project, and opens Leaf's link in a new tab. It signs nothing. (How the
+  manifest declares that link is decided in
+  [An app that owns a "New …" declares a create link](an-app-declares-a-create-link-for-its-new-action.md).)
 - Leaf has a link that starts a new document in a given Folder, and Leaf creates
   the document, signing `kind:30842` itself.
 - This holds for every app, an outside company's included: an app may offer

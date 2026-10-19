@@ -164,6 +164,7 @@ heading here.
 - [Claude learns each app from the app's own manifest, and what it must know about the app goes in a guide there](claude-learns-each-app-from-its-manifest.md) — Accepted, 2026-10-13
 - [Which kinds an agent may sign is an admin's explicit grant per app, never derived from the apps](an-agent-signs-for-an-app-only-by-an-admin-grant.md) — Accepted, 2026-10-13
 - [An app may offer another app's "New …", and the app that owns that kind makes the file](another-apps-new-file-is-made-by-that-app.md) — Accepted, 2026-10-16
+- [An app that owns a "New …" declares a create link in its manifest, and a launcher opens it](an-app-declares-a-create-link-for-its-new-action.md) — Accepted, 2026-10-19
 - [An agent says it is an agent in its own profile (NIP-24 `bot`), and Estiva ID publishes it](an-agent-says-it-is-a-bot-in-its-profile.md) — Accepted, 2026-09-24
 
 ## Devices & sessions
