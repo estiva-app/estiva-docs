@@ -113,6 +113,7 @@ heading here.
 - [Only a Folder's owners and admins can rename or archive it, and its name is the relay's channel name](only-owners-and-admins-rename-or-archive-a-folder.md) — Accepted, 2026-10-03
 - [It is called a Folder; "team" is not a second name for it](a-folder-is-called-a-folder-never-a-team.md) — Accepted, 2026-09-25
 - [Who can read a file is decided on the file, and Folders are labels](folders-are-labels.md) — Proposed, 2026-10-14; parked until the navigation rework
+- [A comment is filed with the file it is about, so only the file's readers can read it](a-comment-is-filed-with-its-file.md) — Proposed, 2026-10-19
 
 ## Read state
 
