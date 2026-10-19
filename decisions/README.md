@@ -121,6 +121,7 @@ heading here.
 - [A Folder has no read state of its own: its chat is unread for you only when a message names you](a-folders-own-chat-is-unread-only-for-a-mention.md) — Accepted, 2026-10-01
 - [A reply is read only when you open its thread, not when you read the conversation it sits in](a-reply-is-read-only-when-its-thread-is-opened.md) — Accepted, 2026-10-03
 - [Anyone may add a person to a file, including someone who left it](anyone-may-add-a-person-to-a-file.md) — Accepted, 2026-10-06
+- [A person mentioned in a file's text is told once and becomes a member, and a later save that still names them changes nothing](a-person-mentioned-in-a-files-text-is-told-once.md) — Accepted, 2026-10-19
 
 ## Messages
 
@@ -144,7 +145,8 @@ heading here.
 - [Every link draws as a chip, and its author chooses a card with an `embed` tag they can change after sending](the-author-chooses-a-links-card.md) — Superseded by the one above, 2026-10-15
 - [A file's summary is its own short field beside the title, not part of its description](a-files-summary-is-its-own-field.md) — Accepted, 2026-10-15
 - [A shared part of a page is a selected run of whole blocks, and it stays live as the page changes](a-shared-part-of-a-page-is-a-selected-run-of-blocks.md) — Accepted, 2026-10-09
-- [While editing a description, clicking a chip opens a menu, Open and its card, and a fresh link opens it by itself](clicking-a-chip-while-editing-opens-a-menu.md) — Accepted, 2026-10-14
+- [While editing a document, a link alone on its line opens a menu with Open and Show as Row or Card; a chip in a sentence offers Open only](a-lone-links-chip-menu-offers-row-or-card.md) — Accepted, 2026-10-19
+- [While editing a description, clicking a chip opens a menu, Open and its card, and a fresh link opens it by itself](clicking-a-chip-while-editing-opens-a-menu.md) — Superseded by the one above, 2026-10-14
 - [Another app's file is labelled by its type ("Topic", "Issue"), and the app's name only says where it opens](a-file-is-labelled-by-its-type-not-its-app.md) — Accepted, 2026-10-02
 
 ## Documents
@@ -156,6 +158,7 @@ heading here.
 - [A reply to a comment on part of a page remembers that part too, so its thread keeps its place when the comment is deleted](a-reply-on-a-page-keeps-its-threads-place.md) — Accepted, 2026-10-19
 - [Leaf writes the title, summary and text of any file whose own app shares each, as Peek shows every file's conversation; the file's own app keeps its other fields, its name and where it opens, and a topic has no text](a-document-app-writes-what-a-files-app-shares.md) — Accepted, 2026-10-19
 - [Leaf edits the text of any file whose own app shares it, as Peek shows every file's conversation; the file's own app keeps its name, its fields and where it opens](a-files-text-is-shared-by-every-app.md) — Superseded by the one above, 2026-10-19
+- [Every app edits and reads a document with one shared editor, and its links draw with the kit's chip, row and card](every-app-edits-a-document-with-one-shared-editor.md) — Accepted, 2026-10-19
 
 ## Apps & agents
 
