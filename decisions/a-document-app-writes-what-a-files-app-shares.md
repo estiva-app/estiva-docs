@@ -64,9 +64,8 @@ that type.
 - A file's title, summary and text are shared with a generic editor. Leaf
   declares the `aspect: "document"` of §7.8, as Peek declares `conversation`,
   and offers its editor on each of those three fields of any file whose owning
-  app's projection declares the action that changes it (§7.3's sharing test;
-  for the text, `describe` in `estiva-blocks-1` with a `description` body),
-  under §6.10's existing rule. Ship's projects and issues qualify today, for
+  app's projection declares the action that changes it (for the text,
+  `describe` in `estiva-blocks-1`), under §6.10's existing rule. Ship's projects and issues qualify today, for
   all three.
 - The owning app keeps what the type is called, its own fields (a Ship issue's
   status, assignee and project), its archive and delete, and where "Open in …"
@@ -111,8 +110,8 @@ SPEC §6.4, §6.5, §6.7, §6.10, §6.11, §7.3 and §7.8 carry it (2026-10-19).
   document tool fits (Miky).
 - **The document app writes the text only, and the title and summary stay the
   owner's** (the record this one supersedes, as it stood). Not taken at the
-  shaping: Miky chose the three fields every file has, each shared by the same
-  action test, and left a type's own fields with its owner.
+  shaping: Miky chose the three fields every file has, and left a type's own
+  fields with its owner.
 
 ## Consequences
 
@@ -126,5 +125,7 @@ SPEC §6.4, §6.5, §6.7, §6.10, §6.11, §7.3 and §7.8 carry it (2026-10-19).
 - Leaf writes a change into the file's own Folder, never the Folder it opened
   it from, and a comment into the Folder SPEC §6.4 names. It offers no change
   on an archived file, as Ship does (§6.5).
+- SPEC §7.3 also requires the owner to show the text it shares (a `body` slot
+  that is the `description` fold), so nobody edits a text the owner never draws.
 - A Leaf page filed under a topic still needs a place in Leaf's tree once
   topics are not listed; none exists today.

@@ -649,12 +649,10 @@ the **whole** thread attaches, not only the message carrying the reference.
 [a-thread-belongs-to-what-it-is-about](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-thread-belongs-to-what-it-is-about.md)).
 The same rule for every kind, and for every app writing it, the file's owner
 or not: a new `kind:1111` on a file takes as `h` the Folder whose listing
-(`kind:30890`, §3.3) names the file and that the writer opened it from;
-otherwise the file's own Folder, read from its root's `h`, or `buzz-channel`
-on a record that names its Folder that way (§7.3). A reply copies its
-comment's `h` (C16). A writer that can name neither does not offer the
-comment, rather than guessing a Folder. A reader reads a file's conversation
-by its address, whatever Folder each comment was filed in.
+(`kind:30890`, §3.3) names the file; otherwise the file's own Folder, read
+from its root's `h`, or `buzz-channel` on a record that names its Folder that
+way (§7.3). A reply copies its comment's `h` (C16). A reader reads a file's
+conversation by its address, whatever Folder each comment was filed in.
 
 **That rule is only defensible because attachment has two strengths, and an app
 MUST present them separately** (added 2026-08-31):
@@ -820,8 +818,7 @@ and available to anyone in the Folder.
 - **An archived file's own fields are not offered for change** (*added
   2026-10-19*, LTX). While a file is archived, its own or inherited from a
   parent, a writer SHOULD NOT offer to change its title, summary or text, in
-  its own app or in a document app (§7.8), and offers un-archiving instead.
-  Comments stay open. This is a client rule: archive is reversible by anyone
+  its own app or in a document app (§7.8). Comments stay open. This is a client rule: archive is reversible by anyone
   in the Folder, so a relay lock would protect nothing, and a reader folds any
   change regardless of when it was made.
 
@@ -2288,10 +2285,9 @@ conversation, the document app writes every file's text. A manifest declaring
   stay the owner's manifest's;
 - lists no bare file, since a bare file has no text (§6.7);
 - writes each change into the file's own Folder (§6.10) and each comment into
-  the Folder §6.4 names, and offers no change on an archived file (§6.5);
-- MUST publish an `naddr` `web` template that opens any such file, so a
-  consumer can link to the file in the document app as well as in its owner.
-  "Open in" on a file still goes to its owner.
+  the Folder §6.4 names, and offers no change on an archived file (§6.5).
+
+"Open in" on a file still goes to its owner.
 
 The newest manifest declaring `document` is the document app, from any author,
 with the exposure the paragraph on the opener below names for `conversation`,
