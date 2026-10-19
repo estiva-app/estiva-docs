@@ -109,11 +109,11 @@ heading here.
 - [A Folder is a group the relay keeps a listing for; every other group is only a conversation space](a-folder-is-a-group-the-relay-lists.md) — Accepted, 2026-10-02
 - [A Folder never holds another Folder: there is one level](folders-are-one-level-deep.md) — Accepted, 2026-10-02
 - [Moving a file to another Folder never changes who can read it, and its sub-files move with it](moving-a-file-never-changes-who-can-read-it.md) — Accepted, 2026-10-02
-- [A conversation belongs to the file it is about, not to the Folder it was filed in](a-thread-belongs-to-what-it-is-about.md) — Superseded by "A comment or a sub-file is stored with the file it belongs to", 2026-10-19
+- [A conversation belongs to the file it is about, not to the Folder it was filed in](a-thread-belongs-to-what-it-is-about.md) — Superseded by "A comment, or a file created under another file, is stored with it", 2026-10-19
 - [Only a Folder's owners and admins can rename or archive it, and its name is the relay's channel name](only-owners-and-admins-rename-or-archive-a-folder.md) — Accepted, 2026-10-03
 - [It is called a Folder; "team" is not a second name for it](a-folder-is-called-a-folder-never-a-team.md) — Accepted, 2026-09-25
 - [Who can read a file is decided on the file, and Folders are labels](folders-are-labels.md) — Proposed, 2026-10-14; parked until the navigation rework
-- [A comment or a sub-file is stored with the file it belongs to, so only that file's readers can read it](what-belongs-to-a-file-is-stored-with-it.md) — Accepted, 2026-10-19
+- [A comment, or a file created under another file, is stored with it, so only that file's readers can read it](what-belongs-to-a-file-is-stored-with-it.md) — Accepted, 2026-10-19
 
 ## Read state
 

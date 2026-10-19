@@ -1,4 +1,4 @@
-# A comment or a sub-file is stored with the file it belongs to, so only that file's readers can read it
+# A comment, or a file created under another file, is stored with it, so only that file's readers can read it
 
 - Date: 2026-10-19
 - Status: Accepted
@@ -10,14 +10,15 @@
 
 Miky, Katerina and a customer comment on files, and add issues or sub-pages
 under them, while looking at a Folder that shows a file another Folder owns.
-Whatever they write about or under that file is readable by exactly the
-people who can read the file, in every app. They still see a file's whole
+Whatever an app writes for them about or under that file is stored with the
+file, so it has the file's readers. They still see a file's whole
 conversation wherever they open it, and are never shown which Folder a thread
-came from. An outside company follows one sentence: what belongs to a file is
-stored with it. It came up in /land's review of estiva-docs#310 (LTX-4).
+came from, and the unread signal comes from the same place in every app. An
+outside company follows one sentence: what belongs to a file is stored with it.
 
 ## Context
 
+- It came up in /land's review of estiva-docs#310 (LTX-4), 2026-10-19.
 - A comment (`kind:1111`) and a file are each stored in a Folder (`h`), and
   that Folder decides who reads them (SPEC §3.1).
 - [A conversation belongs to the file it is about](a-thread-belongs-to-what-it-is-about.md)
@@ -49,14 +50,14 @@ stored with it. It came up in /land's review of estiva-docs#310 (LTX-4).
 
 - **The Folder the file was opened from, and a private file is never shown in
   another Folder.** Two rules instead of one; making an open Folder private
-  later strands its files' earlier comments in other Folders, readable there.
+  later strands its files' earlier comments in other Folders.
 - **The Folder it was opened from when the file's Folder is open, the file's
   own when it is private.** Correct only at the moment of writing: a Folder
-  that turns private leaves earlier comments readable by everyone, and every
+  that turns private leaves earlier comments where they were, and every
   app must read Folder settings before each comment.
 - **A sub-file goes where it was created** (today's §6.7 for non-bare
-  parents). An issue under a private project, created from an open Folder,
-  would be readable by that whole Folder, title included.
+  parents). Its readers would be those of the Folder it was created from,
+  not its parent's.
 - From the 2 Oct record, still rejected: **re-pointing a project at another
   Folder** (the `folder` field and `link-project`; ruled dead 2026-09-29), and
   **showing each thread's source Folder or reading a conversation from one
@@ -67,10 +68,17 @@ stored with it. It came up in /land's review of estiva-docs#310 (LTX-4).
 - Leaf, Peek and Ship file new comments and sub-files in the file's own
   Folder; a live view also listens to that Folder, not only the one on screen.
   Ship's project work Folder (MAN-5) changes with it.
-- A move within a listing offers as targets only files with the same own
-  Folder, so a sub-file's readers stay its parent's.
+- A move within a listing offers as parents only files stored in the same
+  Folder as the file being moved. This follows from
+  [moving a file never changes who can read it](moving-a-file-never-changes-who-can-read-it.md)
+  (a move never changes where a file is stored): under any other parent, a
+  sub-file's readers would differ from its parent's.
 - Comments and issues already filed in a listing Folder stay there and are
   still read by anchor; all are in open Folders today.
+- This decides where an app writes. What a reply follows, and how apps or the
+  relay treat a comment or sub-file stored somewhere other than its file's
+  Folder, are decided when private Folders are built (Miky, 2026-10-19: "a
+  better question when we actually implement private Folders").
 - Who can read a file at all is still the open question of the Proposed
   [Folders are labels](folders-are-labels.md); this record holds under either
   answer, because a comment follows its file.

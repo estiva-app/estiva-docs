@@ -163,7 +163,7 @@ produce the same events in the same order.
 | **rename** | `kind:9002` with the new `name`. Nothing else: a `kind:1852` never carries a name | by the relay, to anybody but the channel's owners and admins |
 | **archive** / **restore** | `kind:1851` on the Folder's address, `field` `archived`, `value` `true` (or empty to restore), `h` the Folder itself; `content` MAY carry what the person said about it | by the consumer, to anybody but the Folder's owners and admins; a reader ignores one from anybody else (§3.2) |
 | **delete** | `kind:9008` with the Folder's `h` | by the relay, while the Folder holds a file — a `30840`, `30842`, `30850` or `30851` under its `h`, or any address its listing names — and to anybody but the channel's owner, the person who owns an owner-role agent in the channel, or an owner or admin of the workspace on the relay's roster |
-| **place** a new file | the file's root, with this Folder's `h` (or the tag its owner's `placement` names, §7.3); then `kind:1852` `add` naming its address | — |
+| **place** a new file | the file's root, with this Folder's `h` (or the tag its owner's `placement` names, §7.3) — under a parent, the parent's own Folder instead (§6.7); then `kind:1852` `add` naming its address | — |
 | **unlist** a deleted file | the `kind:5`; then `kind:1852` `remove` naming its address, in each Folder whose state names it (§7.3) | — |
 | **move** a file to another Folder | `kind:1852` `add` in the target; then `kind:1852` `remove` in the source — one pair for the file and one for each file listed beneath it (§6.7), so a subtree moves whole. The file's `h` does not change | by the consumer, when the target is private and the file's `h` names any other channel (§3.1: the move would look private and not be) |
 | **start a conversation** | `kind:9` with the Folder's `h` (§6.4) | — |
@@ -651,8 +651,9 @@ the same day*; record
 The same rule for every kind, and for every app writing it, the file's owner
 or not: a new `kind:1111` on a file takes as `h` the file's own Folder, read
 from its root's `h`, or `buzz-channel` on a record that names its Folder that
-way (§7.3) — never the Folder whose listing it was opened from. A comment's
-readers are therefore the file's readers, wherever the file is drawn (§3.1). A
+way (§7.3) — never the Folder whose listing it was opened from. A comment
+written this way therefore has the file's readers, wherever the file is drawn
+(§3.1). A
 reply copies its comment's `h` (C16). A reader reads a file's conversation by
 its address, whatever Folder each comment was filed in: comments written
 before the correction may sit in a Folder that lists the file.
@@ -1533,8 +1534,8 @@ sit under it. Its owner says so with `anyParent` (§7.2). Every rule under
 cycles, depth — applies unchanged.
 
 **Placement.** A document is created as any listed file is (§3.3 **place**):
-its root with the Folder's `h`, then the Folder's `kind:1852` `add` naming its
-address. §3.2's built-in `create-file` makes a bare file, not a document; an
+its root with the Folder's `h` (under a parent, the parent's own Folder,
+§6.7), then the Folder's `kind:1852` `add` naming its address. §3.2's built-in `create-file` makes a bare file, not a document; an
 app owning documents leaves it out of its own interface and offers its own
 creation. A Folder holding a document cannot be deleted (§3.3).
 
@@ -1785,8 +1786,9 @@ children; a list of the same kind (a document's list of documents) still
 names its own. A consumer drawing what is under a file reads it from the Folder's
 listing (§6.7), which folds every child whatever its kind; a consumer reading
 by tag asks for each child kind whose list declares `anyParent`, by `#via` and
-`#A` as above. A move's target is a choice among files in the same Folder's
-listing (§6.7), not among objects of one kind. Absent `anyParent`, nothing
+`#A` as above. A move's target is a choice among §6.7's targets (files in the
+same Folder's listing with the moving file's own Folder), not among objects of
+one kind. Absent `anyParent`, nothing
 above changes.
 
 Measured on production 2026-09-29, the 1,000 newest `kind:1851`: 41 set
