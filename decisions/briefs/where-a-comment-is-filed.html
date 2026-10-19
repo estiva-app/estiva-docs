@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where Comments Are Filed</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+  --hl: #f6e3a1;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+    --hl: #5a4a17;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  --hl: #5a4a17;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.q { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); padding: 12px 14px; border-radius: 6px; font-size: 1.05rem; }
+.rec { background: var(--ok-bg); border-left: 4px solid var(--ok); padding: 12px 14px; border-radius: 6px; }
+.warn { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+svg { width: 100%; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); }
+svg .chip { fill: var(--chip); stroke: var(--accent); }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .d { stroke: var(--muted); fill: none; stroke-width: 1.2; stroke-dasharray: 4 3; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 640px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+.rec-row td { background: var(--ok-bg); }
+</style>
+</head>
+<body>
+<main>
+<h1>Who can read a comment on a private file</h1>
+<p class="sub">A decision brief for Miky · 19 October 2026 · Leaf edits any file's text (found in the security review)</p>
+
+<div class="q"><strong>The question.</strong> Once a Folder can be private, should a comment on one of its files be readable by exactly the people who can read the file, even when that file is also shown in a Folder everyone can open?</div>
+
+<h2>Today</h2>
+<p>A file lives in one Folder, and that Folder decides who can read it. It can also be <em>shown</em> in another Folder (that's what a move does). Being shown there gives nobody access. On 2 October you decided that a file's conversation is everything about it, whichever Folder each comment was stored in, and that new comments are stored in the Folder that shows the file. Today's spec says the same for every app, including Leaf.</p>
+<p>A comment is stored in a Folder too, and that Folder decides who reads the comment. So the 2 October rule means <strong>a comment's readers are the showing Folder's members, not the file's</strong>. Today it makes no difference. Every Folder is open to the whole workspace, so both groups are the same people. It starts to matter on the first day a Folder can be private.</p>
+
+<figure>
+<svg viewBox="0 0 720 250" role="img"><title>Today's rule with a private Folder: the comment lands where everyone reads it</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker></defs>
+<rect class="b" x="10" y="20" width="300" height="150" rx="8"/>
+<text class="h" x="24" y="44">Folder "Pricing" — private</text>
+<text class="m" x="24" y="62">members: Miky, Katerina</text>
+<rect class="w" x="40" y="80" width="230" height="44" rx="6"/>
+<text x="54" y="107">File: "2027 price draft"</text>
+<rect class="b" x="410" y="20" width="300" height="150" rx="8"/>
+<text class="h" x="424" y="44">Folder "Everyone" — open</text>
+<text class="m" x="424" y="62">members: the whole workspace</text>
+<rect class="w" x="440" y="80" width="230" height="44" rx="6" stroke-dasharray="4 3"/>
+<text x="454" y="100">shows "2027 price draft"</text>
+<text class="m" x="454" y="116">(a link, no access)</text>
+<path class="d" d="M270,102 L440,102"/>
+<rect class="bad" x="440" y="134" width="230" height="28" rx="6"/>
+<text x="452" y="153">Miky's comment, stored here</text>
+<text class="m" x="10" y="200">Miky opens the file from "Everyone" and comments: "Drop the Starter tier to €9."</text>
+<text class="m" x="10" y="220">Anyone in the workspace can read that comment, though they can't open the file.</text>
+<text class="m" x="10" y="240">Nothing in any app tells Miky this.</text>
+</svg>
+<figcaption>The case the security review found. It can't happen today, because no Folder can be private yet.</figcaption>
+</figure>
+
+<h2>Why it reaches beyond this ticket</h2>
+<p>This sets the rule for every app that writes a comment, Leaf, Peek and Ship and also an outside company's: <em>who reads a comment</em>. A company adopting Nostr-for-Business would expect a comment on a private document to be as private as the document. Google Docs, Notion and Linear all work that way.</p>
+<p><strong>It's a two-way door until private Folders ship, then one-way.</strong> A comment's storage Folder is fixed when it's written. Once comments about private files sit in open Folders, they've been readable there, and moving them later doesn't take that back. Private Folders are already a planned project (their listing has to be hidden first), so this is the moment to settle it.</p>
+
+<h2>Options</h2>
+
+<h3>A · Keep the 2 October rule, and never show a private file in another Folder</h3>
+<p>A comment still goes to the Folder you opened the file from. To keep that safe, a file in a private Folder can't be shown anywhere else. Today the apps already refuse the opposite move: an open file can't be shown in a private Folder, because it would look private and not be.</p>
+<p><em>What you'd see:</em> in "Pricing", "Move to Everyone" isn't offered for the price draft. A link to it in a message still works for members.<br>
+<em>Outside company:</em> one rule to follow (comments go where the file is shown), plus a move rule.<br>
+<em>Locks in:</em> making an open Folder private later strands its files' old comments in other Folders. Either that switch is refused, or old comments stay readable.</p>
+
+<h3>B · A comment is stored with its file, always (recommended)</h3>
+<p>A new comment goes to the Folder that owns the file, whichever Folder it was opened from. Its readers are always the file's readers, whatever the Folders' settings are or become. Reading doesn't change, because the conversation is still everything about the file, wherever it's stored.</p>
+<p><em>What you'd see:</em> nothing different on the file. A private file can still be shown in "Everyone", where non-members see a locked entry, and its conversation stays private.<br>
+<em>Outside company:</em> the simplest rule: a comment is filed with what it's about. It holds unchanged if access later moves from Folders to the file itself (the parked "Folders are labels" question).<br>
+<em>Locks in:</em> it replaces one line of the 2 October decision, where a new comment is stored. That decision's reading rule stays.</p>
+
+<h3>C · Showing Folder when it's open, the file's Folder when the file is private</h3>
+<p>Each app checks at write time: if the file's own Folder is private, the comment goes there; otherwise it goes where the file is shown.</p>
+<p><em>What you'd see:</em> the same as B for private files. For open files, the same as today.<br>
+<em>Outside company:</em> must read Folder settings before every comment, and two apps can disagree if one reads stale settings.<br>
+<em>Locks in:</em> it's only correct at the moment of writing. If "Pricing" was open when Miky commented from "Everyone" and turns private later, his comment stays readable by everyone.</p>
+
+<figure>
+<svg viewBox="0 0 720 300" role="img"><title>Where Miky's comment is stored under each option</title>
+<defs><marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker></defs>
+<text class="h" x="10" y="20">A</text>
+<rect class="b" x="30" y="6" width="190" height="80" rx="6"/><text x="40" y="26" class="h">"Pricing" (private)</text><text x="40" y="46">price draft</text>
+<rect class="b" x="260" y="6" width="190" height="80" rx="6"/><text x="270" y="26" class="h">"Everyone" (open)</text><text class="m" x="270" y="46">can't show the draft:</text><text class="m" x="270" y="62">the move isn't offered</text>
+<rect class="ok" x="490" y="20" width="220" height="44" rx="6"/><text x="500" y="47">comment in "Pricing" (opened there)</text>
+
+<text class="h" x="10" y="120">B</text>
+<rect class="b" x="30" y="106" width="190" height="80" rx="6"/><text x="40" y="126" class="h">"Pricing" (private)</text><text x="40" y="146">price draft</text><text class="m" x="40" y="166">+ every comment on it</text>
+<rect class="b" x="260" y="106" width="190" height="80" rx="6"/><text x="270" y="126" class="h">"Everyone" (open)</text><text class="m" x="270" y="146">shows the draft, locked</text>
+<rect class="ok" x="490" y="120" width="220" height="44" rx="6"/><text x="500" y="147">comment in "Pricing", always</text>
+
+<text class="h" x="10" y="220">C</text>
+<rect class="b" x="30" y="206" width="190" height="80" rx="6"/><text x="40" y="226" class="h">"Pricing" (private now)</text><text x="40" y="246">price draft</text><text class="m" x="40" y="266">+ comments made since</text>
+<rect class="b" x="260" y="206" width="190" height="80" rx="6"/><text x="270" y="226" class="h">"Everyone" (open)</text><text class="m" x="270" y="246">shows the draft</text><text class="m" x="270" y="266">+ comments from before</text>
+<rect class="bad" x="490" y="220" width="220" height="44" rx="6"/><text x="500" y="241">old comments stay readable</text><text class="m" x="500" y="257">by everyone after the switch</text>
+</svg>
+<figcaption>Green: the comment's readers are the file's readers. Red: they aren't.</figcaption>
+</figure>
+
+<h2>Trade-offs</h2>
+<div class="tw"><table>
+<tr><th></th><th>Protocol shape</th><th>What you and Katerina see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td>A · showing Folder, private files never shown elsewhere</td><td>Comment readers follow the Folder you opened from. A second rule on moves keeps it safe.</td><td>A private file can't appear in another Folder.</td><td>Two rules. Turning a Folder private is a hard case.</td><td>Low now. High once private Folders ship.</td><td>A move check in each app.</td></tr>
+<tr class="rec-row"><td>B · with its file</td><td>A comment is filed with what it's about. One rule, no Folder settings read.</td><td>No change on the file. Private stays private wherever it's shown.</td><td>Matches Docs, Notion and Linear. Survives "Folders are labels".</td><td>Low now. Comments already written in open Folders stay where they are (all open today).</td><td>Leaf, Peek and Ship write to the file's own Folder, and a live view also listens to it. A spec edit and a new record.</td></tr>
+<tr><td>C · depends on privacy at write time</td><td>The rule reads Folder settings and is correct only at that instant.</td><td>Same as B, until a Folder turns private.</td><td>Must read settings before every comment.</td><td>Old comments can't be made private.</td><td>A settings check in each app.</td></tr>
+</table></div>
+
+<h2>How others do it</h2>
+<ul>
+<li><strong>Google Drive / Docs</strong>: comments are part of the document, and anyone who can't open the doc can't read them, whatever folder shortcuts point at it.</li>
+<li><strong>Notion</strong>: comments inherit the page's permissions. A linked view in another workspace area shows nothing to people without access.</li>
+<li><strong>Slack</strong>: a message shared into another channel keeps its original channel's access. People outside see "message unavailable".</li>
+<li><strong>Upstream Nostr (NIP-22 comments, NIP-29 groups)</strong>: a comment in a group is readable by that group. Nothing ties it to the file's group, so the protocol has to say which group.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<div class="rec"><strong>B: a comment is stored with its file.</strong> A comment is part of the file it's about, so its readers should be the file's readers, decided once and never by where somebody happened to open it. It's the only option that stays right when a Folder changes from open to private, and when access later moves onto the file itself. An outside company follows one sentence. It keeps your 2 October call that a conversation is read by what it's about, and changes only where a new comment is stored.</div>
+
+<h2>Checked</h2>
+<ul>
+<li>No Folder is private today. On the relay, 49 Folders, 0 marked private (the one private group is a direct message). Read as the agent, 19 Oct.</li>
+<li>33 of 112 files are shown in a Folder other than their own, all between open Folders. So under today's rule some comments are already stored away from their file, and none of them is readable by anyone who couldn't read the file. Same read.</li>
+<li>Private Folders aren't offered until their listing can be hidden from non-members (spec §3.1, your call of 3 Oct).</li>
+<li>Moving an open file <em>into</em> a private Folder is refused. Moving a private file <em>out</em> isn't (spec §3.3).</li>
+<li>Today's spec stores a new comment in the Folder that shows the file, for every app (§6.4, merged today with Leaf's change). The 2 October record says the same for new writes.</li>
+<li>Your 2 October call "moving a file never changes who can read it" covers the file. Under today's comment rule, moving a private file does change who reads its <em>new comments</em>. B keeps the two calls consistent.</li>
+<li>Interop's "which Folder does this file write into" already gives the file's own Folder. Only the apps' choice for comments would change under B.</li>
+<li><strong>Not verified:</strong> whether Peek or Ship shows anything per Folder (an unread dot, a Folder feed) that counts comments by where they're stored, and so would move under B. Checked when it's built.</li>
+</ul>
+
+<h2>For the record</h2>
+<p>SPEC §3.1, §3.3 (move row), §6.4 "Which Folder a new comment goes into" (estiva-docs#310). Records: <code>a-thread-belongs-to-what-it-is-about</code> (Accepted 2026-10-02, the write line would be superseded), <code>folders-are-labels</code> (Proposed, parked). Comments are <code>kind:1111</code> with <code>h</code> = storage Folder. Listings are <code>kind:30890</code>. Private is the NIP-29 <code>private</code> tag on <code>kind:39000</code>. Found by review-security on estiva-docs#310 (PLAUSIBLE). Ticket LTX-4. Proposed record: <code>a-comment-is-filed-with-its-file</code>.</p>
+</main>
+</body>
+</html>

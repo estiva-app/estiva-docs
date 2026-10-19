@@ -2,7 +2,7 @@
 
 - Date: 2026-10-19
 - Status: Accepted
-- Decided by: Miky, in the LTX-4 /land session, on the brief "Who can read a comment on a private file" (the page is added once Peek and Ship file this way), and on the follow-up question there that the same holds for a new file created under another file
+- Decided by: Miky, in the LTX-4 /land session, on the brief "Who can read a comment on a private file" ([page](briefs/where-a-comment-is-filed.html)), and on the follow-up question there that the same holds for a new file created under another file
 - Area: Folders
 - Supersedes: a-thread-belongs-to-what-it-is-about.md
 
