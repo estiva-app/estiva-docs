@@ -152,6 +152,7 @@ heading here.
 - [A file's text is stored as a readable snapshot, and the last save wins; live co-editing comes later, on top](a-files-text-is-a-readable-snapshot.md) — Accepted, 2026-10-13
 - [A comment on a selection remembers the words where it starts and where it ends, and a comment on whole blocks remembers no words](a-comment-remembers-where-its-selection-starts-and-ends.md) — Accepted, 2026-10-15
 - [A comment points at a run of blocks, narrowed by the words quoted at its ends](a-comment-points-at-blocks-and-the-words-quoted.md) — Accepted, 2026-10-13
+- [A reply to a comment on part of a page remembers that part too, so its thread keeps its place when the comment is deleted](a-reply-on-a-page-keeps-its-threads-place.md) — Accepted, 2026-10-19
 
 ## Apps & agents
 

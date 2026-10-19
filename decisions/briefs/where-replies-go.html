@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Where Replies Go</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+  --hl: #f6e3a1;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+    --hl: #5a4a17;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  --hl: #5a4a17;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.q { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); padding: 12px 14px; border-radius: 6px; font-size: 1.05rem; }
+.rec { background: var(--ok-bg); border-left: 4px solid var(--ok); padding: 12px 14px; border-radius: 6px; }
+.warn { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+svg { width: 100%; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .hl { fill: var(--hl); stroke: none; }
+svg .chip { fill: var(--chip); stroke: var(--accent); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 640px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+.rec-row td { background: var(--ok-bg); }
+blockquote { margin: 8px 0; padding: 4px 12px; border-left: 3px solid var(--line); color: var(--muted); }
+mark { background: var(--hl); color: inherit; padding: 0 2px; border-radius: 2px; }
+<body>
+<main>
+<h1>Where a reply goes when its comment is deleted</h1>
+<p class="sub">A decision brief for Miky · 17 October 2026 · Edit and delete your own comment in Leaf</p>
+
+<div class="q"><strong>The question.</strong> When you delete your comment on a paragraph in Leaf and Katerina has already replied, does her reply stay beside that paragraph, or move to a pile at the end of the column with no place on the page?</div>
+
+<h2>Today</h2>
+<p>In Leaf a comment points at the words or blocks it is about, and those words are highlighted. A reply says only which comment it answers; it remembers no place of its own and takes its comment's. That rule was written into the spec on 14 October for Leaf 1, as an engineering choice; it was never asked as a question.</p>
+<p>You decided on 16 October that replies to a deleted comment stay, under <em>"This comment was deleted."</em>, in every app, as Peek does. Peek shows a thread as a list, so place never comes up there. In Leaf it does: once the comment is gone, nothing left says which paragraph the thread was about. Today Leaf simply drops such replies.</p>
+
+<h2>Why it reaches beyond this ticket</h2>
+<ul>
+<li>It decides <strong>what a reply on a page remembers</strong>: only whom it answers, or also what it is about. Every app that comments on parts of a file follows it, and so does an outside company's.</li>
+<li>It also covers a reply whose comment a reader cannot see for another reason (it was filed in a Folder they cannot read).</li>
+<li><strong>Two-way, with a tail.</strong> A is free to change later, but only replies written after the change gain a place. B, once replies carry a place on the relay, is undone by readers ignoring it; the extra words stay on those replies.</li>
+</ul>
+
+<h2>The picture</h2>
+<figure>
+<svg viewBox="0 0 720 300" role="img">
+<title>Today and option A: the place lives only on the comment</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+<text x="10" y="20" class="h">A — the place goes with the comment</text>
+<rect class="w" x="10" y="36" width="250" height="130" rx="6"/>
+<text x="22" y="58" class="h">The page</text>
+<text x="22" y="84">Paragraph 2 …</text>
+<rect class="b" x="18" y="96" width="234" height="26" rx="3"/>
+<text x="22" y="114">Paragraph 3 — no highlight left</text>
+<text x="22" y="146">Paragraph 4 …</text>
+<rect class="bad" x="300" y="36" width="190" height="60" rx="6"/>
+<text x="312" y="58" class="h">Miky's comment</text>
+<text x="312" y="78" class="m">deleted · it held "paragraph 3"</text>
+<rect class="w" x="300" y="120" width="190" height="46" rx="6"/>
+<text x="312" y="140" class="h">Katerina's reply</text>
+<text x="312" y="158" class="m">"answers Miky's comment"</text>
+<path class="a" d="M395,120 L395,98" style="color:var(--ink)"/>
+<rect class="ok" x="530" y="36" width="180" height="250" rx="6"/>
+<text x="542" y="58" class="h">Leaf's column</text>
+<text x="542" y="84" class="m">… cards beside the text …</text>
+<rect class="w" x="540" y="196" width="160" height="80" rx="4"/>
+<text x="548" y="214" class="h">On a deleted comment</text>
+<text x="548" y="236" class="m">This comment was deleted.</text>
+<text x="548" y="256">Katerina: "…"</text>
+<path class="a" d="M490,143 C515,143 515,230 538,230" style="color:var(--ink)"/>
+<text x="10" y="200" class="m">The relay hides Miky's comment, so the only</text>
+<text x="10" y="218" class="m">record of "paragraph 3" is gone. The reply</text>
+<text x="10" y="236" class="m">can only go to a group at the column's end.</text>
+</svg>
+<figcaption>A: nothing changes in what a reply stores. A thread whose comment is deleted moves to the end of the column.</figcaption>
+</figure>
+
+<figure>
+<svg viewBox="0 0 720 300" role="img">
+<title>Option B: every reply also remembers the thread's place</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+<text x="10" y="20" class="h">B — every reply remembers the place too</text>
+<rect class="w" x="10" y="36" width="250" height="130" rx="6"/>
+<text x="22" y="58" class="h">The page</text>
+<text x="22" y="84">Paragraph 2 …</text>
+<rect class="hl" x="18" y="96" width="234" height="26" rx="3"/>
+<text x="22" y="114">Paragraph 3 — still highlighted</text>
+<text x="22" y="146">Paragraph 4 …</text>
+<rect class="bad" x="300" y="36" width="190" height="60" rx="6"/>
+<text x="312" y="58" class="h">Miky's comment</text>
+<text x="312" y="78" class="m">deleted · it held "paragraph 3"</text>
+<rect class="ok" x="300" y="120" width="190" height="56" rx="6"/>
+<text x="312" y="140" class="h">Katerina's reply</text>
+<text x="312" y="158" class="m">answers Miky's comment</text>
+<text x="312" y="172" class="m">+ copy of "paragraph 3"</text>
+<path class="a" d="M300,150 C280,150 270,110 256,110" style="color:var(--ink)"/>
+<rect class="ok" x="530" y="36" width="180" height="250" rx="6"/>
+<text x="542" y="58" class="h">Leaf's column</text>
+<rect class="w" x="540" y="90" width="160" height="80" rx="4"/>
+<text x="548" y="108" class="m">beside paragraph 3</text>
+<text x="548" y="128" class="m">This comment was deleted.</text>
+<text x="548" y="148">Katerina: "…"</text>
+<text x="10" y="200" class="m">The reply copies its comment's place when it is</text>
+<text x="10" y="218" class="m">written. While the comment exists, its own place</text>
+<text x="10" y="236" class="m">wins; once deleted, the replies still hold it.</text>
+<text x="10" y="262" class="m">Replies written before the change fall back to A.</text>
+</svg>
+<figcaption>B: a reply carries the same place as its comment. The thread stays beside its words.</figcaption>
+</figure>
+
+<h2>Options</h2>
+<h3>A — The place goes with the comment</h3>
+<p><strong>What you see:</strong> you delete your comment on paragraph 3. Katerina's reply leaves paragraph 3, the highlight goes, and the thread appears at the foot of the column in a collapsed group, "On a deleted comment", under "This comment was deleted." Reading it later, nobody can tell which paragraph she meant unless her words say so.</p>
+<p><strong>Outside company:</strong> nothing new to write; one more state to draw (a thread with no place).</p>
+
+<h3>B — Every reply remembers the thread's place</h3>
+<p><strong>What you see:</strong> you delete your comment. Katerina's reply stays beside paragraph 3, highlighted, under "This comment was deleted." Replies already written before this change (Leaf comments exist only since 15 October) behave as in A.</p>
+<p><strong>Outside company:</strong> every comment on a page says what it is about, so an app holding only a reply can still place it. That is the same idea as NIP-22, where each reply repeats which object the thread is on. The rule a reader follows: the comment's place while it exists, else the replies'.</p>
+<p><strong>What it locks in:</strong> the spec's "a reply carries no place" is reversed. A reply now carries the quoted words of the page too, on a second person's event.</p>
+
+<h3>Not an option: blank the comment instead of deleting it</h3>
+<p>Editing the words away keeps the place, but the original words stay readable on the relay to anyone who reads the comment itself. That is not a delete, and it goes against "as Peek does".</p>
+
+<h2>Trade-offs</h2>
+<div class="tw"><table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td><strong>A</strong></td><td>A reply's meaning depends on one other person's event surviving.</td><td>A reply about paragraph 3 loses paragraph 3 the moment its comment is deleted.</td><td>No new rule; must draw a placeless thread.</td><td>None.</td><td>Small: Leaf only, plus the spec line.</td></tr>
+<tr class="rec-row"><td><strong>B</strong></td><td>Every comment on a page names what it is about, replies included (as NIP-22 does for the object).</td><td>The thread stays beside its words after a delete.</td><td>One rule: copy the place into a reply; read the comment's place first.</td><td>Readers ignore the copied place; it stays on replies already written.</td><td>Moderate: the shared reply builder, Leaf, Peek (it replies to a page's comments with the same builder, and must pass the place), the spec.</td></tr>
+</table></div>
+
+<h2>How others do it</h2>
+<ul>
+<li><strong>Slack</strong>: a deleted parent leaves "This message was deleted." with its thread — what Peek copies. No page, so no place.</li>
+<li><strong>Google Docs, Word</strong> (from memory, not re-checked): deleting the first comment deletes the whole discussion. They can, because one server owns every reply; on an open protocol we cannot delete someone else's reply.</li>
+<li><strong>Nostr NIP-22</strong>: every reply repeats the thread's root object, so a reply alone knows what it is about. B extends that from "which file" to "which part of the file".</li>
+</ul>
+
+<h2>Recommendation</h2>
+<div class="rec"><strong>B.</strong> On a page, a reply is about the words, not only about the comment above it, and a team document will have exactly this moment: someone tidies up their comment after a colleague answered. Keeping the place on every reply means the thread does not depend on one author's event surviving, and an outside app reading only a reply can still place it. Until B ships, older replies fall back to A's group, so A's drawing is built either way.</div>
+
+<h2>Also settled at this kickoff (not asked, matching Peek)</h2>
+<ul>
+<li>A thread whose comment was deleted takes no new replies; each reply's author can still edit or delete their own (Peek: "The comment was deleted, so this thread takes no new replies.").</li>
+<li>"This comment was deleted." is shown only when the relay holds the deletion, never just because a comment could not be read.</li>
+<li>Delete asks to confirm first, as Peek does.</li>
+</ul>
+
+<h2>Checked</h2>
+<ul>
+<li>A reply carries no place: SPEC §13.6 ("MUST NOT carry a <code>block</code> tag of its own", added 2026-10-14), and Leaf's reply writer (<code>leaf src/comments/comments.ts</code>, <code>postReply</code>).</li>
+<li>Leaf drops a reply whose comment is gone today: <code>readThreads</code>, same file.</li>
+<li>The relay hides a deleted comment and keeps its replies: buzz <code>handle_standard_deletion_event</code> soft-deletes; reads filter deleted rows — <strong>read in code, not yet probed live</strong> (the ticket's production check covers it).</li>
+<li>Peek's "no new replies" notice: <code>peek-app src/components/views/useFileConversationView.tsx</code>.</li>
+<li>No Accepted record states that a reply has no place: the anchor record (<em>a-comment-points-at-blocks-and-the-words-quoted</em>) says a comment has one anchor; B keeps one anchor per thread, repeated on its replies.</li>
+<li>Not measured: how many Leaf replies exist on production today (few; comments shipped 15 October).</li>
+</ul>
+
+<h2>For the record</h2>
+<p>B: a reply <code>1111</code> copies its root's <code>block</code> and <code>quote</code> tags; reader rule "root's anchor if readable, else the earliest reply's". SPEC §13.6's "A reply carries no <code>block</code>" reversed; §6.5 gains the deleted-comment rules above; KINDS §1/§4 gain <code>40003</code>. Issue COMM-5 (30851:…:1500c6b4). Record: <code>decisions/a-reply-on-a-page-keeps-its-threads-place.md</code> (Proposed).</p>
+</main>
+</body>
+</html>
