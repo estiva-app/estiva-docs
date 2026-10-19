@@ -397,17 +397,26 @@ The `search` string is a person's typing, read by one rule:
   the text or after any character that is not a letter or a digit, and
   punctuation typed at either end of a word is ignored.
 - **`"…"`** matches those whole words, next to each other, in that order.
-  A quote with no closing partner is ignored.
-- **`-word`** leaves out anything with a word that starts that way. A search
-  that only leaves words out matches nothing.
+  A quote with no closing partner is dropped and the words after it are read
+  as words, so `"short summ` finds by word starts while it is typed.
+- **`-word`** leaves out anything with a word that starts that way.
+- **`-"…"`** leaves out anything with those whole words next to each other, in
+  that order (*decided 2026-10-19*, record
+  [a-minus-before-a-phrase-leaves-the-phrase-out](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-minus-before-a-phrase-leaves-the-phrase-out.md)).
+  While its closing quote is missing, it and everything after it are
+  ignored, so `remov -"short summ` finds what `remov` finds.
+- **A search that only leaves things out matches nothing**, phrases included.
 - **`or` is an ordinary word**, and so is a `key:value` pair.
 
 A relay MUST return every event that meets the rule and MAY return more (by
-stemming, or folding accents). It SHOULD rank a hit where a typed word is a
-whole word above one where it is only a word's start, since a two-letter
-search starts hundreds of words. The rule is the same for a `REQ` and for
-`/query`, and no client has to ask for it. A reader's check of a hit's current
-title (above) uses the same rule, so it never drops a hit the relay found.
+stemming, or folding accents). It SHOULD rank a hit where every typed word is a
+whole word above one where a typed word is only a word's start, since a
+two-letter search starts hundreds of words; among those it MAY rank by how
+many typed words are whole. It SHOULD answer in rank order, best first, so a
+`limit` or the 500 cap keeps the best-ranked hits. The rule is the same for a
+`REQ` and for `/query`, and no client has to ask for it. A reader's check of a
+hit's current title (above) uses the same rule, so it never drops a hit the
+rule finds; it drops one that a relay returned beyond the rule.
 
 Access does not change. A hit is returned only if a plain read would return the
 event, so a title in a Folder the reader cannot read is not found. An object
@@ -2392,9 +2401,16 @@ which is why it is a hand-run check rather than a CI job.
 Short summary from few places*, asked once over `/query` and once by a `REQ`
 with the same filter. `Remov`, `remov short` and `short remov` each find it;
 `"short summary"` finds it and `"summary short"` does not; `remov -short` does
-not; a nonsense word such as `zqxj` answers `[]`, which tells a relay that
-honours `search` from one that drops the field and answers everything. The
-reference relay runs these in `crates/buzz-search/tests/fts_integration.rs`.
+not; `remov -"short summary"` does not, while `remov -"summary short"` and
+`remov -"short summ` do, and `-"short summary"` alone answers `[]`; a nonsense
+word such as `zqxj` answers `[]`, which tells a relay that honours `search`
+from one that drops the field and answers everything. The reference relay runs
+these against its search layer on Postgres
+(`crates/buzz-search/tests/fts_integration.rs`), not through either
+connection, so asking over `/query` and a `REQ` stays a hand-run check. It does
+not yet find a word start after `.`, `@` or `/` inside a token (`pdf` in
+`notes.pdf`, `x` in `jan@x.com`), or a number after a hyphen (`7` in `sum-7`),
+because its index keeps those whole.
 
 ---
 

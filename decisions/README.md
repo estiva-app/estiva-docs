@@ -179,6 +179,7 @@ heading here.
 ## Search
 
 - [Search matches every typed word as the start of a word; quotes ask for an exact phrase and a minus leaves a word out](search-matches-every-word-as-a-word-start.md) — Accepted, 2026-10-19
+- [A minus before a quoted phrase leaves out anything with those words next to each other](a-minus-before-a-phrase-leaves-the-phrase-out.md) — Accepted, 2026-10-19
 
 ## Protocol
 
