@@ -776,6 +776,14 @@ and available to anyone in the Folder.
   the correction below.
 - It removes the **record**, not the work. Children are separate events with
   their own authors; they remain in the Folder.
+- **A deleted comment's replies stay, under "This comment was deleted."**
+  *Added 2026-10-19 (COMM-5; Miky, 2026-10-16).* Every app draws them where
+  the comment was, under that note, as Peek does. A reader says a comment was
+  deleted only when the relay returns a `kind:5` naming it by its author:
+  replies whose comment the read did not return may only be outside that read.
+  The thread then takes no new replies and offers no Resolve; each reply's
+  author can still edit or delete their own. On a document, the thread keeps
+  its place from its replies (§13.6).
 - **It does not remove the changes.** *Added 2026-10-14 (Leaf 1; Miky,
   2026-10-13).* A `kind:5` naming a file's address hides the root, and every
   `kind:1851` aimed at it stays readable to its Folder — for a bare file, a
@@ -2310,7 +2318,7 @@ throwaway relay or a fake query.
 | C13 | **Reaction horizon and count.** With 101 targets, reactions are asked for the newest 100 and the omission of 1 is reported. `+`, empty and a duplicate from one pubkey count as one `+`. A reaction with two `e` counts against the last (§6.6) |
 | C14 | **Deletion left to the relay.** After the author's `kind:5`, the next read no longer holds the message, and the app shows nothing for it from local state. A non-author's `kind:5` is refused and the refusal is shown in the relay's words. Edit and Delete are offered only on the viewer's own message — not on another person's or an agent's (§6.5, 2026-10-06) |
 | C15 | **Attachment fold.** An edit carrying `imeta` replaces the message's set. A later edit with none leaves it. An edit carrying one file on a message with two leaves one (§6.8) |
-| C16 | **Reply shape.** A reply to a comment is a `kind:1111` with the comment's `A`/`K`/`P`, `e`/`k`/`p` naming the top-level comment, the comment's `h`, and no lowercase `a` for the object. A reply read back threads under that comment in every conforming app (§6.4) |
+| C16 | **Reply shape.** A reply to a comment is a `kind:1111` with the comment's `A`/`K`/`P`, `e`/`k`/`p` naming the top-level comment, the comment's `h`, and no lowercase `a` for the object. A reply to a comment carrying a `block` copies its `block` and `quote` verbatim, before the `h` (§13.6). A reply read back threads under that comment in every conforming app (§6.4) |
 | C17 | **Membership fold.** The file's author is a member from the earliest root version. Writing in the stream, a body mention, an assignee change carrying `["p", P]`, and `member:<P>`=`true` by anyone each make the person a member. A comment's `p` tag alone does not, nor an assignee change without a `p`, nor an unassign, nor a `kind:9` with an `a`. An edit of the root after the author left does not re-join them. A `member:<P>`=`false` signed by someone else is ignored. One signed by `P` ends membership until a later trigger, and member-since is then that trigger's second. Two changes inside one second order by `ts` (§11.8) |
 | C18 | **Unread for a member.** Someone mentioned for the first time on a year-old file has one unread message, the mention. The person's own messages are never unread. A reply is read once its thread's marker or the reply floor passes it, or the file's marker passes it and it is at or before T0; the channel's marker never reads a file. A muted file shows only the messages that mention the person (§11.3, §11.8) |
 | C19 | **Urgent mention.** A message urgent for `P` carries `["urgent", P]` and `["p", P]` and names `P` in its body as published as an ordinary reference. It is urgent for `P` and for nobody else it names. An `urgent` tag for a person the body does not name is not urgent. An app that does not draw urgency renders it as an ordinary mention (§13.1) |
@@ -3592,9 +3600,9 @@ joining blocks into one string is needed:
   every reader of the page.
 - A writer MUST NOT trim the words or replace a reference with its drawn name:
   they are the block's text as stored.
-- A `quote` without a `block` tag is ignored. A **reply** inherits its root's
-  anchor and carries neither tag; a comment **edit** (§6.8) carries neither, so
-  an anchor cannot be re-pointed after posting.
+- A `quote` without a `block` tag is ignored. A **reply** copies its root's
+  `block` and `quote` verbatim (below); a comment **edit** (§6.8) carries
+  neither, so an anchor cannot be re-pointed after posting.
 
 **A reader matches exactly.** It looks for `<start>` in the first listed block
 and `<end>` in the last listed block, both of them inside the run, the end after
@@ -3617,14 +3625,25 @@ says whose block the tag names. A `kind:9` has no `A`, so a reader MUST ignore a
 drawn on gives a confident "deleted" about the wrong document. A message that
 shows a block of another object uses `part` (§13.6.1).
 
-**A reply carries no `block`, and an anchor resolves against the folded body.**
-*Added 2026-10-14 (Leaf 1).* The anchor belongs to the top-level comment: a
-NIP-22 reply (`e` naming that comment, no lowercase `a`) inherits it and MUST
-NOT carry a `block` tag of its own. And the document a `block` id is looked up
-in is the object's **current** body — its `description` fold over the root
-(§6.10, §6.2's `h` rule) — never the root's `content` alone. A block somebody
-added in a later save is present; resolving against the root would call it
-detached.
+**A reply copies its comment's place, and an anchor resolves against the
+folded body.** *Added 2026-10-14 (Leaf 1); the reply rule reversed 2026-10-19
+(COMM-5; record
+[a-reply-on-a-page-keeps-its-threads-place](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-reply-on-a-page-keeps-its-threads-place.md)).*
+The anchor belongs to the top-level comment, one per thread. A NIP-22 reply
+(`e` naming that comment, no lowercase `a`) to a comment that carries a `block`
+MUST copy that comment's `block` and `quote` tags verbatim when it is written,
+and MUST NOT carry a place of its own; a reply to a comment on the whole object
+carries neither. A reader places a thread by its comment's anchor while the
+comment is readable, else by its earliest reply that carries one, so a thread
+keeps its place when its comment is deleted (§6.5). A thread with neither — a
+deleted comment whose replies were written before this rule — is drawn apart,
+after the threads that have a place. A reader MUST NOT draw a reply's copied
+anchor as a second one: it is the thread's.
+
+And the document a `block` id is looked up in is the object's **current** body
+— its `description` fold over the root (§6.10, §6.2's `h` rule) — never the
+root's `content` alone. A block somebody added in a later save is present;
+resolving against the root would call it detached.
 
 **A `block` tag is meaningful only against a block document.** Marker text has
 no addressable sub-unit (§13.1), so an anchor on an object whose body is marker

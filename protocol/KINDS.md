@@ -65,7 +65,8 @@ nobody held the whole list.
 | Kind | Name | Notes |
 | --- | --- | --- |
 | `9` | Chat message | NIP-29 group message. A Folder's conversation, a DM, and a Ship project conversation are all this. Drawn from SPEC §7.8, noun "message"; no `kind:31990` may claim it. A Folder's built-in "Start a conversation" writes one with only the Folder's `h` (SPEC §3.2) |
-| `1111` | Comment | NIP-22. Drawn from SPEC §7.8, noun "comment"; written by every app on any file it can read (SPEC §6.4) |
+| `1111` | Comment | NIP-22. Drawn from SPEC §7.8, noun "comment"; written by every app on any file it can read (SPEC §6.4). A reply to a comment on part of a document copies its `block` and `quote` (SPEC §13.6) |
+| `40003` | Edit | Buzz's message edit, on a message or a comment; Peek, Ship and Leaf write it on their own. `e` names the target, `content` is the new body, and it carries no `block` or `quote`, so a comment never moves (SPEC §6.8). `h` required: the target's Folder. The relay accepts it only from the target's author or their NIP-OA owner (`validate_edit_ownership`) |
 | `7` | Reaction | NIP-25, on a message or a comment; Peek, Ship and Leaf write it, and take their own back with a `5`. Emoji capped at 64 chars (`build_reaction`). The relay files it under its target's channel (`derive_reaction_channel`). Counted under the reaction horizon (SPEC §6.6) |
 
 ---
@@ -129,14 +130,14 @@ of the three.
 | Scope | Meaning | Estiva kinds |
 | --- | --- | --- |
 | `UsersWrite` | User-owned global state | `0`, `31989`, `31990` |
-| `MessagesWrite` | A write into a channel | `5`, `7`, `9`, `1111`, `1851`, `30840`, `30842`, `30850`, `30851` |
+| `MessagesWrite` | A write into a channel | `5`, `7`, `9`, `1111`, `1851`, `30840`, `30842`, `30850`, `30851`, `40003` |
 | `AdminChannels` | Channel administration | `9007` |
 | `AdminUsers` | Membership administration | `9030`, `9031` |
 
 `MessagesWrite` on `1851` is doing real work: it is what lets one member set a
 field on another member's object, which is the normal case in a tracker.
 
-`30842` / `30851` / `1851` **require `h` at ingest.** The Folder is not
+`30842` / `30851` / `1851` / `40003` **require `h` at ingest.** The Folder is not
 optional — several apps write these kinds, and one of them forgetting would put
 an unreachable object into the shared space that nobody can unpublish.
 
