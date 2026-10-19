@@ -407,13 +407,17 @@ The `search` string is a person's typing, read by one rule:
   ignored, so `remov -"short summ` finds what `remov` finds.
 - **A search that only leaves things out matches nothing**, phrases included.
 - **`or` is an ordinary word**, and so is a `key:value` pair.
+- **It is read left to right.** A space or a `"` ends a word, and each `"`
+  pairs with the next one. A minus leaves out only when it opens a term, after
+  a space, a quote or the start of the text: `x-"short summary"` is the word
+  `x-` and the phrase `"short summary"` to find.
 
 A relay MUST return every event that meets the rule and MAY return more (by
 stemming, or folding accents). It SHOULD rank a hit where every typed word is a
 whole word above one where a typed word is only a word's start, since a
 two-letter search starts hundreds of words; among those it MAY rank by how
 many typed words are whole. It SHOULD answer in rank order, best first, so a
-`limit` or the 500 cap keeps the best-ranked hits. The rule is the same for a
+`limit` or the relay's cap keeps the best-ranked hits. The rule is the same for a
 `REQ` and for `/query`, and no client has to ask for it. A reader's check of a
 hit's current title (above) uses the same rule, so it never drops a hit the
 rule finds; it drops one that a relay returned beyond the rule.
@@ -2410,7 +2414,9 @@ these against its search layer on Postgres
 connection, so asking over `/query` and a `REQ` stays a hand-run check. It does
 not yet find a word start after `.`, `@` or `/` inside a token (`pdf` in
 `notes.pdf`, `x` in `jan@x.com`), or a number after a hyphen (`7` in `sum-7`),
-because its index keeps those whole.
+because its index keeps those whole. Nor does it find a word or phrase typed
+with a hyphen in a text that has the two words apart: `remov-short` answers
+`[]` for *Remove Short summary*, because it also asks for the hyphenated word.
 
 ---
 
