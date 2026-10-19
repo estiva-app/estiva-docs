@@ -175,6 +175,10 @@ heading here.
 - [Foundation packages: one repo, public npm, built ESM, and a named owner for a break](0002-foundation-packages.md) — Accepted, 2026-08-26
 - [The block editor is shared: its translation lives in @estiva-app/protocol and its editor nodes in @estiva-app/ui/editor](the-block-editor-kit-lives-in-protocol-and-ui.md) — Accepted, 2026-09-30
 
+## Search
+
+- [Search matches every typed word as the start of a word; quotes ask for an exact phrase and a minus leaves a word out](search-matches-every-word-as-a-word-start.md) — Accepted, 2026-10-19
+
 ## Protocol
 
 - [A shape left over from early experiments is migrated or deleted, never kept on the relay for compatibility](early-shapes-are-migrated-or-deleted.md) — Accepted, 2026-09-15
