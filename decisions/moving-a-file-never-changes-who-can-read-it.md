@@ -43,7 +43,7 @@ None is on record: the call was made without written alternatives.
 - An app's move never makes a file look private, and a moved project never
   leaves its issues behind.
 - The move is about the file. Where its new comments are filed is the separate
-  call [a conversation belongs to the file it is about](a-thread-belongs-to-what-it-is-about.md).
+  call [what belongs to a file is stored with it](what-belongs-to-a-file-is-stored-with-it.md).
 - A failure between the add and the remove leaves the file listed in both
   Folders, visible and fixed by moving again.
 - Whether access should follow a file rather than its Folder is the open

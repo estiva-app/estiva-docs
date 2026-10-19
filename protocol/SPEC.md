@@ -163,7 +163,7 @@ produce the same events in the same order.
 | **rename** | `kind:9002` with the new `name`. Nothing else: a `kind:1852` never carries a name | by the relay, to anybody but the channel's owners and admins |
 | **archive** / **restore** | `kind:1851` on the Folder's address, `field` `archived`, `value` `true` (or empty to restore), `h` the Folder itself; `content` MAY carry what the person said about it | by the consumer, to anybody but the Folder's owners and admins; a reader ignores one from anybody else (§3.2) |
 | **delete** | `kind:9008` with the Folder's `h` | by the relay, while the Folder holds a file — a `30840`, `30842`, `30850` or `30851` under its `h`, or any address its listing names — and to anybody but the channel's owner, the person who owns an owner-role agent in the channel, or an owner or admin of the workspace on the relay's roster |
-| **place** a new file | the file's root, with this Folder's `h` (or the tag its owner's `placement` names, §7.3); then `kind:1852` `add` naming its address | — |
+| **place** a new file | the file's root, with this Folder's `h` (or the tag its owner's `placement` names, §7.3) — under a parent, the parent's own Folder instead (§6.7); then `kind:1852` `add` naming its address | — |
 | **unlist** a deleted file | the `kind:5`; then `kind:1852` `remove` naming its address, in each Folder whose state names it (§7.3) | — |
 | **move** a file to another Folder | `kind:1852` `add` in the target; then `kind:1852` `remove` in the source — one pair for the file and one for each file listed beneath it (§6.7), so a subtree moves whole. The file's `h` does not change | by the consumer, when the target is private and the file's `h` names any other channel (§3.1: the move would look private and not be) |
 | **start a conversation** | `kind:9` with the Folder's `h` (§6.4) | — |
@@ -645,14 +645,18 @@ A thread belongs to whatever anyone in it referenced, at any point. A thread
 that mentions an object halfway through is from then on about that object, and
 the **whole** thread attaches, not only the message carrying the reference.
 
-**Which Folder a new comment goes into** (*added 2026-10-19*, LTX; record
-[a-thread-belongs-to-what-it-is-about](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-thread-belongs-to-what-it-is-about.md)).
+**Which Folder a new comment goes into** (*added 2026-10-19*, LTX; *corrected
+the same day*; record
+[what-belongs-to-a-file-is-stored-with-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/what-belongs-to-a-file-is-stored-with-it.md)).
 The same rule for every kind, and for every app writing it, the file's owner
-or not: a new `kind:1111` on a file takes as `h` the Folder whose listing
-(`kind:30890`, §3.3) names the file; otherwise the file's own Folder, read
+or not: a new `kind:1111` on a file takes as `h` the file's own Folder, read
 from its root's `h`, or `buzz-channel` on a record that names its Folder that
-way (§7.3). A reply copies its comment's `h` (C16). A reader reads a file's
-conversation by its address, whatever Folder each comment was filed in.
+way (§7.3) — never the Folder whose listing it was opened from. A comment
+written this way therefore has the file's readers, wherever the file is drawn
+(§3.1). A
+reply copies its comment's `h` (C16). A reader reads a file's conversation by
+its address, whatever Folder each comment was filed in: comments written
+before the correction may sit in a Folder that lists the file.
 
 **That rule is only defensible because attachment has two strengths, and an app
 MUST present them separately** (added 2026-08-31):
@@ -1207,10 +1211,13 @@ its Folder's, at any depth.
 *Added 2026-09-23 (FOL-4):*
 
 - **Same Folder.** A sub-file's `h` is its parent's: a consumer creating a
-  file under a bare file MUST copy that file's `h`, and one creating it under
-  any other kind MUST use the Folder whose listing it was offered from. A move
-  changes `parent` and never `h`, so a consumer MUST offer as targets only
-  files in the same Folder's listing. There is therefore no permission question
+  file under any file MUST give it its parent's own Folder (§6.4's rule: the
+  root's `h`, or `buzz-channel`), never the Folder whose listing it was offered
+  from (*corrected 2026-10-19*, record
+  [what-belongs-to-a-file-is-stored-with-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/what-belongs-to-a-file-is-stored-with-it.md)).
+  A move changes `parent` and never `h`, so a consumer MUST offer as targets
+  only files in the same Folder's listing whose own Folder is the moving
+  file's. There is therefore no permission question
   at any depth, and nothing to check. Moving a file to another *Folder* is
   §3.3's move, and takes its subtree with it.
 - **A move** is a `parent` change whose `value` is the new parent's address, or
@@ -1527,8 +1534,8 @@ sit under it. Its owner says so with `anyParent` (§7.2). Every rule under
 cycles, depth — applies unchanged.
 
 **Placement.** A document is created as any listed file is (§3.3 **place**):
-its root with the Folder's `h`, then the Folder's `kind:1852` `add` naming its
-address. §3.2's built-in `create-file` makes a bare file, not a document; an
+its root with the Folder's `h` (under a parent, the parent's own Folder,
+§6.7), then the Folder's `kind:1852` `add` naming its address. §3.2's built-in `create-file` makes a bare file, not a document; an
 app owning documents leaves it out of its own interface and offers its own
 creation. A Folder holding a document cannot be deleted (§3.3).
 
@@ -1779,8 +1786,9 @@ children; a list of the same kind (a document's list of documents) still
 names its own. A consumer drawing what is under a file reads it from the Folder's
 listing (§6.7), which folds every child whatever its kind; a consumer reading
 by tag asks for each child kind whose list declares `anyParent`, by `#via` and
-`#A` as above. A move's target is a choice among files in the same Folder's
-listing (§6.7), not among objects of one kind. Absent `anyParent`, nothing
+`#A` as above. A move's target is a choice among §6.7's targets (files in the
+same Folder's listing with the moving file's own Folder), not among objects of
+one kind. Absent `anyParent`, nothing
 above changes.
 
 Measured on production 2026-09-29, the 1,000 newest `kind:1851`: 41 set
@@ -2284,8 +2292,8 @@ conversation, the document app writes every file's text. A manifest declaring
   fields, archive and delete stay the owner's, and its noun and "Open in" link
   stay the owner's manifest's;
 - lists no bare file, since a bare file has no text (§6.7);
-- writes each change into the file's own Folder (§6.10) and each comment into
-  the Folder §6.4 names, and offers no change on an archived file (§6.5).
+- writes each change (§6.10) and each comment (§6.4) into the file's own
+  Folder, and offers no change on an archived file (§6.5).
 
 "Open in" on a file still goes to its owner.
 
