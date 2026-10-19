@@ -150,8 +150,8 @@ naming the Folder its `buzz-channel` names.
 
 What a NIP-50 `search` matches, per kind ([SPEC §5.2](SPEC.md); buzz
 migrations 0035 and 0036). Every typed word matches the start of a word, `"…"`
-is an exact phrase and `-word` leaves a word out, the same over a `REQ` and
-`/query`:
+is an exact phrase, `-word` leaves a word out and `-"…"` a phrase, the same
+over a `REQ` and `/query`:
 
 | Kind | Searchable by |
 | --- | --- |
