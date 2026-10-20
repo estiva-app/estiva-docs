@@ -2026,6 +2026,10 @@ make the value mandatory, and it does not refuse a plain one:
 - On a creation, `format` is meaningful only with `target: "content"`: a tag is
   a scalar (§7.2), and an event has one `content-format`. A consumer MUST ignore
   `format` on a property written to a tag.
+- A consumer that writes a prose value, as a block document or as plain text,
+  also writes the membership change that adds each person the value names and
+  the value it edited did not, and puts no `p` for them on the event (§11.8
+  *A mention in a file's text*, §13.1; *added 2026-10-20*, WBD-2).
 
 A consumer SHOULD draw a prose field as a block editor and MAY draw a
 multi-line text box. `estiva-blocks-1` is the only format defined (§13.3).
@@ -2453,6 +2457,7 @@ throwaway relay or a fake query.
 | C25 | **A message's URL.** A message written with an app URL that names `V` by §7.7 — pasted alone, mid-sentence or typed — has that URL in its body as written, never a `nostr:` reference, and carries `["a", V]` (for a message's URL, `["q", <id>]`); on `V`'s conversation itself it carries no second `a`. A reader draws `V` by where the URL sits (C21), and `V` lists the message as a mention (C11). A URL over chosen words is written `[words](url)`, draws as a link, and carries the `a` (or `q`) its target earns. A link to one block carries its `part`, and a URL no app claims, or whose identity two authors hold, carries no tag and stays a link (§13.1, §6.4) |
 | C26 | **The card replaces the row.** A message whose body is only `V`'s reference, with `["embed", V, "detailed"]`, draws `V`'s card under it and nothing in its body; with `compact` or an unknown layout, `V`'s row under it and nothing in its body; with a `part` for `V`, the part and nothing in its body. A body that is only a link to one block of `V`, with its `part` and no `embed`, draws the part and nothing in its body; `see <that link> here` with the same tags draws `V`'s chip in the sentence, the part, and no card. A body with `V` alone on one line and in a sentence on another, with `detailed`, draws the chip in the sentence, nothing on the lone line, and the card. An edit with `["embed", V, "none"]` and the same body draws `V`'s row in place and no card. An old message with `compact` for `V` and `W`, edited with `["embed", V, "none"], ["embed", W, "compact"]`, draws `W`'s row under it and no card for `V`. A body `the plan is [these words](U)`, where `U` names `V`, with `["a", V]` and `["embed", V, "detailed"]`, draws the words as a link and `V`'s card; `[U](https://example.com)` with an `embed` for `V` draws no card (§13.6.2) |
 | C27 | **The default card.** A writer that adds the default writes `["embed", V, "detailed"]` for a body naming one file `V`, also beside a Folder, a person or a message reference; none for a body naming two files, or a file and a block link (whose `part` it writes, with no `embed`); none for `V` on `V`'s own conversation, where `V` does not count, so `V` and one other file `W` there give `W` the default; never `compact` for a value it adds. An edit that adds the first file to a body adds its default and carries the whole folded set; an edit that changes a word of a body whose card was removed before sending writes no `embed`; an edit that puts `V` back into a body it was taken out of adds its default when the edit's body names no other file, also over an earlier `["embed", V, "none"]`. A link on words counts by its target: a body naming `V` only as `[words](U)` gets `V`'s default; with a second file, on words or bare, none; with a URL no app claims beside it, `V`'s (§13.6.2) |
+| C28 | **A mention in a file's text.** A save of a file's block document that names `P` with a `reference`, edited from a version that did not, is written with `member:<P>`=`true` on the file, signed by the writer and carrying `["p", P]`, and the save carries no `p` for `P`; `P` is a member, and the file is one unread for `P`, with no message in its stream, until `P`'s marker for it passes the change. A creation naming `P` writes the same change; a save naming only the writer writes none. `P` leaves; a save that changes another word and still names `P` writes no change, and `P` stays out. A save that drops `P`, then one that names `P` again, writes the change again: `P` is a member with one unread. The Add button's `member:<P>`=`true` by someone else is one unread too, and still one with two of them; `P`'s own `member:<P>`=`true` (Join) is none (§11.8, §13.1) |
 
 C11 and C12 both have a failure that is invisible from the app that has it.
 A merged mention looks like somebody said it here. A forged edit looks like an
@@ -2921,6 +2926,37 @@ were assigned to. An app that does not know the field folds it like any other
 Measured on production 2026-09-30, as the agent in the QA Folder: the relay
 accepted a `member:<P>` change on an issue, and both `#p` and `#a` returned it.
 
+#### A mention in a file's text
+
+*Added 2026-10-20* (WBD-2; record
+[a-mention-in-a-files-text-adds-the-person](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-mention-in-a-files-text-adds-the-person.md)).
+A file's text — its root's content, or the value of a change whose action
+declares a prose input (§7.3) — names a person with a `nostr:npub` reference
+(§13.1): a `reference` mark in a block document (§13.3), the URI itself in
+marker text (§13.2). A file's text is not a message, so naming someone in it is
+not the *was mentioned in it* trigger above. **A mention in a file's text is
+written as the membership change above, and that is the only event it
+writes:**
+
+- A writer that saves a file's text naming `P`, when the version it edited
+  from did not name `P`, MUST also sign the change setting `member:<P>` to
+  `true` on the file, in the file's Folder. A creation whose text names `P`
+  counts as edited from nothing. The writer compares the two versions it holds,
+  the one it loaded and the one it saves; nothing is kept between edits. It
+  writes none for its own pubkey.
+- The save carries **no `p`** for the people its text names (§13.1). So a save
+  that still names `P` — a typo fix — changes nobody's membership and tells
+  nobody, and a person who left stays out.
+- A save that takes the mention out removes nobody; only `P` leaves. A later
+  save that names `P` again, edited from a version that did not, adds them
+  again.
+- A writer that does not write the change tells nobody: its mention is a chip.
+  No reader ever makes anyone a member from a file's text.
+
+The change carries `["p", P]`, so the `#p` read below still finds every file a
+person was added to this way, and the members a fold finds are still exactly
+what the `#p` filter returns.
+
 #### The fold
 
 Take every join and leave for `(F, P)` and order them as §6.3 orders changes.
@@ -2964,6 +3000,23 @@ Condition 3 is what settles absence for a file (§11.6). A member who has never
 opened the file is told about what was said since they joined, and nothing
 before it. A person who is mentioned for the first time on a year-old issue sees
 the message that mentions them, not the year.
+
+**Being added is one unread item** (*added 2026-10-20*, WBD-2). A change
+setting `member:<P>` to `true` on file `F` is **unread for `P`** when all of
+these hold:
+
+1. it is not signed by `P` — adding yourself (Join) tells you nothing;
+2. `P` is a member of `F` now, by the fold above — a leave after it ends it;
+3. its `created_at` is newer than `P`'s marker for `F`'s own stream (§11.3);
+   a `thread:` or `msg:` key does not read it, and with no marker it is
+   unread.
+
+It does not matter whether a mention in the file's text (above) or someone's
+Add button wrote it: the event is the same. Like a mention, it counts for a
+member who muted the file. However many such changes there are, they are
+**one** item for the file, cleared by reading the file's stream (§11.2), so a
+file with an unread Add is unread even when its stream holds no message. A
+reader that does not know this item shows the Add as a silent join, as before.
 
 A Folder's general stream is not judged by membership: being on the channel
 roster makes a person a member of the Folder, not someone its conversation is
@@ -3189,6 +3242,15 @@ text. A reader that cannot resolve a reference MUST render the URI's own label
 or its shortened form, never blank. A reference to an object MAY also show one
 block of it, live, through a `part` tag (§13.6.1), and any reference MAY ask
 for a card under the message through an `embed` tag (§13.6.2).
+
+**A file's text is not a message** (*added 2026-10-20*, WBD-2). A save of a
+file's text — a root's content, or a change to a prose field (§7.3) — MUST NOT
+carry a `p` for a person because its text names them; a `p` it carries for
+another reason, such as a `pubkey` property (§7.3), stands. Each save carries
+the whole text again, so a `p` per save would tell the person about every typo
+fix, in every client that notifies on `#p`. What tells them is the membership
+change the writer signs when a save newly names them (§11.8 *A mention in a
+file's text*).
 
 An object or a message is mentioned the same way by **an app URL that names
 it** by §7.7 — the link as the person pasted or typed it (decided 2026-10-14,
