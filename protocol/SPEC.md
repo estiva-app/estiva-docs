@@ -3238,9 +3238,9 @@ file's text — a root's content, or a change to a prose field (§7.3) — MUST 
 carry a `p` for a person because its text names them; a `p` it carries for
 another reason, such as a `pubkey` property (§7.3), stands. Each save carries
 the whole text again, so a `p` per save would tell the person about every typo
-fix, in every client that notifies on `#p`. What tells them is the membership
-change the writer signs when a save newly names them (§11.8 *A mention in a
-file's text*).
+fix, in every client that notifies on `#p`. What adds them is the membership
+change the writer signs when a save newly names them; it puts the file in
+their lists (§11.8 *A mention in a file's text*).
 
 An object or a message is mentioned the same way by **an app URL that names
 it** by §7.7 — the link as the person pasted or typed it (decided 2026-10-14,
