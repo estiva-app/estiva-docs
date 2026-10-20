@@ -134,7 +134,9 @@ heading here.
 - [What you do shows at once; if the relay refuses it, it is taken back with a note and what you typed comes back to you](a-refused-action-is-undone-and-your-text-comes-back.md) — Accepted, 2026-10-07
 - [A file's Activity lists only the places that mention it, never the conversations of the files under it](activity-lists-only-mentions-from-elsewhere.md) — Accepted, 2026-09-20
 - [A chat message belongs to the protocol, like a comment, and no app owns it](a-chat-message-belongs-to-the-protocol.md) — Accepted, 2026-10-15
-- [Every app writes comments and chat with one shared comment box and reacts with one shared reaction row, and the cards stay each app's own](every-app-writes-and-reacts-with-one-shared-box.md) — Accepted, 2026-10-16
+- [A conversation is one shared thing that looks and works the same in Peek, Ship and Leaf, and only its colours are each app's own](a-conversation-is-one-shared-thing-and-only-its-colours-are-the-apps.md) — Accepted, 2026-10-20
+- [Every app writes comments and chat with one shared comment box and reacts with one shared reaction row, and the cards stay each app's own](every-app-writes-and-reacts-with-one-shared-box.md) — Accepted, 2026-10-16; its part "the cards stay each app's own" superseded by the one above, 2026-10-20
+- [An archived file is read-only in every app: no new comment, reply or reaction, and no edit or delete, until it is unarchived](an-archived-file-is-read-only-in-every-app.md) — Accepted, 2026-10-20
 - [A comment is the same object in every app; suggestions, review verdicts and an agent's assertions are objects of their own beside it](a-comment-is-the-same-object-in-every-app.md) — Proposed, 2026-10-16
 
 ## Links & widgets

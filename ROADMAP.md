@@ -42,7 +42,7 @@ The live projects after the sweep of 2026-10-19. The sweep of 2026-10-08 applied
 | project | Goal | first open work |
 | --- | --- | --- |
 | **Leaf edits any file's text** (`5fea8a37`) | Leaf is where you read and write any file's text: a Ship project or issue opens in Leaf with Ship's row, and Leaf's tree stops listing Peek topics | LTX-4 (a topic has no text; Leaf writes other apps' text), then LTX-2, LTX-3 |
-| **Comments work the same in Peek, Ship and Leaf** (`e2383f67`) | comments in Leaf and Ship get reactions, @ mentions, [ references, / and edit and delete through one shared comment box, which Peek moves onto next | COMM-8 (the named file's card while you write), then COMM-7 (Ship on the shared box) |
+| **Peek moves onto the shared box** (`6932f4cd`) | Peek writes, edits and reacts with the same comment box and reaction row as Leaf and Ship, and in every app @ offers one list of people, a link reads the same, and an archived file is read-only | the shared box takes what only Peek's does, then one rule for when a file is archived |
 | **Widgets 2: build 1 — messages** (`774e5e0d`) | links in Peek messages and Ship comments draw the same way from one shared widget kit: a chip in a sentence, a row alone on its line, one file's card under the message | WBM-8 (Katerina's look pass on the kit) |
 | **Decision records 2: the code does what the records say** (`028b9653`) | every repo's code, comments and docs agree with the Accepted records, and Miky sees every decision waiting on his merge | REC-1 (a Folder and a chat message belong to no app), then REC-2…REC-7 |
 | **Tests round 2: the gaps the first project left** (`7f27a2fa`) | a red test run always means a real bug | *not shaped yet* |

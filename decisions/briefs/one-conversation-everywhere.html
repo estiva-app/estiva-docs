@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One conversation everywhere</title>
+<style>
+:root{--bg:#fbfaf7;--ink:#1d1d1b;--muted:#5d5b55;--box:#ffffff;--line:#c9c5bb;--shared:#e3efe4;--shared-ink:#24613a;--app:#f3e6d6;--app-ink:#7a4a14;--rec:#eef0fb;--rec-ink:#2c3a8c;--warn:#fbeaea}
+@media (prefers-color-scheme: dark){:root{--bg:#161614;--ink:#ecebe6;--muted:#a9a69d;--box:#22221f;--line:#4a4842;--shared:#1f3526;--shared-ink:#9fd8b0;--app:#3a2c1b;--app-ink:#f0c58f;--rec:#22263f;--rec-ink:#b9c3ff;--warn:#3a2222}}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;margin:0}
+main{max-width:760px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:1.6rem;line-height:1.25;margin:.2em 0 .6em}
+h2{font-size:1.15rem;margin:2em 0 .5em}
+p,li{color:var(--ink)} .muted{color:var(--muted)}
+.q{background:var(--rec);color:var(--rec-ink);border-radius:8px;padding:12px 14px;font-weight:600}
+.rec{background:var(--shared);color:var(--shared-ink);border-radius:8px;padding:12px 14px}
+table{border-collapse:collapse;width:100%;font-size:.92rem;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--box)}
+svg{width:100%;height:auto;display:block;margin:8px 0 4px}
+svg text{fill:var(--ink);font:13px system-ui,sans-serif}
+.s{fill:var(--shared);stroke:var(--shared-ink)} .a{fill:var(--app);stroke:var(--app-ink)} .b{fill:var(--box);stroke:var(--line)}
+.cap{font-size:.9rem;color:var(--muted);margin-top:0}
+.legend span{display:inline-block;padding:1px 8px;border-radius:4px;margin-right:8px;font-size:.85rem}
+code{font-size:.88em}
+</style>
+</head>
+<body>
+<main>
+<p class="muted">Decision brief · Peek moves onto the shared box · 20 October 2026</p>
+<h1>How much of a conversation is the same in every app?</h1>
+<p class="q">Should a conversation (its comments, replies, menus, notes and layout) be one shared thing that looks and behaves the same in Peek, Ship and Leaf, with only each app's colours its own?</p>
+
+<h2>Today</h2>
+<p>Since 20 October Leaf and Ship write and react with one shared comment box and one shared reaction row, and Peek moves onto them next. Everything around the box is still each app's own: the comment card, the thread and its replies, the Edit/Delete menu, "This comment was deleted.", "(edited)", how a link alone on its line draws, and the words. You decided this on 16 October (record <em>every-app-writes-and-reacts-with-one-shared-box</em>: "the cards stay each app's own"). It was on Katerina's 22 September ruling that the cards Ship and Peek both draw are recorded and "none promoted yet", and her 23 September ruling that "(edited)" stays Peek's.</p>
+<p>Today you said: "the capabilities should be shared and work the same including the layout. But the styling, the colors, should be on the app… so people don't need to have multiple mental models of conversations based on where they are."</p>
+<p>What already differs between the apps because each draws its own cards (from the 20 October triage):</p>
+<ul>
+<li>In Ship, a thread whose comment was deleted shows no "This comment was deleted." and still takes replies; Peek and Leaf close it.</li>
+<li>Leaf's "(edited)" has no time on hover; Peek's does.</li>
+<li>A link alone on its line is a row in Peek and a chip in Leaf.</li>
+<li>A refused reaction's note stays until your next click in Leaf and goes by itself in Ship.</li>
+<li>A file that is too large reads "Too large" in Leaf and "upload failed: 413 …" in Ship.</li>
+<li>Ship shows no quoted words for a comment on part of a page.</li>
+</ul>
+
+<h2>Why it reaches beyond this ticket</h2>
+<p>This sets what an app, an outside company's included, takes from us to have comments: a box it wires up next to cards it draws itself, or a whole conversation it places and colours. It decides whether Katerina designs a conversation once or three times, and whether every fix to how a thread behaves is one release or three. <strong>Two-way door:</strong> nothing on the relay changes in any option, since all three write the same events. Undoing it means moving apps back onto cards of their own.</p>
+
+<h2>The picture</h2>
+<p class="legend"><span style="background:var(--shared);color:var(--shared-ink)">shared, one release for every app</span><span style="background:var(--app);color:var(--app-ink)">each app's own</span></p>
+
+<svg viewBox="0 0 720 170" role="img"><title>Option A: box and row shared, cards each app's (today's record)</title>
+<text x="0" y="16" font-weight="600">A · Box and row shared, cards each app's own (today's record)</text>
+<g><rect class="a" x="0" y="30" width="230" height="130" rx="8"/><text x="12" y="50">Peek: its cards, thread,</text><text x="12" y="68">menus, notes, words</text>
+<rect class="s" x="12" y="84" width="100" height="30" rx="5"/><text x="20" y="104">box</text><rect class="s" x="120" y="84" width="98" height="30" rx="5"/><text x="128" y="104">reaction row</text><text x="12" y="146" class="muted">colours: Peek's theme</text></g>
+<g><rect class="a" x="245" y="30" width="230" height="130" rx="8"/><text x="257" y="50">Ship: its cards, thread,</text><text x="257" y="68">menus, notes, words</text>
+<rect class="s" x="257" y="84" width="100" height="30" rx="5"/><text x="265" y="104">box</text><rect class="s" x="365" y="84" width="98" height="30" rx="5"/><text x="373" y="104">reaction row</text><text x="257" y="146">colours: Ship's theme</text></g>
+<g><rect class="a" x="490" y="30" width="230" height="130" rx="8"/><text x="502" y="50">Leaf: its cards, column,</text><text x="502" y="68">menus, notes, words</text>
+<rect class="s" x="502" y="84" width="100" height="30" rx="5"/><text x="510" y="104">box</text><rect class="s" x="610" y="84" width="98" height="30" rx="5"/><text x="618" y="104">reaction row</text><text x="502" y="146">colours: Leaf's theme</text></g>
+</svg>
+<p class="cap">Three sets of cards. Each behaviour above is fixed three times, and they drift.</p>
+
+<svg viewBox="0 0 720 200" role="img"><title>Option B: one conversation, each app places it and colours it</title>
+<text x="0" y="16" font-weight="600">B · One conversation, each app places it and colours it</text>
+<rect class="s" x="0" y="30" width="720" height="78" rx="8"/>
+<text x="12" y="52">One conversation: cards · thread and replies · menus · "deleted" and "(edited)" · link rows · quoted words · words</text>
+<rect class="b" x="12" y="64" width="200" height="30" rx="5"/><text x="20" y="84">box</text><rect class="b" x="222" y="64" width="200" height="30" rx="5"/><text x="230" y="84">reaction row</text>
+<text x="436" y="84">… the same layout and behaviour</text>
+<rect class="a" x="0" y="122" width="230" height="68" rx="8"/><text x="12" y="142">Peek: a thread pane</text><text x="12" y="160">its people, its [ lists, its send</text><text x="12" y="178">its colours</text>
+<rect class="a" x="245" y="122" width="230" height="68" rx="8"/><text x="257" y="142">Ship: an issue's Activity</text><text x="257" y="160">its people, its [ lists, its send</text><text x="257" y="178">its colours</text>
+<rect class="a" x="490" y="122" width="230" height="68" rx="8"/><text x="502" y="142">Leaf: a column beside blocks</text><text x="502" y="160">its people, its [ lists, its send</text><text x="502" y="178">its colours</text>
+</svg>
+<p class="cap">The conversation is drawn once. An app chooses where it sits and supplies its data, its send and its theme's colours.</p>
+
+<svg viewBox="0 0 720 200" role="img"><title>Option C: shared behaviour, each app draws its own layout</title>
+<text x="0" y="16" font-weight="600">C · Shared behaviour and words, each app draws its own layout</text>
+<rect class="s" x="0" y="30" width="720" height="50" rx="8"/>
+<text x="12" y="52">One set of rules and words: who may edit, a deleted thread closes, "(edited)" with its time, refusal words</text>
+<text x="12" y="70" class="muted">no drawing; plus the shared box and reaction row</text>
+<rect class="a" x="0" y="94" width="230" height="96" rx="8"/><text x="12" y="114">Peek draws its own cards</text><text x="12" y="132">and layout from the rules</text><text x="12" y="150">its colours</text>
+<rect class="a" x="245" y="94" width="230" height="96" rx="8"/><text x="257" y="114">Ship draws its own cards</text><text x="257" y="132">and layout from the rules</text><text x="257" y="150">its colours</text>
+<rect class="a" x="490" y="94" width="230" height="96" rx="8"/><text x="502" y="114">Leaf draws its own cards</text><text x="502" y="132">and layout from the rules</text><text x="502" y="150">its colours</text>
+</svg>
+<p class="cap">The behaviour is the same, and the layout is still three. An outside app still draws a conversation itself.</p>
+
+<h2>Options</h2>
+<p><strong>A · Keep today's record.</strong> You and Katerina keep meeting the differences above. Each one is a ticket in each app. An outside company wires our box and reaction row into cards it builds itself. Katerina's 22 September ruling stands as written.</p>
+<p><strong>B · One conversation, each app's colours.</strong> A comment, a thread, a deleted comment, an edit, a link alone on its line and a refusal read and behave the same in Peek, Ship and Leaf, in the same layout. Peek's thread is dark Signal, Ship's is Ship's blue, Leaf's is Leaf's. Where it sits stays each app's: a pane in Peek, Activity in Ship, a column beside the blocks in Leaf, and the shared layout has to fit Leaf's narrow column. Katerina designs the one conversation as a prototype before it is built, and her "promote none yet" for the conversation card ends there. An outside company places one component and gets all of it. It is the drop-in conversation the 16 October record turned down, keeping what that record protected: each app's own look, now its colours, not its layout.</p>
+<p><strong>C · One set of rules, three layouts.</strong> Behaviour and words are shared; each app draws its cards. You meet the same behaviour in a different layout in each app. An outside company still builds the drawing. A bug in drawing (a missing note, a chip where a row belongs) can still differ by app.</p>
+
+<h2>Trade-offs</h2>
+<table>
+<tr><th></th><th>Protocol shape</th><th>What Miky and Katerina see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td>A</td><td>unchanged</td><td>three layouts, differences keep appearing</td><td>builds cards around our box</td><td>none</td><td>none now; each difference fixed per app</td></tr>
+<tr><td>B</td><td>unchanged; one conversation is the reference reading of SPEC's comment rules</td><td>one conversation, each app's colours</td><td>places one component</td><td>low: apps can draw their own again</td><td>a stage of its own, starting with Katerina's prototype</td></tr>
+<tr><td>C</td><td>unchanged</td><td>same behaviour, three layouts</td><td>builds the drawing from our rules</td><td>low</td><td>between A and B; layouts still kept three times</td></tr>
+</table>
+
+<h2>How others do it</h2>
+<ul>
+<li>Google Workspace: Docs, Sheets and Slides share one comment thread, card and menu, placed beside each app's content. This is option B.</li>
+<li>Atlassian: Jira and Confluence comments are one shared component under each product's theme.</li>
+<li>Matrix: each client draws its own timeline from shared rules (option C), and threads and edits behave differently across clients. That is the drift an open protocol gets without a reference component.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<p class="rec"><strong>B: one conversation, each app places it and colours it.</strong> A comment is the same object everywhere (your 16 October words), and B makes it look and act that way too: a person learns one conversation, and an outside company adopting the protocol gets the reference reading of its comment rules instead of writing its own. It keeps each app's identity where Katerina put it, in its theme's colours. It is a stage of its own: Katerina's prototype first, then the build. This project, Peek onto the shared box, stays as shaped and comes first, so Peek is on the shared box before the conversation around it is shared.</p>
+<p><strong>One part of B to settle with it:</strong> does "capabilities are shared" include Peek's Resolve and Highlights, so Ship and Leaf offer them too? The 16 October project kept them Peek's ("each app offers only the rows it can perform"). They write Peek's own markers, which Ship and Leaf would then read and draw, so it is its own question, asked after this one.</p>
+
+<h2>Checked</h2>
+<ul>
+<li>The 16 October record's text, "The cards stay each app's own", and its rejected "one drop-in conversation" (<code>estiva-docs decisions/every-app-writes-and-reacts-with-one-shared-box.md</code>, origin/main).</li>
+<li>Katerina's rulings: UIG-18 (22 Sep), "record all seven, promote none yet", with <code>ConversationThread</code>/<code>ConversationCard</code> still open; UIG-17 (23 Sep), <code>EditedMarker</code> stays Peek's (<code>estiva-ui docs/GATES.md:378-384</code>).</li>
+<li>Per-app colours already exist: estiva-ui's <code>tokens.css</code> has a theme per app (<code>signal</code> for Peek, <code>ship</code> for Ship), and the shared box and reaction row read it.</li>
+<li>Each difference listed under Today is from the 20 October triage of "Comments work the same in Peek, Ship and Leaf"; I did not re-check each one in the code.</li>
+<li>"How others do it" is from general knowledge of those products, not checked today.</li>
+<li>Peek's own cards today: <code>ConversationCard.tsx</code> 783 lines, <code>ReplyCard.tsx</code> 652 (peek-app, origin/main).</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="muted">Supersedes the "cards stay each app's own" part of <em>every-app-writes-and-reacts-with-one-shared-box</em> (Accepted 2026-10-16); reopens Katerina's UIG-18 for <code>ConversationThread</code>/<code>ConversationCard</code> and UIG-17 for <code>EditedMarker</code>. Wire: <code>kind:1111</code>, <code>kind:9</code>, <code>kind:7</code>, <code>kind:5</code>, <code>kind:40003</code> unchanged. Repos: estiva-ui, estiva-foundation (conversation), peek-app, estiva-ship, leaf. A how-it-looks call stays Katerina's.</p>
+</main>
+</body>
+</html>
