@@ -3442,7 +3442,7 @@ dialect has neither, and `[x]` there is text.
 ([a-link-on-words-counts-toward-the-card](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-link-on-words-counts-toward-the-card.md));
 Row or Card, 2026-10-19
 ([a-lone-links-chip-menu-offers-row-or-card](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-lone-links-chip-menu-offers-row-or-card.md));
-callouts and table cells, 2026-10-20.*
+callouts and table cells, 2026-10-20 (Miky).*
 
 In a block document, as in a message (§13.6.2), where a link sits decides how
 it draws:
