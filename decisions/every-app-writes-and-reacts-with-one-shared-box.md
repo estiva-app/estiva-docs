@@ -5,6 +5,11 @@
 - Decided by: Miky, in the shaping session of "Comments work the same in Peek, Ship and Leaf" (2026-10-16)
 - Area: Messages
 
+> Superseded in part, 2026-10-20: the part "The cards stay each app's own" is
+> replaced by
+> [a-conversation-is-one-shared-thing-and-only-its-colours-are-the-apps](a-conversation-is-one-shared-thing-and-only-its-colours-are-the-apps.md).
+> The rest of this record stands.
+
 ## Who it affects
 
 On 16 October, right after comments on a selection landed in Leaf, Miky tried
@@ -43,8 +48,8 @@ company's app gets comments by supplying its people, its `[` lists, its own
 - One **reaction row** in `@estiva-app/ui`: the pills, the picker, and who reacted. What a reaction writes, and how reactions are counted, stays in `@estiva-app/conversation` and `@estiva-app/protocol` (SPEC §6.6).
 - **An app supplies only what is its own:** its people, its `[` sections, its `/` Insert rows, and a send that says whether the relay accepted the message.
 - **The same box writes chat messages** (`kind:9`) as well as comments (`kind:1111`). The wire stays two kinds.
-- **The cards stay each app's own.**
-- Carried out by "Comments work the same in Peek, Ship and Leaf": Leaf first, then Ship. Peek moves in a second stage, its own project, which needs Peek's ui bump from 0.69.
+- **The cards stay each app's own.** (Superseded on 2026-10-20 by [a-conversation-is-one-shared-thing-and-only-its-colours-are-the-apps](a-conversation-is-one-shared-thing-and-only-its-colours-are-the-apps.md).)
+- Carried out by "Comments work the same in Peek, Ship and Leaf": Leaf first, then Ship. Peek moves in a second stage, the project "Peek moves onto the shared box". (Corrected 2026-10-20: this line said the stage needed Peek's ui bump from 0.69; peek#530 moved Peek to ui 0.75 on 16 October, and it is on ^0.79.0 now.)
 
 This extends [composer-triggers-are-one-shared-kit](composer-triggers-are-one-shared-kit.md) from the triggers to the whole box and to reactions.
 
