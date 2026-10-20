@@ -3420,6 +3420,23 @@ of them can be rewritten.
 | `1. ` | numbered item |
 | ```` ``` ```` | fenced code, optionally followed by a language name; closed by a line of ```` ``` ```` |
 
+**An indented list item** sits under the item above it (Miky, 2026-10-20).
+A writer spells it two spaces a level, as Markdown does. A reader reads it
+relative to the item above, not as a count of columns, so two, three or four
+spaces all mean "under the item above": an item indented further than the one
+above is one level below it; any other sits at the level of the nearest item
+above it at the same or a lesser indentation; none deeper than 8. A tab
+counts as four spaces. Only a line at the left edge opens a list, and while
+one is open an indented item of either marker is an item of it, because a
+list is flat and of one type; an item at the left edge of the other kind
+starts a new list. An indented prefix with no list open above it — after a
+paragraph, in a quote, in a fence — is text. A reader draws every item and
+nests it by its level where it can (§13.3, "An indented list item"); one that
+predates this rule draws the indented line as a line of text between two
+lists, so nothing is lost. A description's text reads indented items by this
+same rule; its box, callout and `\` escape stay a description's only (§13.3,
+"A description as text").
+
 **Inline markers.** `**bold**`, `*italic*`, `***bold italic***`, `__underline__`,
 `` `code` ``, `[label](url)`, and a bare `nostr:` URI.
 
@@ -3664,19 +3681,15 @@ text a description's block document is spelled as, and read back from, so an
 edit of one part keeps every other block, and its id, as it was. It is §13.2's
 marker dialect plus what a description holds and a message does not, so it is
 **for a description only**: a message's text stays §13.2, where none of the
-following means anything and an indented `- ` is text. A writer turning
+following means anything except the indented list item, which §13.2 took
+(2026-10-20). A writer turning
 text into a block document SHOULD read it this way, and a reader printing one
 for editing SHOULD spell it this way.
 
 - **Blocks** are §13.2's — `# `/`## ` headings, `- ` and `1. ` lists, `> `
   quotes, fenced code, paragraphs — one block per run, a blank line between.
-- **An indented list item** is spelled two spaces a level. It is read relative
-  to the item above, not as a count of columns, so two, three or four spaces
-  all mean "under the item above": an item indented further than the one above
-  is one level below it; any other sits at the level of the nearest item above
-  it at the same or a lesser indentation; none deeper than 8. Only a line at
-  the left edge opens a list, and while one is open an indented item of either
-  marker is an item of it, because a list is flat and of one type.
+- **An indented list item** is spelled and read as §13.2 says: two spaces a
+  level, relative to the item above, none deeper than 8.
 - **A checklist item** is spelled `- [ ] ` / `- [x] ` (`X` read as `x`), and
   **a callout** as a quote whose first line is `[!WARNING]` — the tone in
   capitals, read back lowercased; an unknown one is kept as written.
