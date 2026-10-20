@@ -3009,7 +3009,9 @@ these hold:
 2. `P` is a member of `F` now, by the fold above — a leave after it ends it;
 3. its `created_at` is newer than `P`'s marker for `F`'s own stream (§11.3);
    a `thread:` or `msg:` key does not read it, and with no marker it is
-   unread.
+   unread;
+4. its `h` is the Folder `F` is in (the root's `h`): an Add filed in another
+   Folder lights nothing.
 
 It does not matter whether a mention in the file's text (above) or someone's
 Add button wrote it: the event is the same. Like a mention, it counts for a
