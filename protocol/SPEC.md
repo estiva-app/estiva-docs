@@ -2260,6 +2260,37 @@ the same one-author rule, and the block is what a `part` (§13.6.1) adds. A
 reader draws it as that object's chip or row (§13.6.2), and a writer counts it
 as that object for the default card, which its `part` then keeps off.
 
+**The path is the same on every host** (added 2026-10-20, from
+[RFC 0.5 §7.7](RFC-0.5-ASSOCIATION.md), 21 September; record
+[a-files-path-is-the-same-on-every-apps-host](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-files-path-is-the-same-on-every-apps-host.md)).
+The path names the file and the host names the perspective:
+`ship.estiva.app/issue/<slug>-<d>` and `leaf.estiva.app/issue/<slug>-<d>` are
+one file, which Ship draws as an issue and Leaf as a page. A person moves
+between apps by changing the host and nothing else. That puts an obligation on
+the app *serving* a path:
+
+1. **A type word is the owning kind's, on every host.** The word is the
+   `<type>` segment of the `urls` shape the kind's owner publishes, and a second
+   app that handles the kind uses the same word. Two manifests declaring one
+   word for different kinds is a collision, which a manifest publisher MUST
+   refuse to publish.
+2. **An app serves every declared shape.** For a path whose type word some
+   manifest declares, an app resolves the `d` as a pasted link resolves it
+   (`{kinds: [<kind>], "#d": ["<d>"]}`, one author) and then either draws the
+   file in its own view, if it has one for that kind, or hands off to the
+   owner's `web` link. A 404 or an empty page is not an option. A path that
+   resolves to nothing, or to a file the viewer cannot read, says so.
+3. **An app's own pages that are not files live under `/app/`**, so a new type
+   word can never collide with them. A file's `naddr` form is `/o/<naddr>`.
+4. **The type word is checked, not trusted.** A word no manifest declares falls
+   back to `{kinds: [<every kind a manifest declares a <d> shape for>], "#d":
+   ["<d>"]}`, never a bare `#d` (§7.4). A file reached by a stale slug, an
+   undeclared word or its `naddr` form is drawn at its own word and its current
+   slug.
+
+Whether a reader recognises a pasted link on another app's host is the
+matcher's rule above, which this does not change.
+
 **This is the projection layer's inversion applied to links**: the owner says
 what its URLs look like, the consumer decides whether to draw a widget. No
 central registry, no per-app integration, and no service that can go down and
