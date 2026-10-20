@@ -3492,7 +3492,9 @@ object, and it stays what they wrote (Miky, 2026-10-14).
 **A link on words** — a `link` mark whose text is not its `href` — draws as its
 words, a link to its `href`, in a sentence and alone on its line alike: never
 a chip, a row or a card. An `embed` on it draws nothing in a document. An
-editor keeps the link, and any attribute on it, through a save (C23).
+editor keeps the link, and any attribute on it, through a save (C23), when its
+scheme is one §13.1 allows; a link to any other scheme is its words, as text,
+for a reader and an editor alike, and no save writes one.
 
 - **Values.** On a line that is only the link, `detailed` draws the object's
   closed `card` (§7.5) in the row's place. No attribute, `none`, `compact`, a
