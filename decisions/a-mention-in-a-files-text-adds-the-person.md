@@ -1,7 +1,7 @@
 # A mention in a file's text adds the person, as the Add button does, and being added shows one unread
 
 - Date: 2026-10-20
-- Status: Accepted
+- Status: Superseded by a-mention-in-a-files-text-adds-the-person-with-no-unread.md
 - Decided by: Miky, in the WBD-2 kickoff session (2026-10-20), and his merge of this record
 - Supersedes: a-person-mentioned-in-a-files-text-is-told-once.md
 - Area: Read state

@@ -121,7 +121,8 @@ heading here.
 - [A Folder has no read state of its own: its chat is unread for you only when a message names you](a-folders-own-chat-is-unread-only-for-a-mention.md) — Accepted, 2026-10-01
 - [A reply is read only when you open its thread, not when you read the conversation it sits in](a-reply-is-read-only-when-its-thread-is-opened.md) — Accepted, 2026-10-03
 - [Anyone may add a person to a file, including someone who left it](anyone-may-add-a-person-to-a-file.md) — Accepted, 2026-10-06
-- [A mention in a file's text adds the person, as the Add button does, and being added shows one unread](a-mention-in-a-files-text-adds-the-person.md) — Accepted, 2026-10-20
+- [A mention in a file's text adds the person, as the Add button does, and being added shows no unread until a document has its own read state](a-mention-in-a-files-text-adds-the-person-with-no-unread.md) — Accepted, 2026-10-20
+- [A mention in a file's text adds the person, as the Add button does, and being added shows one unread](a-mention-in-a-files-text-adds-the-person.md) — Superseded by the one above, 2026-10-20
 - [A person mentioned in a file's text is told once and becomes a member, and a later save that still names them changes nothing](a-person-mentioned-in-a-files-text-is-told-once.md) — Superseded by the one above, 2026-10-20
 
 ## Messages
