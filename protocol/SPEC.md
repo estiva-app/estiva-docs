@@ -2447,9 +2447,9 @@ throwaway relay or a fake query.
 | C19 | **Urgent mention.** A message urgent for `P` carries `["urgent", P]` and `["p", P]` and names `P` in its body as published as an ordinary reference. It is urgent for `P` and for nobody else it names. An `urgent` tag for a person the body does not name is not urgent. An app that does not draw urgency renders it as an ordinary mention (§13.1) |
 | C20 | **Card fold.** A message with `["embed", V, "compact"]` whose body names `V` draws `V`'s row under it, and one with `detailed` its card. An edit with `["embed", V, "none"]` removes it and, with a byte-identical body, does not mark the message edited. A later edit with no `embed` leaves it removed. An `embed` for a value the folded body does not name draws nothing, and one for a value first named in an edit draws, with no `a` on the edit. With a `part` and an `embed` on the same address, the part wins. An unknown layout draws as `compact`. A reader that does not know `embed` draws the reference (§6.8, §13.6.2) |
 | C21 | **Where a link sits.** A message with no `embed` whose body is only `nostr:naddr1…` for a file `V`, or only an app URL that names `V` by §7.7, or a bullet item that is only either, with `["a", V]`, draws `V`'s row in place and no card. A body that names `V` in a sentence, in a quote line, in a heading, inside `**…**` or beside a second reference on its line draws `V`'s chip and no card. A link on words to `V` draws its words as a link and no card. A line that is only a person's or a Folder's reference draws its chip. A line that is only an app URL that resolves to nothing, or to an object the reader cannot read, draws the URL; a line that is only a `nostr:` reference to an object the reader cannot read draws the unreadable row. A link to one block of `V` (`…#block-<id>`, §7.7) with no `part` draws as a link to `V` does: `V`'s row alone on its line, `V`'s chip in a sentence, each opening the URL as written (§13.2, §13.6.2) |
-| C22 | **A description's card.** A block document whose paragraph holds a `reference` mark for `V` with `attrs.embed` `detailed` draws `V`'s chip in the paragraph and `V`'s card after it. The same paragraph with no `embed`, or `none`, draws the chip and no card, alone on its line included. A second reference to `V` in another block with `compact` draws its own row after that block. An unknown `embed` value draws as `compact`. A reader that does not know `embed` draws the chip. Inside a card's `body`, the same reference draws its chip and no card (§13.3) |
+| C22 | **A document's lone link.** In a block document, a paragraph, a list item or a checklist item whose line is only a `reference` mark for a file `V` draws `V`'s row in place; with `attrs.embed` `detailed`, `V`'s card in its place and no row; with no `embed`, `none`, `compact`, an unknown value or a non-string, the row. A second line of the same paragraph, after a hard break, that is only `V`'s reference draws its row too. The same reference beside other words, inside `**…**`, in a heading, a quote, a callout or a table cell draws `V`'s chip and no card, `detailed` included. A person or a Folder alone on its line draws its chip. A reader that does not know `embed` draws the row. Inside a card's `body`, the same lone reference draws its chip: no row, no card (§13.3) |
 | C23 | **An editor keeps the card.** A document with a `reference` mark carrying `embed` and a key the editor does not know, opened in the editor and saved after an edit to another block, comes back with both keys on the mark and the block's id unchanged (§13.3) |
-| C24 | **A description's URL.** A block document whose paragraph is only an app URL that names `V` by §7.7, as plain text, draws `V`'s chip and no card. The same run marked `{"type":"link","attrs":{"href":<the URL>,"embed":"compact"}}` draws the chip and `V`'s row after the paragraph; an editor that opens it and saves after an edit to another block writes the same run back, and one that removes the card writes the URL as plain text — never a `nostr:` reference. A link to one block of `V` draws `V`'s chip, which opens that URL. A URL no app claims stays a link, with no card (§13.3) |
+| C24 | **A document's URL, and a link on words.** A block document whose paragraph is only an app URL that names `V` by §7.7, as plain text, draws `V`'s row in place. The same run marked `{"type":"link","attrs":{"href":<the URL>,"embed":"detailed"}}` — its text exactly its `href` — draws `V`'s card in the row's place; an editor that opens it and saves after an edit to another block writes the same run back, and one whose Row removes the card writes the URL as plain text — never a `nostr:` reference. A link to one block of `V` alone on its line draws `V`'s row, which opens that URL. A URL no app claims, or one naming what the reader cannot read, stays a link. A run `the plan` marked `{"type":"link","attrs":{"href":<the URL>,"embed":"detailed"}}` draws the words `the plan` as a link, alone on its line too: no chip, no row, no card; an editor that opens it and saves after an edit to another block writes the same run back, link and `embed` included (§13.3) |
 | C25 | **A message's URL.** A message written with an app URL that names `V` by §7.7 — pasted alone, mid-sentence or typed — has that URL in its body as written, never a `nostr:` reference, and carries `["a", V]` (for a message's URL, `["q", <id>]`); on `V`'s conversation itself it carries no second `a`. A reader draws `V` by where the URL sits (C21), and `V` lists the message as a mention (C11). A URL over chosen words is written `[words](url)`, draws as a link, and carries the `a` (or `q`) its target earns. A link to one block carries its `part`, and a URL no app claims, or whose identity two authors hold, carries no tag and stays a link (§13.1, §6.4) |
 | C26 | **The card replaces the row.** A message whose body is only `V`'s reference, with `["embed", V, "detailed"]`, draws `V`'s card under it and nothing in its body; with `compact` or an unknown layout, `V`'s row under it and nothing in its body; with a `part` for `V`, the part and nothing in its body. A body that is only a link to one block of `V`, with its `part` and no `embed`, draws the part and nothing in its body; `see <that link> here` with the same tags draws `V`'s chip in the sentence, the part, and no card. A body with `V` alone on one line and in a sentence on another, with `detailed`, draws the chip in the sentence, nothing on the lone line, and the card. An edit with `["embed", V, "none"]` and the same body draws `V`'s row in place and no card. An old message with `compact` for `V` and `W`, edited with `["embed", V, "none"], ["embed", W, "compact"]`, draws `W`'s row under it and no card for `V`. A body `the plan is [these words](U)`, where `U` names `V`, with `["a", V]` and `["embed", V, "detailed"]`, draws the words as a link and `V`'s card; `[U](https://example.com)` with an `embed` for `V` draws no card (§13.6.2) |
 | C27 | **The default card.** A writer that adds the default writes `["embed", V, "detailed"]` for a body naming one file `V`, also beside a Folder, a person or a message reference; none for a body naming two files, or a file and a block link (whose `part` it writes, with no `embed`); none for `V` on `V`'s own conversation, where `V` does not count, so `V` and one other file `W` there give `W` the default; never `compact` for a value it adds. An edit that adds the first file to a body adds its default and carries the whole folded set; an edit that changes a word of a body whose card was removed before sending writes no `embed`; an edit that puts `V` back into a body it was taken out of adds its default when the edit's body names no other file, also over an earlier `["embed", V, "none"]`. A link on words counts by its target: a body naming `V` only as `[words](U)` gets `V`'s default; with a second file, on words or bare, none; with a URL no app claims beside it, `V`'s (§13.6.2) |
@@ -3438,57 +3438,95 @@ dialect has neither, and `[x]` there is text.
 
 #### A reference's card
 
-*Decided 2026-10-14 (Widgets).*
+*Decided 2026-10-14 (Widgets); where a link sits, 2026-10-15
+([a-link-on-words-counts-toward-the-card](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-link-on-words-counts-toward-the-card.md));
+Row or Card, 2026-10-19
+([a-lone-links-chip-menu-offers-row-or-card](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-lone-links-chip-menu-offers-row-or-card.md));
+callouts and table cells, 2026-10-20 (Miky).*
 
-A reference in a block document reads as its chip (§13.1). The writer asks for
-a card for it with `attrs.embed` on the mark itself, the values a message's
-`embed` tag carries (§13.6.2):
+In a block document, as in a message (§13.6.2), where a link sits decides how
+it draws:
+
+- **In a sentence**, a reference draws as its chip (§13.1).
+- **Alone on its line**, a reference to a file draws the file's closed `row`
+  (§7.5) in place, and a reference to a message draws that message as a quote
+  cut to one line. A person or a Folder alone on its line draws its chip. A link
+  to one block of a file draws that file's row, as in a message (C21). A lone
+  link that does not resolve stays as written, as §13.6.2 says: an app URL that
+  names nothing, or an object the reader cannot read, stays the URL; a `nostr:`
+  reference to an object the reader cannot read draws the unreadable row.
+- **Its card, in the row's place**, when the writer chose one: the reference
+  alone on its line carries `attrs.embed` `detailed` on its mark.
+
+A document never adds a card on its own, and never draws one under a block for
+a reference in a sentence: unlike a message, it has no "under the message" and
+no default card.
 
 ```json
 { "type": "paragraph", "id": "p1", "content": [
-  { "type": "text", "text": "Blocked by " },
-  { "type": "text", "text": "nostr:naddr1…", "marks": [ { "type": "reference", "attrs": { "uri": "nostr:naddr1…", "embed": "detailed" } } ] },
-  { "type": "text", "text": " until the relay ships." }
+  { "type": "text", "text": "nostr:naddr1…", "marks": [ { "type": "reference", "attrs": { "uri": "nostr:naddr1…", "embed": "detailed" } } ] }
 ] }
 ```
 
-A `link` mark takes the same attribute, `{"type":"link","attrs":{"href":…,"embed":…}}`,
-and draws a card only when its `href` names an object by §7.7, resolved as for
-a message; otherwise it stays a link. A bare app URL in a run reads as the chip
-of what it names, as in a sentence of a message (§13.6.2, `linksAsReferences`),
-alone in its paragraph included: a message's lone-line row (§13.6.2) does not
-apply to a block document, whose lone links follow in a later revision. It has no
-mark to carry a card, so a writer who chooses one for it marks that run with a
-`link` whose `href` is the URL and keeps the text as written. It never rewrites
+**What a line is.** A line is one of §13.2's lines — the text of a block split
+at its `\n` hard breaks — in a paragraph or a list item, a checklist item
+included. A line is only a link when, with the whitespace around it trimmed, it
+holds one reference or one bare URL and nothing else: other words or
+punctuation, a second link, a mark around it (bold, a code span) or a link on
+words make it a sentence. Every other place is a sentence, whatever is in it:
+a heading, a quote, a callout — a quote with `attrs.tone`, whose tone is how it
+looks, never how a link in it reads — and a paragraph inside a table cell. A
+checklist item is a line because it is a list item on the wire: a reader that
+does not know `checked` draws a list item, and both readers draw its link the
+same way. This is a reading rule; it is the one a message's reader applies
+(`linesOf`, `isOnlyReferenceLine`), so one function serves both.
+
+**A bare URL.** An app URL written as text reads as the reference it names
+(§7.7, `linksAsReferences`), in a sentence or alone. It has no mark to carry a
+card, so a writer who chooses one marks that run with a `link` whose `href` is
+the URL and keeps the text as written: a `link` mark whose run text is exactly
+its `href` is the bare URL, and follows the line rule above. It never rewrites
 the URL into a `nostr:` reference: the URL is how a person addresses the
 object, and it stays what they wrote (Miky, 2026-10-14).
 
-- **Where.** The card is drawn after the innermost block holding the mark — the
-  paragraph, heading or list item (at its indent), or the table cell — and the
-  cards of one block in the order their marks appear. It sits with its link:
-  moving or deleting the link moves or deletes the card, and choosing or
-  changing it changes one attribute, so the block keeps its id and every
-  comment anchored to it.
-- **Each occurrence is its own.** The same object referenced twice may carry two
-  cards, or one, unlike a message's one per value: a document is many blocks,
-  and the block holding the link is where its card belongs.
-- **Runs.** A reference split across runs (part of it bold) takes `embed` from
-  its first run.
-- **Values.** `compact` draws the object's closed `row`, `detailed` its closed
-  `card` (§7.5). `none` means the same as no attribute, and a writer omits it. A
-  reader draws a value it does not know as `compact`, and one that is not a
-  string as no card.
-- **Pointer, never copy.** The card is resolved as the viewer (§13.6.2): a
-  deleted and an unreadable object are different states, and an unreadable card
-  shows no title.
-- **No cards inside a card.** Inside a card's `body` (§7.2) and inside a part
-  (§13.6.1), a reader draws every reference as its chip and no card, whatever its
-  `embed` says. Without it, two objects that card each other nest forever.
+**A link on words** — a `link` mark whose text is not its `href` — draws as its
+words, a link to its `href`, in a sentence and alone on its line alike: never
+a chip, a row or a card. An `embed` on it draws nothing in a document. An
+editor keeps the link, and any attribute on it, through a save (C23), when its
+scheme is one §13.1 allows; a link to any other scheme is its words, as text,
+for a reader and an editor alike, and no save writes one.
 
-A reader that does not know `embed` draws the chip, which is the default
-anyway. An editor that drops the attribute on save loses the card and keeps
-the reference, which is why an editor carries a mark's unknown keys through.
+- **Values.** On a line that is only the link, `detailed` draws the object's
+  closed `card` (§7.5) in the row's place. No attribute, `none`, `compact`, a
+  value the reader does not know and one that is not a string all draw the
+  row. In a sentence, any value draws the chip only.
+- **Writing it.** An editor's Row removes the attribute and its Card writes
+  `detailed` (a-lone-links-chip-menu-offers-row-or-card). No writer writes
+  `compact` or `none`; a mark that already carries one is kept as written.
+- **It sits with its link.** Moving or deleting the link moves or deletes the
+  card, and choosing or changing it changes one attribute, so the block keeps
+  its id and every comment anchored to it. The attribute stays on a link that
+  moves into a sentence, where it draws nothing, and draws again when the line
+  is only the link once more.
+- **Each occurrence is its own.** The same object linked on two lines may draw
+  its card on one and its row on the other, unlike a message's one per value.
+- **Runs.** A reference split across runs (part of it bold) has a mark around
+  it, so its line is a sentence.
+- **Pointer, never copy.** The row and the card are resolved as the viewer
+  (§13.6.2): a deleted and an unreadable object are different states, and an
+  unreadable card shows no title.
+- **No cards inside a card.** Inside a card's `body` (§7.2), inside a part
+  (§13.6.1) and in any excerpt of a document, a reader draws every reference as
+  its chip: no row and no card, whatever its `embed` says. Without it, two
+  objects that card each other nest forever.
+
+A reader that does not know `embed` draws the row, which is what a lone link
+draws anyway. An editor that drops the attribute on save loses the card and
+keeps the link, which is why an editor carries a mark's unknown keys through.
 Where a description is edited as text there is no spelling for a card (below).
+A document saved before this rule may carry `embed` on a reference in a
+sentence, where it drew a card after its block; it now draws the chip only
+(Miky, 2026-10-15: old documents draw under the rule).
 
 #### A description as text
 
@@ -3976,8 +4014,9 @@ conversation, as a card's `body`, a part's blocks, a quoted message, a "Mentione
 in" excerpt or any preview of it, every reference in it draws as its chip: no
 row, no card.
 
-Block documents (§13.3) keep the chip for a lone link until a later revision
-gives them the row.
+A block document (§13.3) draws its lines by the same rule, but has no card
+under it: a card a writer chose there takes its lone link's row's place
+(§13.3, "A reference's card").
 
 `["embed", <value>, <layout>]`. `<value>` is what an `a` or `q` carries for the
 same thing: an address, or a 64-hex event id. `<layout>` is how much to show:
