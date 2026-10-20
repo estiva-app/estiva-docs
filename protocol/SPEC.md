@@ -2257,21 +2257,21 @@ An origin is a scheme, a host and a port together.
   `leaf.estiva.app/issue/<slug>-<d>` names the issue `ship.estiva.app`'s
   address names. `<d>`, `<id>` and query shapes all match this way. A
   fragment-route shape (`/#/…`) matches only on its own origin, which alone
-  serves it.
+  serves it, and so does a shape that names no kind, which elsewhere would
+  turn the link into a lookup by `d` under every kind.
 - **A match on the link's own origin wins**, whatever the specificity of
   shapes elsewhere. Otherwise the most specific reading names the object, and
   every shape elsewhere that reads the same identity adds its kind: the reader
   resolves the identity under all of those kinds, and one author must hold it
   (§13.1), so two apps claiming one word for different kinds turn the link
-  plain rather than handing it to either. A shape that names no kind leaves the
-  kinds open, as on its own origin. Two equally specific readings of different
-  identities name nothing.
+  plain rather than handing it to either. Two equally specific readings of
+  different identities name nothing.
 - **A link on no declared origin matches nothing** and MUST render as an
   ordinary link, whatever its path.
 
 The origin check keeps declarations consistent; it is not authentication. A
 reader trusts a manifest's hosts as far as it trusts the manifest. A click
-opens the link as written, in the app its host names (§13.2).
+opens the link as written, in the app its host names (§13.1, §13.6.2).
 
 **A block in the fragment** (added 2026-10-07, COM-2). A pattern MAY end in a
 fragment carrying a `<block>` placeholder, which names one block of the object
@@ -4167,8 +4167,8 @@ under a message follows the author's layout, not the manifest's `widget`.
   link's words names nothing. *Decided 2026-10-17
   ([a-link-on-words-counts-toward-the-card](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-link-on-words-counts-toward-the-card.md)).*
   A reader MUST resolve such a URL by
-  §7.7 (the host and `<type>` against a published `urls` pattern, and one
-  author for the identity), never by its trailing identifier alone: otherwise a
+  §7.7 (a declared origin, and the `<type>` and shape against a published
+  `urls` pattern, and one author for the identity), never by its trailing identifier alone: otherwise a
   link to any site wears a real object's card. A reader that cannot resolve
   links draws no card for one. There is no `a`/`q` match, so a
   reference first named in an edit can carry a card. This is §13.6.1's rule for
