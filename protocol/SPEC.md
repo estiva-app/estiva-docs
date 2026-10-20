@@ -2271,9 +2271,11 @@ the app *serving* a path:
 
 1. **A type word is the owning kind's, on every host.** The word is the
    `<type>` segment of the `urls` shape the kind's owner publishes, and a second
-   app that handles the kind uses the same word. Two manifests declaring one
-   word for different kinds is a collision, which a manifest publisher MUST
-   refuse to publish.
+   app that handles the kind uses the same word. A word is lowercase letters,
+   digits and hyphens, starting with a letter; a serving app ignores a declared
+   word outside that, or one it uses for its own pages, rather than writing it
+   into an address. Two manifests declaring one word for different kinds is a
+   collision, which a manifest publisher MUST refuse to publish.
 2. **An app serves every declared shape.** For a path whose type word some
    manifest declares, an app resolves the `d` as a pasted link resolves it
    (`{kinds: [<kind>], "#d": ["<d>"]}`, one author) and then either draws the
@@ -2286,7 +2288,8 @@ the app *serving* a path:
    back to `{kinds: [<every kind a manifest declares a <d> shape for>], "#d":
    ["<d>"]}`, never a bare `#d` (§7.4). A file reached by a stale slug, an
    undeclared word or its `naddr` form is drawn at its own word and its current
-   slug.
+   slug; when its own app declares no `<d>` shape for the kind, the address it
+   was reached at stays.
 
 Whether a reader recognises a pasted link on another app's host is the
 matcher's rule above, which this does not change.
