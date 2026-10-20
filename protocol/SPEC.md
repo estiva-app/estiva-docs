@@ -2457,7 +2457,7 @@ throwaway relay or a fake query.
 | C25 | **A message's URL.** A message written with an app URL that names `V` by §7.7 — pasted alone, mid-sentence or typed — has that URL in its body as written, never a `nostr:` reference, and carries `["a", V]` (for a message's URL, `["q", <id>]`); on `V`'s conversation itself it carries no second `a`. A reader draws `V` by where the URL sits (C21), and `V` lists the message as a mention (C11). A URL over chosen words is written `[words](url)`, draws as a link, and carries the `a` (or `q`) its target earns. A link to one block carries its `part`, and a URL no app claims, or whose identity two authors hold, carries no tag and stays a link (§13.1, §6.4) |
 | C26 | **The card replaces the row.** A message whose body is only `V`'s reference, with `["embed", V, "detailed"]`, draws `V`'s card under it and nothing in its body; with `compact` or an unknown layout, `V`'s row under it and nothing in its body; with a `part` for `V`, the part and nothing in its body. A body that is only a link to one block of `V`, with its `part` and no `embed`, draws the part and nothing in its body; `see <that link> here` with the same tags draws `V`'s chip in the sentence, the part, and no card. A body with `V` alone on one line and in a sentence on another, with `detailed`, draws the chip in the sentence, nothing on the lone line, and the card. An edit with `["embed", V, "none"]` and the same body draws `V`'s row in place and no card. An old message with `compact` for `V` and `W`, edited with `["embed", V, "none"], ["embed", W, "compact"]`, draws `W`'s row under it and no card for `V`. A body `the plan is [these words](U)`, where `U` names `V`, with `["a", V]` and `["embed", V, "detailed"]`, draws the words as a link and `V`'s card; `[U](https://example.com)` with an `embed` for `V` draws no card (§13.6.2) |
 | C27 | **The default card.** A writer that adds the default writes `["embed", V, "detailed"]` for a body naming one file `V`, also beside a Folder, a person or a message reference; none for a body naming two files, or a file and a block link (whose `part` it writes, with no `embed`); none for `V` on `V`'s own conversation, where `V` does not count, so `V` and one other file `W` there give `W` the default; never `compact` for a value it adds. An edit that adds the first file to a body adds its default and carries the whole folded set; an edit that changes a word of a body whose card was removed before sending writes no `embed`; an edit that puts `V` back into a body it was taken out of adds its default when the edit's body names no other file, also over an earlier `["embed", V, "none"]`. A link on words counts by its target: a body naming `V` only as `[words](U)` gets `V`'s default; with a second file, on words or bare, none; with a URL no app claims beside it, `V`'s (§13.6.2) |
-| C28 | **A mention in a file's text.** A save of a file's block document that names `P` with a `reference`, edited from a version that did not, is written with `member:<P>`=`true` on the file, signed by the writer and carrying `["p", P]`, and the save carries no `p` for `P`; `P` is a member, and the file is one unread for `P`, with no message in its stream, until `P`'s marker for it passes the change. A creation naming `P` writes the same change; a save naming only the writer writes none. `P` leaves; a save that changes another word and still names `P` writes no change, and `P` stays out. A save that drops `P`, then one that names `P` again, writes the change again: `P` is a member with one unread. The Add button's `member:<P>`=`true` by someone else is one unread too, and still one with two of them; `P`'s own `member:<P>`=`true` (Join) is none (§11.8, §13.1) |
+| C28 | **A mention in a file's text.** A save of a file's block document that names `P` with a `reference`, edited from a version that did not, is written with `member:<P>`=`true` on the file, signed by the writer and carrying `["p", P]`, and the save carries no `p` for `P`; `P` is a member, and with no message in the file's stream nothing is unread for `P`. A creation naming `P` writes the same change; a save naming only the writer writes none. `P` leaves; a save that changes another word and still names `P` writes no change, and `P` stays out. A save that drops `P`, then one that names `P` again, writes the change again: `P` is a member again (§11.8, §13.1) |
 
 C11 and C12 both have a failure that is invisible from the app that has it.
 A merged mention looks like somebody said it here. A forged edit looks like an
@@ -2929,7 +2929,7 @@ accepted a `member:<P>` change on an issue, and both `#p` and `#a` returned it.
 #### A mention in a file's text
 
 *Added 2026-10-20* (WBD-2; record
-[a-mention-in-a-files-text-adds-the-person](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-mention-in-a-files-text-adds-the-person.md)).
+[a-mention-in-a-files-text-adds-the-person-with-no-unread](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-mention-in-a-files-text-adds-the-person-with-no-unread.md)).
 A file's text — its root's content, or the value of a change whose action
 declares a prose input (§7.3) — names a person with a `nostr:npub` reference
 (§13.1): a `reference` mark in a block document (§13.3), the URI itself in
@@ -3001,24 +3001,12 @@ opened the file is told about what was said since they joined, and nothing
 before it. A person who is mentioned for the first time on a year-old issue sees
 the message that mentions them, not the year.
 
-**Being added is one unread item** (*added 2026-10-20*, WBD-2). A change
-setting `member:<P>` to `true` on file `F` is **unread for `P`** when all of
-these hold:
-
-1. it is not signed by `P` — adding yourself (Join) tells you nothing;
-2. `P` is a member of `F` now, by the fold above — a leave after it ends it;
-3. its `created_at` is newer than `P`'s marker for `F`'s own stream (§11.3);
-   a `thread:` or `msg:` key does not read it, and with no marker it is
-   unread;
-4. its `h` is the Folder `F` is in (the root's `h`): an Add filed in another
-   Folder lights nothing.
-
-It does not matter whether a mention in the file's text (above) or someone's
-Add button wrote it: the event is the same. Like a mention, it counts for a
-member who muted the file. However many such changes there are, they are
-**one** item for the file, cleared by reading the file's stream (§11.2), so a
-file with an unread Add is unread even when its stream holds no message. A
-reader that does not know this item shows the Add as a silent join, as before.
+**Being added is not unread by itself** (*changed 2026-10-20*, WBD-2). A
+change setting `member:<P>` to `true` is not a message, so whether a mention in
+a file's text (above) or someone's Add button wrote it, it makes nothing unread
+for `P`; only the messages in the file's stream do, by the rules above. What is new to a
+person in a file's text belongs to a document's own read state, which this
+specification does not define yet.
 
 A Folder's general stream is not judged by membership: being on the channel
 roster makes a person a member of the Folder, not someone its conversation is
@@ -3250,9 +3238,9 @@ file's text — a root's content, or a change to a prose field (§7.3) — MUST 
 carry a `p` for a person because its text names them; a `p` it carries for
 another reason, such as a `pubkey` property (§7.3), stands. Each save carries
 the whole text again, so a `p` per save would tell the person about every typo
-fix, in every client that notifies on `#p`. What tells them is the membership
-change the writer signs when a save newly names them (§11.8 *A mention in a
-file's text*).
+fix, in every client that notifies on `#p`. What adds them is the membership
+change the writer signs when a save newly names them; it puts the file in
+their lists (§11.8 *A mention in a file's text*).
 
 An object or a message is mentioned the same way by **an app URL that names
 it** by §7.7 — the link as the person pasted or typed it (decided 2026-10-14,
