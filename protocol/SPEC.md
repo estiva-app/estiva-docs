@@ -2236,11 +2236,42 @@ file's kinds do not share — except a Folder, whose `39000` and `30890` carry o
 uuid (§3.2), which is why a lookup always names its kinds. Naming the kind is
 cheaper and clearer.
 
-**A consumer MUST match the host and the `<type>` segment, and MUST ignore only
-the slug.** Matching the trailing uuid alone resolves any site's URL as this
-app's object, which is a way of rendering an attacker's chosen content inside
-someone's conversation. A link matching no published shape MUST render as an
-ordinary link — it is one, and nothing should claim otherwise.
+**A consumer MUST match the `<type>` segment and the rest of the shape, and
+MUST ignore only the slug.** Matching the trailing uuid alone resolves any
+site's URL as this app's object, which is a way of rendering an attacker's
+chosen content inside someone's conversation. A link matching no published
+shape MUST render as an ordinary link — it is one, and nothing should claim
+otherwise.
+
+**The host is one some app declares, and the path is the same on every one of
+them** (added 2026-10-20, LTX-6; record
+[a-files-path-is-the-same-on-every-apps-host](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-files-path-is-the-same-on-every-apps-host.md)).
+An origin is a scheme, a host and a port together.
+
+- **A manifest declares `urls` only on its own origin.** A reader drops a
+  shape whose origin is not that of one of the same manifest's `web`
+  templates; a manifest with no `web` declares no shape. The declared origins
+  are the origins of the shapes kept.
+- **A link on a declared origin matches every kept path shape** by its path
+  and query, whatever origin the shape is written on:
+  `leaf.estiva.app/issue/<slug>-<d>` names the issue `ship.estiva.app`'s
+  address names. `<d>`, `<id>` and query shapes all match this way. A
+  fragment-route shape (`/#/…`) matches only on its own origin, which alone
+  serves it.
+- **A match on the link's own origin wins**, whatever the specificity of
+  shapes elsewhere. Otherwise the most specific reading names the object, and
+  every shape elsewhere that reads the same identity adds its kind: the reader
+  resolves the identity under all of those kinds, and one author must hold it
+  (§13.1), so two apps claiming one word for different kinds turn the link
+  plain rather than handing it to either. A shape that names no kind leaves the
+  kinds open, as on its own origin. Two equally specific readings of different
+  identities name nothing.
+- **A link on no declared origin matches nothing** and MUST render as an
+  ordinary link, whatever its path.
+
+The origin check keeps declarations consistent; it is not authentication. A
+reader trusts a manifest's hosts as far as it trusts the manifest. A click
+opens the link as written, in the app its host names (§13.2).
 
 **A block in the fragment** (added 2026-10-07, COM-2). A pattern MAY end in a
 fragment carrying a `<block>` placeholder, which names one block of the object
@@ -2298,12 +2329,10 @@ the app *serving* a path:
    slug; when its own app declares no `<d>` shape for the kind, the address it
    was reached at stays.
 
-A pasted link is a different question, of matching rather than serving. The
-same record decides that a reader accepts a declared path on any host an Estiva
-app declares as its own, and that a manifest declares `urls` only on its own
-origin; until the shared link reader carries that, and this section says it
-with a conformance row, a reader matches the host as above. RFC 0.5's rule 5,
-that the host stays significant for a pasted link, is replaced by it.
+A pasted link is a different question, of matching rather than serving, and
+the rules above answer it (C29). RFC 0.5's rule 5, that the host stays
+significant for a pasted link, is replaced by them: the host must still be a
+declared one, and the path then names the file on any of them.
 
 **This is the projection layer's inversion applied to links**: the owner says
 what its URLs look like, the consumer decides whether to draw a widget. No
@@ -2503,6 +2532,7 @@ throwaway relay or a fake query.
 | C26 | **The card replaces the row.** A message whose body is only `V`'s reference, with `["embed", V, "detailed"]`, draws `V`'s card under it and nothing in its body; with `compact` or an unknown layout, `V`'s row under it and nothing in its body; with a `part` for `V`, the part and nothing in its body. A body that is only a link to one block of `V`, with its `part` and no `embed`, draws the part and nothing in its body; `see <that link> here` with the same tags draws `V`'s chip in the sentence, the part, and no card. A body with `V` alone on one line and in a sentence on another, with `detailed`, draws the chip in the sentence, nothing on the lone line, and the card. An edit with `["embed", V, "none"]` and the same body draws `V`'s row in place and no card. An old message with `compact` for `V` and `W`, edited with `["embed", V, "none"], ["embed", W, "compact"]`, draws `W`'s row under it and no card for `V`. A body `the plan is [these words](U)`, where `U` names `V`, with `["a", V]` and `["embed", V, "detailed"]`, draws the words as a link and `V`'s card; `[U](https://example.com)` with an `embed` for `V` draws no card (§13.6.2) |
 | C27 | **The default card.** A writer that adds the default writes `["embed", V, "detailed"]` for a body naming one file `V`, also beside a Folder, a person or a message reference; none for a body naming two files, or a file and a block link (whose `part` it writes, with no `embed`); none for `V` on `V`'s own conversation, where `V` does not count, so `V` and one other file `W` there give `W` the default; never `compact` for a value it adds. An edit that adds the first file to a body adds its default and carries the whole folded set; an edit that changes a word of a body whose card was removed before sending writes no `embed`; an edit that puts `V` back into a body it was taken out of adds its default when the edit's body names no other file, also over an earlier `["embed", V, "none"]`. A link on words counts by its target: a body naming `V` only as `[words](U)` gets `V`'s default; with a second file, on words or bare, none; with a URL no app claims beside it, `V`'s (§13.6.2) |
 | C28 | **A mention in a file's text.** A save of a file's block document that names `P` with a `reference`, edited from a version that did not, is written with `member:<P>`=`true` on the file, signed by the writer and carrying `["p", P]`, and the save carries no `p` for `P`; `P` is a member, and with no message in the file's stream nothing is unread for `P`. A creation naming `P` writes the same change; a save naming only the writer writes none. `P` leaves; a save that changes another word and still names `P` writes no change, and `P` stays out. A save that drops `P`, then one that names `P` again, writes the change again: `P` is a member again (§11.8, §13.1) |
+| C29 | **A host-swapped address.** With kept shapes `https://a.example/issue/<slug>-<d>` (30851) and `https://a.example/#/issue/<d>` from a manifest on `a.example`, and only `https://b.example/document/<slug>-<d>` from one on `b.example`: a message written with `https://b.example/issue/<any>-<d of V>` keeps that URL in its body, carries `["a", V]`, draws as C21 places it, opens that URL, and `V` lists it as a mention. `https://c.example/issue/<any>-<d of V>`, with no kept shape on `c.example`; `http://b.example/issue/…` and `https://b.example:8443/issue/…`; and `https://b.example/#/issue/<d of V>` carry no tag and stay links. A manifest whose `web` is on `c.example` and that declares `urls` on `a.example` adds no shape and no origin. A manifest on `c.example` that declares `https://c.example/issue/<slug>-<d>` for kind `K`: on `b.example`, a `d` held under both `30851` and `K` names nothing and carries no tag; on `a.example`, the link is `V` (§7.7, §13.1) |
 
 C11 and C12 both have a failure that is invisible from the app that has it.
 A merged mention looks like somebody said it here. A forged edit looks like an
