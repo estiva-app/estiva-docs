@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One Address, Any App</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.q { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); padding: 12px 14px; border-radius: 6px; font-size: 1.05rem; }
+.rec { background: var(--ok-bg); border-left: 4px solid var(--ok); padding: 12px 14px; border-radius: 6px; }
+.warn { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+svg { width: 100%; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .chip { fill: var(--chip); stroke: var(--accent); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .ah { fill: var(--ink); }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 640px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+.rec-row td { background: var(--ok-bg); }
+blockquote { margin: 8px 0; padding: 4px 12px; border-left: 3px solid var(--line); color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+<h1>One file, one address, any app's host</h1>
+<p class="sub">A brief for Miky · 20 Oct 2026 · project "Leaf edits any file's text" · two questions, the second builds on the first</p>
+
+<div class="q"><strong>1.</strong> Should every Estiva app open every other app's address for a file, with only the host changed, either drawing the file itself or handing you to the app that owns it?<br><br>
+<strong>2.</strong> When someone pastes Leaf's address for a Ship issue into a message, should it draw as that issue (its chip, row or card, and a mention on the issue), the way Ship's own address does?</div>
+
+<h2>The moment</h2>
+<p>Today, 20 October, you rewrote a Ship issue in Leaf, took Ship's address for it, changed only the host and opened <code>leaf.estiva.app/issue/b2d86f1f-…</code>. Leaf showed Home. "The URL should be very much same in Ship and Leaf."</p>
+
+<h2>Today</h2>
+<ul>
+<li><strong>You wrote this rule on 21 September</strong>, in the association RFC: "the path names the file; the host names the perspective". <code>ship.estiva.app/project/x</code> and <code>peek.estiva.app/project/x</code> are one file: Ship draws it as a project, Peek as a conversation, and an app with no view of a file hands you to the app that owns it. "A 404 or an empty page is not an option."</li>
+<li><strong>Peek and Ship already work this way.</strong> Peek opens any file word the apps declare (<code>/project/</code>, <code>/issue/</code>, <code>/document/</code>) on its file page; Ship hands <code>/topic/</code> and <code>/document/</code> to Peek and Leaf.</li>
+<li><strong>Leaf does not.</strong> It knows only its own <code>/document/</code> and an internal <code>/f/…</code> form, and sends anything else to Home. That is what you hit.</li>
+<li><strong>The rule was never written as a decision record or into the protocol spec.</strong> It lives only in the RFC. So it binds nobody new, an outside company reading the spec would not know it, and the house rule is to ask before building on it.</li>
+<li><strong>Pasted links are a separate half the RFC left open.</strong> It says a reader <em>may</em> recognise any Estiva host on a file's path. Nothing built does. The spec says a reader must match the exact host an app declares, so today even <code>peek.estiva.app/issue/…</code> pasted in Ship is a plain link.</li>
+</ul>
+
+<figure>
+<svg viewBox="0 0 720 230" role="img"><title>Today: the same path on three hosts</title>
+<defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+<text x="10" y="20" class="h">Opening an address (serving)</text>
+<rect x="10" y="32" width="220" height="34" rx="6" class="w"/><text x="20" y="54">ship.estiva.app/issue/plan-…</text>
+<rect x="10" y="76" width="220" height="34" rx="6" class="w"/><text x="20" y="98">peek.estiva.app/issue/plan-…</text>
+<rect x="10" y="120" width="220" height="34" rx="6" class="w"/><text x="20" y="142">leaf.estiva.app/issue/plan-…</text>
+<path class="a" d="M230,49 L300,49"/><rect x="302" y="32" width="190" height="34" rx="6" class="ok"/><text x="312" y="54">Ship: the issue</text>
+<path class="a" d="M230,93 L300,93"/><rect x="302" y="76" width="190" height="34" rx="6" class="ok"/><text x="312" y="98">Peek: its conversation</text>
+<path class="a" d="M230,137 L300,137"/><rect x="302" y="120" width="190" height="34" rx="6" class="bad"/><text x="312" y="142">Leaf: Home (this ticket)</text>
+<text x="510" y="20" class="h">Pasted in a message</text>
+<rect x="510" y="32" width="200" height="34" rx="6" class="chip"/><text x="520" y="54">draws the issue</text>
+<rect x="510" y="76" width="200" height="34" rx="6" class="bad"/><text x="520" y="98">plain link</text>
+<rect x="510" y="120" width="200" height="34" rx="6" class="bad"/><text x="520" y="142">plain link</text>
+<text x="10" y="186" class="m">Serving follows your 21 Sep rule in Peek and Ship, not yet in Leaf.</text>
+<text x="10" y="204" class="m">Pasting: only the owning app's host is recognised, because only Ship declares where</text>
+<text x="10" y="220" class="m">issues live, and readers compare hosts exactly.</text>
+</svg>
+<figcaption>Today. Left: what opens. Right: what a reader draws when the same address is pasted into a message.</figcaption>
+</figure>
+
+<h2>Why it reaches beyond this ticket</h2>
+<ul>
+<li><strong>It is the rule every app and every outside company follows</strong> for what its addresses mean and what it owes another app's addresses. An outside company building an app needs to know: if my host gets <code>/issue/…</code>, must I answer it, and will my address for your file be recognised in a message?</li>
+<li><strong>Question 1 is close to one-way.</strong> A link is stored as the URL its author wrote (record "a link is stored as the URL a person wrote"). Once Leaf's address for an issue is in people's messages and pages, Leaf owes <code>/issue/</code> for good.</li>
+<li><strong>Question 2 is one-way for messages already sent.</strong> Whether a message counts as mentioning the issue is decided once, when it is sent. A Leaf address pasted before readers recognise it never lists that message on the issue. Drawing can change later; the mentions cannot.</li>
+</ul>
+
+<h2>Question 1 — does every app answer every app's address?</h2>
+<h3>1A. Yes, for every app (your 21 Sep rule, made binding)</h3>
+<p>Any Estiva app opens any declared file path. It draws the file if it has a view of it (Leaf: a Ship issue as a page; Peek: its conversation) and otherwise hands you to the owning app (Leaf on <code>/topic/</code> says "Open in Peek"). The type word is the owner's (<code>issue</code>, <code>project</code>, <code>topic</code>, <code>document</code>) on every host.</p>
+<p><em>You see:</em> change the host, keep the path, and you are on the same file in the other app. <em>An outside company:</em> declares its words once, and every Estiva host answers them; it must answer theirs too. <em>Locks in:</em> one shared vocabulary of file words, with a collision check when an app publishes.</p>
+<h3>1B. Only Leaf takes Ship's paths</h3>
+<p>Leaf adds <code>/issue/</code> and <code>/project/</code> and stops there. <em>You see:</em> this one swap works; <code>leaf.estiva.app/topic/…</code> still shows Home. <em>An outside company:</em> no rule to follow; each pair of apps agrees on its own. Peek and Ship already do more than this.</p>
+<h3>1C. Each app owns its paths; others send you to the owner</h3>
+<p><code>leaf.estiva.app/issue/…</code> redirects to <code>ship.estiva.app/issue/…</code>. <em>You see:</em> the swap lands in Ship, not in Leaf's editor, which is the opposite of what you wanted today. It would also undo what Peek and Ship do now.</p>
+
+<div class="rec"><strong>Recommendation: 1A.</strong> It is the shape you chose on 21 September, two apps already follow it, and it is the only one in which an address means the same file to every app, including an outside company's. The host then says only whose view you are in, which is what "the URL should be very much same" asks for.</div>
+
+<h2>Question 2 — is a pasted Leaf address recognised as the file?</h2>
+<p>The moment: you rewrite an issue in Leaf, copy the address bar, <code>leaf.estiva.app/issue/plan-…</code>, and paste it into a Peek conversation for Katerina.</p>
+
+<figure>
+<svg viewBox="0 0 720 300" role="img"><title>Three ways a pasted Leaf address can be read</title>
+<defs><marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+<text x="10" y="20" class="h">2A · any Estiva app's host + a declared file word</text>
+<rect x="10" y="30" width="200" height="40" rx="6" class="w"/><text x="20" y="54">leaf.estiva.app/issue/plan-…</text>
+<path d="M210,50 L270,50" stroke="var(--ink)" stroke-width="1.4" fill="none" marker-end="url(#arr2)"/>
+<rect x="272" y="30" width="220" height="40" rx="6" class="b"/><text x="282" y="47">host is an Estiva app's own</text><text x="282" y="63" class="m">"issue" is Ship's word → the issue</text>
+<path d="M492,50 L540,50" stroke="var(--ink)" stroke-width="1.4" fill="none" marker-end="url(#arr2)"/>
+<rect x="542" y="30" width="168" height="40" rx="6" class="chip"/><text x="552" y="54">issue chip + mention</text>
+
+<text x="10" y="110" class="h">2B · Leaf lists Ship's shapes as its own</text>
+<rect x="10" y="120" width="200" height="40" rx="6" class="w"/><text x="20" y="144">leaf.estiva.app/issue/plan-…</text>
+<path d="M210,140 L270,140" stroke="var(--ink)" stroke-width="1.4" fill="none" marker-end="url(#arr2)"/>
+<rect x="272" y="120" width="220" height="40" rx="6" class="b"/><text x="282" y="137">Leaf's app entry says</text><text x="282" y="153" class="m">"/issue/ on my host is Ship's issue"</text>
+<path d="M492,140 L540,140" stroke="var(--ink)" stroke-width="1.4" fill="none" marker-end="url(#arr2)"/>
+<rect x="542" y="120" width="168" height="40" rx="6" class="chip"/><text x="552" y="144">issue chip + mention</text>
+
+<text x="10" y="200" class="h">2C · only the owner's address is recognised</text>
+<rect x="10" y="210" width="200" height="40" rx="6" class="w"/><text x="20" y="234">leaf.estiva.app/issue/plan-…</text>
+<path d="M210,230 L540,230" stroke="var(--ink)" stroke-width="1.4" fill="none" marker-end="url(#arr2)"/>
+<rect x="542" y="210" width="168" height="40" rx="6" class="bad"/><text x="552" y="234">plain link</text>
+<text x="10" y="276" class="m">2C: Leaf would copy Ship's address for a Ship file, so the address bar and Copy link disagree.</text>
+<text x="10" y="292" class="m">In 2A and 2B a click opens the address as written: Leaf's view, since that is what was shared.</text>
+</svg>
+<figcaption>Each option, read by any app's message view: Peek, Ship or Leaf.</figcaption>
+</figure>
+
+<h3>2A. Any Estiva app's host on a declared file path is that file</h3>
+<p>Readers recognise a file path on the host of any Estiva app, not only the owner's. One added line keeps lookalikes out: an app declares addresses only on its own host. <em>You and Katerina see:</em> Ship's, Peek's and Leaf's address for one issue all draw as the same chip, row or card, and each opens in the app it names. <em>An outside company:</em> declares its file words once, and every Estiva host's address for its files is recognised, with no change to anyone else's app entry. <em>Locks in:</em> the 21 Sep rule carried through to messages.</p>
+<h3>2B. Each app lists the other apps' addresses it serves</h3>
+<p>Leaf's app entry adds "<code>/issue/</code> and <code>/project/</code> on my host are Ship's issue and project". <em>You see:</em> the same as 2A, for Ship's files only. <em>An outside company:</em> every app must re-list every other app's words and republish whenever one is added; a new app's files are never recognised on Leaf's host until Leaf does. It also blurs which app owns a type, which the protocol keeps separate.</p>
+<h3>2C. Only the owner's address is recognised</h3>
+<p>Leaf answers <code>/issue/</code> (question 1) but its Copy link gives <code>ship.estiva.app/issue/…</code>. <em>You see:</em> an address bar you cannot simply copy and share; a Leaf address pasted by hand stays raw text in Peek while Ship's draws the issue. The two "same" addresses behave differently in a message.</p>
+
+<div class="tw"><table>
+<tr><th>Option</th><th>Protocol shape</th><th>What you and Katerina see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr class="rec-row"><td><strong>2A</strong> any Estiva host</td><td>One declaration per type, valid on every Estiva app's own host. Spec gains "declare addresses only on your own host".</td><td>Any app's address for a file draws as that file and opens where it says.</td><td>Declares once; recognised everywhere.</td><td>Drawing: two-way. Hosts served: one-way.</td><td>Shared link reader + release; Peek, Ship and Leaf take it before Leaf shows its own address.</td></tr>
+<tr><td><strong>2B</strong> each app re-lists</td><td>An app declares addresses for types it does not own.</td><td>Same as 2A, for Ship's files only.</td><td>Many-to-many lists, republished on every new type.</td><td>One-way: app entries are copied.</td><td>One line in Leaf's app entry.</td></tr>
+<tr><td><strong>2C</strong> owner's address only</td><td>Unchanged.</td><td>Leaf's bar and Copy link differ; a Leaf address stays a plain link.</td><td>Simplest, but contradicts "the host is the perspective".</td><td>Two-way.</td><td>Smallest.</td></tr>
+</table></div>
+
+<div class="rec"><strong>Recommendation: 2A.</strong> It is your 21 September rule finished: the path names the file wherever it is pasted, and the host only says whose view it opens in. It is the one shape in which an outside company declares its files once and every Estiva app's address for them works. 2B gets the same screen for Ship today but makes every app list every other app's types, which no outside company would accept. <em>Build order, not shape:</em> until the shared reader recognises Leaf's host in all three apps, Leaf keeps copying the address it copies today, because a message sent before that never counts as a mention.</div>
+
+<h2>How others do it</h2>
+<ul>
+<li><strong>Google Workspace:</strong> one file id; <code>docs.google.com/…/d/&lt;id&gt;</code> and <code>drive.google.com/file/d/&lt;id&gt;</code> are two views of one file, and Chat recognises both. That is 1A + 2A, from one company that controls every host.</li>
+<li><strong>Bluesky (AT Protocol):</strong> the identity is the <code>at://</code> address; each app's web URL is its own view, and other apps do not recognise it. Closer to 2C, which is why links between Bluesky apps are often plain.</li>
+<li><strong>Notion, Linear:</strong> one app, one host; the question does not come up.</li>
+</ul>
+
+<h2>Checked</h2>
+<ul>
+<li>The 21 Sep rule: association RFC §7.7, "The path is the same on every host", marked "Added 2026-09-21 (Miky)" (estiva-docs, <code>origin/main</code>).</li>
+<li>Not in the spec or any decision record: searched spec and <code>decisions/</code> on <code>origin/main</code>.</li>
+<li>Peek opens any declared file word: one file route, words read from the app entries (Peek <code>App.tsx</code>, FOL-39). Ship hands others' words off (Ship <code>router.ts</code>, <code>handoff.ts</code>, PRO-22). Read in code; on production, checked for Leaf only.</li>
+<li>Leaf shows Home for <code>/issue/&lt;d&gt;</code>: Leaf <code>route.ts</code>; opened on leaf.estiva.app as QA-1 today, no file page and no "could not be found" within two minutes.</li>
+<li>Readers compare hosts exactly, so another app's host on a Ship path is a plain link: the shared link reader (<code>matchObjectUrl</code>). Read in code, not tried on production.</li>
+<li>Only Ship declares <code>/issue/</code> and <code>/project/</code> addresses; Leaf declares only <code>/document/</code>, Peek only <code>/topic/</code> and <code>/message/</code>: each app's entry on <code>origin/main</code>.</li>
+<li>A mention is decided at send and an edit carries none: spec C25 and §13.6.2.</li>
+</ul>
+
+<h2>For the record</h2>
+<p>Issue 58c4dc00 ("Ship's address for a project or issue opens it in Leaf too"). RFC 0.5 §7.7 rules 1–5; SPEC §7.7 (<code>urls</code>, "MUST match the host and the &lt;type&gt; segment"), §7.8, §13.1, C21, C24, C25. Records: a-link-is-stored-as-the-url-a-person-wrote, a-document-app-writes-what-a-files-app-shares. 2A = <code>matchObjectUrl</code> accepts any host some <code>kind:31990</code> declares in <code>urls</code> and matches the path against every manifest's shapes, plus "a manifest declares <code>urls</code> only on its own origin (its <code>web</code> origin)". 2B = Leaf's 31990 adds <code>["urls","https://leaf.estiva.app/issue/&lt;slug&gt;-&lt;d&gt;#block-&lt;block&gt;","30851"]</code> and <code>/project/</code> → 30850. Proposed record: <code>decisions/a-files-path-is-the-same-on-every-apps-host.md</code>.</p>
+</main>
+</body>
+</html>
