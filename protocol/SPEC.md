@@ -2231,8 +2231,10 @@ and the reasoning; this section is the manifest surface.
 §7.2 says the kind comes from the path segment — but `/issue/` means `30851`
 only to the app serving it, and a consumer has never heard of "issue". An app
 MAY omit it, in which case a consumer falls back to the kinds the manifest
-declares it handles; that is sound only because a `d` is a v4 uuid and is not
-reused across kinds, so naming the kind is cheaper and clearer.
+declares it handles; that is sound only because a `d` is a v4 uuid that one
+file's kinds do not share — except a Folder, whose `39000` and `30890` carry one
+uuid (§3.2), which is why a lookup always names its kinds. Naming the kind is
+cheaper and clearer.
 
 **A consumer MUST match the host and the `<type>` segment, and MUST ignore only
 the slug.** Matching the trailing uuid alone resolves any site's URL as this
@@ -2273,26 +2275,35 @@ the app *serving* a path:
    `<type>` segment of the `urls` shape the kind's owner publishes, and a second
    app that handles the kind uses the same word. A word is lowercase letters,
    digits and hyphens, starting with a letter; a serving app ignores a declared
-   word outside that, or one it uses for its own pages, rather than writing it
-   into an address. Two manifests declaring one word for different kinds is a
+   word outside that rather than writing it into an address, and an app whose
+   own pages still sit at the root (rule 3) ignores their words too. Two manifests declaring one word for different kinds is a
    collision, which a manifest publisher MUST refuse to publish.
 2. **An app serves every declared shape.** For a path whose type word some
    manifest declares, an app resolves the `d` as a pasted link resolves it
    (`{kinds: [<kind>], "#d": ["<d>"]}`, one author) and then either draws the
    file in its own view, if it has one for that kind, or hands off to the
-   owner's `web` link. A 404 or an empty page is not an option. A path that
-   resolves to nothing, or to a file the viewer cannot read, says so.
+   owner's `web` link: at least the file's title, its app and the link that
+   opens it there, the reference widget. No app builds a view of another app's
+   kind to serve its address. A 404 or an empty page is not an option. A path
+   that resolves to nothing, or to a file the viewer cannot read, says so. An
+   `<id>` shape (a message, §7.6) is resolved by `ids` and handed off the same
+   way.
 3. **An app's own pages that are not files live under `/app/`**, so a new type
    word can never collide with them. A file's `naddr` form is `/o/<naddr>`.
 4. **The type word is checked, not trusted.** A word no manifest declares falls
    back to `{kinds: [<every kind a manifest declares a <d> shape for>], "#d":
-   ["<d>"]}`, never a bare `#d` (§7.4). A file reached by a stale slug, an
+   ["<d>"]}`, leaving out the kinds no manifest may claim (§3.2), and never a
+   bare `#d`, which would cross a Folder's two kinds. A file reached by a stale slug, an
    undeclared word or its `naddr` form is drawn at its own word and its current
    slug; when its own app declares no `<d>` shape for the kind, the address it
    was reached at stays.
 
-Whether a reader recognises a pasted link on another app's host is the
-matcher's rule above, which this does not change.
+A pasted link is a different question, of matching rather than serving. The
+same record decides that a reader accepts a declared path on any host an Estiva
+app declares as its own, and that a manifest declares `urls` only on its own
+origin; until the shared link reader carries that, and this section says it
+with a conformance row, a reader matches the host as above. RFC 0.5's rule 5,
+that the host stays significant for a pasted link, is replaced by it.
 
 **This is the projection layer's inversion applied to links**: the owner says
 what its URLs look like, the consumer decides whether to draw a widget. No
