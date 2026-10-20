@@ -2260,11 +2260,13 @@ An origin is a scheme, a host and a port together.
   serves it, and so does a shape that names no kind, which elsewhere would
   turn the link into a lookup by `d` under every kind.
 - **A match on the link's own origin wins**, whatever the specificity of
-  shapes elsewhere. Otherwise the most specific reading names the object, and
-  every shape elsewhere that reads the same identity adds its kind: the reader
-  resolves the identity under all of those kinds, and one author must hold it
-  (§13.1), so two apps claiming one word for different kinds turn the link
-  plain rather than handing it to either. Two equally specific readings of
+  shapes elsewhere; only when none matches there do shapes elsewhere count.
+  Among the shapes that count, the most specific reading names the object, and
+  every one that reads the same identity adds its kind, whatever its
+  specificity and whatever order the manifests came in: the reader resolves
+  the identity under all of those kinds, and one author must hold it (§13.1),
+  so two manifests claiming one word for different kinds turn the link plain
+  rather than handing it to either. Two equally specific readings of
   different identities name nothing.
 - **A link on no declared origin matches nothing** and MUST render as an
   ordinary link, whatever its path.
