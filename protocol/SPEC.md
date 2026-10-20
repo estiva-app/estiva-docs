@@ -3004,7 +3004,7 @@ the message that mentions them, not the year.
 **Being added is not unread by itself** (*changed 2026-10-20*, WBD-2). A
 change setting `member:<P>` to `true` is not a message, so whether a mention in
 a file's text (above) or someone's Add button wrote it, it makes nothing unread
-for `P`; only the messages after it do, by the rules above. What is new to a
+for `P`; only the messages in the file's stream do, by the rules above. What is new to a
 person in a file's text belongs to a document's own read state, which this
 specification does not define yet.
 

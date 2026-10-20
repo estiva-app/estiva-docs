@@ -64,9 +64,6 @@ mention someone in a file's text writes the same Add, and every app folds it.
   so a document-level event would be read by a conversation-level marker, and
   every reader, an outside company's included, would build a rule that a
   document read state replaces.
-- **Ship a stopgap document marker now, read when the document is opened.**
-  A new marker shape on the relay before document read state is shaped, which
-  then decides that shape: one-way once markers are written.
 
 ## Consequences
 
