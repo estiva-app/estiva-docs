@@ -73,6 +73,8 @@ else's file is recognised in a message.
   owes those paths for as long as its addresses are in people's text.
 - The shared link reader and SPEC §7.7 change, with a conformance row
   for a host-swapped address, and Peek, Ship and Leaf take the release before
-  Leaf shows or copies its own host for another app's file.
+  Leaf's Copy link gives its own host for another app's file. Leaf's address
+  bar shows that path from the start: the `/f/<naddr>` it showed before is
+  declared by no app, so a pasted bar address was a plain link either way.
 - An outside company declares its file words once and every Estiva host
   answers and recognises them; it must answer theirs in return.
