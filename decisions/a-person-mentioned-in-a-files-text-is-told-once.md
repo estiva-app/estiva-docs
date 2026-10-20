@@ -1,7 +1,7 @@
 # A person mentioned in a file's text is told once and becomes a member, and a later save that still names them changes nothing
 
 - Date: 2026-10-19
-- Status: Accepted
+- Status: Superseded by a-mention-in-a-files-text-adds-the-person.md
 - Decided by: Miky, in the shaping session of the project *Widgets 2: build 2 — documents* (2026-10-19), asked twice there, and his merge of this record
 - Area: Read state
 
