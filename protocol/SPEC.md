@@ -1156,7 +1156,7 @@ writer emits them; a reader finds each by name (§6.1):
 | `summary` | at most one | seeds the `summary` field, its one-line summary (§6.12) |
 
 **A bare file has no text** (*decided 2026-10-19*, record
-[a-document-app-writes-what-a-files-app-shares](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-document-app-writes-what-a-files-app-shares.md)).
+[a-card-changes-what-a-files-app-shares](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-card-changes-what-a-files-app-shares.md)).
 A topic is a conversation. A writer leaves `content` empty, and a reader
 ignores it. A file that needs a text is a document (§6.11) or a kind whose app
 gives it one, never a topic that grows one: a file's type is part of its
@@ -1400,7 +1400,7 @@ does (§7.2, rule 2); the change stream overrides either. A bare file has no
 text (§6.7, 2026-10-19).
 
 **Who offers an editor on it** (*decided 2026-10-19*, record
-[a-document-app-writes-what-a-files-app-shares](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-document-app-writes-what-a-files-app-shares.md)).
+[a-card-changes-what-a-files-app-shares](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-card-changes-what-a-files-app-shares.md)).
 The owning app, and the document app (§7.8) wherever the owner shares the text
 by declaring a `describe` action (§7.3's sharing test). An owner that does not
 declare one keeps its text to itself in every conforming app. The sharing is
@@ -2045,7 +2045,7 @@ a consumer offers no way to change that kind's summary.
 
 **Declaring a field's action shares that field** (*added 2026-10-19*, LTX;
 record
-[a-document-app-writes-what-a-files-app-shares](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-document-app-writes-what-a-files-app-shares.md)).
+[a-card-changes-what-a-files-app-shares](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-card-changes-what-a-files-app-shares.md)).
 An owner shares a file field of one of its kinds with every consumer,
 generic editors and agents alike, by declaring the action that changes it. The
 test, applied per kind and per field, on the owner's projection for that kind:
@@ -2359,7 +2359,7 @@ declares `document`.
 
 **`document` — the app that writes other apps' shared fields** (*decided
 2026-10-19*, record
-[a-document-app-writes-what-a-files-app-shares](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-document-app-writes-what-a-files-app-shares.md);
+[a-card-changes-what-a-files-app-shares](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-card-changes-what-a-files-app-shares.md);
 it replaces 2026-10-14's "`document` stays reserved, and Leaf declares none").
 It is the counterpart of `conversation`: where Peek shows every file's
 conversation, the document app writes every file's text. A manifest declaring
