@@ -161,7 +161,8 @@ heading here.
 - [A comment on a selection remembers the words where it starts and where it ends, and a comment on whole blocks remembers no words](a-comment-remembers-where-its-selection-starts-and-ends.md) — Accepted, 2026-10-15
 - [A comment points at a run of blocks, narrowed by the words quoted at its ends](a-comment-points-at-blocks-and-the-words-quoted.md) — Accepted, 2026-10-13
 - [A reply to a comment on part of a page remembers that part too, so its thread keeps its place when the comment is deleted](a-reply-on-a-page-keeps-its-threads-place.md) — Accepted, 2026-10-19
-- [Leaf writes the title, summary and text of any file whose own app shares each, as Peek shows every file's conversation; the file's own app keeps its other fields, its name and where it opens, and a topic has no text](a-document-app-writes-what-a-files-app-shares.md) — Accepted, 2026-10-19
+- [Any app may change a file from its card through an action the file's own app shares; Leaf also writes the title, summary and text of any file whose app shares each; the owner keeps a field to itself by not sharing it](a-card-changes-what-a-files-app-shares.md) — Accepted, 2026-10-21
+- [Leaf writes the title, summary and text of any file whose own app shares each, as Peek shows every file's conversation; the file's own app keeps its other fields, its name and where it opens, and a topic has no text](a-document-app-writes-what-a-files-app-shares.md) — Superseded by the one above, 2026-10-21
 - [Leaf edits the text of any file whose own app shares it, as Peek shows every file's conversation; the file's own app keeps its name, its fields and where it opens](a-files-text-is-shared-by-every-app.md) — Superseded by the one above, 2026-10-19
 - [Every app edits and reads a document with one shared editor, and its links draw with the kit's chip, row and card](every-app-edits-a-document-with-one-shared-editor.md) — Accepted, 2026-10-19
 

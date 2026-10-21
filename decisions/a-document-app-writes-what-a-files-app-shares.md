@@ -1,7 +1,7 @@
 # Leaf writes the title, summary and text of any file whose own app shares each, as Peek shows every file's conversation; the file's own app keeps its other fields, its name and where it opens, and a topic has no text
 
 - Date: 2026-10-19
-- Status: Accepted
+- Status: Superseded by a-card-changes-what-a-files-app-shares.md
 - Decided by: Miky. The text, in the LEAF-13 kickoff session, on the brief "Who edits a file's text" ([page](briefs/who-edits-a-files-text.html)); the title and summary, at the shaping of the project "Leaf edits any file's text", the same day
 - Area: Documents
 - Supersedes: a-files-text-is-shared-by-every-app.md
