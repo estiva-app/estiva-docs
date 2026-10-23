@@ -103,7 +103,7 @@ page; it is where each project's "today" starts.
 - **When the project closes**, `/wrap-project` redraws the "after" pictures as
   built, and marks the page `As built, <date>` under its title. A page that
   still says `Shaped` describes intent, not what runs. It then folds the same
-  change into the base page (below), with the date and the project's page
+  change into the base page (above), with the date and the project's page
   linked under its title.
 - A later project that changes the same parts gets its own page and links the
   earlier one under its title; the earlier page is not rewritten.

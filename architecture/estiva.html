@@ -142,7 +142,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <rect class="b" x="258" y="256" width="204" height="56" rx="8"/><text x="272" y="279" class="h">Live socket, re-reads</text><text x="272" y="298" class="m">platform</text>
 <rect class="b" x="480" y="256" width="204" height="56" rx="8"/><text x="494" y="279" class="h">Look and shared parts</text><text x="494" y="298" class="m">ui</text>
 </svg>
-<figcaption>Most of how the apps behave alike lives in these packages, not in the apps. "Other apps' files" is how Peek can draw a Ship issue or a Leaf document from the manifest the owning app publishes. A change to a package reaches an app only when that app moves to the new version.</figcaption>
+<figcaption>Most of how the apps behave alike lives in these packages, not in the apps. "Other apps' files" is how Peek can draw a Ship issue or a Leaf document from that app's manifest (who may publish one: see Access, below). A change to a package reaches an app only when that app moves to the new version.</figcaption>
 </figure>
 
 <h2 id="production">Map: how it reaches production</h2>
@@ -208,7 +208,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <h3>Around a file: the conversation</h3>
 <figure>
 <svg viewBox="0 0 720 310" role="img">
-<title>A comment is about one file and can be written from any app; a reply answers a comment, one level deep. A message lives in a Folder's conversation in Peek. A card under a message points at a file. A reaction can be on a comment or a message.</title>
+<title>A comment is about one file and can be written from any app; a reply answers a comment, one level deep. A message lives in a direct message in Peek. A card under a message points at a file. A reaction can be on a comment or a message.</title>
 <rect class="b" x="260" y="20" width="200" height="56" rx="8"/><text x="276" y="44" class="h">A file</text><text x="276" y="63" class="m">any of the four types</text>
 
 <rect class="b" x="20" y="130" width="200" height="72" rx="8"/><text x="36" y="152" class="h">Comment</text><text x="36" y="171" class="m">about the file, from any app</text><text x="36" y="188" class="m">1111</text>
@@ -220,7 +220,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <path class="a" d="M260,168 L224,168"/>
 <path class="a" d="M460,168 L496,168"/>
 
-<rect class="b" x="500" y="130" width="200" height="72" rx="8"/><text x="516" y="152" class="h">Message</text><text x="516" y="171" class="m">in a Folder's conversation</text><text x="516" y="188" class="m">9 · shown in Peek</text>
+<rect class="b" x="500" y="130" width="200" height="72" rx="8"/><text x="516" y="152" class="h">Message</text><text x="516" y="171" class="m">in a direct message</text><text x="516" y="188" class="m">9 · shown in Peek</text>
 <rect class="b" x="500" y="240" width="200" height="56" rx="8"/><text x="516" y="264" class="h">Card</text><text x="516" y="283" class="m">drawn under a message</text>
 <path class="a" d="M600,240 L600,206"/>
 <path class="a" d="M700,268 L712,268 L712,40 L464,40"/><text x="560" y="34" class="m">points at a file</text>
@@ -238,7 +238,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <tr><td>Document</td><td>A page of blocks</td><td>Its author</td><td>Leaf</td><td>Leaf; its conversation in Peek</td></tr>
 <tr><td>Title, summary, text</td><td>What a file says about itself</td><td>Whoever changed it</td><td>The file's app</td><td>Every app that lists the file</td></tr>
 <tr><td>Comment</td><td>A remark on a file, or on part of a document</td><td>Its author</td><td>Any app</td><td>Peek, Ship's Activity, Leaf's side column</td></tr>
-<tr><td>Message</td><td>A line in a Folder's conversation or a direct message</td><td>Its author</td><td>Peek</td><td>Peek</td></tr>
+<tr><td>Message</td><td>A line in a direct message; a Folder's own chat is in the protocol, and no app shows it yet</td><td>Its author</td><td>Peek</td><td>Peek</td></tr>
 <tr><td>Card</td><td>A preview of a file under a message or comment</td><td>(part of the message)</td><td>Any app</td><td>Each reader's app</td></tr>
 </tbody>
 </table>
@@ -276,16 +276,16 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 </figure>
 
 <h2 id="access">Access</h2>
-<p>Every read and every write is made by someone on the workspace, and every event is signed by the person who sent it. The rows below are the rules the relay, Estiva ID or each reading app enforces. Every Folder is open today, so "whoever can read the Folder" is everyone on the workspace until private Folders exist (SPEC §3.1).</p>
+<p>Every read and every write is made by someone on the workspace, and every event is signed by the person who sent it. The rows below are the rules the relay, Estiva ID or each reading app enforces; a rule that is decided and still being built names its record and the issue that carries it out. Every Folder is open today, so "whoever can read the Folder" is everyone on the workspace until private Folders exist (SPEC §3.1).</p>
 <div class="tw">
 <table>
 <thead><tr><th>What</th><th>Who can see it</th><th>Who can change it</th><th>Checked by</th></tr></thead>
 <tbody>
 <tr><td>Anything in the workspace</td><td>People on the workspace</td><td>People on the workspace, each only as themselves</td><td>The relay</td></tr>
-<tr><td>Someone removed from the workspace</td><td colspan="3">Decided in <code>someone-you-remove-loses-access-at-once</code>; carried out by the issue <a href="https://ship.estiva.app/issue/someone-you-remove-loses-access-at-once-39f569d5-bfa2-415b-815e-4c281ce25564">Someone you remove loses access at once</a></td></tr>
+<tr><td>Someone removed from the workspace</td><td colspan="3">Decided in <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/someone-you-remove-loses-access-at-once.md">Someone you remove loses access the moment the removal lands</a>; carried out by an issue in Ship (<a href="https://ship.estiva.app/issue/someone-you-remove-loses-access-at-once-39f569d5-bfa2-415b-815e-4c281ce25564">Someone you remove loses access at once</a>)</td></tr>
 <tr><td>Which kinds of event an app may sign</td><td>—</td><td>Set per app in Estiva ID; no app may publish a profile</td><td>Estiva ID</td></tr>
 <tr><td>A person's profile (name, picture)</td><td>People on the workspace</td><td>That person, through Estiva ID</td><td>Estiva ID and the relay</td></tr>
-<tr><td>An app's manifest (its types, actions and Open in links)</td><td>People on the workspace</td><td>Decided in <code>an-app-counts-only-once-the-workspace-adds-it</code>; carried out by the issue <a href="https://ship.estiva.app/issue/only-an-app-the-workspace-added-can-publish-an-app-manifest-710f925a-6550-435d-b763-1c90613b34b2">Only an app the workspace added can publish an app manifest</a></td><td>The relay and each app</td></tr>
+<tr><td>An app's manifest (its types, actions and Open in links)</td><td>People on the workspace</td><td>Decided in <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/an-app-counts-only-once-the-workspace-adds-it.md">An app speaks for a file type only once the workspace has added it</a>; carried out by an issue in Ship (<a href="https://ship.estiva.app/issue/only-an-app-the-workspace-added-can-publish-an-app-manifest-710f925a-6550-435d-b763-1c90613b34b2">Only an app the workspace added can publish an app manifest</a>)</td><td>The relay and each app</td></tr>
 <tr><td>A Folder's name and description</td><td>Whoever can read the Folder</td><td>Its owners and admins</td><td>The relay</td></tr>
 <tr><td>A Folder's admins and members</td><td>Whoever can read the Folder</td><td>Written only by the relay; only owners and admins make someone an admin</td><td>The relay</td></tr>
 <tr><td>Archiving a Folder</td><td>Whoever can read the Folder</td><td>Its owners and admins: each app ignores an archive from anyone else</td><td>Each app, through interop</td></tr>

@@ -40,7 +40,7 @@ holds what was dropped rather than migrated: `users.role`, `users.isExternal`,
 
 ---
 
-## The relay is the exception
+## The relay deploys differently
 
 **Buzz deploys itself, but only the relay.** Since 2026-09-29 (buzz#21),
 `estiva-buzz-update.timer` runs `/opt/buzz/update.sh` every two minutes like the
@@ -63,9 +63,8 @@ cd /opt/buzz && docker compose pull relay && ./run.sh restart
 
 Pull `relay` only. `run.sh pull` also pulls postgres, redis and minio.
 
-**Verify by comparing the running image id to `:nfb`.** Health tells you
-nothing here — a healthy relay serving a stale image is precisely the state this
-produces.
+**After a pull by hand, verify by comparing the running image id to `:nfb`.**
+Health alone tells you nothing: a healthy relay can be serving a stale image.
 
 Relay images are built from the **`nfb-demo-kinds`** branch by `relay-image.yml`,
 not from `main`. Only that one workflow is enabled in `estiva-app/buzz`; the

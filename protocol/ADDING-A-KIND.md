@@ -33,8 +33,9 @@ four failures were reported by the app.
       ▼
 ┌──────────────────────────────────────────────┐
 │ GATE 3 — the deployed relay image            │
-│ buzz has NO update timer. The code can be    │
-│ merged and the running relay still refuses.  │
+│ buzz pulls a new image every 2 minutes. The  │
+│ code can be merged, the image still building,│
+│ and the running relay still refuses.         │
 │ refuses: identically to gate 2               │
 └──────────────────────────────────────────────┘
 ```
@@ -153,19 +154,19 @@ events heap on relay startup — seconds at production's size, a window on a
 large one. Prove it the way it was found: `{kinds:[<kind>], search:"<a word
 in one>"}` through `POST /query`, and expect the event, not a 200.
 
-## Gate 3 — deploy the relay by hand
+## Gate 3 — the relay is running the new image
 
-**The relay has no update timer.** `estiva-id`, `peek` and `ship` each have a
-`*-update.timer`; buzz does not. On the box:
+Since 2026-09-29 `estiva-buzz-update.timer` pulls the relay's `:nfb` image every
+two minutes, as the other services' timers do (`operations/PRODUCTION.md`, "The
+relay deploys differently"). A merge is live only once the image has built and
+the timer has pulled it. On the box:
 
 ```bash
-cd /opt/buzz && docker compose pull relay && ./run.sh restart
+journalctl -u estiva-buzz-update --output=cat | grep -E "new image|healthy on|FAILED"
 ```
 
-Pull `relay` only — `run.sh pull` also pulls postgres, redis and minio.
-
-**Verify by comparing the running image id to `:nfb`, not by health.** A healthy
-relay serving the old image is exactly the state this gate produces.
+**Then publish the new kind and read `accepted`**, with a negative control: a
+green build is not a deploy, and a healthy relay can be serving the old image.
 
 ---
 
