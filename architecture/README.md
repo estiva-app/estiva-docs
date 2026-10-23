@@ -11,6 +11,9 @@ Each page is also listed in `DRAWINGS` in `site/nav.mjs` and is read at
 A page says under its title whether it is **Shaped** (the intent, before the
 build) or **As built** (redrawn when the project closed).
 
-Newest first:
+**The base page:** [`estiva.html`](estiva.html) — the whole suite as it runs;
+every project's "today" starts from it.
+
+Project pages, newest first:
 
 *None yet.*

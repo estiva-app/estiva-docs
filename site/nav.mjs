@@ -138,6 +138,7 @@ export const isInternal = (file) => INTERNAL.has(file) || INTERNAL_DIRS.some((di
  * Not in the sidebar or search; the project's description links it.
  */
 export const DRAWINGS = [
+  'architecture/estiva.html',
   'architecture/template.html',
 ]
 

@@ -42,9 +42,20 @@ holds what was dropped rather than migrated: `users.role`, `users.isExternal`,
 
 ## The relay is the exception
 
-**Buzz has no update timer.** The other three do, which is exactly what makes
-this easy to forget — a merged relay change sits in the registry while the box
-keeps serving the old image, healthy the whole time.
+**Buzz deploys itself, but only the relay.** Since 2026-09-29 (buzz#21),
+`estiva-buzz-update.timer` runs `/opt/buzz/update.sh` every two minutes like the
+others. It pulls `BUZZ_IMAGE` from `/opt/buzz/.env` (`ghcr.io/estiva-app/buzz:nfb`)
+and, when the image changed, recreates only the `relay` service and checks that
+it is healthy on the image it just pulled. It refuses to run unless
+`BUZZ_AUTO_MIGRATE=true`, because the relay migrates itself on start. Its
+sources are `deploy/estiva/` on `nfb-demo-kinds`.
+
+```bash
+systemctl start estiva-buzz-update                       # deploy now
+journalctl -u estiva-buzz-update --output=cat | grep -E "new image|healthy on|FAILED"
+```
+
+By hand, when the timer is stopped:
 
 ```bash
 cd /opt/buzz && docker compose pull relay && ./run.sh restart
