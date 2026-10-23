@@ -49,11 +49,14 @@ app could close a file's box while another kept it open.
   comment.", "Unarchive the project to comment.", "Unarchive the topic to
   comment.". "Archived. Unarchive it to comment." for a file archived itself
   stays as it was.
+- **Nothing new is added under an archived file.** "New issue" in an archived
+  project and a new sub-page under an archived page are not offered until it
+  is unarchived (Miky, in PEEKM-2's /land session, 23 October).
 - **The Folder part is parked.** Whether a file counts as archived because
   every Folder listing it is archived waits for the Folders-as-labels rework.
-  Until then each app keeps what it does today: Ship still closes an issue
-  whose every team is archived, and says "Unarchive the Folder to comment.";
-  Peek and Leaf do not.
+  Until then each app keeps what it does today: Ship still counts a project as
+  archived when every Folder listing it is, and closes its issues with a line
+  naming the Folder; Peek and Leaf do not.
 - Everything else in
   [an-archived-file-is-read-only-in-every-app](an-archived-file-is-read-only-in-every-app.md)
   stands: no new comment, reply or reaction, and no edit or delete, while the
@@ -61,14 +64,9 @@ app could close a file's box while another kept it open.
 
 ## Rejected alternatives
 
-- **Every Folder listing it, as the old record said.** Anyone can undo it by
-  listing the file in a live Folder, and it settles what a Folder is before
-  the rework does.
-- **The top-most archived file.** The line would name something further away
-  than what is actually in the way: unarchiving the closer one would not
-  reopen the file.
-- **"Archived with its parent", with no kind.** Says nothing a person can act
-  on.
+- **Keep the Folder part now, as the old record said.** Not turned down but
+  parked: anyone can undo it by listing the file in a live Folder, and it
+  would settle what a Folder is before the Folders-as-labels rework does.
 
 ## Consequences
 

@@ -559,8 +559,7 @@ four Folder archives §3.3 already ignored. One case cannot apply it and folds
 as before: a root that names no Folder at all (a bare file published before
 its `h` was required, §6.7). A parent's archive is read with its root too
 (§6.5): an ancestor read by address alone is no longer an exception. A reader
-that
-holds several versions of a root checks against the newest.
+that holds several versions of a root checks against the newest.
 
 A relay MAY refuse such a change at ingest; this one does not yet.
 
@@ -802,7 +801,8 @@ These have genuinely different reach and MUST NOT be offered as two styles of
 the same control.
 
 **Archive** is a change event on an `archived` field. Reversible, attributable,
-and available to anyone in the Folder.
+and available to anyone in the file's Folder; a Folder's own archive, only to
+its owners and admins (§3.3).
 
 *Added 2026-09-30 (FOL-46), as shipped in interop 0.37–0.38, Ship and Peek:*
 
@@ -826,11 +826,11 @@ and available to anyone in the Folder.
   2026-10-23*, PEEKM-2; replaces "Comments stay open."). While a file is
   archived, itself or up its parent chain, a writer SHOULD NOT offer a new
   `kind:1111` rooted at it (replies included), a `kind:7` on it or on its
-  comments, a `kind:40003` or `kind:5` on its comments, or a new child under
-  it. Its own Archive and Unarchive, Delete, and a move out of an archived
+  comments, a `kind:40003` or `kind:5` on its comments, a `kind:5` taking back
+  a reaction on it or on its comments, or a new child under it. Its own Archive and Unarchive, Delete, and a move out of an archived
   parent stay offered. A reader MUST show such events whatever their
   `created_at`: an older app, an outside client or an agent can still write
-  one. Reactions follow §6.6, which this narrows for an archived file.
+  one. Reading reactions still follows §6.6.
 - **Archived with a file above it, at any depth.** A file is archived with the
   closest archived file up its parent chain; that is the file a reader names
   ("Unarchive the page to comment."), and once it is unarchived the next one
@@ -841,12 +841,11 @@ and available to anyone in the Folder.
   to `parent`, else its `a` tag (§6.7 Nesting). Each level's `archived` change
   is folded against that level's own root, with §6.2's `h` rule. The walk
   stops at a file already seen (a cycle). A level whose root or manifest the
-  reader cannot read ends the walk, and the file counts as not archived by
-  what lies beyond it.
+  reader cannot read ends the walk: neither that level's archive nor anything
+  above it counts, since its archive cannot be checked against its root.
 - **No relay lock.** Archive is a view folded at read time, not an access
   boundary: a lock would protect nothing, and a reader folds any change
-  whenever it was made. A file's archive is reversible by anyone in its
-  Folder; a Folder's only by its owners and admins (§3.3).
+  whenever it was made.
 - **Not covered yet.** Whether a file counts as archived because every Folder
   listing it is archived, and whether a `kind:9` may be sent in an archived
   Folder, wait for the Folders-as-labels rework; until then each app keeps
