@@ -5,6 +5,11 @@
 - Decided by: Miky, in three sessions. On 2026-10-17, in the kickoff of the shared box's prototype ticket (Ship issue 851c0c1e): no comments on an archived file, in every app, and a line in the box's place saying why, not a greyed box. On 2026-10-20, in COMM-7's /land session: the words of that line. On 2026-10-20, in the shaping session of "Peek moves onto the shared box": your own messages are frozen too, and a Leaf page archived in Peek is fully read-only
 - Area: Messages
 
+> Superseded in part, 2026-10-23: the part "or when every Folder listing it
+> is", and which file the parent line names, are replaced by
+> [a-file-is-archived-with-the-closest-archived-file-above-it](a-file-is-archived-with-the-closest-archived-file-above-it.md).
+> The rest of this record stands.
+
 ## Who it affects
 
 Miky or Katerina opens a file that is archived, in Peek, Ship or Leaf. Every
