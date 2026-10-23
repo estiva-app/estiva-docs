@@ -117,6 +117,7 @@ export const INTERNAL = new Set([
   // the people usage scenarios are anchored to, not documentation of the suite.
   'process/PROJECT.md',
   'process/ISSUE.md',
+  'process/ARCHITECTURE.md',
 ])
 
 /**
@@ -128,6 +129,17 @@ export const INTERNAL = new Set([
 export const INTERNAL_DIRS = ['decisions/']
 
 export const isInternal = (file) => INTERNAL.has(file) || INTERNAL_DIRS.some((dir) => file.startsWith(dir))
+
+/**
+ * Self-contained HTML pages published as they are, at the same path — a
+ * project's architecture page (process/ARCHITECTURE.md) is drawings, not
+ * markdown. Opt-in like NAV, and the same test applies: each page is listed
+ * by name, and only if it would still be fine to serve with the password off.
+ * Not in the sidebar or search; the project's description links it.
+ */
+export const DRAWINGS = [
+  'architecture/template.html',
+]
 
 /**
  * Maps a repo-relative markdown path to its published slug, so cross-document

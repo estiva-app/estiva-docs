@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project architecture</title>
+<!--
+  Template for a project's architecture page (process/ARCHITECTURE.md).
+  Copy to architecture/<project-slug>.html, then redraw every example below:
+  the drawings here show the visual language, not any real project.
+  Classes: .b box · .w card · .ok new · .bad goes away · .q undecided (dashed)
+  · .f untouched (faint) · .a arrow · .an new arrow · .aq undecided arrow
+  · .m muted second line · .h bold label · .tag milestone tag.
+-->
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.example { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
+.legend .lgone::before { background: var(--warn-bg); border-color: var(--warn); }
+.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
+.legend .lf::before { opacity: .45; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+/* Below 560px a diagram scrolls inside its figure instead of shrinking its text. */
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); stroke-width: 1.5; }
+svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .f { opacity: .45; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
+svg .aq { stroke: var(--accent); fill: none; stroke-width: 1.6; stroke-dasharray: 5 4; marker-end: url(#arr-q); }
+svg .life { stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 3 4; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 560px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+tr.new td { background: var(--ok-bg); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+</style>
+</head>
+<body>
+<!-- Arrowheads, shared by every diagram on the page. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+    <marker id="arr-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<main>
+
+<h1>&lt;Project title&gt;</h1>
+<p class="sub"><span class="state">Shaped, 2026-10-23</span> · <a href="#">Ship project</a> · Goal: &lt;the project's one-line Goal&gt;</p>
+<!-- When the project closes: <span class="state">As built, <date></span>. A later page about the same parts links the earlier one here. -->
+
+<p class="example">Template. Every drawing below is an example of the visual language; redraw each one for the project and delete this box.</p>
+
+<p>&lt;Two or three sentences: what the project changes in the system, in product words, and where to look first.&gt;</p>
+
+<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lgone">goes away</span><span class="lq">waits on a decision</span><span class="lf">untouched, for orientation</span></div>
+
+<h2>Map</h2>
+
+<h3>Today</h3>
+<figure>
+<svg viewBox="0 0 720 240" role="img">
+<title>Today: Peek, Ship and Leaf each read and write the relay; the agent writes through the relay too; Estiva ID signs people in to every app</title>
+<rect class="b" x="20" y="20" width="150" height="54" rx="8"/><text x="36" y="44" class="h">Peek</text><text x="36" y="62" class="m">chat</text>
+<rect class="b" x="200" y="20" width="150" height="54" rx="8"/><text x="216" y="44" class="h">Ship</text><text x="216" y="62" class="m">projects and issues</text>
+<rect class="b" x="380" y="20" width="150" height="54" rx="8"/><text x="396" y="44" class="h">Leaf</text><text x="396" y="62" class="m">documents</text>
+<g class="f"><rect class="b" x="560" y="20" width="140" height="54" rx="8"/><text x="576" y="44" class="h">Estiva ID</text><text x="576" y="62" class="m">signs people in</text></g>
+<rect class="b" x="200" y="160" width="330" height="60" rx="8"/><text x="216" y="186" class="h">Relay</text><text x="216" y="204" class="m">stores every event · checks who may write</text>
+<g class="f"><rect class="b" x="20" y="160" width="150" height="60" rx="8"/><text x="36" y="186" class="h">Agent</text><text x="36" y="204" class="m">ship / peek CLI</text></g>
+<path class="a" d="M95,74 L95,120 L250,120 L250,156"/>
+<path class="a" d="M275,74 L275,156"/>
+<path class="a" d="M455,74 L455,120 L480,120 L480,156"/>
+<path class="a f" d="M170,190 L196,190"/>
+</svg>
+<figcaption>&lt;What to notice in today's picture, and anything left out on purpose.&gt;</figcaption>
+</figure>
+
+<h3>After</h3>
+<figure>
+<svg viewBox="0 0 720 260" role="img">
+<title>After: Ship's issues gain a card in Peek (milestone 1); whether Leaf may show the same card waits on a decision (milestone 2)</title>
+<rect class="ok" x="20" y="20" width="150" height="54" rx="8"/><text x="36" y="44" class="h">Peek</text><text x="36" y="62" class="m">shows issue cards</text>
+<rect class="b" x="200" y="20" width="150" height="54" rx="8"/><text x="216" y="44" class="h">Ship</text><text x="216" y="62" class="m">projects and issues</text>
+<rect class="q" x="380" y="20" width="150" height="54" rx="8"/><text x="396" y="44" class="h">Leaf</text><text x="396" y="62" class="m">shows it too?</text>
+<g class="f"><rect class="b" x="560" y="20" width="140" height="54" rx="8"/><text x="576" y="44" class="h">Estiva ID</text><text x="576" y="62" class="m">signs people in</text></g>
+<rect class="b" x="200" y="170" width="330" height="60" rx="8"/><text x="216" y="196" class="h">Relay</text><text x="216" y="214" class="m">stores every event · checks who may write</text>
+<g class="f"><rect class="b" x="20" y="170" width="150" height="60" rx="8"/><text x="36" y="196" class="h">Agent</text><text x="36" y="214" class="m">ship / peek CLI</text></g>
+<path class="a" d="M95,74 L95,130 L250,130 L250,166"/>
+<path class="a" d="M275,74 L275,166"/>
+<path class="a" d="M455,74 L455,130 L480,130 L480,166"/>
+<path class="a f" d="M170,200 L196,200"/>
+<path class="an" d="M200,40 L174,40"/><text x="176" y="98" class="tag">M1</text><text x="176" y="112" class="m">card</text>
+<path class="aq" d="M350,58 L376,58"/><text x="540" y="104" class="tag">M2 · decision</text><text x="540" y="120" class="m">may Leaf draw an</text><text x="540" y="136" class="m">issue's card? → brief</text>
+</svg>
+<figcaption>&lt;What changes, by milestone. Each changed box or arrow carries its milestone; a dashed one names its open question.&gt;</figcaption>
+</figure>
+
+<h2>Objects</h2>
+<figure>
+<svg viewBox="0 0 720 240" role="img">
+<title>A Folder holds a project, the project holds issues, an issue holds comments; new: a card inside a message that points at an issue</title>
+<rect class="w" x="20" y="20" width="460" height="200" rx="10"/><text x="36" y="44" class="h">Folder</text><text x="36" y="62" class="m">who can read and write · signed by its admins</text>
+<rect class="b" x="34" y="100" width="140" height="52" rx="8"/><text x="48" y="122" class="h">Project</text><text x="48" y="140" class="m">signed by its author</text>
+<rect class="b" x="195" y="100" width="140" height="52" rx="8"/><text x="209" y="122" class="h">Issue</text><text x="209" y="140" class="m">signed by its author</text>
+<rect class="b" x="195" y="172" width="140" height="40" rx="8"/><text x="209" y="197" class="h">Comment</text>
+<rect class="b" x="355" y="100" width="115" height="52" rx="8"/><text x="369" y="122" class="h">Message</text><text x="369" y="140" class="m">in a conversation</text>
+<rect class="ok" x="510" y="100" width="190" height="56" rx="8"/><text x="524" y="120" class="h">Card</text><text x="524" y="136" class="m">part of the message,</text><text x="524" y="150" class="m">not a file of its own</text>
+<path class="a" d="M174,126 L191,126"/>
+<path class="a" d="M265,152 L265,168"/>
+<path class="an" d="M470,126 L506,126"/>
+<path class="an" d="M600,100 L600,82 L265,82 L265,96"/><text x="520" y="76" class="m">points at the issue</text>
+</svg>
+<figcaption>&lt;What each object is, who owns it, and what points at what. Name what the new object is <em>not</em> (here: the card is not a file of its own).&gt;</figcaption>
+</figure>
+
+<h2>Flow</h2>
+<figure>
+<svg viewBox="0 0 720 300" role="img">
+<title>Katerina comments in Ship; Ship writes the comment into the project's Folder; the relay checks she is a member and stores it; Peek receives it and Miky sees it in the project conversation</title>
+<rect class="b" x="20" y="14" width="150" height="40" rx="8"/><text x="34" y="39" class="h">Katerina · Ship</text>
+<rect class="b" x="285" y="14" width="150" height="40" rx="8"/><text x="331" y="39" class="h">Relay</text>
+<rect class="b" x="550" y="14" width="150" height="40" rx="8"/><text x="564" y="39" class="h">Peek · Miky</text>
+<line class="life" x1="95" y1="54" x2="95" y2="290"/><line class="life" x1="360" y1="54" x2="360" y2="290"/><line class="life" x1="625" y1="54" x2="625" y2="290"/>
+<text x="110" y="86">1  writes a comment on the issue</text>
+<path class="a" d="M95,124 L356,124"/><text x="110" y="118">2  Ship sends it to the project's Folder</text>
+<rect class="ok" x="370" y="138" width="196" height="40" rx="6"/><text x="380" y="156">3  checks she is a member,</text><text x="380" y="172" class="m">then stores it</text>
+<path class="an" d="M360,206 L621,206"/><text x="375" y="200">4  sends it to Peek's watch</text>
+<text x="420" y="246">5  appears in the project's</text><text x="420" y="262" class="m">conversation, unread</text>
+</svg>
+<figcaption>&lt;One real usage scenario from the project, step by step: who does what, which app writes, what checks it, who sees it and when.&gt;</figcaption>
+</figure>
+
+<h2>Access</h2>
+<div class="tw">
+<table>
+<thead><tr><th>What</th><th>Who can see it</th><th>Who can change it</th><th>Checked by</th></tr></thead>
+<tbody>
+<tr><td>&lt;An object the project touches&gt;</td><td>&lt;who, as people meet it&gt;</td><td>&lt;who&gt;</td><td>&lt;the relay, the app, or nobody&gt;</td></tr>
+<tr class="new"><td>&lt;An object that is new or whose access changes&gt;</td><td>&lt;who, and what someone who cannot read it sees instead&gt;</td><td>&lt;who&gt;</td><td>&lt;where&gt;</td></tr>
+</tbody>
+</table>
+</div>
+<p class="sub">&lt;Rows that change are green. Say what someone who cannot read the issue sees instead.&gt;</p>
+
+<h2>Checked</h2>
+<ul>
+<li>&lt;Each box and arrow in "today", and where it was verified: a file and line, a SPEC section, a probe on production.&gt;</li>
+<li>&lt;Anything that could not be verified, said plainly.&gt;</li>
+</ul>
+
+</main>
+</body>
+</html>

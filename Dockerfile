@@ -37,6 +37,7 @@ COPY design ./design
 COPY guide ./guide
 COPY local-dev ./local-dev
 COPY repos ./repos
+COPY architecture ./architecture
 
 # `operations/` is deliberately NOT copied. site/nav.mjs decides what is
 # published, and not shipping the private documents into the image at all means
