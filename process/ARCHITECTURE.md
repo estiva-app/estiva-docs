@@ -79,6 +79,20 @@ shows; the Map is always drawn.
 - **Never describe a security gap that is not fixed yet** — see "Where it
   lives" for what happens to a page that would.
 
+## The base page
+
+[`architecture/estiva.html`](../architecture/estiva.html) draws the whole suite
+as it runs: the apps, the relay, the shared packages, the objects people meet,
+one flow end to end, and who can see and change what. It is not a project's
+page; it is where each project's "today" starts.
+
+- **At shaping**, a project's "today" pictures are cut from the base page: the
+  same boxes, names and positions, with what the project does not touch faded
+  or left out. Check each box the project rests on again; a box the base page
+  has wrong is fixed there in the same PR.
+- **When a project closes**, its as-built change goes into the base page, so
+  the next project starts from what runs.
+
 ## Keeping it true
 
 - **At kickoff**, a ticket whose approach changes a box or arrow the page does
@@ -88,6 +102,8 @@ shows; the Map is always drawn.
   redraw.
 - **When the project closes**, `/wrap-project` redraws the "after" pictures as
   built, and marks the page `As built, <date>` under its title. A page that
-  still says `Shaped` describes intent, not what runs.
+  still says `Shaped` describes intent, not what runs. It then folds the same
+  change into the base page (above), with the date and the project's page
+  linked under its title.
 - A later project that changes the same parts gets its own page and links the
   earlier one under its title; the earlier page is not rewritten.

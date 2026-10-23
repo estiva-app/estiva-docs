@@ -135,9 +135,11 @@ export const isInternal = (file) => INTERNAL.has(file) || INTERNAL_DIRS.some((di
  * project's architecture page (process/ARCHITECTURE.md) is drawings, not
  * markdown. Opt-in like NAV, and the same test applies: each page is listed
  * by name, and only if it would still be fine to serve with the password off.
- * Not in the sidebar or search; the project's description links it.
+ * Not in the sidebar or search; the project's description links it (the base
+ * page, from architecture/README.md).
  */
 export const DRAWINGS = [
+  'architecture/estiva.html',
   'architecture/template.html',
 ]
 

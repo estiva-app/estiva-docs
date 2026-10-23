@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Estiva architecture</title>
+<!--
+  The whole Estiva suite as it runs today (process/ARCHITECTURE.md).
+  Later project pages redraw their Map from this one.
+  Classes: .b box · .w card · .f faint · .a request arrow · .al live arrow
+  · .m muted second line · .h bold label.
+-->
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lreq::before { height: 0; border: 0; border-top: 2px solid var(--ink); border-radius: 0; background: none; width: 18px; }
+.legend .llive::before { height: 0; border: 0; border-top: 2px solid var(--accent); border-radius: 0; background: none; width: 18px; }
+.legend .lcard::before { background: var(--card); }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+/* Below 560px a diagram scrolls inside its figure instead of shrinking its text. */
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .f { opacity: .45; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .al { stroke: var(--accent); fill: none; stroke-width: 1.8; marker-end: url(#arr-q); }
+svg .life { stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 3 4; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 560px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+.checked li { font-size: .92rem; }
+</style>
+</head>
+<body>
+<!-- Arrowheads, shared by every diagram on the page. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<main>
+
+<h1>Estiva architecture</h1>
+<p class="sub"><span class="state">As built, 2026-10-23</span> · the whole suite, as it runs today</p>
+
+<p>Estiva is a set of apps for one team: Peek for chat, Ship for projects and issues, and Leaf for documents. They share one workspace, which is a single relay. Every app reads and writes the same signed events there, so a file made in one app can be found and discussed in the others.</p>
+<p>Start with the first map, then look at <a href="#objects">Objects</a> to see what a person meets. <a href="#flow">Flow</a> follows one comment from Ship to Peek. Project pages redraw their parts from this page.</p>
+
+<h2 id="map">Map: the suite</h2>
+<div class="legend"><span class="lreq">asked for: a write, a read, a signature</span><span class="llive">pushed live to an open tab</span></div>
+<figure>
+<svg viewBox="0 0 720 500" role="img">
+<title>Peek, Ship, Leaf and the agent sign in at Estiva ID and ask it to sign their events. They write and read over HTTP at the relay. The relay pushes live updates to the three browser apps, but not to the agent. The relay keeps events in Postgres, uses Redis for live fan-out, and keeps uploaded files in S3-compatible storage.</title>
+<rect class="b" x="20" y="20" width="680" height="72" rx="8"/>
+<text x="36" y="44" class="h">Estiva ID</text>
+<text x="36" y="63" class="m">signs people in with a passkey · keeps each person's key, encrypted, in its own database</text>
+<text x="36" y="81" class="m">signs each event for whoever is signed in · publishes people's profiles to the relay</text>
+
+<rect class="b" x="20" y="160" width="150" height="56" rx="8"/><text x="36" y="184" class="h">Peek</text><text x="36" y="203" class="m">chat</text>
+<rect class="b" x="190" y="160" width="150" height="56" rx="8"/><text x="206" y="184" class="h">Ship</text><text x="206" y="203" class="m">projects and issues</text>
+<rect class="b" x="360" y="160" width="150" height="56" rx="8"/><text x="376" y="184" class="h">Leaf</text><text x="376" y="203" class="m">documents</text>
+<rect class="b" x="530" y="160" width="170" height="56" rx="8"/><text x="546" y="184" class="h">Agent</text><text x="546" y="203" class="m">CLI and MCP server</text>
+
+<path class="a" d="M44,160 L44,96"/><text x="52" y="132" class="m">sign in, sign</text>
+<path class="a" d="M214,160 L214,96"/><text x="222" y="132" class="m">sign in, sign</text>
+<path class="a" d="M384,160 L384,96"/><text x="392" y="132" class="m">sign in, sign</text>
+<path class="a" d="M554,160 L554,96"/><text x="562" y="132" class="m">sign as the agent</text>
+
+<rect class="b" x="20" y="300" width="680" height="72" rx="8"/>
+<text x="36" y="324" class="h">The relay</text><text x="118" y="324" class="m">the workspace · built on Buzz</text>
+<text x="36" y="343" class="m">every app reads and writes the same events here</text>
+<text x="36" y="361" class="m">checks who signed each event, that they are in the workspace, and who may write in each Folder</text>
+
+<path class="a" d="M40,216 L40,296"/><text x="48" y="262" class="m">write, read</text>
+<path class="al" d="M150,300 L150,220"/><text x="118" y="290" class="m">live</text>
+<path class="a" d="M210,216 L210,296"/>
+<path class="al" d="M320,300 L320,220"/>
+<path class="a" d="M380,216 L380,296"/>
+<path class="al" d="M490,300 L490,220"/>
+<path class="a" d="M550,216 L550,296"/><text x="558" y="262" class="m">write, read · no live</text>
+
+<rect class="b" x="20" y="428" width="213" height="56" rx="8"/><text x="36" y="452" class="h">Events</text><text x="36" y="471" class="m">Postgres</text>
+<rect class="b" x="253" y="428" width="213" height="56" rx="8"/><text x="269" y="452" class="h">Live fan-out</text><text x="269" y="471" class="m">Redis: who is watching what</text>
+<rect class="b" x="486" y="428" width="214" height="56" rx="8"/><text x="502" y="452" class="h">Uploaded files</text><text x="502" y="471" class="m">S3-compatible storage</text>
+<path class="a" d="M126,372 L126,424"/>
+<path class="a" d="M359,372 L359,424"/>
+<path class="a" d="M593,372 L593,424"/>
+</svg>
+<figcaption>Peek, Ship and Leaf run in the browser and have no server of their own. They write and read with plain HTTP requests, and each tab keeps one live socket so changes arrive without a reload. Estiva ID is the only part with its own database besides the relay. The agent answers a command and stops, so it never watches for changes.</figcaption>
+</figure>
+
+<h3>What each app builds on</h3>
+<figure>
+<svg viewBox="0 0 720 340" role="img">
+<title>Peek, Ship and Leaf use all six shared packages. The agent uses four of them and leaves out the live socket and the UI. Estiva ID uses none. The packages are published to public npm.</title>
+<rect class="b" x="20" y="20" width="330" height="68" rx="8"/><text x="36" y="44" class="h">Peek, Ship, Leaf</text><text x="36" y="63" class="m">browser apps, served as static files</text>
+<rect class="b" x="370" y="20" width="150" height="68" rx="8"/><text x="386" y="44" class="h">Agent</text><text x="386" y="63" class="m">runs on a computer</text>
+<rect class="b" x="540" y="20" width="160" height="68" rx="8"/><text x="556" y="44" class="h">Estiva ID</text><text x="556" y="63" class="m">its own server;</text><text x="556" y="79" class="m">uses none of these</text>
+
+<path class="a" d="M185,88 L185,146"/><text x="193" y="122" class="m">all six</text>
+<path class="a" d="M445,88 L445,146"/><text x="453" y="122" class="m">four: not the live socket, not ui</text>
+
+<rect class="w" x="20" y="150" width="680" height="176" rx="10"/>
+<text x="36" y="173" class="h">Shared packages</text><text x="176" y="173" class="m">public npm, @estiva-app/…</text>
+<rect class="b" x="36" y="188" width="204" height="56" rx="8"/><text x="50" y="211" class="h">Events and relay calls</text><text x="50" y="230" class="m">protocol</text>
+<rect class="b" x="258" y="188" width="204" height="56" rx="8"/><text x="272" y="211" class="h">Other apps' files</text><text x="272" y="230" class="m">interop</text>
+<rect class="b" x="480" y="188" width="204" height="56" rx="8"/><text x="494" y="211" class="h">Comments and unread</text><text x="494" y="230" class="m">conversation</text>
+<rect class="b" x="36" y="256" width="204" height="56" rx="8"/><text x="50" y="279" class="h">Sign-in and signing</text><text x="50" y="298" class="m">identity</text>
+<rect class="b" x="258" y="256" width="204" height="56" rx="8"/><text x="272" y="279" class="h">Live socket, re-reads</text><text x="272" y="298" class="m">platform</text>
+<rect class="b" x="480" y="256" width="204" height="56" rx="8"/><text x="494" y="279" class="h">Look and shared parts</text><text x="494" y="298" class="m">ui</text>
+</svg>
+<figcaption>Most of how the apps behave alike lives in these packages, not in the apps. "Other apps' files" is how Peek can draw a Ship issue or a Leaf document from that app's manifest (who may publish one: see Access, below). A change to a package reaches an app only when that app moves to the new version.</figcaption>
+</figure>
+
+<h2 id="production">Map: how it reaches production</h2>
+<figure>
+<svg viewBox="0 0 720 370" role="img">
+<title>A merge on GitHub runs CI, which checks the code and builds a container image into GitHub's registry. The server pulls new images itself every two minutes. Shared packages go to npm on a version tag. Storybook previews go to Cloudflare Pages.</title>
+<rect class="b" x="20" y="20" width="220" height="56" rx="8"/><text x="36" y="44" class="h">Code on GitHub</text><text x="36" y="63" class="m">main · the relay's own branch</text>
+<rect class="b" x="270" y="20" width="190" height="56" rx="8"/><text x="286" y="44" class="h">CI</text><text x="286" y="63" class="m">checks, then builds</text>
+<rect class="b" x="490" y="20" width="210" height="56" rx="8"/><text x="506" y="44" class="h">Container images</text><text x="506" y="63" class="m">GitHub's registry</text>
+<path class="a" d="M240,48 L266,48"/>
+<path class="a" d="M460,48 L486,48"/>
+
+<rect class="b" x="20" y="160" width="220" height="70" rx="8"/><text x="36" y="184" class="h">Storybook</text><text x="36" y="203" class="m">on Cloudflare Pages,</text><text x="36" y="219" class="m">a preview per concept branch</text>
+<path class="a" d="M290,76 L290,112 L130,112 L130,156"/><text x="140" y="104" class="m">UI previews</text>
+
+<rect class="b" x="270" y="160" width="190" height="70" rx="8"/><text x="286" y="184" class="h">npm</text><text x="286" y="203" class="m">shared packages,</text><text x="286" y="219" class="m">released on a tag</text>
+<path class="a" d="M340,76 L340,156"/><text x="348" y="128" class="m">tag</text>
+<path class="a" d="M420,160 L420,80"/><text x="427" y="128" class="m">installed</text>
+
+<rect class="b" x="490" y="150" width="210" height="204" rx="8"/>
+<text x="506" y="174" class="h">The server</text>
+<text x="506" y="193" class="m">every 2 minutes a timer pulls</text>
+<text x="506" y="209" class="m">new images, restarts what</text>
+<text x="506" y="225" class="m">changed, checks its health</text>
+<text x="506" y="253" class="h">runs</text>
+<text x="506" y="272" class="m">the relay and its stores</text>
+<text x="506" y="290" class="m">Estiva ID and its database</text>
+<text x="506" y="308" class="m">Peek, Ship, Leaf</text>
+<text x="506" y="326" class="m">this docs site</text>
+<path class="a" d="M595,76 L595,146"/><text x="603" y="118" class="m">pulled, not pushed</text>
+</svg>
+<figcaption>Nothing logs in to the server to deploy: it fetches new images on its own, so a merge is live within a few minutes. The relay's image is built from its own branch, not from <code>main</code>. The agent has no deploy; it is installed where it runs.</figcaption>
+</figure>
+
+<h2 id="objects">Objects</h2>
+<h3>A Folder and its files</h3>
+<div class="legend"><span class="lcard">a container</span><span>an object</span></div>
+<figure>
+<svg viewBox="0 0 720 330" role="img">
+<title>A Folder has a name, admins and members, all signed by the relay. It holds four types of file: a project and its issues, made in Ship; a topic, made in Peek; and a document, made in Leaf. The relay keeps the Folder's list of files. Changes to a file's title, summary, text or status are separate events signed by whoever makes them.</title>
+<rect class="w" x="20" y="20" width="470" height="296" rx="10"/>
+<text x="36" y="44" class="h">Folder</text>
+<text x="36" y="63" class="m">a shared space: its name, admins and members,</text>
+<text x="36" y="79" class="m">all signed by the relay · 39000–39002</text>
+
+<rect class="b" x="36" y="100" width="210" height="72" rx="8"/><text x="50" y="122" class="h">Project</text><text x="50" y="141" class="m">made in Ship</text><text x="50" y="158" class="m">30850</text>
+<rect class="b" x="266" y="100" width="208" height="72" rx="8"/><text x="280" y="122" class="h">Issue</text><text x="280" y="141" class="m">made in Ship, in a project</text><text x="280" y="158" class="m">30851</text>
+<path class="a" d="M266,136 L250,136"/>
+<rect class="b" x="36" y="188" width="210" height="72" rx="8"/><text x="50" y="210" class="h">Topic</text><text x="50" y="229" class="m">a conversation, made in Peek</text><text x="50" y="246" class="m">30840</text>
+<rect class="b" x="266" y="188" width="208" height="72" rx="8"/><text x="280" y="210" class="h">Document</text><text x="280" y="229" class="m">made in Leaf</text><text x="280" y="246" class="m">30842</text>
+<text x="36" y="290" class="m">each file is signed by its author and carries</text>
+<text x="36" y="306" class="m">the id of the Folder it was filed in</text>
+
+<rect class="b" x="508" y="30" width="196" height="88" rx="8"/><text x="522" y="52" class="h">The Folder's list</text><text x="522" y="71" class="m">which files it shows,</text><text x="522" y="87" class="m">signed by the relay</text><text x="522" y="106" class="m">30890</text>
+<path class="a" d="M508,74 L494,74"/>
+
+<rect class="b" x="508" y="150" width="196" height="110" rx="8"/><text x="522" y="172" class="h">Changes</text><text x="522" y="191" class="m">title, summary, text,</text><text x="522" y="207" class="m">status, assignee, archived</text><text x="522" y="223" class="m">signed by whoever acts</text><text x="522" y="244" class="m">1851</text>
+<path class="a" d="M508,224 L478,224"/>
+</svg>
+<figcaption>A file's own event holds only what never changes; its title, summary and text are a stream of changes, and the latest one for each field wins. Who can read a file follows the Folder it was filed in, and moving a file only changes which Folder lists it. Folders hold files, never other Folders.</figcaption>
+</figure>
+
+<h3>Around a file: the conversation</h3>
+<figure>
+<svg viewBox="0 0 720 310" role="img">
+<title>A comment is about one file and can be written from any app; a reply answers a comment, one level deep. A message lives in a direct message in Peek. A card under a message points at a file. A reaction can be on a comment or a message.</title>
+<rect class="b" x="260" y="20" width="200" height="56" rx="8"/><text x="276" y="44" class="h">A file</text><text x="276" y="63" class="m">any of the four types</text>
+
+<rect class="b" x="20" y="130" width="200" height="72" rx="8"/><text x="36" y="152" class="h">Comment</text><text x="36" y="171" class="m">about the file, from any app</text><text x="36" y="188" class="m">1111</text>
+<path class="a" d="M120,130 L120,48 L256,48"/><text x="128" y="100" class="m">about</text>
+<rect class="b" x="20" y="240" width="200" height="56" rx="8"/><text x="36" y="264" class="h">Reply</text><text x="36" y="283" class="m">to a comment, one level</text>
+<path class="a" d="M120,240 L120,206"/>
+
+<rect class="b" x="260" y="140" width="200" height="56" rx="8"/><text x="276" y="164" class="h">Reaction</text><text x="276" y="183" class="m">on a comment or message · 7</text>
+<path class="a" d="M260,168 L224,168"/>
+<path class="a" d="M460,168 L496,168"/>
+
+<rect class="b" x="500" y="130" width="200" height="72" rx="8"/><text x="516" y="152" class="h">Message</text><text x="516" y="171" class="m">in a direct message</text><text x="516" y="188" class="m">9 · shown in Peek</text>
+<rect class="b" x="500" y="240" width="200" height="56" rx="8"/><text x="516" y="264" class="h">Card</text><text x="516" y="283" class="m">drawn under a message</text>
+<path class="a" d="M600,240 L600,206"/>
+<path class="a" d="M700,268 L712,268 L712,40 L464,40"/><text x="560" y="34" class="m">points at a file</text>
+</svg>
+<figcaption>A comment carries the file's own Folder, so a file's comments show in every app that shows the file. A card is not copied into the message: the message keeps the link as written, and each reader's app draws the card from the file as it is now. Edits and deletes are left out; each is offered only on your own message or comment.</figcaption>
+</figure>
+
+<div class="tw">
+<table>
+<thead><tr><th>Object</th><th>What a person meets</th><th>Signed by</th><th>Made in</th><th>Shown in</th></tr></thead>
+<tbody>
+<tr><td>Folder</td><td>A shared space with a name, admins and members</td><td>The relay</td><td>Any app</td><td>Every app</td></tr>
+<tr><td>Project, issue</td><td>Ship's work items; an issue belongs to a project</td><td>Its author</td><td>Ship</td><td>Ship; its conversation in Peek</td></tr>
+<tr><td>Topic</td><td>A conversation that is a file of its own</td><td>Its author</td><td>Peek</td><td>Peek</td></tr>
+<tr><td>Document</td><td>A page of blocks</td><td>Its author</td><td>Leaf</td><td>Leaf; its conversation in Peek</td></tr>
+<tr><td>Title, summary, text</td><td>What a file says about itself</td><td>Whoever changed it</td><td>The file's app</td><td>Every app that lists the file</td></tr>
+<tr><td>Comment</td><td>A remark on a file, or on part of a document</td><td>Its author</td><td>Any app</td><td>Peek, Ship's Activity, Leaf's side column</td></tr>
+<tr><td>Message</td><td>A line in a direct message; a Folder's own chat is in the protocol, and no app shows it yet</td><td>Its author</td><td>Peek</td><td>Peek</td></tr>
+<tr><td>Card</td><td>A preview of a file under a message or comment</td><td>(part of the message)</td><td>Any app</td><td>Each reader's app</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="flow">Flow: a comment on a Ship issue, seen in Peek</h2>
+<p>Katerina comments on an issue in Ship; Miky reads it in Peek. A comment on an issue shows in that issue's conversation, not in its project's: the project's conversation holds the comments made on the project itself.</p>
+<figure>
+<svg viewBox="0 0 720 470" role="img">
+<title>Ship builds the comment and asks Estiva ID to sign it with Katerina's key. Ship sends it to the relay, which checks who signed it and that she may write in the Folder, then stores it and pushes it live to Peek. Miky sees it on the issue in Peek at once if it is open.</title>
+<rect class="b" x="15" y="14" width="150" height="40" rx="8"/><text x="31" y="39" class="h">Katerina · Ship</text>
+<rect class="b" x="195" y="14" width="150" height="40" rx="8"/><text x="235" y="39" class="h">Estiva ID</text>
+<rect class="b" x="375" y="14" width="150" height="40" rx="8"/><text x="425" y="39" class="h">Relay</text>
+<rect class="b" x="555" y="14" width="150" height="40" rx="8"/><text x="590" y="39" class="h">Peek · Miky</text>
+<line class="life" x1="90" y1="54" x2="90" y2="405"/><line class="life" x1="270" y1="54" x2="270" y2="405"/><line class="life" x1="450" y1="54" x2="450" y2="405"/><line class="life" x1="630" y1="54" x2="630" y2="405"/>
+
+<text x="100" y="84">1  sends a comment on</text><text x="118" y="100">the issue</text>
+<text x="100" y="128">2  builds it: about</text><text x="118" y="144">the issue, in its Folder</text><text x="118" y="160" class="m">1111</text>
+<path class="a" d="M90,190 L266,190"/><text x="100" y="184">3  asks it to sign</text>
+<path class="a" d="M270,226 L94,226"/><text x="100" y="220">4  signed with her key</text>
+<path class="a" d="M90,268 L446,268"/><text x="100" y="262">5  sends it to the relay</text><text x="118" y="284" class="m">HTTP</text>
+
+<rect class="b" x="460" y="292" width="160" height="82" rx="6"/>
+<text x="470" y="312">6  checks, then stores</text>
+<text x="470" y="330" class="m">signed by her,</text>
+<text x="470" y="346" class="m">on the workspace,</text>
+<text x="470" y="362" class="m">may write in the Folder</text>
+
+<path class="al" d="M450,392 L626,392"/><text x="320" y="396">7  pushed live</text>
+
+<text x="706" y="430" text-anchor="end">8  Miky sees it on the issue: at once if it is open,</text>
+<text x="706" y="448" text-anchor="end" class="m">otherwise within a minute, as unread on its Folder</text>
+</svg>
+<figcaption>Signing happens at Estiva ID, not in the browser: Ship never holds Katerina's key. Peek's open tab watches the issue's Folder over one live socket and keeps only what is about this issue; the same comment also shows in Ship's Activity. It counts as read once Miky has had the conversation open for a moment.</figcaption>
+</figure>
+
+<h2 id="access">Access</h2>
+<p>Every read and every write is made by someone on the workspace, and every event is signed by the person who sent it. The rows below are the rules the relay, Estiva ID or each reading app enforces; a rule that is decided and still being built names its record and the issue that carries it out. Every Folder is open today, so "whoever can read the Folder" is everyone on the workspace until private Folders exist (SPEC §3.1).</p>
+<div class="tw">
+<table>
+<thead><tr><th>What</th><th>Who can see it</th><th>Who can change it</th><th>Checked by</th></tr></thead>
+<tbody>
+<tr><td>Anything in the workspace</td><td>People on the workspace</td><td>People on the workspace, each only as themselves</td><td>The relay</td></tr>
+<tr><td>Someone removed from the workspace</td><td colspan="3">Decided in <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/someone-you-remove-loses-access-at-once.md">Someone you remove loses access the moment the removal lands</a>; carried out by an issue in Ship (<a href="https://ship.estiva.app/issue/someone-you-remove-loses-access-at-once-39f569d5-bfa2-415b-815e-4c281ce25564">Someone you remove loses access at once</a>)</td></tr>
+<tr><td>Which kinds of event an app may sign</td><td>—</td><td>Set per app in Estiva ID; no app may publish a profile</td><td>Estiva ID</td></tr>
+<tr><td>A person's profile (name, picture)</td><td>People on the workspace</td><td>That person, through Estiva ID</td><td>Estiva ID and the relay</td></tr>
+<tr><td>An app's manifest (its types, actions and Open in links)</td><td>People on the workspace</td><td>Decided in <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/an-app-counts-only-once-the-workspace-adds-it.md">An app speaks for a file type only once the workspace has added it</a>; carried out by an issue in Ship (<a href="https://ship.estiva.app/issue/only-an-app-the-workspace-added-can-publish-an-app-manifest-710f925a-6550-435d-b763-1c90613b34b2">Only an app the workspace added can publish an app manifest</a>)</td><td>—</td></tr>
+<tr><td>A Folder's name and description</td><td>Whoever can read the Folder</td><td>Its owners and admins</td><td>The relay</td></tr>
+<tr><td>A Folder's admins and members</td><td>Whoever can read the Folder</td><td>Written only by the relay; only owners and admins make someone an admin</td><td>The relay</td></tr>
+<tr><td>Archiving a Folder</td><td>Whoever can read the Folder</td><td>Its owners and admins: each app ignores an archive from anyone else</td><td>Each app, through interop</td></tr>
+<tr><td>Which files a Folder lists</td><td>People on the workspace</td><td>Anyone who may write in the Folder</td><td>The relay</td></tr>
+<tr><td>Deleting a Folder</td><td>—</td><td>Its owner, the person whose agent owns it, or a workspace admin, and only once no file is filed in it or listed by it</td><td>The relay</td></tr>
+<tr><td>An issue's or a document's own event</td><td>Whoever can read its Folder</td><td>Its author</td><td>The relay</td></tr>
+<tr><td>A file's title, summary, text and other fields</td><td>Whoever can read the Folder each change is sent to</td><td>Anyone who may write in that Folder</td><td>The relay</td></tr>
+<tr><td>An uploaded file (a picture, an attachment)</td><td>People on the workspace, by its link</td><td>—</td><td>The relay</td></tr>
+<tr><td>A message</td><td>Whoever can read its Folder</td><td>Written by whoever may write there; edited or deleted by its author or the person whose agent wrote it; also removed by the Folder's owners and admins</td><td>The relay</td></tr>
+<tr><td>A comment</td><td>Whoever can read the Folder it is written in</td><td>Edited or deleted by its author or the person whose agent wrote it; also removed by the Folder's owners and admins</td><td>The relay</td></tr>
+<tr><td>A reaction</td><td>Whoever can read what it reacts to</td><td>Its author, on something that exists</td><td>The relay</td></tr>
+<tr><td>A direct message</td><td>Its participants</td><td>Its participants</td><td>The relay</td></tr>
+<tr><td>Read state (what you have read)</td><td>Only you</td><td>Only you</td><td>The relay</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="checked">Checked</h2>
+<p class="sub">Read on 2026-10-23 from <code>origin/main</code> of each repository, and from <code>origin/nfb-demo-kinds</code> for the relay. On production, only the relay's sign-in check and its deploy timer were probed.</p>
+<ul class="checked">
+<li><b>Apps have no server of their own.</b> Peek, Ship and Leaf are static builds in an nginx image: <code>peek:Dockerfile:8-14</code>, <code>estiva-ship:Dockerfile:28-30</code>, <code>leaf:Dockerfile:11-13</code>. Peek's old Convex backend is gone (removed 2026-09-25, <code>estiva-docs:ROADMAP.md:124</code>).</li>
+<li><b>Sign in and sign.</b> Each app signs in through <code>createEstivaId</code> (<code>peek:src/auth/estivaId.ts:23</code>, <code>estiva-ship:src/auth/estivaId.ts:60</code>, <code>leaf:src/auth/estivaId.ts:1</code>); signing is <code>POST /sign</code> (<code>estiva-foundation:packages/identity/src/signer.ts:127-140</code>). Estiva ID keeps each key encrypted in Postgres (<code>estiva-id:docs/KEY-CUSTODY.md:14-16</code>, <code>README.md:10-12</code>), signs in with passkeys (<code>docs/API.md:39-50</code>) and publishes profiles (<code>src/domain/policy.ts:130-141</code>). SPEC §4.3–4.4.</li>
+<li><b>Agent.</b> Client-credentials sign-in and signing through Estiva ID (<code>estiva-agent:lib/agent/credentials.ts:114-143</code>, <code>lib/nostr/signer.ts:12</code>); no subscription (<code>lib/agent/apps/peek.ts:186</code>); packages in <code>package.json:22-26</code>.</li>
+<li><b>Write and read over HTTP.</b> <code>POST /events</code> and <code>POST /query</code> (<code>estiva-foundation:packages/protocol/src/bridge.ts:2,410-423</code>).</li>
+<li><b>Live socket.</b> One per tab, from <code>@estiva-app/platform</code> (<code>packages/platform/src/live-client.ts:2,196,332</code>); used by Peek (<code>src/nostr/liveTopics.ts:88</code>), Ship (<code>src/api/liveWorkspace.ts:60</code>) and Leaf (<code>src/relay/client.ts:28</code>).</li>
+<li><b>Relay and its stores.</b> Rust, Buzz fork (<code>buzz:Cargo.toml:2-31</code>); events in Postgres (<code>crates/buzz-db/Cargo.toml:8</code>), fan-out in Redis (<code>crates/buzz-pubsub/Cargo.toml:8</code>), uploads at <code>PUT /upload</code> into S3-compatible storage (<code>crates/buzz-relay/src/api/media.rs:1-7</code>, <code>crates/buzz-media/Cargo.toml:24</code>). That production runs these three stores: <code>estiva-docs:operations/PRODUCTION.md:64</code>. The workspace is the relay: SPEC §2; record <code>0001-relay-canonical-by-default</code>.</li>
+<li><b>Shared packages.</b> Names and descriptions in <code>estiva-foundation:packages/*/package.json</code> and <code>estiva-ui:package.json</code>; consumers in <code>peek:package.json:24-29</code>, <code>estiva-ship:package.json:32-37</code>, <code>leaf:package.json:24-29</code>. Estiva ID depends on none (<code>estiva-id:package.json</code>).</li>
+<li><b>Production.</b> Images built on merge (<code>peek:.github/workflows/deploy.yml:105-182</code>, <code>estiva-ship:deploy.yml:165-242</code>, <code>leaf:deploy.yml:80-125</code>, <code>estiva-id:ci.yml:82-113</code>, <code>estiva-docs:deploy.yml:20-82</code>); the relay's from its branch (<code>buzz:.github/workflows/relay-image.yml:20-23,66-77</code>). Pulled by a timer every 2 minutes (<code>estiva-ship:deploy/estiva-ship-update.timer:6</code>, <code>peek:deploy/update.sh:3-71</code>, <code>buzz:deploy/estiva/estiva-buzz-update.timer:5-7</code>). Packages released on a tag to npm (<code>estiva-foundation:.github/workflows/release.yml</code>, <code>estiva-ui:release.yml:19-59</code>). Storybook on Cloudflare Pages (<code>estiva-foundation:.github/workflows/storybook-pages.yml:81-86</code>, each app's <code>storybook.yml</code>).</li>
+<li><b>Folder and files.</b> SPEC §3, §3.1–3.3, §6.1–6.3; KINDS §3–4; records <code>a-folder-is-a-group-the-relay-lists</code>, <code>folders-belong-to-the-protocol</code>, <code>folders-are-one-level-deep</code>, <code>moving-a-file-never-changes-who-can-read-it</code>, <code>a-document-is-its-own-type-of-file</code>, <code>a-files-summary-is-its-own-field</code>, <code>a-files-text-is-a-readable-snapshot</code>. Builders: <code>estiva-foundation:packages/protocol/src/events.ts:963,1007</code>.</li>
+<li><b>Conversation objects.</b> SPEC §6.4, §6.6, §6.8, §13.1, §13.6.2; records <code>what-belongs-to-a-file-is-stored-with-it</code>, <code>a-chat-message-belongs-to-the-protocol</code>, <code>a-conversation-is-one-shared-thing-and-only-its-colours-are-the-apps</code>, <code>a-link-is-stored-as-the-url-a-person-wrote</code>, <code>a-link-on-words-counts-toward-the-card</code>, <code>edit-and-delete-are-offered-only-on-your-own-message</code>. Cards drawn in <code>peek:src/nostr/fileConversation.ts</code>, <code>estiva-ship:src/lib/messageCard.ts</code>, <code>leaf:src/comments/comments.ts</code>.</li>
+<li><b>Flow.</b> Ship: <code>src/pages/IssuePage.tsx:250</code> → <code>src/api/writes.ts:391-414</code> → <code>src/nostr/store.ts:690-727</code> → <code>estiva-foundation:packages/conversation/src/builders.ts:40-65</code>; signer chosen in <code>src/api/store.ts:31-50</code>. Relay: <code>crates/buzz-relay/src/api/bridge.rs:691-779</code>, <code>handlers/ingest.rs:2262</code> (signer is the signed-in key at 2407; Folder check at 879 and 2697). Peek: <code>src/nostr/useLiveFile.ts:66-73,116-122</code>, <code>src/nostr/conversationCatchUp.ts:244-268</code>, a one-minute catch-up (<code>src/api/useFileConversation.ts:194</code>, <code>src/api/useChannelStreams.ts:47-49</code>), read after 1.5 s (<code>src/api/unread.ts:64</code>). Comment anchoring: <code>estiva-foundation:packages/conversation/src/strength.ts:99-104</code>.</li>
+<li><b>Access.</b> Workspace roster on every request (<code>buzz:crates/buzz-relay/src/api/bridge.rs:879-893</code>, <code>src/auth.rs:216-234</code>); signer is the signed-in key (<code>ingest.rs:2407-2411</code>); per-app kinds (<code>estiva-id:src/domain/policy.ts:130-141</code>); Folder rename, members, delete, counting files filed and listed (<code>handlers/side_effects.rs:377-529,626-655,755-819</code>); any member may send a Folder's <code>kind:1852</code> (SPEC §3.2); a Folder's archive counts only from its owners and admins (<code>estiva-foundation:packages/interop/src/projection.ts:6146-6160</code>); uploads served by hash, with no listing (<code>crates/buzz-relay/src/router.rs:41-43</code>); relay-only kinds (<code>crates/buzz-core/src/kind.rs:950-964</code>); edits and deletes (<code>ingest.rs:1293-1379</code>, <code>side_effects.rs:230-283</code>); reactions (<code>ingest.rs:616-651</code>); direct messages and read state (<code>crates/buzz-db/src/channel.rs:1096</code>, <code>handlers/req.rs:358</code>). Records <code>only-owners-and-admins-rename-or-archive-a-folder</code>, <code>someone-you-remove-loses-access-at-once</code>, <code>an-app-counts-only-once-the-workspace-adds-it</code>. Probed on production on 2026-10-23: a request with no signed header, or with a header signed for another body, is refused on <code>/query</code> and <code>/events</code>, and a signed one is answered (control); <code>estiva-buzz-update.timer</code> runs on the box.</li>
+<li><b>Not verified.</b> Apart from those probes, the page shows what the code on the deploying branch says, not what the running images are. The exact shape of a direct message beyond "a message in a group with no file list" is not drawn. Whether Peek's project page also lists its issues' comments was not checked.</li>
+</ul>
+
+</main>
+</body>
+</html>
