@@ -46,6 +46,10 @@ filled; leave it only on a section that is still empty.
 # Solution
 *What we will do: the mechanism, not the spec.*
 
+## Architecture
+*A link to the project's architecture page (`architecture/<slug>.html`,
+[ARCHITECTURE.md](ARCHITECTURE.md)) and one sentence on what it shows changing.*
+
 ## Not in scope
 *What this deliberately does not do.*
 
@@ -94,6 +98,8 @@ engineering-only goes here, below the parts everyone reads.*
 - **Projects written before 2026-10-07** use bold labels and may have no Goal or
   Done when. They stay valid; add the headings when the project is next shaped or
   swept for its own sake, not in a bulk rewrite.
+- **Projects shaped before 2026-10-23** have no architecture page. Draw one when
+  the project is next reshaped, not for a project that is already building.
 - **The issue list is fixed when the project is shaped.** An issue is added only
   for a blocker — it stops the Done when, or it is a production bug a person hits
   now — or on Miky's call. Everything else found on the way is a line in Later.
