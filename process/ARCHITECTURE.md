@@ -14,12 +14,22 @@ project's description, and redrawn as built when the project closes.
 
 - `architecture/<project-slug>.html`, one page per project, copied from
   [`architecture/template.html`](../architecture/template.html). The slug is
-  the project's title in lower-case words (`widgets-2`, `sign-in-stage-1`).
-- Listed in [`architecture/README.md`](../architecture/README.md), newest first.
+  the project's title in lower case, each run of anything but letters and
+  digits turned into one `-` (`Peek: Real-time Ship→Peek updates` →
+  `peek-real-time-ship-peek-updates`).
+- Listed in [`architecture/README.md`](../architecture/README.md), newest first,
+  and in `DRAWINGS` in `site/nav.mjs`, which publishes it as it is at
+  `https://docs.estiva.app/architecture/<project-slug>.html`. On GitHub an
+  HTML file shows as source, so that address is the one to link.
 - The project's description links it under `## Architecture` in Solution
   ([PROJECT.md](PROJECT.md)), with one sentence on what changes.
-- It is not on `docs.estiva.app`; open it from the repository or ask the agent
-  to show it.
+- **Before it is committed, read it for a security gap that is not fixed yet**
+  — a "today" Access row checked by nobody, or by the app alone where the relay
+  should check. This repository is public and the site will be. A page that
+  shows one stays out of the repository, shown to Miky only, and is committed
+  by the issue that closes the gap: add that step to the issue's Engineering
+  (as for a brief, `decisions/README.md`). The same check runs again at the
+  as-built redraw.
 
 ## What it draws
 
@@ -66,8 +76,8 @@ shows; the Map is always drawn.
   SVG using the CSS variables, light and dark, readable at phone width, a
   `<title>` inside each SVG. The template carries the styles and an example of
   each view; redraw the examples, do not keep them.
-- **Never describe a security gap that is not fixed yet** — this repository is
-  public. Draw the shape, and link the issue for the gap.
+- **Never describe a security gap that is not fixed yet** — see "Where it
+  lives" for what happens to a page that would.
 
 ## Keeping it true
 

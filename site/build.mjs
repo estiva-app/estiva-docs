@@ -11,7 +11,7 @@ import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import MarkdownIt from 'markdown-it'
 import anchor from 'markdown-it-anchor'
-import { NAV, PAGES, SITE, BY_FILE, isInternal } from './nav.mjs'
+import { NAV, PAGES, SITE, BY_FILE, DRAWINGS, isInternal } from './nav.mjs'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const OUT = join(ROOT, 'dist')
@@ -278,6 +278,11 @@ PAGES.forEach((p, i) => {
     b: toPlainText(body).slice(0, 12000),
   })
 })
+
+for (const file of DRAWINGS) {
+  mkdirSync(dirname(join(OUT, file)), { recursive: true })
+  cpSync(join(ROOT, file), join(OUT, file))
+}
 
 cpSync(join(ROOT, 'site/styles.css'), join(OUT, 'styles.css'))
 writeFileSync(
