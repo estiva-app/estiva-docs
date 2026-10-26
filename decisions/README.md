@@ -210,6 +210,7 @@ properties and its history.
 - [A shape left over from early experiments is migrated or deleted, never kept on the relay for compatibility](early-shapes-are-migrated-or-deleted.md) — Accepted, 2026-09-15
 - [The Specification states what a relay and an identity service must do, and Estiva hosts the only deployment](estiva-hosts-the-only-deployment.md) — Accepted, 2026-10-02
 - [RFCs are no longer a kind of document: what is still true moves into the Specification and a builder's guide](rfcs-are-retired.md) — Accepted, 2026-10-02
+- [A copy of an app holds one workspace, which the sign-in picks and a company's own address picks for you; a sign-in is good for that one workspace, and a person has one name and picture in all of them](the-sign-in-picks-the-workspace.md) — Accepted, 2026-10-26
 
 # Research
 
