@@ -176,6 +176,7 @@ heading here.
 - [An app may offer another app's "New …", and the app that owns that kind makes the file](another-apps-new-file-is-made-by-that-app.md) — Accepted, 2026-10-16
 - [An app that owns a "New …" declares a create link in its manifest, and a launcher opens it](an-app-declares-a-create-link-for-its-new-action.md) — Accepted, 2026-10-19
 - [An agent says it is an agent in its own profile (NIP-24 `bot`), and Estiva ID publishes it](an-agent-says-it-is-a-bot-in-its-profile.md) — Accepted, 2026-09-24
+- [An app adds a file type by declaring it in its manifest, with no new event kind: one typed-file kind carries the type, and today's file kinds are read as types](an-app-adds-a-file-type-by-declaring-it.md) — Proposed, 2026-10-25
 
 ## Devices & sessions
 
@@ -199,6 +200,7 @@ heading here.
 - [A shape left over from early experiments is migrated or deleted, never kept on the relay for compatibility](early-shapes-are-migrated-or-deleted.md) — Accepted, 2026-09-15
 - [The Specification states what a relay and an identity service must do, and Estiva hosts the only deployment](estiva-hosts-the-only-deployment.md) — Accepted, 2026-10-02
 - [RFCs are no longer a kind of document: what is still true moves into the Specification and a builder's guide](rfcs-are-retired.md) — Accepted, 2026-10-02
+- [When a file type's schema changes, every app translates old files as it reads them, by rules the schema declares; a renamed property or option touches no file](a-file-follows-schema-changes-by-translation-on-read.md) — Proposed, 2026-10-25
 
 # Research
 
