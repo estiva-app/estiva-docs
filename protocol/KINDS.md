@@ -66,7 +66,7 @@ nobody held the whole list.
 | --- | --- | --- |
 | `9` | Chat message | NIP-29 group message. A Folder's conversation, a DM, and a Ship project conversation are all this. Drawn from SPEC §7.8, noun "message"; no `kind:31990` may claim it. A Folder's built-in "Start a conversation" writes one with only the Folder's `h` (SPEC §3.2) |
 | `1111` | Comment | NIP-22. Drawn from SPEC §7.8, noun "comment"; written by every app on any file it can read (SPEC §6.4). A reply to a comment on part of a document copies its `block` and `quote` (SPEC §13.6) |
-| `40003` | Edit | Buzz's message edit, on a message or a comment; Peek, Ship and Leaf write it on their own. `e` names the target, `content` is the new body, and it carries no `block` or `quote`, so a comment never moves (SPEC §6.8). `h` required: the target's Folder. The relay accepts it only from the target's author or their NIP-OA owner (`validate_edit_ownership`) |
+| `40003` | Edit | Buzz's message edit, on a message or a comment; Peek, Ship and Leaf write it on their own. `e` names the target, `content` is the new body, its `imeta` tags are the message's whole file set (none means no files), and it carries no `block` or `quote`, so a comment never moves (SPEC §6.8). `h` required: the target's Folder. The relay accepts it only from the target's author or their NIP-OA owner (`validate_edit_ownership`) |
 | `7` | Reaction | NIP-25, on a message or a comment; Peek, Ship and Leaf write it, and take their own back with a `5`. Emoji capped at 64 chars (`build_reaction`). The relay files it under its target's channel (`derive_reaction_channel`). Counted under the reaction horizon (SPEC §6.6) |
 
 ---

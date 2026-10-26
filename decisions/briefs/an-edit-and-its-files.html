@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edits and Files</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.q { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); padding: 12px 14px; border-radius: 6px; font-size: 1.05rem; }
+.rec { background: var(--ok-bg); border-left: 4px solid var(--ok); padding: 12px 14px; border-radius: 6px; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+svg { width: 100%; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .chip { fill: var(--chip); stroke: var(--accent); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .ad { stroke: var(--muted); fill: none; stroke-width: 1.2; stroke-dasharray: 4 3; marker-end: url(#arr); }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 640px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+.rec-row td { background: var(--ok-bg); }
+</style>
+</head>
+<body>
+<main>
+<h1>What an edit says about a message's files</h1>
+<p class="sub">A brief for Miky · 26 Oct 2026 · from "Editing can take every file off a message" (Peek moves onto the shared box) · you decided on 26 Oct that it must be possible; this is how</p>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+</defs></svg>
+
+<h2>The question</h2>
+<p class="q">When someone edits a message, should the edit always list the files the message keeps, or say something about files only when they change?</p>
+
+<h2>Today</h2>
+<p>When you edit a comment you can change its words, add a file, or take one of two files off. An edit says nothing about files unless they changed. When it does list files, that list replaces the old one.</p>
+<p>Because an edit that says nothing means "files unchanged", no edit can say "no files". So Peek, Ship and Leaf all refuse to take off a message's last file. On 26 October you decided that this must be possible (your option C on PEEKM-4). What is left to decide is how an edit says it, and that sets what every edit means.</p>
+<p>One thing we found while checking: <strong>Buzz's own desktop app, the upstream of our relay, reads edits the opposite way.</strong> There, an edit always lists every file, and an edit that lists none means "no files". So when someone fixes a typo in Peek today, Buzz desktop shows that message with no files. Buzz hit the same problem with mentions and solved it with a mark on the edit that says "this list is complete".</p>
+
+<h2>Why it reaches beyond this ticket</h2>
+<ul>
+<li><strong>It is the edit rule for every app and every company.</strong> Anyone who shows an edited message has to know which files it has now. That includes an outside company's app, the agent, and the History panel you approved today (every version openable).</li>
+<li><strong>Part of it is a one-way door.</strong> What the mark means, or what an edit with no list means, is fixed once such edits are on the relay, and every reader has to honour it for good. How often apps write the mark can change later, so that part is two-way.</li>
+</ul>
+
+<h2>The picture</h2>
+<p>Katerina's comment has two files. She fixes a typo (edit 1), then takes both files off (edit 2).</p>
+
+<figure>
+<svg viewBox="0 0 720 150" role="img"><title>Today: the second edit cannot be written</title>
+<text x="10" y="18" class="h">Today</text>
+<rect x="10" y="30" width="150" height="56" rx="6" class="b"/><text x="22" y="52" class="h">Comment</text><text x="22" y="72" class="m">2 files</text>
+<rect x="190" y="30" width="170" height="56" rx="6" class="w"/><text x="202" y="52" class="h">Edit 1: typo</text><text x="202" y="72" class="m">says nothing of files</text>
+<rect x="390" y="30" width="160" height="56" rx="6" class="w" style="stroke: var(--warn)"/><text x="402" y="52" class="h">Edit 2: take off</text><text x="402" y="72" class="m">cannot be said: refused</text>
+<rect x="580" y="30" width="130" height="56" rx="6" class="b"/><text x="592" y="52" class="h">Everyone sees</text><text x="592" y="72" class="m">2 files</text>
+<path d="M160 58 L188 58" class="a"/><path d="M360 58 L388 58" class="a"/><path d="M550 58 L578 58" class="a"/>
+<text x="190" y="112" class="m">Buzz desktop reads edit 1 as "no files", so the two apps already disagree.</text>
+</svg>
+</figure>
+
+<figure>
+<svg viewBox="0 0 720 150" role="img"><title>Option A: every edit lists its files and says the list is complete</title>
+<text x="10" y="18" class="h">A · every edit is a whole version</text>
+<rect x="10" y="30" width="150" height="56" rx="6" class="b"/><text x="22" y="52" class="h">Comment</text><text x="22" y="72" class="m">2 files</text>
+<rect x="190" y="30" width="170" height="56" rx="6" class="chip"/><text x="202" y="52" class="h">Edit 1: typo</text><text x="202" y="72" class="m">2 files · "complete"</text>
+<rect x="390" y="30" width="160" height="56" rx="6" class="chip"/><text x="402" y="52" class="h">Edit 2: take off</text><text x="402" y="72" class="m">no files · "complete"</text>
+<rect x="580" y="30" width="130" height="56" rx="6" class="ok"/><text x="592" y="52" class="h">Everyone sees</text><text x="592" y="72" class="m">no files</text>
+<path d="M160 58 L188 58" class="a"/><path d="M360 58 L388 58" class="a"/><path d="M550 58 L578 58" class="a"/>
+<text x="190" y="112" class="m">An older edit without the mark keeps today's meaning. Buzz desktop reads</text>
+<text x="190" y="130" class="m">every new edit correctly, because each one lists its files.</text>
+</svg>
+</figure>
+
+<figure>
+<svg viewBox="0 0 720 150" role="img"><title>Option B: Buzz's rule, an edit's list is the files, no mark</title>
+<text x="10" y="18" class="h">B · Buzz's rule as it is: the list is the files, no mark</text>
+<rect x="10" y="30" width="150" height="56" rx="6" class="b"/><text x="22" y="52" class="h">Comment</text><text x="22" y="72" class="m">2 files</text>
+<rect x="190" y="30" width="170" height="56" rx="6" class="chip"/><text x="202" y="52" class="h">Edit 1: typo</text><text x="202" y="72" class="m">2 files</text>
+<rect x="390" y="30" width="160" height="56" rx="6" class="chip"/><text x="402" y="52" class="h">Edit 2: take off</text><text x="402" y="72" class="m">no files</text>
+<rect x="580" y="30" width="130" height="56" rx="6" class="ok"/><text x="592" y="52" class="h">Everyone sees</text><text x="592" y="72" class="m">no files</text>
+<path d="M160 58 L188 58" class="a"/><path d="M360 58 L388 58" class="a"/><path d="M550 58 L578 58" class="a"/>
+<text x="190" y="112" class="m" style="fill: var(--warn)">An edit that forgets to list the files (an old tab, a simple outside app)</text>
+<text x="190" y="130" class="m" style="fill: var(--warn)">takes them all off. 4 messages on production would lose theirs today.</text>
+</svg>
+</figure>
+
+<figure>
+<svg viewBox="0 0 720 150" role="img"><title>Option C: the mark only on the edit that takes the last file off</title>
+<text x="10" y="18" class="h">C · do less: the mark only when the files go to none</text>
+<rect x="10" y="30" width="150" height="56" rx="6" class="b"/><text x="22" y="52" class="h">Comment</text><text x="22" y="72" class="m">2 files</text>
+<rect x="190" y="30" width="170" height="56" rx="6" class="w"/><text x="202" y="52" class="h">Edit 1: typo</text><text x="202" y="72" class="m">says nothing of files</text>
+<rect x="390" y="30" width="160" height="56" rx="6" class="chip"/><text x="402" y="52" class="h">Edit 2: take off</text><text x="402" y="72" class="m">no files · "complete"</text>
+<rect x="580" y="30" width="130" height="56" rx="6" class="ok"/><text x="592" y="52" class="h">Everyone sees</text><text x="592" y="72" class="m">no files</text>
+<path d="M160 58 L188 58" class="a"/><path d="M360 58 L388 58" class="a"/><path d="M550 58 L578 58" class="a"/>
+<text x="190" y="112" class="m">The mark means the same as in A, so C can become A later without changing</text>
+<text x="190" y="130" class="m">what anything on the relay means. Buzz desktop still drops files on edit 1.</text>
+</svg>
+<figcaption>In every option, taking a file off only hides it. Anyone in the Folder can still open the file and the earlier versions of the message. Truly deleting a file is a separate question.</figcaption>
+</figure>
+
+<h2>Options</h2>
+<h3>A · Every edit is a whole version (recommended)</h3>
+<p><strong>What you see:</strong> you take the last file off a comment in Peek, and Ship, Leaf and the agent show it with no files. When Katerina fixes a typo, her edit lists her two files again. Nothing on screen tells you this.</p>
+<p><strong>An outside company</strong> reads one rule: the files are the list on the newest edit that carries the mark. That is the same idea Buzz already uses for mentions. Buzz desktop reads every new edit from our apps correctly with no change, because each one lists its files.</p>
+<p><strong>What could go wrong:</strong> every edit names its files again, and the relay checks that each one is still stored. Today nothing removes a stored file, but if deleting a file is built later, fixing a typo in a message that pointed to a deleted file would be refused until the file is taken off. An app that writes no mark changes nothing about files, which is today's behaviour, so a simple or old writer cannot wipe files by accident.</p>
+
+<h3>B · Take Buzz's rule as it is</h3>
+<p><strong>What you see:</strong> the same as A in Peek, Ship and Leaf. But 4 comments on production would show their files gone the moment readers switch rules: 3 of Katerina's (14 Sep, and two from 7 Oct) and one test comment. Bringing them back takes a new edit that only Katerina can sign.</p>
+<p><strong>An outside company</strong> gets the simplest rule, the same as upstream Buzz, with no mark.</p>
+<p><strong>What could go wrong:</strong> a forgotten list now means "no files". A tab still open from before the update, the agent's command line until it is rebuilt, or an outside builder who is new to Nostr writes a typo fix, and every file disappears from that message for everyone. The files are still stored and can be put back, but people see them vanish.</p>
+
+<h3>C · Do less: mark only the edit that takes the last file off</h3>
+<p><strong>What you see:</strong> the same as A in our three apps.</p>
+<p><strong>An outside company</strong> reads the same rule as in A. Our typo fixes keep dropping files in Buzz desktop. An edit is not a whole version, so the History panel has to look back through earlier edits to show a version's files.</p>
+<p><strong>What could go wrong:</strong> very little. It is A's reader with fewer marks written, so moving to A later changes only what apps write.</p>
+
+<h2>Trade-offs</h2>
+<div class="tw"><table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr class="rec-row"><td><strong>A</strong></td><td>Each edit is a whole version, marked complete. Unmarked old edits mean "unchanged".</td><td>Last file can be taken off everywhere. Nothing lost.</td><td>One rule, the same as Buzz's for mentions. Buzz desktop reads our edits right.</td><td>The mark's meaning is permanent. How often it is written can change.</td><td>The mark in the shared library, three refusals removed, every edit re-lists its files.</td></tr>
+<tr><td><strong>B</strong></td><td>The list is the files, no mark. The same as upstream Buzz.</td><td>The same, but 4 messages lose their files on switch-over, 3 of them Katerina's.</td><td>Simplest rule. A forgotten list wipes files.</td><td>One-way: "no list = no files" cannot be taken back once written.</td><td>Like A, plus Katerina re-saving 3 comments.</td></tr>
+<tr><td><strong>C</strong></td><td>The mark only on the edit that takes the last file off.</td><td>The same as A in our apps.</td><td>The same rule as A. Buzz desktop still drops files on our typo fixes.</td><td>Two-way: can grow into A.</td><td>Smallest: the mark written only when the list is empty.</td></tr>
+</table></div>
+
+<h2>How others do it</h2>
+<ul>
+<li><strong>Buzz desktop (our upstream):</strong> every edit lists its files, and no list means no files. For mentions, where old edits existed, it added a "this list is complete" mark instead. That second case is ours.</li>
+<li><strong>Matrix:</strong> an edit carries the message's whole new content, never a patch. Every edit is a whole version, as in A.</li>
+<li><strong>Nostr's file tags (NIP-92)</strong> define no edits, and NIP-C7 chat apps never read edits at all, so they keep showing the original files whatever we choose.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<div class="rec"><p><strong>A: every edit lists the files the message keeps and says its list is complete.</strong> Each edit then stands alone as a version, which is what the History panel you approved today will open. Upstream Buzz reads our new edits correctly, and an outside company meets the same "complete list" rule Buzz already uses for mentions. Unlike B, an app that forgets the mark changes nothing, so no simple or stale writer can make files vanish, and Katerina's old comments keep theirs. C would be fine as a first stage, but it leaves our typo fixes dropping files in Buzz desktop. Writing the mark on every edit costs little.</p></div>
+
+<h2>Checked</h2>
+<ul>
+<li>"An edit with no files means unchanged; emptying is not expressible": Specification §6.8, on estiva-docs main. The fold is the same in the shared library (<code>foldAttachments</code>, <code>@estiva-app/conversation</code> on main).</li>
+<li>All three apps refuse taking off the last file: Peek <code>ConversationBox.tsx:468</code>, Ship <code>ConversationBox.tsx:166</code>, Leaf <code>CommentsColumn.tsx:251</code>, each on main.</li>
+<li>Buzz desktop's rule and its mentions mark: <code>desktop/src/features/messages/lib/applyEditTagOverlay.mjs</code> and <code>buzz:mention-snapshot</code> in <code>events.rs</code>, on buzz <code>nfb-demo-kinds</code>.</li>
+<li>The relay accepts a separate mark tag on an edit with no relay change. It refuses a new field inside a file tag, and a file tag with no file: <code>validate_imeta_tags</code>, buzz <code>handlers/imeta.rs</code>.</li>
+<li>Production, read as the agent on 26 Oct, Folders it can read: 177 edits on 153 messages, 54 of them listing files. Under A or C, no message reads differently. Under B, 4 lose their files: 3 of Katerina's comments, 1 QA-1 test comment.</li>
+<li>Not checked: Folders the agent cannot read. A private Folder could hold more messages that B would empty.</li>
+</ul>
+
+<h2>For the record</h2>
+<p><code>kind:40003</code> edit, NIP-92 <code>imeta</code>. The mark would be a separate valueless tag, <code>["imeta-snapshot"]</code>, never inside <code>imeta</code>. SPEC §6.8 "Attachments fold" (the "Emptying … is not expressible" bullet), conformance C15, KINDS row 40003, §13.6.2 "embed folds like imeta". RFC 0.4 §12 open question 11 named this mark. Issue 30851:…:8de3e4b4 "Editing can take every file off a message"; PEEKM-4 Decided line; peek#564, ship#335, leaf#63. Record: <code>decisions/an-edit-lists-every-file-the-message-keeps.md</code> (Proposed).</p>
+</main>
+</body>
+</html>
