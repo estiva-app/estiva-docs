@@ -54,11 +54,13 @@ basically live on both relays".
 Proposed, as the brief "Two companies, one Folder" recommends; Miky has not
 answered yet.
 
-- **Where it lives:** on each company's relay. The relay of the company that
-  started it is the host. The host accepts or refuses every change and signs
-  who is in and what the Folder lists. Each partner's relay passes its people's
-  changes to the host and keeps the copy the host accepted. A shared Folder has
-  the host's address on every relay.
+- **Where it lives:** each event ends up on both companies' relays, and each
+  company's apps work from their own. There is no merging: a change is a signed
+  event, and every relay folds the same events into the same result. The relay
+  of the company that started the Folder is the host. It says yes or no to every
+  change, and signs who is in and what the Folder lists. A person's app sends
+  only to their own company's relay, and the relays pass each event on, so a
+  lost send is filled in. A shared Folder has the host's address on every relay.
 - **Who lets whom in:** anyone in the Folder can invite a person from a partner
   company, who gets in only once their company allows it. Each company takes
   out its own people; the host can take out anyone. Only the host invites
@@ -84,6 +86,17 @@ None rejected yet; these are the options in the brief.
   disagreements between admins, the same on every relay, for good. Nobody in
   Nostr has proposed one. The Folder would have two addresses, and a partner's
   admin could take out the host's own people.
+- **Each app sends every event to both relays, and the relays never talk**
+  (Miky's version, 26 October). Each relay decides on its own who may write,
+  and nothing needs merging. It is the least work in the relay, and it is
+  social Nostr's way of publishing, with the group as a fork that every writer
+  keeps close. But a send that lands on one relay only stays there, since a
+  relay refuses an event about 15 minutes from its clock. The two companies
+  then see different states for the same file, with no way to tell. Every app
+  signs in to every partner's relay. A leaver's writes are taken until the
+  other relay is told. A partner that joins late gets no history, and the
+  Folder has two addresses. A repair between relays can be added later, which
+  turns it into the decision above.
 - **The host adds and removes every person** (Teams). The partner company is
   told, not asked, and can take one of its people out only by removing them
   from the company altogether.
