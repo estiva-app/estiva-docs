@@ -1349,15 +1349,22 @@ repair a non-replaceable message in place is the one that already targets it.
   (§13), with `m` and `x` as the relay reported them. Ingest verifies `imeta` on
   any kind (`verify_imeta_blobs`), so an edit naming a blob the relay does not
   hold is refused.
-- A message's attachment set is the `imeta` set of its **latest edit that
-  carries at least one `imeta`**, in the body fold's order. If no edit carries
-  one, it is the message's own set. An edit with no `imeta` leaves the
-  attachments as they were, so every edit written before 2026-09-23 keeps its
-  meaning.
-- **A set replaces, it does not append.** An edit that adds one file to a
-  message with two carries all three.
-- **Emptying** a message's attachments is not expressible, because an edit with
-  no `imeta` means "unchanged". That is RFC 0.4 open question 11.
+- **An edit is the whole new message: its body and its files** (amended
+  2026-10-26). A message's attachment set is the `imeta` set of its **latest
+  edit**, in the body fold's order, and an edit with no `imeta` means the
+  message has no files. If it has no edit, it is the message's own set. This is
+  how Buzz's own client reads an edit (`applyEditTagOverlay`), and how an edit
+  takes every file off a message.
+- **A writer carries every file the message keeps on every edit**, a
+  words-only edit included. An edit that adds one file to a message with two
+  carries all three; one that takes one off carries the other.
+- Until 2026-10-26 an edit with no `imeta` meant "unchanged". Every edit on the
+  relay that would read differently under the rule above is re-saved with its
+  files before readers switch, as for any earlier shape
+  ([early-shapes-are-migrated-or-deleted](../decisions/early-shapes-are-migrated-or-deleted.md));
+  nothing marks the old meaning on the wire.
+- Taking a file off only hides it: the message and every earlier edit stay on
+  the relay, and so does the file, readable to the Folder.
 
 **What a reader shows.** An app that renders an edited message MUST show the
 current text and MUST mark it as edited. The mark is about the **body**. An
@@ -2547,7 +2554,7 @@ throwaway relay or a fake query.
 | C12 | **Edit fold.** Three edits to one message inside one second, carrying `ts`, fold to the last by `ts`. One whose `ts` is off by a second folds by `created_at`. An edit whose first `e` is marked and names another message is applied to that message and never to the second `e`. An edit byte-identical to the body does not mark the message edited. The message is marked edited, and shows the current text (§6.2, §6.8) |
 | C13 | **Reaction horizon and count.** With 101 targets, reactions are asked for the newest 100 and the omission of 1 is reported. `+`, empty and a duplicate from one pubkey count as one `+`. A reaction with two `e` counts against the last (§6.6) |
 | C14 | **Deletion left to the relay.** After the author's `kind:5`, the next read no longer holds the message, and the app shows nothing for it from local state. A non-author's `kind:5` is refused and the refusal is shown in the relay's words. Edit and Delete are offered only on the viewer's own message — not on another person's or an agent's (§6.5, 2026-10-06) |
-| C15 | **Attachment fold.** An edit carrying `imeta` replaces the message's set. A later edit with none leaves it. An edit carrying one file on a message with two leaves one (§6.8) |
+| C15 | **Attachment fold.** An edit carrying `imeta` replaces the message's set. A later edit with none leaves the message with no files. An edit carrying one file on a message with two leaves one (§6.8) |
 | C16 | **Reply shape.** A reply to a comment is a `kind:1111` with the comment's `A`/`K`/`P`, `e`/`k`/`p` naming the top-level comment, the comment's `h`, and no lowercase `a` for the object. A reply to a comment carrying a `block` copies its `block` and `quote` verbatim, before the `h` (§13.6). A reply read back threads under that comment in every conforming app (§6.4) |
 | C17 | **Membership fold.** The file's author is a member from the earliest root version. Writing in the stream, a body mention, an assignee change carrying `["p", P]`, and `member:<P>`=`true` by anyone each make the person a member. A comment's `p` tag alone does not, nor an assignee change without a `p`, nor an unassign, nor a `kind:9` with an `a`. An edit of the root after the author left does not re-join them. A `member:<P>`=`false` signed by someone else is ignored. One signed by `P` ends membership until a later trigger, and member-since is then that trigger's second. Two changes inside one second order by `ts` (§11.8) |
 | C18 | **Unread for a member.** Someone mentioned for the first time on a year-old file has one unread message, the mention. The person's own messages are never unread. A reply is read once its thread's marker or the reply floor passes it, or the file's marker passes it and it is at or before T0; the channel's marker never reads a file. A muted file shows only the messages that mention the person (§11.3, §11.8) |
@@ -4286,9 +4293,10 @@ block under it, as a lone reference with its card does (C26), and its object's
 row when the message carries no `part` for it (an older message, another
 app's).
 
-**Edits change it.** `embed` folds like `imeta` (§6.8): a message's set is the
-`embed` set of its latest edit carrying at least one, and an edit carrying none
-leaves it. A set replaces: an edit that changes one card carries an `embed` for
+**Edits change it.** `embed` folds as `imeta` did before 2026-10-26 (§6.8): a
+message's set is the `embed` set of its latest edit carrying at least one, and
+an edit carrying none leaves it. Unlike files, an absent card has a meaning of
+its own (the default card, C27), so cards keep that rule. A set replaces: an edit that changes one card carries an `embed` for
 every value whose card it keeps, and `none` for each it removes. So "remove
 every card, keep the chips" is expressible. An edit carries an `embed` it does
 not change as it was written, a layout its writer does not know included, so a

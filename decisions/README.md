@@ -140,6 +140,7 @@ heading here.
 - [An archived file is read-only in every app: no new comment, reply or reaction, and no edit or delete, until it is unarchived](an-archived-file-is-read-only-in-every-app.md) — Accepted, 2026-10-20; its part "or when every Folder listing it is" superseded by the one below, 2026-10-23
 - [A file is archived with the closest archived file above it, at any depth, and its line names that file by its kind; whether a Folder's archive freezes the files it lists waits for Folders as labels](a-file-is-archived-with-the-closest-archived-file-above-it.md) — Accepted, 2026-10-23
 - [A comment is the same object in every app; suggestions, review verdicts and an agent's assertions are objects of their own beside it](a-comment-is-the-same-object-in-every-app.md) — Proposed, 2026-10-16
+- [An edit is the whole new message, its words and its files, so an edit with no files takes every file off](an-edit-is-the-whole-new-message.md) — Accepted, 2026-10-26
 
 ## Links & widgets
 
