@@ -1,4 +1,4 @@
-# A file keeps every change and every text save for good, and every app shows them in the file's History
+# A file keeps every change and every text save for good, and has a History panel that shows them
 
 - Date: 2026-10-26
 - Status: Accepted
@@ -35,7 +35,8 @@ Today every change is kept, but no app shows a history.
   are versions you can open, and Restore writes a new save under your name. A
   database's schema changes appear in its own history.
 - **A text that must truly be gone**, such as a pasted password, is removed
-  with "delete this version". Deleting a file removes every save.
+  with "delete this version". Deleting a file is to remove every save, which
+  it does not do today (SPEC §6.5).
 
 ## Rejected alternatives
 
@@ -49,7 +50,12 @@ Today every change is kept, but no app shows a history.
 
 - History is complete, and reading it never slows a list.
 - Disk grows with every save, for good.
-- Every app owes a History panel, and "delete this version" needs its rule on
-  the wire when the panel is built.
+- The old saves stay, as history. Whether a file's newest old save is also
+  read as its current text until someone saves again is not decided here; it
+  is asked when the text moves out
+  ([a-files-type-is-a-shared-meaning-any-app-extends](a-files-type-is-a-shared-meaning-any-app-extends.md)).
+- The History panel is built later, in stages. "Delete this version" and
+  deleting a file need their rules on the wire then, and must reach the
+  relay's summary of the file too.
 - Two-way: what is kept can still be thinned later, while a save deleted under
   either turned-down option could never come back.

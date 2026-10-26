@@ -26,7 +26,8 @@ chose both, staged.
   ([a-files-type-is-a-shared-meaning-any-app-extends](a-files-type-is-a-shared-meaning-any-app-extends.md)).
 - An app's manifest already declares its fields and their allowed values,
   each with a value and a label (SPEC §7.4), but a field is named on the wire
-  by its word (SPEC §6.2), so renaming a field means renaming it in every file.
+  by its word (SPEC §6.2), so a renamed field leaves every earlier change
+  under the old word, and nobody can rewrite changes other people signed.
 - Notion and Airtable give every property a fixed id, so a rename is free.
   Anytype makes types and properties objects that people create in their own
   space.
@@ -60,7 +61,7 @@ chose both, staged.
 - An app's types and a person's database read the same way to every app, so
   nothing is drawn twice.
 - Fixed ids are one-way once files use them; labels can change at any time.
-- The Notion-like app's shaping owes the rules for reshaping a database, and
-  until then only app types exist.
-- A database is a file, so who may change its schema follows who may change
-  the file.
+- The Notion-like app's shaping owes the rules for reshaping a database, who
+  may change its schema, and which rows count in it (a row names its database,
+  so someone who cannot write there must not add one). Until then only app
+  types exist.

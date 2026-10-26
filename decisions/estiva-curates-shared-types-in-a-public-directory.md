@@ -7,7 +7,7 @@
 
 ## Who it affects
 
-An HR expert at an outside company starts an HR app from Estiva's public
+The brief's example, from Miky's own: an HR expert at an outside company starts an HR app from Estiva's public
 directory of types. Job position is there, so they reuse it and add their own
 "Salary band". Candidate is not there yet, so it starts as their own record
 type, and they propose it. They need no permission to build the app or to add
@@ -67,9 +67,7 @@ for enterprise.
   process is built around social clients. "Why not the git-issue kind for
   issues?" becomes a question for every type.
 - **Nobody: the first app to register a meaning owns it.** The fastest. It is
-  the first-come land grab the community warns about ("Kinds as strings are
-  great for companies that want to fake interoperability and create vendor
-  lock-in", Vitor), and collisions follow.
+  the first-come land grab Vitor warns about, and collisions follow.
 
 ## Consequences
 

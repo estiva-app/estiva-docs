@@ -10,15 +10,16 @@
 >   only "written as a change to the file's `description` field (`kind:1851`)".
 >   A save moves to an event of its own; a full readable copy, "the last save
 >   wins" and the live layer on top stay.
-> - [0001-relay-canonical-by-default](0001-relay-canonical-by-default.md): only
->   "How an app folds events into current truth is where apps are *supposed* to
->   differ" (§8). The generic fold is one rule the relay applies; what a field
->   means stays each app's, so "share the wire format, never the
->   interpretation" stands.
+> - [0001-relay-canonical-by-default](0001-relay-canonical-by-default.md): "share
+>   the wire format, never the interpretation. How an app folds events into
+>   current truth is where apps are *supposed* to differ" (§8), as far as it
+>   covers the fold. The generic fold, "the newest change per field wins", moves
+>   into the relay; what a field means stays each app's.
 > - [another-apps-new-file-is-made-by-that-app](another-apps-new-file-is-made-by-that-app.md):
->   only "the app that owns that kind makes the file", and Peek's allowed kinds
->   in Estiva ID as a hand-kept list. A shared type has no owning app: any app
->   the workspace has added whose listing declares the type may make its files.
+>   only "the app that owns that kind makes the file", and each app's allowed
+>   kinds in Estiva ID as a hand-kept list. No app owns making a file of a
+>   shared type: any app the workspace has added whose listing declares the
+>   type may make its files.
 
 ## Who it affects
 
@@ -103,7 +104,7 @@ current state:
   hide them. No new number.
 - **Records, for everything not shared yet.** One kind with one meaning: "an
   item whose type is defined by the schema it names". A one-letter tag on its
-  root names that schema, fixed for the file's life: an app's own type, or a
+  root names that schema: an app's own type, or a
   person's database
   ([an-apps-listing-or-a-persons-database-defines-a-type](an-apps-listing-or-a-persons-database-defines-a-type.md)).
   Other apps show a record plainly, with its properties. We say plainly that
@@ -119,19 +120,23 @@ current state:
   newest text save. Lists read one summary per file, and the change log
   becomes the file's history
   ([a-file-keeps-every-change-for-good](a-file-keeps-every-change-for-good.md)).
-  The relay does not know what fields mean. Its rule stays generic and gives
+  It applies the fold every app uses today, including whose changes count (a
+  change counts only in its file's Folder, and a Folder's archive only from its
+  admins), and knows no other meaning of a field. Its rule stays generic and gives
   the same answer from the same changes, for good, so two relays serving one
   Folder work out the same summaries. It keeps bounding a change's time, so a
   change claiming a far-future time cannot win for ever.
 - **A file's text moves out of the change log** into an event of its own: each
   save is a full readable copy, the last save wins, and the summary names the
-  newest. Until someone saves again, each file's newest old save is read as its
-  text, so nobody re-signs.
+  newest. How a file's newest old save is read until someone saves again is
+  not decided here: Miky's 26 October lean was to read it as the text, so
+  nobody re-signs. It is asked when the text moves out, beside
+  [early-shapes-are-migrated-or-deleted](early-shapes-are-migrated-or-deleted.md).
 - **An app signs the types its listing declares**, once the workspace has
   added it ([an-app-counts-only-once-the-workspace-adds-it](an-app-counts-only-once-the-workspace-adds-it.md)).
-  Estiva ID's limits follow the listing, not a hand-kept list per app. A shared
-  type has no owning app, so any added app whose listing declares it may make
-  its files. An agent still signs only by an admin's grant, now per kind or
+  Estiva ID's limits follow the listing, not a hand-kept list per app. No app
+  owns making a file of a shared type: any added app whose listing declares it
+  may make its files. An agent still signs only by an admin's grant, now per kind or
   type ([an-agent-signs-for-an-app-only-by-an-admin-grant](an-agent-signs-for-an-app-only-by-an-admin-grant.md)).
 
 It is built in stages, without changing the shape: text out first; ids and
@@ -149,19 +154,21 @@ after its own brief. Each stage writes its part of SPEC (§6, §7, §8).
   understands those types, a partner's relay must admit every app's numbers,
   and a shared file is understood only where both companies run the same app.
   First load on a new phone, for a new colleague or for Claude grows with every
-  edit ever made. Collisions follow; there is one already, with our Folder
-  listing's number.
+  edit ever made. A Notion-style database still needs a typed row. Collisions
+  follow; there is one already, with our Folder listing's number. The numbers
+  stay once outside files exist.
 - **B. One kind of file whose types each app names ("Ship's issue"), and every
   app folds the history itself.** This was the draft estiva-docs#330. It is C
   without the summary, so history must be cut to stay fast, and each app's fold
   disagrees on odd cases. Today's 937 files move to the one kind, re-signed by
   their authors. A partner's own tracker sees "Ship's issue" as a stranger, not
-  as an issue.
+  as an issue. Its type naming is one-way, and its build medium.
 - **C. As B, and the relay keeps each file's current state** (the first
   version of the brief recommended it). Its types are named by each app, so two
   companies' different apps never agree what an issue is, and it is the one
-  pattern the community turns down by name. Its relay summary carries over into
-  this record unchanged. Its variant, each field's newest value as its own
+  pattern the community turns down by name. Its naming is one-way and its
+  summary two-way; it costs B plus the relay's fold. Its relay summary carries
+  over into this record unchanged. Its variant, each field's newest value as its own
   replaceable event (as Kanbanstr and Formstr do), works on any relay but costs
   two writes per edit and many more events per file.
 - **D. The relay is the workspace's database**: it reads every type's schema,
@@ -178,12 +185,6 @@ after its own brief. Each stage writes its part of SPEC (§6, §7, §8).
   the type leaves the file's address (a turned-down option in
   [a-card-changes-what-a-files-app-shares](a-card-changes-what-a-files-app-shares.md)),
   and names invite the first-come land grab of common words.
-- **A schema change declared as a translation every reader applies** (the
-  draft's second record, "a file follows schema changes by translation on
-  read"). For shared types, "versions should be handled using new kinds, rather
-  than references to schemas" (staab): a shared type changes only compatibly,
-  and a breaking change is a new number. How a person reshapes their own
-  database is shaped with the Notion-like app.
 
 ## Consequences
 
@@ -203,6 +204,26 @@ after its own brief. Each stage writes its part of SPEC (§6, §7, §8).
   stands; a company running its own relay would be a new decision.
 - Promoting a record type to a shared type re-signs its files under their
   authors; files of an author who has left stay records.
+- Which app opens a file of a shared type, and offers its editor, when several
+  added apps declare that type is not decided here. Until it is,
+  [a-document-is-its-own-type-of-file](a-document-is-its-own-type-of-file.md)
+  ("Leaf owns it first") and
+  [a-file-is-labelled-by-its-type-not-its-app](a-file-is-labelled-by-its-type-not-its-app.md)
+  stand; it is asked when app gates move to listings.
+- An extension property is as readable and as writable as the file it is on:
+  it is not private to its app, and not owned by it.
+- Each stage owes SPEC rules that this record does not settle:
+  - what bounds a listing for Estiva ID: file types only, never the other kinds
+    an app signs; and whether a wider listing needs the workspace to add the
+    app again;
+  - for records: whether signing one checks its schema against the signer's
+    listing, or a record's type is no access boundary;
+  - for the summary: it is readable only where its file's changes are, and
+    deleting a version or a file drops it from the summary too.
+- The draft's second record, a schema change declared as a translation every
+  reader applies, is neither taken nor turned down here: for shared types a
+  breaking change is a new number, and how a person reshapes their own
+  database is shaped with the Notion-like app.
 - Less to build than C now: no file moves. It fits
   [a-document-is-its-own-type-of-file](a-document-is-its-own-type-of-file.md)
   (a document keeps its number), and

@@ -163,7 +163,7 @@ properties and its history.
 - [A file's type is a shared meaning with its own number, which any app extends with its own properties; what no other app shares yet is a record; and the relay keeps each file's current state, so its changes become its history](a-files-type-is-a-shared-meaning-any-app-extends.md) — Accepted, 2026-10-26
 - [Estiva curates the shared types in public, in a directory of types any builder starts from, and the optional App Store's review helps builders agree but forces no one](estiva-curates-shared-types-in-a-public-directory.md) — Accepted, 2026-10-26
 - [A type of file and its properties are defined by an app's listing or by a person's database, in one schema shape; app types come first, and people's databases come with the Notion-like app](an-apps-listing-or-a-persons-database-defines-a-type.md) — Accepted, 2026-10-26
-- [A file keeps every change and every text save for good, and every app shows them in the file's History](a-file-keeps-every-change-for-good.md) — Accepted, 2026-10-26
+- [A file keeps every change and every text save for good, and has a History panel that shows them](a-file-keeps-every-change-for-good.md) — Accepted, 2026-10-26
 
 ## Documents
 
@@ -195,7 +195,7 @@ properties and its history.
 
 ## Infrastructure
 
-- [Relay-canonical by default; an app database is an exception](0001-relay-canonical-by-default.md) — Accepted, 2026-08-22; its sentence "how an app folds events into current truth is where apps are supposed to differ" superseded by "A file's type is a shared meaning", 2026-10-26
+- [Relay-canonical by default; an app database is an exception](0001-relay-canonical-by-default.md) — Accepted, 2026-08-22; its part "share the wire format, never the interpretation", as far as it covers the fold, superseded by "A file's type is a shared meaning", 2026-10-26
 - [Foundation packages: one repo, public npm, built ESM, and a named owner for a break](0002-foundation-packages.md) — Accepted, 2026-08-26
 - [The block editor is shared: its translation lives in @estiva-app/protocol and its editor nodes in @estiva-app/ui/editor](the-block-editor-kit-lives-in-protocol-and-ui.md) — Accepted, 2026-09-30
 

@@ -10,9 +10,8 @@
 > replaced by
 > [a-files-type-is-a-shared-meaning-any-app-extends](a-files-type-is-a-shared-meaning-any-app-extends.md):
 > a shared type has no owning app, and any app the workspace has added whose
-> listing declares the type may make its files. The hand-off stands: an app
-> offering a "New …" for a type its own listing does not declare opens an app
-> that does. The rest of this record stands.
+> listing declares the type may make its files. The rest of this record
+> stands.
 
 ## Who it affects
 
