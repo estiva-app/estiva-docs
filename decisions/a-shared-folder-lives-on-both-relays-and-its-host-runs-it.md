@@ -1,7 +1,8 @@
 # A Folder two companies share is kept on both companies' relays, and the company that started it runs it; each company decides about its own people and their words
 
 - Date: 2026-10-26
-- Status: Proposed
+- Status: Accepted
+- Decided by: Miky, in the brief session of 26 October, on the brief "Two companies, one Folder" ([page](briefs/two-companies-one-folder.html)): B, after asking for his own version to be added as option D; and the recommended answer to both calls it brings
 - Area: Folders
 
 ## Who it affects
@@ -51,9 +52,6 @@ basically live on both relays".
 
 ## Decision
 
-Proposed, as the brief "Two companies, one Folder" recommends; Miky has not
-answered yet.
-
 - **Where it lives:** each event ends up on both companies' relays, and each
   company's apps work from their own. There is no merging: a change is a signed
   event, and every relay folds the same events into the same result. The relay
@@ -71,9 +69,13 @@ answered yet.
   company's retention, once there is one, applies to it on every relay. The host
   can take a person out, not delete their words.
 
-## Rejected alternatives
+It is built in stages, without changing the shape. First, Estiva ID serves
+more than one workspace, and each workspace signs with its own key. Then the
+exchange between relays goes into the Specification. The first shared Folders
+are between two workspaces on Estiva's deployment. No project carries it out
+yet.
 
-None rejected yet; these are the options in the brief.
+## Rejected alternatives
 
 - **One copy, at the host; partners come in as guests** (Teams, XMPP group chat,
   Nostr's groups as written). The least to build in the relay. The partner
