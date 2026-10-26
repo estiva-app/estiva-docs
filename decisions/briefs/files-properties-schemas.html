@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Files, Types, History</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 22px 0 6px; }
+p, li { margin: 6px 0; }
+ul { padding-left: 22px; }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.q { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); padding: 12px 14px; border-radius: 6px; font-size: 1.05rem; }
+.rec { background: var(--ok-bg); border-left: 4px solid var(--ok); padding: 12px 14px; border-radius: 6px; }
+.warn { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.opt { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 4px 14px 10px; margin: 16px 0; }
+.opt.pick { border-color: var(--ok); border-width: 2px; }
+.lbl { font-weight: 600; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+svg { width: 100%; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .chip { fill: var(--chip); stroke: var(--accent); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); }
+svg .no { fill: var(--warn-bg); stroke: var(--warn); }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .ag { stroke: var(--ok); fill: none; stroke-width: 1.8; marker-end: url(#arrg); }
+svg .ar { stroke: var(--warn); fill: none; stroke-width: 1.8; marker-end: url(#arrr); }
+svg .ad { stroke: var(--muted); fill: none; stroke-width: 1.2; stroke-dasharray: 4 3; marker-end: url(#arr); }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; min-width: 640px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-word; }
+.rec-row td { background: var(--ok-bg); }
+.no-cell { color: var(--warn); font-weight: 600; }
+.ok-cell { color: var(--ok); font-weight: 600; }
+.small { font-size: .9rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+<h1>What a file is, for any app and any company: its type, its properties, its history</h1>
+<p class="sub">A brief for Miky · revised 26 Oct 2026 after your four notes, your message on interoperability, and your notes on spam and the App Store · replaces the version sent earlier today · it would replace the two Proposed records in the draft estiva-docs#330 · one architecture call, then three calls it brings with it</p>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+<marker id="arrg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+<marker id="arrr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--warn)"/></marker>
+</defs></svg>
+
+<h2>The question</h2>
+<p class="q">What should a file be on the wire, so that any app opens it fast, an HR expert can build an HR app without learning Nostr, two companies can share a project and still understand each other's files, people can change properties as easily as in Notion, and every file keeps its history?</p>
+<p>Your goals: <strong>1</strong> fast for any app, on first load and in sync; <strong>2</strong> a simple Notion: files with properties, and simple databases; <strong>3</strong> a new app needs no new kinds; <strong>4</strong> easy migration when properties change; <strong>5</strong> people can see a file's history; and, new today, <strong>6</strong> two companies connect and share a Folder, as in Slack Connect.</p>
+
+<h2>What changed since the first version</h2>
+<ul>
+<li><strong>"Nostr is for interoperability, less for decentralization"</strong> (your message today). This sorts the Nostr community's reasons in two. Some are about many relays and unknown clients, and they weigh less for us. Others are about apps understanding each other, and they weigh <em>more</em> for us. The second kind is the one that decides this brief.</li>
+<li><strong>"They probably had good reason."</strong> They did, and it is an interoperability reason: a type is shared only if it is named for a meaning, not for an app. A new section below sets out how they think about kinds at scale.</li>
+<li><strong>Slack Connect is now goal 6.</strong> Each option is re-weighed for a Folder that two companies' relays both serve. There is a new picture of the two ways that can work.</li>
+<li><strong>Builders are domain experts.</strong> There is a new "Builder" column: what an HR expert must learn under each option.</li>
+<li><strong>The recommendation changed, from C to a new option E: shared types.</strong> Common meanings, such as an issue or a candidate, get one number each, as Nostr asks, and any app extends them with its own properties. Everything not shared yet is a record. The relay keeps each file's current state, as in C. C's types were named for apps, and that is the one pattern this research shows the community turning down for interoperability's sake.</li>
+</ul>
+
+<h2>Today</h2>
+<p>A file is one of four types: a topic, a document, a project, an issue. Each has its own number on the wire, and each is named for what it is, not for an app. A new type needs Estiva to change three things: the list of what each app may sign in Estiva ID, the relay's code, and a relay deploy. An outside company cannot add a type.</p>
+<p>Everything about a file that changes (its title, status, assignee, and its whole text) is written as a small change: "set this field of this file to this value". The newest change per field wins, and every app works out a file's current state by reading all of its changes, ever. Fields are named by their word, with no separate id. The text is one of those fields, so each save is a full copy in the change log. <strong>Measured today:</strong> text saves weigh 33.2 MB, and all other changes 0.95 MB. That is why Weekly Plans took 30–35 s to open on 25 Oct. Every change is kept, but no app shows a history.</p>
+<p>A Folder lives on one company's relay and cannot move. The relay already serves several companies, one per web address, each with its own Folders.</p>
+<p><strong>Decided before.</strong> A document is its own type of file, with its own number (you, 14 Oct). Each text save is a full readable copy, and live co-editing comes later, on top (13 Oct). On 25 Oct you said an app may add types (for now only an app, not a person), and old shapes are translated when read. That became the two Proposed records in the draft #330, now on hold.</p>
+
+<figure>
+<svg viewBox="0 0 720 260" role="img"><title>Today: four numbered types, and every list reads every change, text included</title>
+<rect class="b" x="10" y="20" width="150" height="220" rx="8"/>
+<text class="h" x="24" y="44">Apps</text>
+<text x="24" y="70">Peek, Ship, Leaf</text>
+<text x="24" y="92">Claude</text>
+<text class="m" x="24" y="190">no outside app can</text>
+<text class="m" x="24" y="208">add a type of file</text>
+<rect class="b" x="250" y="20" width="290" height="220" rx="8"/>
+<text class="h" x="264" y="44">The relay</text>
+<rect class="w" x="264" y="56" width="262" height="38" rx="5"/>
+<text x="276" y="80">Files: 4 types, each its own number</text>
+<rect class="no" x="264" y="104" width="262" height="72" rx="5"/>
+<text x="276" y="128">Change log: every change, ever</text>
+<text class="m" x="276" y="148">text saves inside: 33.2 MB</text>
+<text class="m" x="276" y="166">everything else: 0.95 MB</text>
+<rect class="ok" x="264" y="188" width="262" height="38" rx="5"/>
+<text x="276" y="212">Folder listing, kept by the relay</text>
+<rect class="w" x="570" y="20" width="140" height="100" rx="8"/>
+<text class="h" x="582" y="44">Estiva ID</text>
+<text class="m" x="582" y="66">lets each app sign</text>
+<text class="m" x="582" y="84">only its numbers,</text>
+<text class="m" x="582" y="102">set by hand</text>
+<rect class="w" x="570" y="140" width="140" height="100" rx="8"/>
+<text class="h" x="582" y="164">App listing</text>
+<text class="m" x="582" y="186">fields and values,</text>
+<text class="m" x="582" y="204">named by their word</text>
+<path class="a" d="M160 76 H262"/>
+<text class="m" x="182" y="68">writes</text>
+<path class="ar" d="M264 150 H162"/>
+<text class="m" x="168" y="142">every list</text>
+<text class="m" x="168" y="170">reads it all</text>
+</svg>
+<figcaption>Today. The red arrow is the slow part: a list of statuses downloads every text save.</figcaption>
+</figure>
+
+<h2>Why it reaches beyond this ticket</h2>
+<ul>
+<li>It sets what a file is for every app and every company, and what an outside builder must learn to join: numbers, or a listing.</li>
+<li>It sets whether two companies' apps understand each other's files when they share a Folder. That is the reason you chose Nostr.</li>
+<li><strong>One-way:</strong> how a type is named (a number per meaning, a name each app picks, or a number each app picks), and how a property is named (its word, or a fixed id). Once another company's files sit on the relay under one scheme, changing it means moving files signed by people we cannot sign for.</li>
+<li><strong>Two-way:</strong> who works out a file's current state. While the change log stays the truth, a summary kept by the relay can be added or dropped later. Without it, apps fold the log themselves: slower, but still correct.</li>
+</ul>
+
+<h2>How the Nostr community thinks about kinds, and what applies to us</h2>
+<p><strong>At scale, they do not expect every app to have its own number.</strong> They expect one number per <em>meaning</em>, shared by every app that handles it. Data no other app needs to read goes in a generic app-data container that is honest about not being shared. Nobody hands out numbers: 281 are registered, by pull request, and collisions happen (we found four, one of them with our Folder listing's number). Proposals to use names or namespaces instead of numbers were turned down twice. Whether apps really reuse numbers by meaning in practice is not confirmed: there are anecdotes both ways.</p>
+<div class="tw"><table>
+<tr><th>Their reason</th><th>In their words</th><th>For us: one relay per company, interoperability first</th></tr>
+<tr><td><strong>A type is shared only if it is named for a meaning, not an app</strong></td><td>Vitor: names "quickly become a clusterfuck of vocabularies … devs CAN'T interoperate". "Kinds as strings are great for companies that want to fake interoperability and create vendor lock-in." staab: a type tag inside one kind is "a namespace-within-a-namespace. Better to just use kinds, unless you have no aspirations for interoperability."</td><td class="ok-cell">Applies fully. It is your reason for using Nostr. A type named "Ship's issue" is exactly what they warn against: another company's tracker can never read it as an issue.</td></tr>
+<tr><td><strong>No first-come land grab for names, and versions are new kinds</strong></td><td>Vitor: a number can be retired and replaced; a common word, once taken badly, cannot. staab: "Versions should be handled using new kinds, rather than references to schemas."</td><td class="ok-cell">Applies. A shared type may only change compatibly. A breaking change makes a new type.</td></tr>
+<tr><td><strong>A client that does not know the type draws it wrong</strong></td><td>A want-to-buy ad tagged on a for-sale kind shows as an offer, and its price means the opposite.</td><td>Applies in part. Our apps draw any file plainly (title, properties, conversation), which is correct. It bites when a property means different things in two types, so properties get ids per type.</td></tr>
+<tr><td><strong>Relays index only one-letter tags and set rules per kind; generic kinds look like spam</strong></td><td>pablof7z: a generic kind lets him "block this kind from my relays". staab: it "may be considered spam".</td><td>Indexing and per-kind rules weigh less, because we run the relay. Per-kind rules come back with Slack Connect, where a partner's relay decides what it admits. Spam does not apply: only a company's own people and its connected partners can write (your note, 26 Oct).</td></tr>
+<tr><td><strong>The number's range sets how the event is stored</strong></td><td>staab: "Kind numbers are meaningless, the only thing that's important is what range it's in."</td><td>A cost for builders (your note 4), not a reason against us. Whoever picks a number must know this.</td></tr>
+</table></div>
+<p><strong>What they accept:</strong> one kind with one meaning used for many things (one comment kind for comments on anything; one listing kind for products, services and jobs), and an honest app-data container. <strong>What nobody defends:</strong> a type tag on one kind for data that apps share.</p>
+<p><strong>So the line that matters is not "numbers or names".</strong> It is "named for a meaning and shared" against "named for an app". Options B and C as first drafted sit on the wrong side of it. That is a protocol-shape problem, not a matter of optics, once a partner company's apps must read our files.</p>
+
+<h2>Options</h2>
+<p>Three things vary: <strong>what names a type</strong> (a number each app picks; a name each app picks; or a number per shared meaning), <strong>how much the relay does</strong> (stores events; keeps each file's current state; knows every schema), and, new, <strong>what a partner company's apps understand</strong>. In every option, the text moves out of the change log into an event of its own.</p>
+
+<div class="opt">
+<h3>A. Do less: a number per type, each app picks its own, made cheap to add</h3>
+<p><span class="lbl">What changes.</span> Text saves become their own events. Apps keep a copy on the device and ask only for what is new. An app the workspace has added may sign the numbers its listing declares, with no Estiva step. Properties stay named by their word.</p>
+<p><span class="lbl">What you and Katerina see.</span> Fast again today, since the change log without text is under 1 MB. A second open is instant in any app that keeps a copy.</p>
+<p><span class="lbl">Builder.</span> The HR expert picks numbers for Job position and Candidate in the right range (the range decides how the event is stored), picks which one-letter tags to use so fields can be filtered, avoids numbers others took, and builds a device copy and a fold. No other app understands those types unless the builder writes a standard and other apps adopt it.</p>
+<p><span class="lbl">Two companies.</span> The partner's relay must admit every number of every app used in the shared Folder. Files are understood only where both sides run the same app.</p>
+<p><span class="lbl">What could go wrong.</span> Collisions (one already, with our Folder listing). First load on a new phone, for a new colleague or for Claude grows with every edit ever made. A Notion-style database still needs a typed row.</p>
+<figure>
+<svg viewBox="0 0 720 250" role="img"><title>Option A: a number per type, text saves apart, device copies</title>
+<rect class="b" x="10" y="20" width="150" height="210" rx="8"/>
+<text class="h" x="24" y="44">Apps</text>
+<text x="24" y="70">Peek, Ship, Leaf</text>
+<text x="24" y="92">Claude</text>
+<text x="24" y="114">HR app</text>
+<text class="m" x="24" y="160">each keeps a copy</text>
+<text class="m" x="24" y="178">on the device and</text>
+<text class="m" x="24" y="196">folds it itself</text>
+<rect class="b" x="250" y="20" width="290" height="210" rx="8"/>
+<text class="h" x="264" y="44">The relay</text>
+<rect class="w" x="264" y="54" width="262" height="40" rx="5"/>
+<text x="276" y="72">Files: a number per type</text>
+<text class="m" x="276" y="88">the HR app picks 2 numbers</text>
+<rect class="w" x="264" y="102" width="262" height="34" rx="5"/>
+<text x="276" y="124">Change log: small changes only</text>
+<rect class="w" x="264" y="144" width="262" height="34" rx="5"/>
+<text x="276" y="166">Text saves: one event per save</text>
+<rect class="ok" x="264" y="186" width="262" height="34" rx="5"/>
+<text x="276" y="208">Folder listing</text>
+<rect class="w" x="570" y="20" width="140" height="100" rx="8"/>
+<text class="h" x="582" y="44">Estiva ID</text>
+<text class="m" x="582" y="66">an added app signs</text>
+<text class="m" x="582" y="84">the numbers its</text>
+<text class="m" x="582" y="102">listing declares</text>
+<rect class="w" x="570" y="140" width="140" height="90" rx="8"/>
+<text class="h" x="582" y="164">App listing</text>
+<text class="m" x="582" y="186">fields by their word</text>
+<path class="a" d="M160 74 H262"/>
+<text class="m" x="182" y="66">writes</text>
+<path class="ag" d="M264 119 H162"/>
+<text class="m" x="168" y="112">what is new</text>
+<path class="ar" d="M264 132 Q230 215 162 215"/>
+<text class="m" x="166" y="150">new device:</text>
+<text class="m" x="166" y="166">reads all</text>
+</svg>
+<figcaption>A. Green: a return visit reads only what is new. Red: a new device, a new colleague or Claude reads the whole change log.</figcaption>
+</figure>
+</div>
+
+<div class="opt">
+<h3>B. One kind of file whose types each app names; every app folds the history itself (the draft #330)</h3>
+<p><span class="lbl">What changes.</span> One kind of file. Its root names its type under the app that declares it ("Ship's issue", "the HR app's candidate"). The listing declares each type's properties with a fixed id, a label and a kind of value. Apps fold the change log, with a device copy.</p>
+<p><span class="lbl">What you and Katerina see.</span> The same speed as A. Renaming a property or a stage is instant and touches no file.</p>
+<p><span class="lbl">Builder.</span> Writes a listing, with no numbers. Still builds a device copy and a fold to be fast.</p>
+<p><span class="lbl">Two companies.</span> The partner's relay admits one kind. The partner's own tracker sees "Ship's issue" as a stranger, not as an issue.</p>
+<p><span class="lbl">What could go wrong.</span> First load grows with every edit, so history must be cut to stay fast. Each app's fold disagrees on odd cases. Today's 937 files move to the one kind, re-signed by their authors.</p>
+<figure>
+<svg viewBox="0 0 720 250" role="img"><title>Option B: one kind of file with app-named types; every app folds every change</title>
+<rect class="b" x="10" y="20" width="150" height="210" rx="8"/>
+<text class="h" x="24" y="44">Apps</text>
+<text x="24" y="70">Peek, Ship, Leaf</text>
+<text x="24" y="92">Claude</text>
+<text x="24" y="114">HR app</text>
+<text class="m" x="24" y="160">each folds every</text>
+<text class="m" x="24" y="178">change itself</text>
+<rect class="b" x="250" y="20" width="290" height="210" rx="8"/>
+<text class="h" x="264" y="44">The relay</text>
+<rect class="chip" x="264" y="54" width="262" height="40" rx="5"/>
+<text x="276" y="72">Files: one kind, type named by app</text>
+<text class="m" x="276" y="88">Ship's issue · HR app's candidate</text>
+<rect class="no" x="264" y="102" width="262" height="40" rx="5"/>
+<text x="276" y="120">Change log, by property id</text>
+<text class="m" x="276" y="136">grows with every edit</text>
+<rect class="w" x="264" y="150" width="262" height="32" rx="5"/>
+<text x="276" y="171">Text saves: one event per save</text>
+<rect class="ok" x="264" y="190" width="262" height="32" rx="5"/>
+<text x="276" y="211">Folder listing</text>
+<rect class="w" x="570" y="20" width="140" height="100" rx="8"/>
+<text class="h" x="582" y="44">App listing</text>
+<text class="m" x="582" y="66">types, property ids,</text>
+<text class="m" x="582" y="84">labels, kinds of</text>
+<text class="m" x="582" y="102">value</text>
+<rect class="w" x="570" y="140" width="140" height="90" rx="8"/>
+<text class="h" x="582" y="164">Estiva ID</text>
+<text class="m" x="582" y="186">checks the type an</text>
+<text class="m" x="582" y="204">app may sign</text>
+<path class="a" d="M160 74 H262"/>
+<text class="m" x="182" y="66">writes</text>
+<path class="ar" d="M264 122 H162"/>
+<text class="m" x="168" y="114">every change</text>
+</svg>
+<figcaption>B. Adding a type needs nothing from Estiva. A list still reads every change ever made, minus the text.</figcaption>
+</figure>
+</div>
+
+<div class="opt">
+<h3>C. As B, and the relay keeps each file's current state (the first version's pick)</h3>
+<p><span class="lbl">What changes.</span> Everything in B, plus this: when a change arrives, the relay applies the rule every app uses today, "the newest change per field wins". It keeps one small signed summary per file: type, title, Folder, each property's newest value with who set it and when, and the newest text save. Lists read one summary per file. The change log becomes the history. The relay does not know what fields mean.</p>
+<p><span class="lbl">What you and Katerina see.</span> Any list opens with one small read per file, however long its history. History shows every change, because nothing has to be deleted to keep lists fast. A row can say "Katerina set Stage to Offer, 2 h ago".</p>
+<p><span class="lbl">Builder.</span> Writes a listing and reads summaries. Has no fold or sync engine to build.</p>
+<p><span class="lbl">Two companies.</span> If both relays serve the Folder, each works out its own summaries from the same changes. That works only because the rule is generic. The types are still named for apps, so a partner's tracker still sees strangers.</p>
+<p><span class="lbl">What could go wrong.</span> The relay's rule becomes part of the protocol and must stay generic for good. A change claiming a far-future time would win for ever unless the relay clamps it. Our relay drifts further from upstream Buzz ("the pipe, not the brain"). And the community turns down this pattern by name: "No. Use a new kind number for the thing you want to do" (fiatjaf, July 2026).</p>
+<p class="small">A variant that keeps the relay simple: each field's newest value becomes its own replaceable event, as the Kanbanstr and Formstr apps do. It works on any relay, but costs two writes per edit and many more events per file.</p>
+<figure>
+<svg viewBox="0 0 720 280" role="img"><title>Option C: the relay keeps one summary per file; the change log is history</title>
+<rect class="b" x="10" y="20" width="150" height="240" rx="8"/>
+<text class="h" x="24" y="44">Apps</text>
+<text x="24" y="70">Peek, Ship, Leaf</text>
+<text x="24" y="92">Claude</text>
+<text x="24" y="114">HR app</text>
+<text class="m" x="24" y="190">read one summary</text>
+<text class="m" x="24" y="208">per file; translate</text>
+<text class="m" x="24" y="226">and draw it</text>
+<rect class="b" x="250" y="20" width="290" height="240" rx="8"/>
+<text class="h" x="264" y="44">The relay</text>
+<rect class="chip" x="264" y="54" width="262" height="32" rx="5"/>
+<text x="276" y="75">Files: one kind, type named by app</text>
+<rect class="w" x="264" y="94" width="262" height="40" rx="5"/>
+<text x="276" y="112">Change log = history</text>
+<text class="m" x="276" y="128">read when History opens</text>
+<path class="a" d="M395 134 V156"/>
+<text class="m" x="404" y="150">newest per field</text>
+<rect class="ok" x="264" y="158" width="262" height="48" rx="5"/>
+<text x="276" y="178">Summary per file, relay-signed</text>
+<text class="m" x="276" y="196">values, who, when, newest text</text>
+<rect class="w" x="264" y="214" width="262" height="34" rx="5"/>
+<text x="276" y="236">Text saves · Folder listing</text>
+<rect class="w" x="570" y="20" width="140" height="120" rx="8"/>
+<text class="h" x="582" y="44">Types</text>
+<text class="m" x="582" y="66">in an app listing</text>
+<text class="m" x="582" y="84">or a person's</text>
+<text class="m" x="582" y="102">database (if you</text>
+<text class="m" x="582" y="120">say so, call 3)</text>
+<rect class="w" x="570" y="160" width="140" height="100" rx="8"/>
+<text class="h" x="582" y="184">Estiva ID</text>
+<text class="m" x="582" y="206">checks the type an</text>
+<text class="m" x="582" y="224">app may sign</text>
+<path class="a" d="M160 72 H262"/>
+<text class="m" x="182" y="64">writes</text>
+<path class="ag" d="M264 182 H162"/>
+<text class="m" x="168" y="174">one per file</text>
+<path class="ad" d="M264 118 H162"/>
+<text class="m" x="168" y="110">History</text>
+</svg>
+<figcaption>C. Lists read the green arrow only. The dashed arrow is read when someone opens a file's History.</figcaption>
+</figure>
+</div>
+
+<div class="opt">
+<h3>D. Contrarian: the relay is the workspace's database</h3>
+<p><span class="lbl">What changes.</span> The relay reads every type's schema, refuses a write that does not fit, answers queries ("candidates in 1st interview, assigned to Katerina") and serves each file converted to today's schema. Apps are thin views, as with Notion's and Linear's servers.</p>
+<p><span class="lbl">What you and Katerina see.</span> The fastest database views at any size, and a wrong value refused the moment it is typed.</p>
+<p><span class="lbl">Builder.</span> Writes a listing and nothing else. But a new kind of property, such as a currency or a formula, waits for our relay release.</p>
+<p><span class="lbl">Two companies.</span> The worst of the five. Both relays must know both companies' schemas, at the same version, or a shared Folder accepts a write on one side and refuses it on the other.</p>
+<p><span class="lbl">What could go wrong.</span> A schema bug in the relay breaks every app at once. It overturns the heart of an Accepted record ("share the wire format, never the interpretation"). It is the most to build and to run.</p>
+<figure>
+<svg viewBox="0 0 720 230" role="img"><title>Option D: the relay knows every schema, checks writes and answers queries</title>
+<rect class="b" x="10" y="20" width="150" height="190" rx="8"/>
+<text class="h" x="24" y="44">Apps</text>
+<text x="24" y="70">Peek, Ship, Leaf</text>
+<text x="24" y="92">Claude</text>
+<text x="24" y="114">HR app</text>
+<text class="m" x="24" y="160">thin views: they</text>
+<text class="m" x="24" y="178">ask, never fold</text>
+<rect class="b" x="250" y="20" width="290" height="190" rx="8"/>
+<text class="h" x="264" y="44">The relay</text>
+<rect class="w" x="264" y="54" width="262" height="30" rx="5"/>
+<text x="276" y="74">Reads every type's schema</text>
+<rect class="w" x="264" y="92" width="262" height="30" rx="5"/>
+<text x="276" y="112">Refuses a write that doesn't fit</text>
+<rect class="w" x="264" y="130" width="262" height="30" rx="5"/>
+<text x="276" y="150">Answers: Stage = 1st interview</text>
+<rect class="w" x="264" y="168" width="262" height="30" rx="5"/>
+<text x="276" y="188">Serves files in today's schema</text>
+<rect class="w" x="570" y="20" width="140" height="80" rx="8"/>
+<text class="h" x="582" y="44">App listing</text>
+<text class="m" x="582" y="66">types and ids,</text>
+<text class="m" x="582" y="84">read by the relay</text>
+<rect class="no" x="570" y="120" width="140" height="90" rx="8"/>
+<text class="h" x="582" y="144">A new kind of</text>
+<text class="h" x="582" y="162">property</text>
+<text class="m" x="582" y="184">= a relay release</text>
+<path class="a" d="M160 107 H262"/>
+<text class="m" x="182" y="99">writes</text>
+<path class="ag" d="M264 145 H162"/>
+<text class="m" x="168" y="137">answers</text>
+<path class="ad" d="M570 60 H542"/>
+</svg>
+<figcaption>D. Every app's meaning moves into the relay.</figcaption>
+</figure>
+</div>
+
+<div class="opt pick">
+<h3>E. Shared types: one number per shared meaning, extended by any app; the relay keeps each file's current state (recommended)</h3>
+<p><span class="lbl">What changes.</span> Three layers, and C's relay summary under all of them:</p>
+<ul>
+<li><strong>Shared types.</strong> A meaning many apps use: an issue, a project, a document, a topic today; later perhaps a task, a contact, a job position, a candidate. Each has its own number, as Nostr asks, and a short public definition of its core properties, each with a fixed id and a label (an issue's status, and what each status means). Who curates them is call 2.</li>
+<li><strong>Extensions.</strong> Any app adds its own properties to a shared type in its listing: the HR app adds "Salary band" to Job position. Other apps show them as plain values under the HR app's label, or hide them. No new number.</li>
+<li><strong>Records</strong> for everything not shared yet. One kind with one meaning: "an item whose type is defined by the schema it names". That schema is a row's database, which a person made, or an app's own type, such as the HR app's "Interview scorecard". Nostr's comment kind works the same way: one meaning that names what it hangs on. Other apps show a record plainly, with its properties. When several apps want a record type, it becomes a shared type and its files move once.</li>
+</ul>
+<p>Today's four types already are one number per meaning, named for the meaning. They stay where they are, their field words become their ids, and nobody re-signs anything. The relay admits a whole block of numbers set aside for shared types, so a new one needs no relay release. An added app signs the types its listing declares.</p>
+<p><span class="lbl">What you and Katerina see.</span> Everything C gives: one read per file, full history, "who set this" on every row. And when a partner's project manager opens the shared project in their own tracker, Ship's issues are issues there: "done" means done.</p>
+<p><span class="lbl">Builder.</span> The HR expert writes a listing: "Job position: the shared type, plus Salary band and Hiring manager. Interview scorecard: our own record type." No numbers, no tag letters, no Estiva step. Their job positions show in any app that knows job positions. To make "candidate" shared, they propose it.</p>
+<p><span class="lbl">Two companies.</span> The partner's relay admits the shared numbers and the record kind, the same set on every relay. Shared meanings are understood across both companies' apps, which is the point of interoperability. Each relay can work out its own summaries, as in C.</p>
+<p><span class="lbl">A Nostr developer reads</span> the community's own rule: one number per meaning, shared across apps. The record kind is the one place where a type sits inside a kind. We say plainly that records are not for sharing, as the community asks of app data.</p>
+<p><span class="lbl">What could go wrong.</span></p>
+<ul>
+<li><strong>Curation is a job that never ends.</strong> Someone must say no to a second "task" and yes to "candidate", and decide quickly. If that is slow, everything stays a record, and we are back to app-named types. The optional App Store's review helps people agree, but it forces no one.</li>
+<li><strong>A breaking change to a shared type is a new number.</strong> Old and new live side by side until files move. That is Nostr's rule and AT Protocol's.</li>
+<li><strong>Promoting a record type to a shared type</strong> re-signs its files under their authors. Files of an author who has left stay records.</li>
+<li><strong>A shared type has no owning app,</strong> so "the app that owns a kind makes the file" becomes "any added app whose listing declares the type".</li>
+<li><strong>An existing Nostr kind may cover a meaning with another shape.</strong> Nostr has a git-issue kind, and a listing kind that covers job posts. We reuse one where its shape fits, or say why we don't.</li>
+</ul>
+<p class="small">A variant: the same layers as names on one kind of file ("issue", "candidate"). Builders would see no difference. Not recommended: it is the pattern the community turns down by name, the type leaves the file's address (a turned-down option in an Accepted record), and names invite the first-come land grab Vitor warns about.</p>
+<figure>
+<svg viewBox="0 0 720 300" role="img"><title>Option E: shared types with their own numbers, extended by apps; records for the rest; the relay keeps a summary per file</title>
+<rect class="b" x="10" y="20" width="150" height="260" rx="8"/>
+<text class="h" x="24" y="44">Apps</text>
+<text x="24" y="70">Peek, Ship, Leaf</text>
+<text x="24" y="92">Claude</text>
+<text x="24" y="114">HR app</text>
+<text x="24" y="136">A partner's tracker</text>
+<text class="m" x="24" y="206">read one summary</text>
+<text class="m" x="24" y="224">per file; know the</text>
+<text class="m" x="24" y="242">shared meanings</text>
+<rect class="b" x="250" y="20" width="290" height="260" rx="8"/>
+<text class="h" x="264" y="44">The relay</text>
+<rect class="chip" x="264" y="54" width="262" height="60" rx="5"/>
+<text x="276" y="74">Shared types, a number each</text>
+<text class="m" x="276" y="92">issue · project · document · topic</text>
+<text class="m" x="276" y="108">later: job position, candidate…</text>
+<rect class="w" x="264" y="122" width="262" height="42" rx="5"/>
+<text x="276" y="140">Records: one number</text>
+<text class="m" x="276" y="156">database rows · an app's own types</text>
+<rect class="w" x="264" y="172" width="262" height="42" rx="5"/>
+<text x="276" y="190">Change log = history</text>
+<text class="m" x="276" y="206">read when History opens</text>
+<rect class="ok" x="264" y="222" width="262" height="46" rx="5"/>
+<text x="276" y="242">Summary per file, relay-signed</text>
+<text class="m" x="276" y="259">every type, one generic rule</text>
+<rect class="w" x="570" y="20" width="140" height="80" rx="8"/>
+<text class="h" x="582" y="44">Shared types</text>
+<text class="m" x="582" y="66">public definitions,</text>
+<text class="m" x="582" y="84">curated (call 2)</text>
+<rect class="w" x="570" y="110" width="140" height="90" rx="8"/>
+<text class="h" x="582" y="134">App listings</text>
+<text class="m" x="582" y="156">extend shared types;</text>
+<text class="m" x="582" y="174">declare own record</text>
+<text class="m" x="582" y="192">types</text>
+<rect class="w" x="570" y="210" width="140" height="70" rx="8"/>
+<text class="h" x="582" y="234">Estiva ID</text>
+<text class="m" x="582" y="254">an added app signs</text>
+<text class="m" x="582" y="270">what it declares</text>
+<path class="a" d="M160 84 H262"/>
+<text class="m" x="182" y="76">writes</text>
+<path class="ad" d="M264 194 H162"/>
+<text class="m" x="168" y="186">History</text>
+<path class="ag" d="M264 250 H162"/>
+<text class="m" x="168" y="270">one per file</text>
+</svg>
+<figcaption>E. A partner's tracker reads Ship's issues as issues because the number names the meaning, not the app. Records are for what no other app needs yet.</figcaption>
+</figure>
+</div>
+
+<h2>Two companies, one Folder</h2>
+<p>There are two ways a Folder can live on two companies' relays. Which one is its own decision, with its own brief, but the file shape has to work under both.</p>
+<figure>
+<svg viewBox="0 0 720 310" role="img"><title>Two ways two companies share a Folder: hosted on one relay, or held on both</title>
+<text class="h" x="16" y="24">1. Hosted: one company's relay holds it</text>
+<rect class="b" x="16" y="40" width="320" height="110" rx="8"/>
+<text class="h" x="30" y="64">Acme's relay</text>
+<rect class="ok" x="30" y="76" width="292" height="60" rx="5"/>
+<text x="42" y="98">Folder "Launch"</text>
+<text class="m" x="42" y="118">members, summaries, history: one copy</text>
+<rect class="w" x="16" y="200" width="150" height="58" rx="8"/>
+<text x="28" y="224">Miky, Katerina</text>
+<text class="m" x="28" y="244">join as guests</text>
+<rect class="w" x="186" y="200" width="150" height="58" rx="8"/>
+<text x="198" y="224">Acme's team</text>
+<text class="m" x="198" y="244">at home</text>
+<path class="a" d="M91 198 V152"/>
+<path class="a" d="M261 198 V152"/>
+<text class="m" x="16" y="284">Slack Connect, Teams shared channels.</text>
+<text class="m" x="16" y="300">Nostr: a group is "this relay, this id".</text>
+<text class="h" x="384" y="24">2. On both: each relay holds a copy</text>
+<rect class="b" x="384" y="40" width="150" height="110" rx="8"/>
+<text class="h" x="396" y="64">Estiva's relay</text>
+<rect class="ok" x="396" y="76" width="126" height="60" rx="5"/>
+<text x="406" y="98">"Launch"</text>
+<text class="m" x="406" y="118">own summaries</text>
+<rect class="b" x="564" y="40" width="150" height="110" rx="8"/>
+<text class="h" x="576" y="64">Acme's relay</text>
+<rect class="ok" x="576" y="76" width="126" height="60" rx="5"/>
+<text x="586" y="98">"Launch"</text>
+<text class="m" x="586" y="118">own summaries</text>
+<path class="a" d="M536 90 H562"/>
+<path class="a" d="M562 120 H536"/>
+<text class="m" x="476" y="176">signed changes travel</text>
+<rect class="w" x="384" y="200" width="150" height="58" rx="8"/>
+<text x="396" y="224">Miky, Katerina</text>
+<rect class="w" x="564" y="200" width="150" height="58" rx="8"/>
+<text x="576" y="224">Acme's team</text>
+<path class="a" d="M459 198 V152"/>
+<path class="a" d="M639 198 V152"/>
+<text class="m" x="384" y="284">Matrix works this way. New ground for Nostr:</text>
+<text class="m" x="384" y="300">whose admins govern, and who lets whom in?</text>
+</svg>
+<figcaption>Left: one copy, governed by its host. Right: two copies that must agree. Summaries signed by one relay do not travel: each relay signs its own.</figcaption>
+</figure>
+<ul>
+<li><strong>What every option needs under both:</strong> the partner's relay admits the kinds used in the Folder. Under A, that is every app's numbers. Under B and C, one kind. Under E, the shared block and the record kind, the same set everywhere.</li>
+<li><strong>Under "on both",</strong> each relay works out its own summaries from the same changes. That works only if the rule stays generic and gives the same answer from the same changes. This is one more reason to lock in "generic, for good" (C and E), and the reason D breaks: both relays would need both companies' schemas.</li>
+<li><strong>What only E gives:</strong> the partner's own apps understand the files. Under A, B and C, sharing works only where both companies run the same app.</li>
+<li><strong>Left for the Slack Connect brief:</strong> hosted or on both; whose admins govern; how an Acme member is let in on our relay; whose retention applies (in Slack, each company's retention applies to its own members' messages, and only the sender's company can edit or delete them). And the Accepted "Estiva hosts the only deployment": today two companies are two communities on our one relay deployment, which is the easier case. A company running its own relay would be a new decision.</li>
+</ul>
+
+<h2>Trade-offs</h2>
+<div class="tw">
+<table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Builder (an HR expert)</th><th>Two companies</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td><strong>A</strong> do less</td><td>A number per type, picked by each app; the relay only stores</td><td>Fast today; a new device and Claude slow down as history grows; no person-made databases</td><td>Learns ranges and tag letters, avoids collisions, builds a copy and a fold; nobody else reads its types</td><td>The partner's relay admits every app's numbers; understood only with the same app</td><td>Numbers stay once outside files exist</td><td>Small</td></tr>
+<tr><td><strong>B</strong> app-named types</td><td>One kind of file; each app names its types; every app folds</td><td>Same speed as A; renames free; history cut to stay fast</td><td>Writes a listing; builds a copy and a fold</td><td>One kind to admit; "Ship's issue" is a stranger to the partner's tracker</td><td>Type naming one-way</td><td>Medium; 937 files move</td></tr>
+<tr><td><strong>C</strong> B + relay summary</td><td>As B, plus one relay-signed summary per file; the log is history</td><td>One read per file at any history length; full history; "who set this"</td><td>Writes a listing; nothing to fold</td><td>As B for meaning; each relay can work out its own summaries</td><td>Summary two-way; naming one-way</td><td>B plus the relay's fold</td></tr>
+<tr><td><strong>D</strong> relay as database</td><td>The relay holds schemas, checks writes, answers queries</td><td>Fastest views; wrong values refused at once</td><td>Writes a listing; waits for our releases for anything new</td><td class="no-cell">Both relays need both companies' schemas</td><td>Hard</td><td>Largest</td></tr>
+<tr class="rec-row"><td><strong>E</strong> shared types</td><td>A number per shared meaning; apps extend them; one record kind for the rest; relay summary as C</td><td>As C; a partner's tools read our issues as issues</td><td>Writes a listing; reuses shared types; proposes a new one when needed</td><td class="ok-cell">One fixed set of kinds to admit; meanings understood across both companies' apps</td><td>Numbers one-way, as in all of Nostr; summary two-way</td><td>C's relay fold, no files move; plus curating shared types, a job that never ends</td></tr>
+</table>
+</div>
+
+<h2>How others do it</h2>
+<ul>
+<li><strong>Nostr:</strong> one number per meaning, shared across apps; a generic container for app-only data; one comment kind that names what it comments on. Group relays sign group state (NIP-29), as we do for Folder listings. A group is "this relay, this id": it can be moved or forked, but no Nostr proposal has one group governed jointly on two relays.</li>
+<li><strong>AT Protocol (Bluesky):</strong> each app names its record types under its own domain, with no approval. A breaking change needs a new name. To extend someone else's type, an app writes a sidecar record next to it. Shared meanings are curated by a separate volunteer group with a steering committee (the Lexicon Community, e.g. calendar events). <em>For us:</em> closest to E. Their app-named types are the default and shared ones came later; E starts from shared ones.</li>
+<li><strong>schema.org:</strong> one public vocabulary (JobPosting, Person, Event) curated by a steering group, which sites extend. <em>For us:</em> the model for curating shared types in public.</li>
+<li><strong>Notion and Airtable:</strong> properties have fixed ids, so renames are free. The server serves current state and converts values on a type change. History is kept by plan. <em>For us:</em> one company owns every type and may rewrite anything; we cannot rewrite changes other people signed.</li>
+<li><strong>Linear:</strong> the server serves state with a sync cursor and writes history rows as changes land. <em>For us:</em> the model for C's and E's summary.</li>
+<li><strong>Anytype:</strong> types and properties are objects people create in their space. <em>For us:</em> the model for a person's database as a file.</li>
+<li><strong>Slack Connect and Teams shared channels:</strong> one channel, one copy. In Teams the host company owns the data; in Slack each company sets retention for its own members' messages. <strong>Matrix:</strong> every server in a room keeps a full copy, and all of them run the same rule to agree on members and admins. That rule has been Matrix's hardest problem. <em>For us:</em> the two Slack Connect models above.</li>
+</ul>
+
+<h2>Accepted records an option goes against</h2>
+<div class="tw">
+<table>
+<tr><th>Record (Accepted)</th><th>A</th><th>B / C</th><th>D</th><th>E</th></tr>
+<tr><td>A document is its own type of file (14 Oct): its own number</td><td>fits</td><td class="no-cell">against the number half</td><td class="no-cell">as B</td><td>fits: a document keeps its number</td></tr>
+<tr><td>Any app may change a file from its card (21 Oct): it keeps the turned-down "one kind of file … the type leaves the address"</td><td>fits</td><td class="no-cell">brings it back</td><td class="no-cell">as B</td><td>fits for shared types; records are a new kind for types no other app shares, and no existing file moves into it</td></tr>
+<tr><td>A file's text is a readable snapshot (13 Oct): each save is a change to the description field</td><td colspan="4">every option amends it: the save moves to its own event; a full copy and "the last save wins" stay</td></tr>
+<tr><td>Relay-canonical by default (22 Aug): "share the wire format, never the interpretation"</td><td>fits</td><td>B fits; <span class="no-cell">C against that sentence</span>: the generic fold moves into the relay, meaning stays in apps</td><td class="no-cell">against its heart</td><td class="no-cell">as C</td></tr>
+<tr><td>Early shapes are migrated or deleted (15 Sep)</td><td>fits</td><td>fits if the 937 files move once</td><td>as B</td><td>fits: nothing moves now; a promoted record type moves once</td></tr>
+<tr><td>The app that owns a kind makes the file (16 Oct)</td><td>fits</td><td>holds, with kind read as type</td><td>as B</td><td class="no-cell">amends: a shared type has no owner; any added app whose listing declares it may make it</td></tr>
+<tr><td>An agent signs only by an admin's grant per kind (13 Oct)</td><td colspan="4">holds in every option, granted per kind or type</td></tr>
+</table>
+</div>
+<p class="small">These fit every option: <em>A Folder is a group the relay lists</em> (the precedent for a relay-signed summary); <em>Estiva hosts the only deployment</em> (Slack Connect across two deployments would need a new record, whatever the file shape); <em>An app counts only once the workspace adds it</em>; <em>A file's id is unique across every kind</em>; <em>A file is labelled by its type</em>; <em>What belongs to a file is stored with it</em>; <em>Peek keeps a plain copy until sign-out</em>. Any option that goes against a record needs a new record that supersedes it, for your accept.</p>
+
+<h2>Recommendation</h2>
+<div class="rec">
+<p><strong>Pick E: one number for each shared meaning, which any app extends with its own properties; one record kind for everything not shared yet; and a relay that keeps each file's current state while the change log becomes its history.</strong></p>
+<ul>
+<li><strong>The protocol shape.</strong> You use Nostr for interoperability. Interoperability needs types named for meanings and shared across apps, never named for one app. That is the community's rule, and it is about interoperability, not social media. E follows it in full. The parts of their reasoning about many relays and unknown clients (indexing, per-relay rules) weigh less on one company relay, spam does not apply at all, and E does not lean on any of them.</li>
+<li><strong>The person.</strong> Katerina, and a partner's project manager in another tool, see the same issue with the same meaning. An HR expert writes a listing and never meets a number. A new colleague, a new phone and Claude read one summary per file, however long its history. History is complete, because nothing is deleted to keep lists fast.</li>
+<li><strong>Not C:</strong> its types are named by each app, so two companies' different apps never agree what an issue is. It is also the one pattern the community turns down by name. C's relay summary carries over into E unchanged.</li>
+<li><strong>Not A:</strong> every builder picks numbers, ranges and tag letters (your note 4), and the numbers still name apps, not meanings.</li>
+<li><strong>Not B:</strong> C without the summary, so it must cut history to stay fast.</li>
+<li><strong>Not D:</strong> every relay in a shared Folder would need every company's schemas.</li>
+<li><strong>Cost, said plainly:</strong> E is less to build than C now. Today's four types already are shared types, so no file moves. It adds a lasting job, curating shared types (call 2). Staging, without changing the shape: text out first (every option needs it); ids and labels for today's four types, and app gates driven by listings; the relay summary; records and people's databases with the Notion-like app; Slack Connect after its own brief.</li>
+</ul>
+</div>
+
+<h2>The calls</h2>
+
+<h3>Call 1. The architecture</h3>
+<p>E (recommended), C, A or D. B is C without the summary.</p>
+
+<h3>Call 2. Who decides the shared types?</h3>
+<div class="tw"><table>
+<tr><th>Option</th><th>What happens</th></tr>
+<tr class="rec-row"><td><strong>Estiva, in public, with a directory; the App Store helps</strong> (recommended)</td><td>An open ecosystem: any company may build an app and add it without us. A public directory of types in estiva-docs says what each shared number means. New builders start from it, and a record type that shows up in several apps gets a shared number. Your App Store is optional (26 Oct). It lists verified apps that companies install and update in one place, and its review warns a builder whose app clashes with a shared type or skips one that fits. It helps the community agree, and it does not force anyone (your note, 26 Oct). Outside the store nothing forces reuse, and a clash shows only in the directory. Each number is registered in Nostr's kind registry. An existing Nostr kind is reused where its shape fits, and when it doesn't we say why. A type is proposed upstream as a Nostr standard once a second company uses it. A steering group of adopters comes later, as with schema.org and AT Protocol's Lexicon Community. A shared type changes only compatibly; a breaking change is a new number.</td></tr>
+<tr><td>The Nostr community</td><td>Each shared type is a Nostr standard, merged upstream before apps use it. This is the most aligned and the slowest, and the process is built around social clients. "Why not the git-issue kind for issues?" becomes a question for every type.</td></tr>
+<tr><td>Nobody: the first app to register a meaning owns it</td><td>The fastest. It is the first-come land grab Vitor warns about, and collisions follow.</td></tr>
+</table></div>
+
+<h3>Call 3. Who defines a type of file and its properties?</h3>
+<div class="tw"><table>
+<tr><th>Option</th><th>What happens</th></tr>
+<tr class="rec-row"><td><strong>An app's listing, or a person's database</strong> (recommended, staged)</td><td>One schema shape in two places: an app's listing, or a <em>database</em>, which is a file a person makes in a Folder. Its rows are records under it, with members, comments, archive and history like any file. App types first; databases when the Notion-like app is shaped.</td></tr>
+<tr><td>Only an app's listing (your 25 Oct "for now")</td><td>Katerina's candidate tracker needs a developer, or an app that ships fixed types.</td></tr>
+<tr><td>Nobody: any file takes any property</td><td>The fastest start. People will write "Stage" and "stage", and two apps will not agree.</td></tr>
+</table></div>
+<figure>
+<svg viewBox="0 0 720 170" role="img"><title>Two places a record type is defined, one shape; both can use shared types</title>
+<rect class="w" x="10" y="14" width="300" height="110" rx="8"/>
+<text class="h" x="24" y="38">HR app's listing</text>
+<text class="m" x="24" y="60">set by its developer</text>
+<rect class="chip" x="24" y="72" width="128" height="36" rx="5"/><text x="34" y="95">Job position*</text>
+<rect class="w" x="164" y="72" width="134" height="36" rx="5"/><text x="174" y="95">Scorecard</text>
+<rect class="w" x="410" y="14" width="300" height="110" rx="8"/>
+<text class="h" x="424" y="38">Katerina's database "Hiring"</text>
+<text class="m" x="424" y="60">a file in a Folder; she edits it</text>
+<rect class="w" x="424" y="72" width="272" height="36" rx="5"/><text x="434" y="95">its rows: records under it</text>
+<text class="m" x="120" y="148">* a shared type with the HR app's extra properties; the rest are records</text>
+<text class="m" x="120" y="164">same shape everywhere: properties with ids, labels, kinds of value</text>
+</svg>
+<figcaption>Peek, Ship and Claude draw a row of Katerina's tracker the way they draw an HR app's scorecard.</figcaption>
+</figure>
+
+<h3>Call 4. What does a file keep as its history?</h3>
+<div class="tw"><table>
+<tr><th>Option</th><th>What happens</th></tr>
+<tr class="rec-row"><td><strong>Everything, for good</strong> (recommended with C or E)</td><td>Every change and every text save, the 2,286 old saves included. Lists never read history, so it costs only disk: 33 MB of text since 7 Aug.</td></tr>
+<tr><td>From switch day (your 25 Oct call)</td><td>Each file's newest old text is kept and the older ones are deleted, for good. Needed under A or B to keep lists fast.</td></tr>
+<tr><td>Thinned (Notion)</td><td>One text version per 10 minutes of editing, older ones thinned. Less to store; some steps are lost.</td></tr>
+</table></div>
+<p>In every option a file gets a <strong>History</strong> panel. Property changes are a list ("Katerina set Stage to Offer"). Text saves are versions you can open, and <em>Restore</em> writes a new save under your name. A database's schema changes appear in its own history. Someone who needs a text truly gone, such as a pasted password, needs "delete this version", and deleting a file removes every save.</p>
+
+<h3>Not asked now</h3>
+<ul>
+<li><strong>How a person reshapes a database</strong> (a property changed from text to choice; options merged). It is shaped with the Notion-like app. The rule that holds from now on is fixed ids with labels, so a rename touches no file.</li>
+<li><strong>Slack Connect's own shape</strong> (hosted, or on both relays). It is the next brief. E works under both.</li>
+<li><strong>A file's text.</strong> It follows your earlier calls. Each save is its own event; the summary names the newest. Until someone saves again, each file's newest old save is read as its text, so nobody re-signs (your 26 Oct lean). Sections and live co-editing come later; a CRDT as the stored text stays turned down (13 Oct).</li>
+</ul>
+
+<h2>Checked</h2>
+<ul>
+<li><strong>Nostr community, at source today:</strong>
+  <ul>
+  <li>staab on a generic database kind: "You're not going to get any kind of interoperability from this, which is the point of NIPs."</li>
+  <li>staab on type tags: "a namespace-within-a-namespace … unless you have no aspirations for interoperability".</li>
+  <li>Vitor's case for numbers over names: no first-come land grab, a number can be retired, and "Kinds as strings are great for companies that want to fake interoperability and create vendor lock-in".</li>
+  </ul>
+  fiatjaf's "No. Use a new kind number…", staab's 22 Oct "Kinds are about semantics", the NIP-29 text on forks, and the four collisions were checked by the research session today.</li>
+<li><strong>Existing Nostr kinds for shared meanings</strong> (NIPs mirror, 22 Jul): comments on anything, git issues and their status, long-form articles, classified listings (their text names "work opportunities"), calendar events.</li>
+<li><strong>Relay code</strong> (Buzz, the branch our image builds from):
+  <ul>
+  <li>One deployment serves several communities, one per host.</li>
+  <li>A Folder's community is fixed when it is made.</li>
+  <li>The Folder listing is relay-signed.</li>
+  <li>A kind the relay does not know is refused.</li>
+  <li>Only one-letter tags are filtered.</li>
+  <li>Nothing folds property changes.</li>
+  </ul></li>
+<li><strong>Production, read-only, earlier today:</strong> 2,286 text saves, 33.2 MB; other changes 3,264, 0.95 MB; 937 files across the four types, with no id used by two types.</li>
+<li><strong>Specification and records</strong> on main (estiva-docs, 26 Oct), as quoted in the tables. No decision record has been added since the first version.</li>
+<li><strong>Slack Connect and Teams:</strong> from Slack's and Microsoft's help pages, via search summaries; I did not read them in full. Matrix: from its specification, not re-read today. The Lexicon Community: from its repository's README, via search.</li>
+<li><strong>The draft PR #330:</strong> still open and a draft. Its body still says "his merge accepts both records", which is wrong: merging a Proposed record does not accept it. Noted, not fixed, as you asked.</li>
+</ul>
+<p><strong>Not checked:</strong></p>
+<ul>
+<li>Whether Nostr apps really reuse numbers by meaning in practice.</li>
+<li>Whether any proposal anywhere has one group governed on two relays. Searches found none.</li>
+<li>How closely Nostr's git-issue and listing kinds fit our issue and a job position.</li>
+<li>Whether Ship's issue numbers and project keys fit as ordinary properties.</li>
+<li>The build size of each option, and how the relay's fold behaves under load (not prototyped).</li>
+<li>Weekly Plans' 30–35 s (timed on 25 Oct); I measured sizes, not times.</li>
+</ul>
+
+<h2>For the record</h2>
+<ul class="small">
+<li>Today: roots <code>30840</code> topic, <code>30842</code> document, <code>30850</code> project, <code>30851</code> issue; <code>1851</code> change (<code>a</code>, <code>field</code>, <code>value</code>, <code>ts</code>, <code>h</code>); <code>31990</code> manifest (§7); <code>1852</code> → relay-signed <code>30890</code>; reserved <code>30890–30899</code>; provisional <code>30820–30899</code>, <code>185x</code>. SPEC §6.3, §6.10, §7.4, §8; <code>protocol/ADDING-A-KIND.md</code>. Buzz <code>migrations/0001_initial_schema.sql</code> (<code>community_id</code>, immutable on channels); <code>api/bridge.rs</code> host → community.</li>
+<li>E: shared kinds = today's four plus new ones in a block the relay and Estiva ID admit by range; core property ids in each kind's definition (today's <code>field</code> words become ids); extension ids namespaced by app key; a record kind (new number) with a one-letter tag naming its schema (<code>&lt;app key&gt;:&lt;type id&gt;</code> or a database file's address); a relay-signed addressable state event per file as in C; each number registered in nostr-protocol/registry-of-kinds. C: typed-file kind with <code>&lt;app key&gt;:&lt;name&gt;</code>; summary as above. Variant: per-field addressable events (Kanbanstr #1665 / Formstr).</li>
+<li>Records: a-document-is-its-own-type-of-file, a-card-changes-what-a-files-app-shares, a-files-text-is-a-readable-snapshot, 0001-relay-canonical-by-default, early-shapes-are-migrated-or-deleted, another-apps-new-file-is-made-by-that-app, an-agent-signs-for-an-app-only-by-an-admin-grant, a-folder-is-a-group-the-relay-lists, estiva-hosts-the-only-deployment, an-app-counts-only-once-the-workspace-adds-it, a-files-id-is-unique-across-every-kind, a-file-is-labelled-by-its-type-not-its-app, what-belongs-to-a-file-is-stored-with-it, peek-keeps-a-plain-copy-on-the-device-until-sign-out.</li>
+<li>On your go: Proposed records for the calls, in one estiva-docs PR that you merge after flipping them to Accepted; they supersede the two Proposed records in estiva-app/estiva-docs#330 and amend or supersede the records marked against above. Nothing is written to Ship, Peek, Leaf or GitHub before that.</li>
+<li>Upstream: nostr-protocol/nips #995, #1168 (staab), #1190 (staab), #1503 (staab), #511 and #1974 (Vitor, fiatjaf), #2426 (fiatjaf), #2467 (staab, 2026-10-22), #2458 (NIP-78 wording), #2354 and #1815 (30890/30891), #2413 (10011), #2443 (<code>h</code> across relays), #1903 (NIP-90); NIP-22, 23, 29 (forks, 22 Jul), 34 (<code>1621</code>), 52, 65, 77, 78, 99 (<code>30402</code>). AT Protocol lexicon spec and the Lexicon Community; schema.org; Matrix state resolution; Slack Connect data management; Teams shared channels.</li>
+<li>Research: <code>~/estiva/handoff/research/</code> (framing, nostr, nostr-kinds-and-federation, buzz-and-estiva, other-systems, brief-revision-notes).</li>
+</ul>
+</main>
+</body>
+</html>

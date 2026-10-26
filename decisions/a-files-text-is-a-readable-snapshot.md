@@ -5,6 +5,11 @@
 - Decided by: Miky, in the Leaf 1 shaping session, after research on Notion, Linear, Google Docs, Formstr and Leaflet
 - Area: Documents
 
+> Superseded in part, 2026-10-26: the part "written as a change to the file's
+> `description` field (`kind:1851`)" is replaced by
+> [a-files-type-is-a-shared-meaning-any-app-extends](a-files-type-is-a-shared-meaning-any-app-extends.md):
+> each save is an event of its own. The rest of this record stands.
+
 ## Who it affects
 
 Miky and the friend he wants as Estiva's first outside user write one page
