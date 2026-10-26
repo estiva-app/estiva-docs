@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reaching a Workspace</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 22px 0 6px; }
+p, li { margin: 6px 0; }
+ul, ol { padding-left: 22px; }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.q { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); padding: 12px 14px; border-radius: 6px; font-size: 1.05rem; }
+.rec { background: var(--ok-bg); border-left: 4px solid var(--ok); padding: 12px 14px; border-radius: 6px; }
+.warn { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.opt { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 4px 14px 10px; margin: 16px 0; }
+.opt.pick { border-color: var(--ok); border-width: 2px; }
+.lbl { font-weight: 600; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+svg { width: 100%; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .e { fill: none; stroke: var(--line); stroke-dasharray: 5 4; }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .ag { stroke: var(--ok); fill: none; stroke-width: 1.8; marker-end: url(#arrg); }
+svg .agd { stroke: var(--ok); fill: none; stroke-width: 1.8; stroke-dasharray: 6 4; marker-end: url(#arrg); }
+svg .ad { stroke: var(--muted); fill: none; stroke-width: 1.2; stroke-dasharray: 4 3; marker-end: url(#arr); }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; min-width: 640px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-word; }
+.rec-row td { background: var(--ok-bg); }
+.small { font-size: .9rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arrg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+  </defs>
+</svg>
+
+<h1>One Peek that switches, or one workspace per sign-in?</h1>
+<p class="sub">A brief for Miky · 26 Oct 2026, second round · Slack Connect stage 1, "Estiva ID serves more than one workspace, and each workspace signs with its own key" · follows <em>A Second Workspace</em> (<code>second-workspace.html</code>)</p>
+
+<h2>The question</h2>
+<p class="q">When someone belongs to two companies' workspaces, does one copy of Peek, Ship and Leaf hold both with a switcher (B), or does a copy hold one workspace at a time, the one you signed in to, with a company's own address picking it for you (C)?</p>
+<p>Acme is still the stand-in for the second company. Nobody has been picked yet, so this is the shape, not a moment that happened.</p>
+
+<h2>Already settled</h2>
+<ul>
+  <li><strong>Your answers on the first brief (26 Oct):</strong> a sign-in is good for one workspace only, and a person's name and picture are the same in every workspace.</li>
+  <li><strong>You dropped A</strong> (each workspace with its own address, and nothing else). You lean to C, "cleaner", over B, and asked what C costs. You named two ways of hosting the apps: a company's own domain, such as <code>peek.acme.com</code>, and Estiva's generic <code>peek.estiva.app</code>. C below has both.</li>
+  <li><strong>Accepted the same day:</strong> a Folder two companies share lives on both companies' relays, and each company's apps work from their own relay.</li>
+  <li><strong>The same in B and C:</strong> Estiva's workspace keeps today's key, because every Folder's address names it, and Acme's workspace gets its own key.</li>
+</ul>
+
+<div class="warn"><strong>A correction to the first brief.</strong> It said C's links "stop saying where they belong, which is exactly what stage 2's shared Folders need". That is wrong. A link names the file, not the relay, and a shared Folder is on both relays under one address. So a link to a shared file opens for people in both companies, in B or C. Only a link to a file that is <em>not</em> shared, opened by someone in both workspaces while signed in to the other one, cannot say where to go. That cost is listed under C below.</div>
+
+<h2>Today</h2>
+<figure>
+<svg viewBox="0 0 700 250" role="img"><title>Today: one workspace, one key for the whole deployment</title>
+  <rect class="w" x="230" y="10" width="240" height="40" rx="6"/><text x="350" y="35" text-anchor="middle" class="h">Estiva ID · id.estiva.app</text>
+  <rect class="b" x="20" y="80" width="190" height="60" rx="6"/><text x="115" y="105" text-anchor="middle" class="h">Miky, Katerina</text><text x="115" y="125" text-anchor="middle" class="m">peek / ship / leaf.estiva.app</text>
+  <path class="a" d="M210 110 L300 165"/>
+  <path class="ad" d="M115 80 L260 50"/><text x="150" y="60" class="m">sign in</text>
+  <rect class="b" x="240" y="150" width="230" height="85" rx="6"/><text x="355" y="175" text-anchor="middle" class="h">Estiva's workspace</text><text x="355" y="195" text-anchor="middle" class="m">estiva.estiva.app</text><text x="355" y="215" text-anchor="middle" class="m">signed with the deployment's key</text>
+  <rect class="e" x="500" y="150" width="180" height="85" rx="6"/><text x="590" y="180" text-anchor="middle" class="m">a second workspace</text><text x="590" y="198" text-anchor="middle" class="m">none yet; no apps</text><text x="590" y="216" text-anchor="middle" class="m">point at it</text>
+  <path class="ad" d="M350 50 L355 148"/><text x="362" y="110" class="m">lets in</text>
+  <rect class="w" x="20" y="175" width="190" height="45" rx="6"/><text x="115" y="196" text-anchor="middle" class="m">one key signs every</text><text x="115" y="212" text-anchor="middle" class="m">workspace's Folders</text>
+</svg>
+<figcaption>Today: Peek, Ship and Leaf are each built with Estiva's relay inside them. Estiva ID knows one workspace.</figcaption>
+</figure>
+
+<h2>Why it reaches beyond this ticket</h2>
+<ul>
+  <li><strong>It sets what every app must know, ours and an outside company's.</strong> In B, every app holds several workspaces at once and asks the identity service for your list. In C, an app still holds one, and only learns <em>which</em> one from the sign-in.</li>
+  <li><strong>It sets what a link looks like.</strong> In B, a link gains a workspace part in its path. In C, a link keeps today's shape, and only a company's own address says which workspace it is from.</li>
+  <li><strong>Doors.</strong> The rule in the Specification is text and can be changed back: a two-way door. Links are kept as written in messages and descriptions, so their shape is one-way. B's workspace part has to keep opening for good, and every link sent before it has none, so it means "Estiva" forever. C adds nothing to links, so there is nothing to undo. Moving from C to B later is still possible. Each company address also has to keep working for as long as links to it exist.</li>
+</ul>
+
+<h2>The options</h2>
+
+<div class="opt">
+<h3>B · One Peek holds all your workspaces: a switcher, and the workspace in the link</h3>
+<figure>
+<svg viewBox="0 0 700 220" role="img"><title>Option B: one Peek, a switcher, the workspace in the path</title>
+  <rect class="b" x="220" y="10" width="260" height="60" rx="6"/><text x="350" y="33" text-anchor="middle" class="h">peek.estiva.app</text><text x="350" y="52" text-anchor="middle" class="m">switcher: Estiva · Acme</text>
+  <text x="350" y="88" text-anchor="middle" class="m">peek.estiva.app/acme/topic/…</text>
+  <path class="ag" d="M300 70 L190 128"/><path class="ag" d="M400 70 L510 128"/>
+  <rect class="ok" x="40" y="130" width="260" height="75" rx="6"/><text x="170" y="158" text-anchor="middle" class="h">Estiva's workspace</text><text x="170" y="178" text-anchor="middle" class="m">Estiva's key (today's)</text>
+  <rect class="ok" x="400" y="130" width="260" height="75" rx="6"/><text x="530" y="158" text-anchor="middle" class="h">Acme's workspace</text><text x="530" y="178" text-anchor="middle" class="m">Acme's own key</text>
+  <rect class="w" x="20" y="10" width="170" height="50" rx="6"/><text x="105" y="32" text-anchor="middle" class="m">Estiva ID tells the app</text><text x="105" y="48" text-anchor="middle" class="m">your workspaces</text>
+  <path class="ad" d="M190 35 L218 38"/>
+</svg>
+<figcaption>One copy of each app is connected to every workspace you are in, with a sign-in for each. The link's path names the workspace.</figcaption>
+</figure>
+<p><span class="lbl">What you and Katerina see.</span> One Peek tab. If you were in Acme too, a switcher, Slack-style, with a dot when the other workspace has something new. Links gain a workspace part, <code>peek.estiva.app/acme/topic/…</code>.</p>
+<p><span class="lbl">What an outside company gets.</span> Every app learns to hold several workspaces: it reads your list from the identity service, which becomes part of the protocol for every identity service; it keeps a sign-in and a relay connection per workspace, all open at once; and it keeps what it stores on the device apart per workspace.</p>
+<p><span class="lbl">What it locks in.</span> Apps that span workspaces: a narrower form of the app on several relays that you set aside today.</p>
+<p><span class="lbl">What could go wrong.</span> A bug that mixes the two workspaces' device copies shows Acme's text in Estiva's view. Every app's paths change shape, and the record that a file's address is the same in every app, with only the host changed, gains a rule for the missing part. Katerina designs a switcher for three apps.</p>
+</div>
+
+<div class="opt pick">
+<h3>C · A copy of an app holds one workspace: the sign-in picks it, and a company's own address picks it for you</h3>
+<figure>
+<svg viewBox="0 0 700 310" role="img"><title>Option C: the sign-in picks the workspace; a company's own address presets it</title>
+  <rect class="w" x="215" y="8" width="270" height="58" rx="6"/><text x="350" y="30" text-anchor="middle" class="h">Estiva ID · id.estiva.app</text><text x="350" y="48" text-anchor="middle" class="m">one passkey; "Which workspace?" only if</text><text x="350" y="62" text-anchor="middle" class="m">you are in two and the address didn't say</text>
+  <rect class="b" x="20" y="100" width="240" height="62" rx="6"/><text x="140" y="123" text-anchor="middle" class="h">peek.estiva.app</text><text x="140" y="141" text-anchor="middle" class="m">Estiva's generic address:</text><text x="140" y="156" text-anchor="middle" class="m">the sign-in picks the workspace</text>
+  <rect class="b" x="440" y="100" width="240" height="62" rx="6"/><text x="560" y="123" text-anchor="middle" class="h">peek.acme.com</text><text x="560" y="141" text-anchor="middle" class="m">Acme's own address:</text><text x="560" y="156" text-anchor="middle" class="m">always Acme, no question</text>
+  <path class="ad" d="M180 100 L255 68"/><text x="150" y="84" class="m">sign in</text>
+  <path class="ad" d="M520 100 L445 68"/><text x="495" y="84" class="m">sign in to Acme</text>
+  <path class="ag" d="M90 162 L90 223"/>
+  <path class="agd" d="M220 162 L430 223"/><text x="305" y="176" class="m">or, one at a time</text>
+  <path class="ag" d="M600 162 L600 223"/>
+  <rect class="ok" x="20" y="225" width="290" height="75" rx="6"/><text x="165" y="252" text-anchor="middle" class="h">Estiva's workspace</text><text x="165" y="271" text-anchor="middle" class="m">estiva.estiva.app</text><text x="165" y="288" text-anchor="middle" class="m">Estiva's key (today's)</text>
+  <rect class="ok" x="390" y="225" width="290" height="75" rx="6"/><text x="535" y="252" text-anchor="middle" class="h">Acme's workspace</text><text x="535" y="271" text-anchor="middle" class="m">acme.estiva.app</text><text x="535" y="288" text-anchor="middle" class="m">Acme's own key</text>
+</svg>
+<figcaption>Estiva ID answers each sign-in with one workspace, and the app talks to that workspace's relay until you sign in again. A company's own address tells Estiva ID which workspace before it asks.</figcaption>
+</figure>
+<p><span class="lbl">What you and Katerina see.</span> Nothing new at <code>peek.estiva.app</code> while you are in one workspace. Alice at Acme opens <code>peek.acme.com</code>, taps her passkey at Estiva ID, and is in Acme. If you were in Acme too, Estiva ID would ask "Estiva or Acme?" when you sign in at <code>peek.estiva.app</code>, and each app would show the workspace's name and a "Switch workspace" item, which signs you in again without the passkey and reloads. A link made at <code>peek.acme.com</code> opens Acme by itself. A link made at <code>peek.estiva.app</code> looks exactly like today's.</p>
+<p><span class="lbl">What an outside company gets.</span> Its apps still serve one workspace at a time. The one new thing is that the relay comes from the sign-in answer, not from how the app was built. Which workspaces a person has stays inside the identity service and its own page; no app has to read that list.</p>
+<p><span class="lbl">What it locks in.</span> One workspace per running copy of an app. A company's own address as its front door. B stays possible later, as a switcher on top.</p>
+<p><span class="lbl">What could go wrong.</span></p>
+<ul>
+  <li>Someone in two workspaces has one workspace per address in a browser, because every tab on that address shares one sign-in. Seeing both side by side means one of them on its company's address, or a second browser. Nobody sees the other workspace's unread dot.</li>
+  <li>A stale tab: switching workspace in one tab changes the sign-in under every other tab on that address. Each tab has to notice and reload, or it would show Estiva's screen while talking to Acme.</li>
+  <li>A <code>peek.estiva.app</code> link to a file that only Acme has, opened while you are in Estiva, shows "not here", and the app cannot say where the file is. It can offer "Switch workspace".</li>
+  <li>A pasted <code>peek.acme.com</code> link shows as a plain link in Estiva's Peek unless Estiva's relay also lists <code>peek.acme.com</code> as Peek's address. Every company address has to be listed on every workspace that should read its links as files.</li>
+</ul>
+</div>
+
+<h2>What C costs</h2>
+<ol>
+  <li><strong>The Specification's rule on the workspace changes.</strong> Today: an app treats the relay it was built with as the edge of the workspace, and a person never picks a relay. In C: an app treats the relay its sign-in names as the edge of the workspace until the next sign-in, and a person picks a workspace by name, never by typing a relay address. B changes the same rule further: several at once.</li>
+  <li><strong>Estiva ID knows every workspace and lists yours on its own sign-in page.</strong> Today three settings bind it to one workspace (where it publishes profiles, the workspace handles belong to, and the operator who adds and removes members), and letting people in, admins and invites all assume one. In C it keeps a list of workspaces: each one's relay, its handle domain, its operator and its apps' addresses. It also knows who is in which, which today only each relay's member list says. B needs this list too, and has to hand it to every app as well.</li>
+  <li><strong>The sign-in and its renewal are kept per workspace.</strong> Today a renewal is tied to an app, a person and a session, and the app keeps one sign-in per address. In C the sign-in, its renewal and sign-out name one workspace, and a switch replaces them. The copy of what the relay sent, kept on the device, already names its relay, so it is kept apart already. Unsent drafts and a few view settings are not, and are cleared or kept apart on a switch. B needs all of this for several workspaces at once.</li>
+  <li><strong>Links on the generic address do not name a workspace.</strong> Links on a company's own address do, by the address.</li>
+  <li><strong>A company's own address is set up per company:</strong> its DNS and certificate at Estiva's edge, one exact return address per app in Estiva ID, and the apps' manifests on every relay listing it. Passkeys do not change: you always tap at <code>id.estiva.app</code>.</li>
+  <li><strong>No server changes in the apps.</strong> Peek, Ship and Leaf are static files served as they are; the relay address is only built into the browser bundle. One build serves every workspace and every company address. Leaf's manifest script and Peek's maintenance scripts take the relay from a setting, so they run once per workspace.</li>
+</ol>
+<p class="small">Stage 1 could ship the generic address first and the first company address when a company wants one. That is a staging choice, not a change of shape.</p>
+
+<h2>Trade-offs</h2>
+<div class="tw">
+<table>
+  <tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+  <tr><td><strong>B</strong> switcher</td><td>Apps span workspaces; the identity service hands every app your list; the relay is chosen at runtime</td><td>One tab, a switcher, unread from both; links gain a workspace part</td><td>Multi-workspace apps: a sign-in, connection and device copy per workspace, all live</td><td>Link paths change for good; old links mean "Estiva" forever</td><td>Switcher in three apps (Katerina); list in Estiva ID; new paths in every app</td></tr>
+  <tr class="rec-row"><td><strong>C</strong> sign-in picks</td><td>An app holds one workspace, named by its sign-in; the list stays inside the identity service</td><td>Nothing new for one-company people; Acme at its own address; a question at sign-in for people in two</td><td>Read the relay from the sign-in; keep one workspace's state at a time</td><td>Links unchanged, nothing to undo; each company address kept for good</td><td>Workspace list and picker in Estiva ID; per-workspace sign-in; a name and a switch item per app; per-company address setup</td></tr>
+</table>
+</div>
+
+<h2>How others do it</h2>
+<ul>
+  <li><strong>Slack:</strong> you sign in at <code>acme.slack.com</code>, which picks the workspace for you, then the web app runs at one address with the workspace in the path and a sidebar switcher. Each workspace has its own sign-in. That is B's look with C's front door.</li>
+  <li><strong>Microsoft Teams:</strong> one address; your account decides the organisation, and as a guest you switch organisation, which reloads the app. That is close to C.</li>
+  <li><strong>Linear, Notion:</strong> one address, the workspace in the path, a switcher. That is B.</li>
+  <li>What breaks for us: they write every client themselves. On an open protocol, B makes every outside app span workspaces. C asks one new thing of them: read the relay from the sign-in.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<div class="rec">
+<p><strong>C: a copy of an app holds one workspace, the sign-in picks it, and a company's own address picks it for you.</strong></p>
+<p>The reasons are the protocol's shape and the person. An app still serves one workspace at a time, so the edge of a workspace stays one relay, which is what the record you accepted today rests on: each company's apps work from their own relay, and the relays exchange what is shared. An outside company's app learns one thing, not a whole multi-workspace model, and the list of your workspaces stays a matter for the identity service. For the person: most people are in one company and see nothing new, Acme gets its own front door, and shared Folders mean nobody has to join a partner's workspace to work with them. The cost is plain: the few people in two workspaces switch instead of seeing both, and links made on the generic address cannot say which workspace they are from.</p>
+<p>B would be right if being in several companies' workspaces became normal, as it is for agencies on Slack. It can come later as a switcher on top of C; going from B back to C would leave a workspace part in every link already sent.</p>
+</div>
+
+<h2>Checked</h2>
+<ul>
+  <li>No app has a server: Peek, Ship and Leaf are each static files behind nginx with no proxy (<code>Dockerfile</code> and <code>deploy/nginx.conf</code> in peek-app, estiva-ship, leaf). The relay is built into the bundle (peek-app <code>deploy.yml:160</code>, leaf <code>deploy.yml:106</code>, estiva-ship <code>deploy.yml:216</code>, whose comment says "changing where it points is a rebuild, by design"). Leaf's <code>scripts/publish-manifest.ts</code> and Peek's maintenance scripts read it from a setting.</li>
+  <li>The Specification's rule today: "An app MUST treat its configured relay origin as the workspace boundary" and "MUST NOT allow a user to select the relay at runtime" (SPEC §2).</li>
+  <li>A link names the file by its type and id, never the relay; a pasted link is resolved on the reader's own relay; a link on an address no manifest lists is a plain link (SPEC §7.7). A shared Folder has the host's address on every relay, and each company's apps work from their own (the record accepted 26 Oct). This is what corrects the first brief.</li>
+  <li>Estiva ID is bound to one workspace by three settings (<code>src/config.ts:166-222</code>); handles are kept per person per workspace host (<code>migrations/002_profile.sql</code>); a renewal names an app, a person and a session, no workspace (<code>migrations/007_refresh_tokens.sql</code>); a sign-in names the person and the app (<code>src/domain/jwt.ts:148-179</code>); each app's return addresses are an exact list (<code>src/config.ts</code>, PEEK/SHIP/LEAF_REDIRECT_URIS); passkeys are tapped only at <code>id.estiva.app</code> (<code>deploy/env.production.example</code>: RP_ORIGINS).</li>
+  <li>On the device: the copy of the relay's answers is scoped by relay and person (estiva-foundation <code>packages/platform/src/event-snapshot.ts:150</code>); the sign-in is one per app address (peek-app <code>src/auth/estivaId.ts:49</code>); drafts have no relay in their key (<code>packages/conversation/src/drafts.ts:43</code>).</li>
+  <li>The relay: one key signs every workspace, and the per-workspace key column is unused (buzz <code>main.rs:38-46</code>, <code>migrations/0001_initial_schema.sql:53-58</code>), checked in the first brief.</li>
+  <li><strong>Not checked:</strong> what DNS and certificates for a company's own address cost at Estiva's edge; how Slack, Teams, Linear and Notion behave today (general knowledge, not their documentation); that production holds one workspace (needs the box).</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="small">SPEC §2 (the workspace is the relay), §4.3–4.4 (signing, signing in), §7.7 (<code>urls</code>, declared origins). In C the token response carries the workspace's relay, and <code>/sign</code> refuses NIP-42 AUTH and NIP-98 for any other relay (call 2 of the first brief). Records: <code>a-shared-folder-lives-on-both-relays-and-its-host-runs-it</code>, <code>a-files-path-is-the-same-on-every-apps-host</code>, <code>estiva-hosts-the-only-deployment</code>, <code>sign-in-is-plain-oauth</code>. Proposed record: <code>the-sign-in-picks-the-workspace</code>. Repos: buzz (<code>nfb-demo-kinds</code>), estiva-id, estiva-foundation, peek-app, estiva-ship, leaf.</p>
+</main>
+</body>
+</html>
