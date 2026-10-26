@@ -1,0 +1,390 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Two Companies, One Folder</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 22px 0 6px; }
+p, li { margin: 6px 0; }
+ul { padding-left: 22px; }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.q { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); padding: 12px 14px; border-radius: 6px; font-size: 1.05rem; }
+.rec { background: var(--ok-bg); border-left: 4px solid var(--ok); padding: 12px 14px; border-radius: 6px; }
+.warn { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.opt { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 4px 14px 10px; margin: 16px 0; }
+.opt.pick { border-color: var(--ok); border-width: 2px; }
+.lbl { font-weight: 600; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+svg { width: 100%; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .e { fill: none; stroke: var(--line); stroke-dasharray: 5 4; }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); }
+svg .no { fill: var(--warn-bg); stroke: var(--warn); }
+svg .wall { stroke: var(--warn); stroke-width: 4; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .ag { stroke: var(--ok); fill: none; stroke-width: 1.8; marker-end: url(#arrg); }
+svg .ar { stroke: var(--warn); fill: none; stroke-width: 1.8; marker-end: url(#arrr); }
+svg .ad { stroke: var(--muted); fill: none; stroke-width: 1.2; stroke-dasharray: 4 3; marker-end: url(#arr); }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; min-width: 640px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-word; }
+.rec-row td { background: var(--ok-bg); }
+.small { font-size: .9rem; color: var(--muted); }
+</style>
+</head>
+<body>
+<main>
+<h1>When two companies share a Folder, where does it live, and who runs it?</h1>
+<p class="sub">A brief for Miky · 26 Oct 2026 · the Slack Connect brief that "Files, Types, History" left open · revised the same day after your note: your version added as option D, and B said plainly · one architecture call, then two calls it brings with it</p>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+<marker id="arrg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+<marker id="arrr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--warn)"/></marker>
+</defs></svg>
+
+<h2>The question</h2>
+<p class="q">When Estiva and a partner company work in one Folder (a Ship project, a Peek topic, a Leaf document), does it live only with the company that started it, with the partner's people let in as guests? Or does each company keep it on its own relay? And then how does each event get to both relays, and who says yes when they disagree?</p>
+<p>The example throughout: you share a Folder called <em>Launch</em> with Acme, an agency. Alice works at Acme. No partner has a shared Folder yet, so this is the shape, not a moment that happened.</p>
+
+<h2>Today</h2>
+<ul>
+<li><strong>Each app talks to one relay, and that relay is the workspace.</strong> Who is on its roster can read and write, Folder by Folder. Your apps cannot pick another relay.</li>
+<li><strong>There is one workspace: Estiva's.</strong> One relay deployment can hold several workspaces, each walled off from the others. Production has one, and Estiva ID serves one.</li>
+<li><strong>A person's key is theirs everywhere.</strong> Alice would use the same key in any workspace, and each workspace admits her on its own. When someone leaves a company they keep their key; the company takes them off its roster.</li>
+<li><strong>Nothing crosses.</strong> No one from one workspace can reach another's Folder, and no relay passes anything to another.</li>
+</ul>
+<p>What was decided before: <em>Estiva hosts the only deployment</em> (you, 2 Oct), so for now a partner would be a second workspace on Estiva's relay. A company running its own relay would be a new decision. On 26 Oct you said Slack Connect for everything, one relay per company with its apps on that relay only, that "probably a folder would basically live on both relays", and that Nostr is for interoperability more than decentralization. The files record you accepted today made the relay's summaries generic, so that two relays serving one Folder work them out the same way.</p>
+
+<figure>
+<svg viewBox="0 0 720 230" role="img"><title>Today: one workspace on Estiva's relay; a partner's workspace would be walled off</title>
+<rect class="b" x="16" y="16" width="320" height="120" rx="8"/>
+<text class="h" x="30" y="40">Estiva's workspace</text>
+<text class="m" x="30" y="58">one relay deployment, run by Estiva</text>
+<rect class="ok" x="30" y="70" width="140" height="50" rx="5"/>
+<text x="42" y="100">Folder "Launch"</text>
+<rect class="w" x="184" y="70" width="138" height="50" rx="5"/>
+<text x="196" y="100">other Folders</text>
+<line class="wall" x1="360" y1="16" x2="360" y2="136"/>
+<text class="m" x="304" y="158">nothing crosses</text>
+<rect class="e" x="384" y="16" width="320" height="120" rx="8"/>
+<text class="h" x="398" y="40">Acme's workspace</text>
+<text class="m" x="398" y="58">would be a second workspace on</text>
+<text class="m" x="398" y="74">Estiva's deployment; none exists yet</text>
+<rect class="w" x="16" y="172" width="200" height="48" rx="8"/>
+<text x="28" y="194">Miky, Katerina</text>
+<text class="m" x="28" y="211">Peek, Ship, Leaf</text>
+<path class="a" d="M116 170 V138"/>
+<rect class="w" x="454" y="172" width="250" height="48" rx="8"/>
+<text x="466" y="194">Alice at Acme</text>
+<text class="m" x="466" y="211">her own key, her company's apps</text>
+<path class="ad" d="M584 170 V138"/>
+</svg>
+<figcaption>Today a workspace is a wall. The question is how a Folder gets through it.</figcaption>
+</figure>
+
+<h2>Why it reaches beyond this ticket</h2>
+<ul>
+<li><strong>It is the first time two relays talk to each other in Nostr for Business.</strong> Whatever passes between them becomes protocol, which an outside company's relay would have to speak, even while both sides run on Estiva's deployment.</li>
+<li><strong>It decides whether an app stays on one relay.</strong> Either your company's relay brings the partner's Folder to your apps, or every app learns to connect to other companies' relays.</li>
+<li><strong>It decides who answers for a shared conversation:</strong> whose admins, whose rules on keeping and deleting, and what each company keeps when the partnership ends.</li>
+<li><strong>It decides what a shared Folder's address names.</strong> Today it names the relay that keeps the Folder.</li>
+<li><strong>Doors.</strong> What has reached a partner cannot be taken back, under any option. "One copy at the host" can become "a copy on each relay" later by copying the history across: Nostr already calls that a move. The other way round takes copies away from partner companies. And "both run it" can only be undone by taking rights away from a company, while its rule for settling disagreements must give the same answer for good on every relay that ever ran it.</li>
+</ul>
+
+<h2>The options</h2>
+
+<div class="opt">
+<h3>A · Do less: one copy, at the company that started it; the partner's people come in as guests</h3>
+<figure>
+<svg viewBox="0 0 720 300" role="img"><title>Option A: Launch lives only on Estiva's relay; Alice's apps also connect to Estiva's relay as a guest</title>
+<rect class="b" x="16" y="16" width="320" height="130" rx="8"/>
+<text class="h" x="30" y="40">Estiva's relay</text>
+<rect class="ok" x="30" y="54" width="292" height="76" rx="5"/>
+<text x="42" y="78">Folder "Launch": the only copy</text>
+<text class="m" x="42" y="98">Estiva's admins run it</text>
+<text class="m" x="42" y="116">Estiva's rules on keeping and deleting</text>
+<rect class="b" x="384" y="16" width="320" height="130" rx="8"/>
+<text class="h" x="398" y="40">Acme's relay</text>
+<rect class="w" x="398" y="54" width="140" height="76" rx="5"/>
+<text x="410" y="88">Acme's own</text>
+<text x="410" y="106">Folders</text>
+<rect class="e" x="550" y="54" width="140" height="76" rx="5"/>
+<text class="m" x="562" y="88">nothing of</text>
+<text class="m" x="562" y="106">Launch here</text>
+<path class="ad" d="M336 40 H382"/>
+<text class="m" x="290" y="10">"is Alice still yours?"</text>
+<rect class="w" x="16" y="232" width="200" height="56" rx="8"/>
+<text x="28" y="256">Miky, Katerina</text>
+<text class="m" x="28" y="274">their apps: Estiva's relay</text>
+<path class="a" d="M116 230 V148"/>
+<rect class="w" x="484" y="232" width="220" height="56" rx="8"/>
+<text x="496" y="256">Alice at Acme</text>
+<text class="m" x="496" y="274">her apps hold two connections</text>
+<path class="a" d="M594 230 V148"/>
+<path class="ar" d="M500 230 L300 148"/>
+<text class="m" x="236" y="200">a guest on Estiva's relay,</text>
+<text class="m" x="236" y="216">for Launch only</text>
+</svg>
+<figcaption>One copy, run by its host. Acme keeps nothing; Alice's apps reach across.</figcaption>
+</figure>
+<p><span class="lbl">What you and Katerina see.</span> Miky creates Launch and invites Alice. She appears in it with an "Acme" badge. Estiva runs everything in it. Nothing else changes for you.</p>
+<p><span class="lbl">What Alice and Acme get.</span> Alice sees "Launch · Estiva" in her apps, served from Estiva's relay, beside her own Folders. Acme as a company holds nothing: its admins cannot see, export or keep what their people wrote there. Teams works this way: the partner has no audit log of its people's activity there and cannot put them on hold.</p>
+<p><span class="lbl">What an outside company must build.</span> Every app it uses learns to connect and sign in to other companies' relays, and to merge two workspaces into one list. The rule "the workspace is the relay" changes for every app.</p>
+<p><span class="lbl">What it locks in.</span> Apps that talk to several relays, which is social Nostr's way and the one you set aside for companies on 26 Oct. It is easy to move to a copy on each relay later.</p>
+<p><span class="lbl">What could go wrong.</span></p>
+<ul>
+<li><strong>Alice leaves Acme.</strong> Acme removes her from its relay at once. But she keeps her key, and Estiva's relay let that key in. She keeps reading Launch unless Estiva's relay asks Acme every time she connects. Teams does this with tokens that last an hour and are checked against both companies.</li>
+<li>Estiva's relay is down: Acme sees nothing of Launch. Acme's search, Acme's Claude, and a link to Launch pasted in an Acme Folder reach it only if each of those apps also asks Estiva's relay.</li>
+</ul>
+</div>
+
+<div class="opt pick">
+<h3>B · Each event ends up on both relays, no merging; the company that started it says yes or no (Slack Connect's shape)</h3>
+<p><span class="lbl">In your words.</span> Each event ends up on both relays, and each company works from its own. There is no merging: a change is a signed event, and every relay folds the same events into the same result, by the generic rule you accepted today. B adds two things to D. Alice's app sends only to Acme's relay, and the relays pass each event on, so no app signs in to another company's relay and a lost send is filled in. And the host's relay is the one place that says yes or no, so the two copies never differ.</p>
+<figure>
+<svg viewBox="0 0 720 290" role="img"><title>Option B: Launch is on both relays; Estiva's relay accepts every change and decides who is in; Acme's relay keeps a copy and decides which of its people are in</title>
+<rect class="b" x="16" y="16" width="280" height="130" rx="8"/>
+<text class="h" x="30" y="40">Estiva's relay · the host</text>
+<rect class="ok" x="30" y="54" width="252" height="76" rx="5"/>
+<text x="42" y="78">Launch: host copy</text>
+<text class="m" x="42" y="98">accepts or refuses every change</text>
+<text class="m" x="42" y="116">signs who is in, and its listing</text>
+<rect class="b" x="424" y="16" width="280" height="130" rx="8"/>
+<text class="h" x="438" y="40">Acme's relay</text>
+<rect class="ok" x="438" y="54" width="252" height="76" rx="5"/>
+<text x="450" y="78">Launch: Acme's copy</text>
+<text class="m" x="450" y="98">keeps what the host accepted</text>
+<text class="m" x="450" y="116">its own search, records, Claude</text>
+<path class="ag" d="M422 70 H298"/>
+<text class="m" x="308" y="62">Alice's change</text>
+<path class="ag" d="M298 112 H422"/>
+<text class="m" x="308" y="132">accepted, copied</text>
+<rect class="w" x="16" y="172" width="210" height="56" rx="8"/>
+<text x="28" y="196">Miky, Katerina</text>
+<text class="m" x="28" y="214">their apps: Estiva's relay only</text>
+<path class="a" d="M121 170 V148"/>
+<rect class="w" x="494" y="172" width="210" height="56" rx="8"/>
+<text x="506" y="196">Alice at Acme</text>
+<text class="m" x="506" y="214">her apps: Acme's relay only</text>
+<path class="a" d="M599 170 V148"/>
+<text class="m" x="16" y="258">Estiva decides: name, archive, which</text>
+<text class="m" x="16" y="274">companies are in; can take anyone out</text>
+<text class="m" x="424" y="258">Acme decides: which of its people are in;</text>
+<text class="m" x="424" y="274">can leave, and keeps a read-only copy</text>
+</svg>
+<figcaption>Each event ends up on both relays, no merging. One place says yes or no; the relays carry events, so the apps don't have to.</figcaption>
+</figure>
+<p><span class="lbl">What you and Katerina see.</span> Miky creates Launch and invites Acme. Acme's admin accepts once, and Acme adds Alice. In your Ship, Launch is a Folder like any other, marked "Shared with Acme", with Acme's people badged. Nothing about your apps changes: they still talk only to Estiva's relay.</p>
+<p><span class="lbl">What Alice and Acme get.</span> Launch is on Acme's relay too, marked "Shared by Estiva". Alice's apps talk only to Acme's relay. When she changes something, Acme's relay passes it to Estiva's, which accepts or refuses it, and both keep what was accepted. Acme's search, records and Claude see Launch like any of Acme's Folders. Acme decides which of its people are in, and if the partnership ends, Acme keeps a read-only copy, as an invited company does in Slack.</p>
+<p><span class="lbl">What an outside company must build.</span> Its apps: almost nothing; a shared Folder is a Folder. Its relay: one new exchange with other relays (pass its people's changes to the host, keep the host's accepted copy). Today's relay takes only events signed by the person connected to it, so events passed on by another relay need a new way in. It never needs another company's schemas, because the summaries are generic.</p>
+<p><span class="lbl">What it locks in.</span> A Folder has one home that runs it, as Nostr's groups do ("this relay, this id"), and a shared Folder's address names that home on both relays, so a link to Launch is the same in both companies. The exchange between relays becomes protocol.</p>
+<p><span class="lbl">What could go wrong.</span></p>
+<ul>
+<li><strong>The host's relay is down.</strong> Acme's people can read Launch, but their changes wait until it is back, because the host is the one that accepts. While both companies are on Estiva's deployment this cannot happen, since it is one relay.</li>
+<li><strong>The partnership ends badly.</strong> Acme keeps its read-only copy. Carrying on in it under Acme's own admins would be a separate Folder (Nostr calls it a fork). Not offered at first.</li>
+<li><strong>A second partner.</strong> Estiva can also invite Beta. Acme cannot pass Launch on to a third company; only the host invites companies, as in Slack and Mattermost.</li>
+<li><strong>An existing Estiva project.</strong> Listing it in Launch does not share it, because moving a file never changes who can read it (Accepted). To share work with Acme, it is created in Launch.</li>
+<li><strong>Today's relay signs every workspace with one key.</strong> A shared Folder needs each workspace to sign with its own, so Acme's apps can tell the host's word from Acme's. The relay's own design notes already list this as owed.</li>
+</ul>
+</div>
+
+<div class="opt">
+<h3>C · A copy on each company's relay, run by both together (Matrix's shape)</h3>
+<figure>
+<svg viewBox="0 0 720 300" role="img"><title>Option C: two equal copies, each accepting changes, kept in agreement by a merge rule both relays run</title>
+<rect class="b" x="16" y="16" width="250" height="130" rx="8"/>
+<text class="h" x="30" y="40">Estiva's relay</text>
+<rect class="ok" x="30" y="54" width="222" height="76" rx="5"/>
+<text x="42" y="78">Launch: equal copy</text>
+<text class="m" x="42" y="98">accepts its people's changes</text>
+<text class="m" x="42" y="116">either company's admins</text>
+<rect class="b" x="454" y="16" width="250" height="130" rx="8"/>
+<text class="h" x="468" y="40">Acme's relay</text>
+<rect class="ok" x="468" y="54" width="222" height="76" rx="5"/>
+<text x="480" y="78">Launch: equal copy</text>
+<text class="m" x="480" y="98">accepts its people's changes</text>
+<text class="m" x="480" y="116">either company's admins</text>
+<rect class="no" x="290" y="46" width="140" height="92" rx="6"/>
+<text class="h" x="302" y="70">merge rule</text>
+<text class="m" x="302" y="90">same answer on</text>
+<text class="m" x="302" y="106">both relays,</text>
+<text class="m" x="302" y="122">for good</text>
+<path class="a" d="M268 92 H288"/>
+<path class="a" d="M452 92 H432"/>
+<rect class="no" x="16" y="186" width="688" height="56" rx="6"/>
+<text x="30" y="208">Same minute: Acme's admin removes Katerina; Miky removes Acme's admin.</text>
+<text class="m" x="30" y="228">Both relays must agree which counts, even if one heard of them in the other order.</text>
+<text class="m" x="16" y="270">Miky and Katerina's apps: Estiva's relay only. Alice's apps: Acme's relay only.</text>
+<text class="m" x="16" y="288">Each relay signs its own Folder record, so Launch has two addresses.</text>
+</svg>
+<figcaption>Neither company is the host. Two copies stay equal only through a rule both run exactly.</figcaption>
+</figure>
+<p><span class="lbl">What you and Katerina see.</span> As in B, except that neither company is the host. Acme's admins can rename Launch, archive it, invite another company or take anyone out, Katerina included, and so can yours. If either company leaves, the other carries on with full rights.</p>
+<p><span class="lbl">What Alice and Acme get.</span> Equal standing, and Launch survives either relay going away, still fully run.</p>
+<p><span class="lbl">What an outside company must build.</span> As in B, plus a rule that settles disagreements between admins, run exactly as every other relay runs it.</p>
+<p><span class="lbl">What it locks in.</span> That rule, for good. Nostr has no such rule, and nobody has proposed one. Matrix's version is its hardest problem: work on "state resets", where people were re-added to rooms they had left and access went back to an earlier state, began in 2022 and was fixed as a security issue in August 2025. The fix gave each room's creator a power nobody can lower. Even Matrix ended up with something like a host.</p>
+<p><span class="lbl">What could go wrong.</span></p>
+<ul>
+<li>A partner's admin can take Miky out of a Folder Estiva started.</li>
+<li>For a moment the two relays disagree on who is in, and a message shows on one side only.</li>
+<li>Launch has two addresses, one per relay, so a link names one company's copy, unless Folders get a new kind of address that names no relay.</li>
+</ul>
+</div>
+
+<div class="opt">
+<h3>D · Your version: each app sends every event to both relays, and the relays never talk</h3>
+<figure>
+<svg viewBox="0 0 720 320" role="img"><title>Option D: Miky's and Alice's apps each send every event to both relays; the relays never talk, and each decides alone who may write</title>
+<text class="m" x="250" y="12">the relays never talk to each other</text>
+<rect class="b" x="16" y="20" width="280" height="116" rx="8"/>
+<text class="h" x="30" y="44">Estiva's relay</text>
+<rect class="ok" x="30" y="56" width="252" height="66" rx="5"/>
+<text x="42" y="78">Launch: Estiva's copy</text>
+<text class="m" x="42" y="96">takes what reaches it</text>
+<text class="m" x="42" y="112">decides alone who may write</text>
+<line class="e" x1="360" y1="28" x2="360" y2="128"/>
+<rect class="b" x="424" y="20" width="280" height="116" rx="8"/>
+<text class="h" x="438" y="44">Acme's relay</text>
+<rect class="ok" x="438" y="56" width="252" height="66" rx="5"/>
+<text x="450" y="78">Launch: Acme's copy</text>
+<text class="m" x="450" y="96">takes what reaches it</text>
+<text class="m" x="450" y="112">decides alone who may write</text>
+<rect class="w" x="16" y="196" width="210" height="56" rx="8"/>
+<text x="28" y="220">Miky, Katerina</text>
+<text class="m" x="28" y="238">apps sign in to both relays</text>
+<path class="a" d="M90 194 V138"/>
+<path class="ar" d="M180 194 L470 138"/>
+<rect class="w" x="494" y="196" width="210" height="56" rx="8"/>
+<text x="506" y="220">Alice at Acme</text>
+<text class="m" x="506" y="238">apps sign in to both relays</text>
+<path class="a" d="M630 194 V138"/>
+<path class="ar" d="M540 194 L250 138"/>
+<rect class="no" x="16" y="268" width="688" height="44" rx="6"/>
+<text x="30" y="295">Alice's laptop sleeps after the first send: Acme sees "done", Estiva "in progress", for good.</text>
+</svg>
+<figcaption>Each event ends up on both relays only if each app gets it to both. Two copies, each its own.</figcaption>
+</figure>
+<p><span class="lbl">What you and Katerina see.</span> When every send lands, the same as B. Your apps read Launch from Estiva's relay, and they also sign in to Acme's relay to write there.</p>
+<p><span class="lbl">What Alice and Acme get.</span> Acme's own copy, with its search, records and Claude, as in B. Each company's relay decides on its own who may write into its copy. Nothing settles a disagreement, because each copy is its own.</p>
+<p><span class="lbl">What an outside company must build.</span> Its relay: very little. It admits the partner's people as writers in the shared Folder, which today's relay can already check, since each person signs in to it themselves. Its apps: every app sends each event to every partner's relay, signs in to each, retries what failed, and copes when one relay says yes and the other no.</p>
+<p><span class="lbl">What it locks in.</span> Two copies of one Folder with the same id, each run on its own: Nostr calls that a fork, and here every writer keeps the two close. Each relay signs its own Folder record, so Launch has two addresses. The work of keeping the copies alike sits in every app, of every company. A repair between relays can be added later, which turns it into B or C.</p>
+<p><span class="lbl">What could go wrong.</span></p>
+<ul>
+<li><strong>A write that reaches one relay stays there.</strong> A retry more than about 15 minutes later is refused, because the relay won't take an event that far from its clock. The two companies see a different state for the same issue, and nobody can tell.</li>
+<li><strong>Alice leaves Acme.</strong> Estiva's relay keeps taking her writes until it is told, as in A.</li>
+<li><strong>Who's in differs for a moment, and the difference stays.</strong> If Acme removed Alice a second ago, one relay takes her message and the other refuses it, for good. Renames and archives work the same way.</li>
+<li><strong>No history.</strong> When Acme joins a three-month-old Folder, its relay has none of it unless someone copies it over.</li>
+<li><strong>A third partner.</strong> Every write goes to three relays, from every app.</li>
+</ul>
+</div>
+
+<h2>Trade-offs</h2>
+<div class="tw"><table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td><strong>A</strong> one copy, guests</td><td>A Folder lives on one relay, as in Nostr today; apps learn to talk to several relays</td><td>The same Folder; partners are guests; the partner's search and Claude miss it unless each app asks the host</td><td>Its apps connect and sign in to other companies' relays; it holds nothing and cannot export or keep its people's words</td><td>Easy: add copies later. Apps that talk to several relays stay.</td><td>Smallest in the relay; every app gets a second connection</td></tr>
+<tr class="rec-row"><td><strong>B</strong> on both, host says yes</td><td>Each event ends up on both relays, no merging; one home says yes or no; relays pass events on; apps stay on one relay</td><td>The same Folder in both companies; each company runs its own people; the partner keeps a read-only copy if it ends</td><td>Its relay speaks one exchange with other relays; it holds its copy and answers for its people</td><td>Hard once another company's relay speaks it; a copy given stays given</td><td>Medium, mostly in the relay; little in apps</td></tr>
+<tr><td><strong>C</strong> copies, both run it</td><td>Equal copies, kept equal by a merge rule every relay runs for good; two addresses</td><td>The same Folder; either company's admins can do anything, including taking the other's people out</td><td>Equal say; must run the merge rule exactly</td><td>Hardest: the rule stays for good, and rights given are hard to take back</td><td>B plus the merge rule: years of work in Matrix</td></tr>
+<tr><td><strong>D</strong> apps send to both</td><td>Two copies with one id, each run on its own (a Nostr fork); every app writes to every partner's relay; relays never talk; two addresses</td><td>The same Folder while every send lands; a missed one leaves the companies seeing different states, silently</td><td>Every app signs in to partners' relays, sends twice and retries; its relay admits partners' writers</td><td>Easy to add a repair between relays later (it becomes B); apps that write to several relays stay</td><td>Least in the relay; most in every app, of every company</td></tr>
+</table></div>
+<p class="small">Under every option: Estiva ID must serve more than one workspace, which it does not today.</p>
+
+<h2>How others do it</h2>
+<ul>
+<li><strong>Slack Connect.</strong> One company owns the channel. Only it can invite or remove companies, set who may post, and keep using the channel after a split; an invited company can leave. Each company's retention covers only its own people's messages, and "messages can only be edited or deleted by someone from the organization from where they were sent". Each company's messages live in its own data region, and so does its search of the channel. After a disconnect, which "can't be undone", an invited company with more than posting rights keeps "an archived read-only copy", and files from the other company stop opening. <em>For us:</em> B's shape, on one vendor's servers.</li>
+<li><strong>Microsoft Teams shared channels.</strong> The channel is the host's: its storage, and only its owner adds or removes people. The host's retention, compliance and sign-in rules apply, and "all message data in the channel regardless of who added the data is discoverable" by the host's compliance admin. Partners sign in with their own account, once both companies allow it. The partner gets "no audit logs" of its people's activity there, and "admins can't place an external participant on hold". <em>For us:</em> A.</li>
+<li><strong>Mattermost connected workspaces.</strong> "Content is synchronized across all participating Mattermost instances", and "a channel's permissions and access continues to be governed by each server separately". A company that received a channel cannot share it on. <em>For us:</em> close to B, between companies that each run their own server.</li>
+<li><strong>Matrix.</strong> Every server in a room holds a copy and no server owns it. Servers apply changes at once and settle disagreements by a shared rule. Faults in that rule re-added people and reset access, and took from 2022 to August 2025 to fix (CVE-2025-49090). Its newest room version gives creators a power that "cannot be changed after the room is created". A server deletes a message only if the sender has enough power or is on the same server as its author. <em>For us:</em> C, and its move toward a host.</li>
+<li><strong>XMPP group chat.</strong> A room lives at one service's address, and its owners and admins are roles there. Copying rooms between services is out of its scope. <em>For us:</em> A, in a protocol where servers talk to each other.</li>
+<li><strong>Nostr's groups (NIP-29).</strong> A group belongs to one relay. It can move to a relay that agrees to keep "enforcing the same rules and acknowledging the same admins", or fork into a separate group with other admins ("Forks are not bugs"). A copy elsewhere is only a backup. Nobody has proposed a group run jointly from two relays. <em>For us:</em> B is Nostr's move, kept live both ways; C is new ground; D is a fork that every writer keeps close.</li>
+<li><strong>Social Nostr (NIP-65).</strong> An author's app publishes to several relays, and readers fetch from the author's relays. Nothing keeps the relays alike, and gaps are normal. A group is still read on one relay, "knowing beforehand that you're querying from a group in a specific relay" (fiatjaf). <em>For us:</em> D's way of sending.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<div class="rec">
+<p><strong>B: each event ends up on both relays, no merging, and the company that started the Folder says yes or no.</strong></p>
+<ul>
+<li><strong>For the person.</strong> You, Katerina and Alice each see Launch in your own apps, on your own company's relay, as in Slack. Each company answers for its own people: when Acme takes Alice out, she is out at once, because she never had a way into Estiva's relay. Acme's search, records and Claude cover Launch like any of its Folders. When it ends, both keep what they hold.</li>
+<li><strong>For the protocol.</strong> It keeps the two rules you set on 26 Oct, one relay per company and apps on that relay only, and Nostr's rule that one relay runs a group. Talking across companies becomes the relays' job, where an outside builder never meets it. The generic summaries you accepted today mean the partner's relay needs no schemas.</li>
+<li><strong>Not A:</strong> the partner company holds nothing and cannot answer for its people, every app learns to talk to other companies' relays, and a leaver keeps their key in unless the host checks with their company every time.</li>
+<li><strong>Not C:</strong> joint running needs a merge rule that must be right for good, which nobody in Nostr has proposed and which Matrix spent years securing. Its main gain, no single home, is decentralization, which you put below interoperability on 26 Oct.</li>
+<li><strong>Not D:</strong> it is the most Nostr-native and the least work in the relay, and you are right that nothing needs merging. But with no single place that says yes and no relay that fills gaps, a send that lands on one side only leaves the two companies with different answers for the same issue, silently and for good. And every app of every company must sign in to partners' relays and get its retries right. B is D plus exactly those two things.</li>
+<li><strong>Cost, said plainly:</strong> B costs more than A or D in the relay and less in the apps. It is staged without changing the shape. First, both companies as two workspaces on Estiva's deployment, which also needs Estiva ID to serve two workspaces, owed under every option. The exchange between relays goes into the Specification from the start, so a company's own relay could speak it later. Whether a company may run its own relay stays a separate decision.</li>
+</ul>
+</div>
+
+<h2>Two calls it brings with it</h2>
+<h3>2 · Who lets whom in, and who takes them out</h3>
+<ul>
+<li><strong>a (recommended), as in Slack:</strong> anyone in Launch can invite a person from Acme, who gets in only once Acme allows it. Acme takes out its own people, and Estiva, as host, can take out anyone. Only the host invites another company. Either company can leave.</li>
+<li><strong>b, as in Teams:</strong> the host adds and removes every person directly, and Acme is told, not asked. Acme can take Alice out of Launch only by removing her from Acme altogether.</li>
+</ul>
+<p>Recommendation: <strong>a</strong>. Each company decides about its own people, and the host decides about its Folder.</p>
+
+<h3>3 · Whose rule a partner's message follows: who may delete it, and how long it stays</h3>
+<p class="small">Estiva has no retention rule yet, and every change to a file is kept for good (Accepted, 26 Oct). Today a Folder's owners and admins can delete anyone's message in it. This settles who decides once two companies share one.</p>
+<ul>
+<li><strong>a (recommended), as in Slack:</strong> the author's company decides, on both relays. Only Alice, and later Acme's admins, can edit or delete her message; Acme's retention, when it exists, applies to Acme's people's messages on both relays. The host can take Alice out, not delete her words.</li>
+<li><strong>b, as in Teams:</strong> the host decides everything in its Folder. Estiva's admins can delete Alice's message on both relays, and Estiva's retention covers everything.</li>
+<li><strong>c, each copy to itself:</strong> each company keeps or deletes what is on its own relay, and only an author's own delete travels. The two companies' records of one conversation drift apart.</li>
+</ul>
+<p>Recommendation: <strong>a</strong>. A company answers for what its people said, so it decides about their words. It matches Nostr, where only an author can delete their event, and Matrix, where the author's own server can.</p>
+
+<h2>Not decided here</h2>
+<ul>
+<li>Direct messages between companies (Slack Connect has them too).</li>
+<li>Whether a company may run its own relay: a new decision beside <em>Estiva hosts the only deployment</em>. B works on one deployment or several.</li>
+<li>Private Folders and <em>Folders are labels</em> (Proposed, parked): the shape holds whatever turns out to decide who can read a file.</li>
+<li>Carrying on in a partner's copy after a split (a fork): Later.</li>
+</ul>
+
+<h2>Checked</h2>
+<ul>
+<li><strong>Apps stay on one relay, and the workspace is that relay.</strong> SPEC §2: an app treats its configured relay as the workspace boundary and lets no one pick a relay. (estiva-docs <code>protocol/SPEC.md</code>, origin/main.)</li>
+<li><strong>A Folder's address names its relay's key</strong>, and an app keeps a Folder's record and listing only when that key signed them (SPEC §3.2). Who can read a file is the Folder it was filed in, and a listing grants nothing (§3.1).</li>
+<li><strong>One person, one key in every workspace.</strong> Each workspace admits a person on its own, and a leaver keeps their key (SPEC §4.1, §4.2).</li>
+<li><strong>Workspaces are walled off.</strong> The relay keeps channels and rosters per workspace, and a test checks that access never crosses them. It refuses an event not signed by the person connected, and refuses a Folder's record or listing from any client. It has no relay-to-relay sync. It refuses an event more than about 15 minutes from its clock (SPEC §5.1), so a change passed late between relays would need its own way in. (buzz <code>origin/nfb-demo-kinds</code>.)</li>
+<li><strong>One signing key for the whole deployment.</strong> The relay loads one key, and the live relay at estiva.estiva.app lists one key today. A per-workspace key has a column, but no code uses it, and the relay's design notes list it as owed.</li>
+<li><strong>Deleting today.</strong> No retention rule. Deletes are soft. A person deletes only their own events, and a workspace's or a Folder's owners and admins can remove anyone's message in it.</li>
+<li><strong>Estiva ID serves one workspace.</strong> It has one workspace setting, and a token names no workspace. A person in a second workspace would sign in with the same key. (estiva-id origin/main.)</li>
+<li><strong>Corrected premise.</strong> The handoff said that today two companies are two workspaces on our one deployment. The relay can hold several, but production has one and Estiva ID serves one. Not verified: the live list of workspaces on the box, which needs your passphrase for ssh. It does not change the call.</li>
+<li><strong>Records</strong> (estiva-docs origin/main): <em>Estiva hosts the only deployment</em>, <em>A Folder is a group the relay lists</em>, <em>Someone you remove loses access at once</em>, <em>A file's type is a shared meaning</em> (Accepted today), and <em>Moving a file never changes who can read it</em>, all Accepted; <em>Folders are labels</em>, Proposed. B and the two calls fit all of them. B needs one change to SPEC §3.2's wording: a partner's relay serves the host's signed record, so an app trusts the key the Folder's address names.</li>
+<li><strong>Read in full today:</strong> Slack's help pages on data management for Slack Connect, removing and disconnecting organizations, the Slack Connect guide, data residency, and the Slack Connect developer pages. Microsoft Learn on shared channels, B2B direct connect and Teams retention. Matrix's Project Hydra post (14 Aug 2025), room version 12, and the server-server API. Mattermost's connected workspaces page. XMPP's group chat specification (XEP-0045).</li>
+<li><strong>Not read again today:</strong> NIP-29, NIP-65 and the thread on reading groups across relays (#2443), quoted from the research note of 26 Oct.</li>
+<li><strong>Could not verify:</strong> Slack's legal hold in shared channels (not on the pages read); whether Teams applies a partner's own retention to its people's messages (not stated); whether a Matrix server that leaves a room keeps its copy (not stated; I believe it does).</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="small">NIP-29 group <code>kind:9007</code>; relay-signed <code>39000</code>–<code>39003</code> and the Folder listing <code>30890</code>; add <code>1852</code>; delete <code>kind:5</code> (author only) and <code>9005</code> (Folder or workspace admin). NIP-29 move and fork (mirror commit db5fe3d, 2026-07-22), nips#2443, NIP-77. SPEC §2, §3.1, §3.2, §4.1, §4.2, §5.1. buzz <code>crates/buzz-relay/src/main.rs</code> (one relay key), <code>schema/schema.sql</code> (channels and roster keyed per workspace; unused <code>communities.signing_key</code>), <code>handlers/ingest.rs</code> (signer check, ±900 s), <code>buzz-auth/src/access.rs</code> (<code>access_does_not_cross_communities</code>), <code>docs/multi-tenant-relay.md</code> (per-workspace key owed). estiva-id <code>src/config.ts</code> (one <code>COMMUNITY_HOST</code>), <code>src/domain/jwt.ts</code>. Records: <code>estiva-hosts-the-only-deployment</code>, <code>a-folder-is-a-group-the-relay-lists</code>, <code>someone-you-remove-loses-access-at-once</code>, <code>a-files-type-is-a-shared-meaning-any-app-extends</code>, <code>moving-a-file-never-changes-who-can-read-it</code>, <code>folders-are-labels</code>. Proposed record: <code>a-shared-folder-lives-on-both-relays-and-its-host-runs-it</code>. Brief before it: <code>files-properties-schemas.html</code>, "Two companies, one Folder". Research: <code>handoff/research/nostr-kinds-and-federation.md</code> §3.</p>
+</main>
+</body>
+</html>
