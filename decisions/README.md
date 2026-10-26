@@ -155,10 +155,20 @@ heading here.
 - [While editing a description, clicking a chip opens a menu, Open and its card, and a fresh link opens it by itself](clicking-a-chip-while-editing-opens-a-menu.md) — Superseded by the one above, 2026-10-14
 - [Another app's file is labelled by its type ("Topic", "Issue"), and the app's name only says where it opens](a-file-is-labelled-by-its-type-not-its-app.md) — Accepted, 2026-10-02
 
+## Files
+
+What a file is on the wire, for any app and any company: its type, its
+properties and its history.
+
+- [A file's type is a shared meaning with its own number, which any app extends with its own properties; what no other app shares yet is a record; and the relay keeps each file's current state, so its changes become its history](a-files-type-is-a-shared-meaning-any-app-extends.md) — Accepted, 2026-10-26
+- [Estiva curates the shared types in public, in a directory of types any builder starts from, and the optional App Store's review helps builders agree but forces no one](estiva-curates-shared-types-in-a-public-directory.md) — Accepted, 2026-10-26
+- [A type of file and its properties are defined by an app's listing or by a person's database, in one schema shape; app types come first, and people's databases come with the Notion-like app](an-apps-listing-or-a-persons-database-defines-a-type.md) — Accepted, 2026-10-26
+- [A file keeps every change and every text save for good, and has a History panel that shows them](a-file-keeps-every-change-for-good.md) — Accepted, 2026-10-26
+
 ## Documents
 
 - [A document is its own type of file, which any app may own; Leaf owns it first](a-document-is-its-own-type-of-file.md) — Accepted, 2026-10-14
-- [A file's text is stored as a readable snapshot, and the last save wins; live co-editing comes later, on top](a-files-text-is-a-readable-snapshot.md) — Accepted, 2026-10-13
+- [A file's text is stored as a readable snapshot, and the last save wins; live co-editing comes later, on top](a-files-text-is-a-readable-snapshot.md) — Accepted, 2026-10-13; its part "written as a change to the file's `description` field" superseded by "A file's type is a shared meaning", 2026-10-26
 - [A comment on a selection remembers the words where it starts and where it ends, and a comment on whole blocks remembers no words](a-comment-remembers-where-its-selection-starts-and-ends.md) — Accepted, 2026-10-15
 - [A comment points at a run of blocks, narrowed by the words quoted at its ends](a-comment-points-at-blocks-and-the-words-quoted.md) — Accepted, 2026-10-13
 - [A reply to a comment on part of a page remembers that part too, so its thread keeps its place when the comment is deleted](a-reply-on-a-page-keeps-its-threads-place.md) — Accepted, 2026-10-19
@@ -173,7 +183,7 @@ heading here.
 - [A file's id is unique across every file type and author, deleted files included](a-files-id-is-unique-across-every-kind.md) — Accepted, 2026-10-03
 - [Claude learns each app from the app's own manifest, and what it must know about the app goes in a guide there](claude-learns-each-app-from-its-manifest.md) — Accepted, 2026-10-13
 - [Which kinds an agent may sign is an admin's explicit grant per app, never derived from the apps](an-agent-signs-for-an-app-only-by-an-admin-grant.md) — Accepted, 2026-10-13
-- [An app may offer another app's "New …", and the app that owns that kind makes the file](another-apps-new-file-is-made-by-that-app.md) — Accepted, 2026-10-16
+- [An app may offer another app's "New …", and the app that owns that kind makes the file](another-apps-new-file-is-made-by-that-app.md) — Accepted, 2026-10-16; its part "the app that owns that kind makes the file" superseded by "A file's type is a shared meaning", 2026-10-26
 - [An app that owns a "New …" declares a create link in its manifest, and a launcher opens it](an-app-declares-a-create-link-for-its-new-action.md) — Accepted, 2026-10-19
 - [An agent says it is an agent in its own profile (NIP-24 `bot`), and Estiva ID publishes it](an-agent-says-it-is-a-bot-in-its-profile.md) — Accepted, 2026-09-24
 
@@ -185,7 +195,7 @@ heading here.
 
 ## Infrastructure
 
-- [Relay-canonical by default; an app database is an exception](0001-relay-canonical-by-default.md) — Accepted, 2026-08-22
+- [Relay-canonical by default; an app database is an exception](0001-relay-canonical-by-default.md) — Accepted, 2026-08-22; its part "share the wire format, never the interpretation", as far as it covers the fold, superseded by "A file's type is a shared meaning", 2026-10-26
 - [Foundation packages: one repo, public npm, built ESM, and a named owner for a break](0002-foundation-packages.md) — Accepted, 2026-08-26
 - [The block editor is shared: its translation lives in @estiva-app/protocol and its editor nodes in @estiva-app/ui/editor](the-block-editor-kit-lives-in-protocol-and-ui.md) — Accepted, 2026-09-30
 

@@ -5,6 +5,14 @@
 - Decided by: Miky, in the /land session of the Ship issue "A Folder and a chat message belong to no app" (2026-10-16), asked as a brief: who creates the Leaf document when someone picks New document on a Folder in Peek's launcher
 - Area: Apps & agents
 
+> Superseded in part, 2026-10-26: "the app that owns that kind makes the
+> file", and each app's allowed kinds in Estiva ID as a hand-kept list, are
+> replaced by
+> [a-files-type-is-a-shared-meaning-any-app-extends](a-files-type-is-a-shared-meaning-any-app-extends.md):
+> a shared type has no owning app, and any app the workspace has added whose
+> listing declares the type may make its files. The rest of this record
+> stands.
+
 ## Who it affects
 
 Miky and Katerina can pick New document on a Folder in Peek's launcher and end

@@ -7,6 +7,13 @@
 - **Applies to:** every app-layer product in the suite — Peek, Ship, Leaf, and any app after them
 - **Does not apply to:** Estiva ID (see §4)
 
+> Superseded in part, 2026-10-26: "share the wire format, never the
+> interpretation. How an app folds events into current truth is where apps are
+> *supposed* to differ" (§8), as far as it covers the fold, is replaced by
+> [a-files-type-is-a-shared-meaning-any-app-extends](a-files-type-is-a-shared-meaning-any-app-extends.md):
+> the generic fold, "the newest change per field wins", moves into the relay,
+> and what a field means stays each app's. The rest of this record stands.
+
 ---
 
 ## 1. Context
