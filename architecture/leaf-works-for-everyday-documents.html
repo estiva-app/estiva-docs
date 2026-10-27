@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Leaf everyday documents</title>
+<title>Leaf works for everyday documents</title>
 <style>
 :root {
   --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
@@ -87,7 +87,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <path class="a" d="M700,78 L712,78 L712,240 L704,240"/>
 <path class="a f" d="M185,178 L185,196 L260,196 L260,208"/>
 </svg>
-<figcaption>Leaf already reads members' names and pictures, and its manifest already says a document can be moved, archived and deleted, so Peek offers those for a Leaf document today. Leaf itself offers none of them.</figcaption>
+<figcaption>Leaf's manifest already declares that a document can be moved, archived and deleted, and Peek and Ship already do those things through the shared file rules. Leaf itself offers none of them.</figcaption>
 </figure>
 
 <h3>After</h3>
@@ -108,7 +108,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <text x="372" y="96" class="tag">M3</text><text x="408" y="92" class="m">move · archive</text><text x="408" y="106" class="m">delete · members</text>
 <path class="an" d="M700,78 L712,78 L712,260 L704,260"/>
 <text x="640" y="214" class="tag">M2</text><text x="560" y="228" class="m">uploads pictures</text>
-<text x="420" y="214" class="tag">M1 · M2</text><text x="420" y="228" class="m">fixes Ship picks up</text>
+<text x="476" y="206" class="tag">M1 · M2</text><text x="540" y="206" class="m">Ship picks it up</text>
 <path class="a f" d="M185,188 L185,216 L260,216 L260,228"/>
 </svg>
 <figcaption>M1 fixes Leaf's pictures and tree and the shared editor's "/". M2 turns on picture uploads (the editor and the save already handle them) and lets the comments column and the sidebar fold away. M3 has Leaf call the same shared file rules Peek uses. The dashed header prototype (M1) decides how M2's and M3's controls look before they are built. Who may move, archive or delete a file does not change, so no Access view is drawn.</figcaption>
@@ -118,11 +118,12 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <ul>
 <li>Leaf reads pictures but drops them in comments, the owner row and the account menu: leaf <code>src/comments/people.tsx</code>, <code>src/comments/CommentsColumn.tsx</code> (no <code>picture</code> on the author line), <code>src/App.tsx</code> (origin/main bf7d767, after PEEKM-6).</li>
 <li>Every document gets an expand arrow: leaf <code>src/folders/tree.tsx:57-66</code> with Leaf's manifest declaring children for documents.</li>
-<li>The shared editor has three heading levels and an upload hook; Leaf does not pass it, Ship does: ui <code>src/DocumentEditor.tsx:351</code>, leaf <code>src/document/LiveDocument.tsx:149</code>, ship <code>LiveDescription.tsx:158</code>.</li>
-<li>Leaf uploads go to the relay through <code>uploadBlob</code>: leaf <code>src/relay/blobs.ts:76</code>.</li>
+<li>The shared editor has three heading levels and an upload hook; Leaf does not pass it, Ship does: estiva-ui <code>src/DocumentEditor.tsx:351</code>, leaf <code>src/document/LiveDocument.tsx:149</code>, ship <code>src/components/editing/LiveDescription.tsx:158</code>.</li>
+<li>Leaf uploads (comment attachments) go to the relay through <code>uploadFile</code> → <code>uploadBlob</code>: leaf <code>src/relay/blobs.ts:76-80</code>.</li>
 <li>Leaf's manifest declares archive, delete and move for documents, and Leaf offers none: leaf <code>src/manifest.ts</code>. Peek does all three through interop's planners (<code>useFileControls</code>, <code>MoveDialog</code>); members via conversation's <code>membersOf</code>.</li>
-<li>The shared page shell has no collapse; Peek's collapse is its own: ui <code>AppShell.tsx</code>, peek <code>src/layouts/PeekFrame.tsx:37</code>.</li>
-<li>Not verified: the cause of the "/" mid-line bug, not reproduced yet.</li>
+<li>The shared page shell has no collapse; Peek's collapse is its own: estiva-ui <code>src/AppShell.tsx</code>, peek <code>src/layouts/PeekFrame.tsx:37</code>.</li>
+<li>Ship archives and lists members itself: ship <code>archiveProject</code> (<code>src/App.test.tsx</code> mocks it), <code>membersOf</code> in <code>src/api/useFeedJudges.ts:144</code>.</li>
+<li>Not verified: whether Peek already offers its move, archive and delete on a Leaf document (it has the controls; the Leaf case was not tried), and the cause of the "/" mid-line bug, not reproduced yet.</li>
 </ul>
 
 </main>
