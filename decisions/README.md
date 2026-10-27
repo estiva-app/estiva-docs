@@ -212,6 +212,7 @@ properties and its history.
 - [The Specification states what a relay and an identity service must do, and Estiva hosts the only deployment](estiva-hosts-the-only-deployment.md) — Accepted, 2026-10-02
 - [RFCs are no longer a kind of document: what is still true moves into the Specification and a builder's guide](rfcs-are-retired.md) — Accepted, 2026-10-02
 - [A copy of an app holds one workspace, which the sign-in picks and a company's own address picks for you; a sign-in is good for that one workspace, and a person has one name and picture in all of them](the-sign-in-picks-the-workspace.md) — Accepted, 2026-10-26
+- [A relay too busy to answer says it is busy, at every door; a host it does not know still gets the same answer as before](a-busy-relay-says-it-is-busy.md) — Accepted, 2026-10-27
 
 # Research
 
