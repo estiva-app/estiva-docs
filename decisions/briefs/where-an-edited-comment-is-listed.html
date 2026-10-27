@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Edited Comment Listing</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.q { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); padding: 12px 14px; border-radius: 6px; font-size: 1.05rem; }
+.rec { background: var(--ok-bg); border-left: 4px solid var(--ok); padding: 12px 14px; border-radius: 6px; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+svg { width: 100%; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .chip { fill: var(--chip); stroke: var(--accent); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .ad { stroke: var(--muted); fill: none; stroke-width: 1.2; stroke-dasharray: 4 3; marker-end: url(#arr); }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 640px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+.rec-row td { background: var(--ok-bg); }
+</style>
+</head>
+<body>
+<main>
+<h1>Where an edited comment is listed</h1>
+<p class="sub">A brief for Miky · 27 Oct 2026 · from "A link in a comment reads the same in every app" (Every app treats @, a link and an archived file the same) · its Done when asks for it; the protocol says the opposite today</p>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+</defs></svg>
+
+<p class="q"><strong>When somebody edits a comment to add or remove a link to a file, does that file's "Mentioned in" follow the edit, in every app?</strong></p>
+
+<h2>Today</h2>
+<p>A comment that links a file is listed under that file's Mentioned in, through a pointer the comment carries from the moment it is sent. An edit changes the words, the files and the cards, but by our protocol (2 Oct) it carries no pointer: what a comment points at stays as first sent. That was decided when an edit was "a correction"; on 26 Oct you decided an edit <em>is</em> the whole new message, for its files.</p>
+<p>So today: add a link by editing and the file never lists the comment. Remove one by editing and <strong>Peek</strong> drops the row (Katerina's report, 8 Oct, fixed only for chips) while <strong>Ship</strong> keeps it. Leaf has no Mentioned in.</p>
+
+<h2>Why it reaches beyond this ticket</h2>
+<ul>
+<li>It decides what an edit says on the wire for every app, the agent, and any outside company: does the edit say what the message points at now, or only its words and files?</li>
+<li>It is the same question for a person named by an edit (are they told?). That one is already decided: <strong>no</strong>, an edit never notifies (the urgent-mention record). Both options here leave it so.</li>
+<li><strong>Two-way door, with a gap.</strong> Readers can start or stop reading edits at any time. But under A, links added by edits in the meantime are never listed later: nothing on the relay points from them. Under B, going back to A just means readers ignore what edits carry.</li>
+</ul>
+
+<h2>The picture</h2>
+<figure>
+<svg viewBox="0 0 720 170" role="img"><title>Today: the pointer is fixed at send</title>
+<text x="10" y="18" class="h">Today</text>
+<rect x="10" y="30" width="170" height="56" rx="6" class="b"/><text x="22" y="52" class="h">Comment</text><text x="22" y="72" class="m">links issue X → points at X</text>
+<rect x="210" y="30" width="190" height="56" rx="6" class="w"/><text x="222" y="52" class="h">Edit: + link to Y, − X</text><text x="222" y="72" class="m">points at nothing</text>
+<rect x="430" y="22" width="280" height="34" rx="6" class="w" style="stroke: var(--warn)"/><text x="442" y="44">Y's Mentioned in: <tspan class="m">not listed</tspan></text>
+<rect x="430" y="64" width="280" height="34" rx="6" class="w" style="stroke: var(--warn)"/><text x="442" y="86">X's: <tspan class="m">dropped in Peek, kept in Ship</tspan></text>
+<path d="M180 58 L208 58" class="a"/><path d="M400 50 L428 40" class="ad"/><path d="M400 66 L428 80" class="ad"/>
+<text x="10" y="128" class="m">The index says what was first sent; the words say what is there now.</text>
+<text x="10" y="148" class="m">Each app papers over the gap its own way.</text>
+</svg>
+</figure>
+<figure>
+<svg viewBox="0 0 720 150" role="img"><title>Option A: listed by what it first linked, minus what an edit took out</title>
+<text x="10" y="18" class="h">A · Do less: listed by what it first linked, while its words still link it</text>
+<rect x="10" y="30" width="170" height="56" rx="6" class="b"/><text x="22" y="52" class="h">Comment</text><text x="22" y="72" class="m">points at X</text>
+<rect x="210" y="30" width="190" height="56" rx="6" class="w"/><text x="222" y="52" class="h">Edit: + Y, − X</text><text x="222" y="72" class="m">points at nothing</text>
+<rect x="430" y="22" width="280" height="34" rx="6" class="w" style="stroke: var(--warn)"/><text x="442" y="44">Y: <tspan class="m">never listed</tspan></text>
+<rect x="430" y="64" width="280" height="34" rx="6" class="ok"/><text x="442" y="86">X: <tspan class="m">dropped, in Peek and Ship</tspan></text>
+<path d="M180 58 L208 58" class="a"/><path d="M400 50 L428 40" class="ad"/><path d="M400 66 L428 80" class="ad"/>
+<text x="10" y="128" class="m">Every reader checks the latest words before listing. Nothing new on the wire.</text>
+</svg>
+</figure>
+<figure>
+<svg viewBox="0 0 720 150" role="img"><title>Option B: an edit says what the message points at now</title>
+<text x="10" y="18" class="h">B · An edit says what the message links now, as it does for its files</text>
+<rect x="10" y="30" width="170" height="56" rx="6" class="b"/><text x="22" y="52" class="h">Comment</text><text x="22" y="72" class="m">points at X</text>
+<rect x="210" y="30" width="190" height="56" rx="6" class="w"/><text x="222" y="52" class="h">Edit: + Y, − X</text><text x="222" y="72" class="m">points at Y (the whole set)</text>
+<rect x="430" y="22" width="280" height="34" rx="6" class="ok"/><text x="442" y="44">Y: <tspan class="m">listed (found through the edit)</tspan></text>
+<rect x="430" y="64" width="280" height="34" rx="6" class="ok"/><text x="442" y="86">X: <tspan class="m">dropped, in Peek and Ship</tspan></text>
+<path d="M180 58 L208 58" class="a"/><path d="M400 50 L428 40" class="a"/><path d="M400 66 L428 80" class="ad"/>
+<text x="10" y="128" class="m">The pointers find; the latest words decide. The same rule cards follow already.</text>
+</svg>
+</figure>
+
+<h2>Options</h2>
+<h3>A · Do less: a comment is listed by what it first linked, while its words still link it</h3>
+<ul>
+<li><strong>You see:</strong> you paste the wrong issue, edit it to the right one. The wrong issue stops listing you (good, in both apps now). The right one never lists you: to get there you post a new comment.</li>
+<li><strong>Outside company:</strong> nothing new to write; every reader must check the latest words before listing.</li>
+<li><strong>What could go wrong:</strong> the list and the text disagree in the direction nobody notices. A link fixed by an edit is invisible from the file it names, for good. The agent's own comments are edited too.</li>
+<li><strong>Done when changes:</strong> "edits each comment to add a second link: its card appears" (the card half already works).</li>
+</ul>
+<h3>B · An edit says what the message links now, the whole set, as it does for its files</h3>
+<ul>
+<li><strong>You see:</strong> fix the link by editing and the right issue lists your comment, the wrong one stops. Same in Peek and Ship; agent edits too.</li>
+<li><strong>Outside company:</strong> writes on an edit the same pointers it writes on a send, and reads edits as well as messages when it lists mentions. Buzz's own desktop already reads pointers off edits, so it is the shape a Buzz-family app expects.</li>
+<li><strong>What could go wrong:</strong> a reader that does not know the rule ignores edits and lists what was first sent (today's behaviour, no worse). A deleted comment leaves its edits behind; a reader must list nothing for an edit whose comment it cannot read. Edits written before this stay pointer-less: a link added by an old edit is not listed. People are untouched: an edit still never notifies anyone.</li>
+</ul>
+
+<h2>Trade-offs</h2>
+<div class="tw"><table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td><strong>A</strong></td><td>Pointers fixed at send; readers confirm against the latest words</td><td>A removed link unlists; an added one never lists</td><td>No new writing; one reading rule</td><td>Edits made meanwhile can never be listed later</td><td>Small: one shared reader</td></tr>
+<tr class="rec-row"><td><strong>B</strong></td><td>An edit carries the whole set of pointers, like its files; readers find by pointer, confirm by words</td><td>The list follows the words, both ways, in every app</td><td>Same pointers on send and edit; reads edits too</td><td>Cheap: readers stop reading edits</td><td>Medium: SPEC in four places, edit writers in 3 apps + the agent's builder, one shared reader</td></tr>
+</table></div>
+
+<h2>How others do it</h2>
+<ul>
+<li><strong>Slack, Linear, Notion:</strong> a backlink follows the current text; edit the link out and the backlink goes, edit it in and it appears.</li>
+<li><strong>Matrix:</strong> an edit carries the whole new content, and clients read mentions from it (they are told not to re-notify).</li>
+<li><strong>Buzz (our relay's upstream):</strong> its desktop merges pointers from an edit into the message; files come wholly from the edit, the rule you accepted on 26 Oct.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<p class="rec"><strong>B.</strong> "An edit is the whole new message" then holds for what it links as well as for its words and files, so the list under a file says what anyone reading the comment sees. It is what people already expect from every tool they use, and it is the shape an outside company on Buzz already reads. A leaves a permanent class of comments that point somewhere nobody can find from there.</p>
+
+<h2>Checked</h2>
+<ul>
+<li>Our protocol says an edit carries no pointer (SPEC §6.8, "the indexes a body earns… stay as first published", 2 Oct, CON-25). No decision record states it except for people: <em>an-urgent-mention-is-a-tag-beside-the-mention</em> says an edit carries no person or urgent tag, and B keeps that.</li>
+<li>Peek lists mentions by pointer on comments and chat messages only, and drops a row an edit took out, for chips only (<code>peek-app src/nostr/fileMentions.ts:90, :209</code>, PEE-48). Ship reads pointers and chips from the first version only (<code>estiva-ship src/nostr/fold.ts:416</code>).</li>
+<li>The relay has no rule on pointers in an edit and lets only people who can read the comment read its edits (buzz <code>handlers/ingest.rs</code>, <code>req.rs</code>), so B reveals nothing new.</li>
+<li>Buzz desktop reads pointers off edits (<code>desktop/src/features/messages/lib/applyEditTagOverlay.mjs</code>).</li>
+<li><strong>Not checked:</strong> how many edits on production add or remove a link today.</li>
+</ul>
+
+<h2>For the record</h2>
+<p>B: <code>40003</code> tags become <code>h, e, ts, [imeta…], [embed…], [a…], [q…]</code>, <code>a</code>/<code>q</code> = every value the new body names (protocol <code>valuesIn</code>) minus the comment's own address and its parent event; never <code>p</code>/<code>urgent</code>/<code>part</code>. Readers query <code>{kinds:[1111,9,40003], '#a':[X]}</code>, map an edit to its target by <code>e</code>, list while the folded body names X. SPEC §6.8, §6.4 (strengths table, "attaches permanently"), §13.1 (the <code>q</code> bullet), §13.6.2, KINDS.md 40003 row. A: §6.4 and a §6.8 note. Ticket PEEKM-7; peek-app, estiva-ship, leaf, estiva-foundation (protocol, interop), estiva-agent.</p>
+</main>
+</body>
+</html>
