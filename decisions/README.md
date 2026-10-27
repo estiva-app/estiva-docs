@@ -115,6 +115,7 @@ heading here.
 - [Who can read a file is decided on the file, and Folders are labels](folders-are-labels.md) — Proposed, 2026-10-14; parked until the navigation rework
 - [A comment, or a file created under another file, is stored with it, so only that file's readers can read it](what-belongs-to-a-file-is-stored-with-it.md) — Accepted, 2026-10-19
 - [A Folder two companies share is kept on both companies' relays, and the company that started it runs it; each company decides about its own people and their words](a-shared-folder-lives-on-both-relays-and-its-host-runs-it.md) — Accepted, 2026-10-26
+- [Only a group's owners and admins make it a Folder; DMs and workflow channels never become one](only-a-groups-owners-and-admins-make-it-a-folder.md) — Accepted, 2026-10-27
 
 ## Read state
 
@@ -142,6 +143,7 @@ heading here.
 - [A comment is the same object in every app; suggestions, review verdicts and an agent's assertions are objects of their own beside it](a-comment-is-the-same-object-in-every-app.md) — Proposed, 2026-10-16
 - [An edit is the whole new message, its words and its files, so an edit with no files takes every file off](an-edit-is-the-whole-new-message.md) — Accepted, 2026-10-26
 - [An edit says what the message links now, so a file lists a comment while its latest words link it](an-edit-says-what-the-message-links-now.md) — Accepted, 2026-10-27
+- [Nobody deletes a whole DM; each person deletes only their own messages](nobody-deletes-a-whole-dm.md) — Accepted, 2026-10-27
 
 ## Links & widgets
 
@@ -189,6 +191,8 @@ properties and its history.
 - [An app may offer another app's "New …", and the app that owns that kind makes the file](another-apps-new-file-is-made-by-that-app.md) — Accepted, 2026-10-16; its part "the app that owns that kind makes the file" superseded by "A file's type is a shared meaning", 2026-10-26
 - [An app that owns a "New …" declares a create link in its manifest, and a launcher opens it](an-app-declares-a-create-link-for-its-new-action.md) — Accepted, 2026-10-19
 - [An agent says it is an agent in its own profile (NIP-24 `bot`), and Estiva ID publishes it](an-agent-says-it-is-a-bot-in-its-profile.md) — Accepted, 2026-09-24
+- [Removing an agent from a Folder keeps it out, even while the person it works for is in](removing-an-agent-from-a-folder-keeps-it-out.md) — Accepted, 2026-10-27
+- [The person an agent works for can end that at once, and the relay cuts the agent off](an-agents-owner-ends-its-access-at-once.md) — Accepted, 2026-10-27
 
 ## Devices & sessions
 
