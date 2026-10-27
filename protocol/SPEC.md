@@ -720,9 +720,24 @@ readable without decoding the body, and it is what `referenceTagsFor` in
 before it that names a file by `naddr` carries no `a` — the fourth row, read
 from the body.
 
-Message content is immutable, so **an accidental mention attaches permanently**
-and cannot be withdrawn. That is acceptable for the secondary section and would
-not be for the primary one — a second reason the two must not merge.
+**A file lists a message as a mention while the message's latest words link
+it** (amended 2026-10-27, PEEKM-7; record
+[an-edit-says-what-the-message-links-now](../decisions/an-edit-says-what-the-message-links-now.md)).
+An edit (§6.8) carries the `a` and `q` its new words earn, so a reader finds
+the candidates by `#a` on `kind:1111`, `kind:9` **and `kind:40003`**, reads an
+edit as standing for the message it edits (`editTargetOf`), and lists a message
+only while its folded body names the file, by a `nostr:` reference or an app
+link that resolves to it (§7.7). A link added by an edit lists the message; one
+an edit removed unlists it. A message the reader cannot read lists nothing,
+whatever its edits point at. A reader that does not read edits lists what was
+first sent, as before. `readMentionedIn` in `@estiva-app/interop` is this rule.
+*Until 2026-10-27* an edit carried no index and a mention, once sent, attached
+permanently.
+
+The first version of a message still cannot be withdrawn, so **an accidental
+mention attaches until somebody edits it out**. That is acceptable for the
+secondary section and would not be for the primary one — a second reason the
+two must not merge.
 
 An app MAY offer a mention as a *suggestion* to associate two files. It MUST NOT
 create the association automatically: mentions arrive retroactively and by
@@ -1293,7 +1308,7 @@ is what the relay validates against, plus `ts`:
 
 | Kind | Tag order | Content |
 | --- | --- | --- |
-| `40003` | `h`, `e`, `ts`, `[imeta…]`, `[embed…]` | the **new body**, in the target's own format |
+| `40003` | `h`, `e`, `ts`, `[imeta…]`, `[embed…]`, `[a…]`, `[q…]` | the **new body**, in the target's own format |
 
 - **`h`** is REQUIRED. `40003` is in the relay's `requires_h_channel_scope`, so
   an edit without one is refused with `accepted: false`, and the relay refuses
@@ -1331,15 +1346,26 @@ arrive later, and a dropped edit is not recovered by a re-read.
 **An edit changes the body, the attachments and the cards, and nothing else.**
 It does not change the target's kind, channel, place in a thread or author. An
 edit that appears to change any of those is folded for its content and its
-`imeta` and `embed` tags, and ignored for the rest. Cards (`embed`, §13.6.2)
-fold exactly as attachments do below, and are matched against the folded body,
-not against an `a` or `q`: an edit carries none (amended 2026-10-13, OPT-16).
+`imeta`, `embed`, `a` and `q` tags, and ignored for the rest. Cards (`embed`,
+§13.6.2) fold exactly as attachments do below, and are matched against the
+folded body, not against an `a` or `q` (amended 2026-10-13, OPT-16).
 
-The indexes a body earns — `p`, `urgent`, `a`, `q` and `part` (§6.4, §13.1,
-§13.6.1) — stay as first published (added 2026-10-02, CON-25). An edit carries
-none of them, so a person or a message named only in an edit has no tag, and one
-an edit removed keeps it. A reader that needs the edited answer reads the folded
-body. A `part` is drawn only while the folded body still names its address.
+**An edit says what the message links now** (amended 2026-10-27, PEEKM-7;
+record [an-edit-says-what-the-message-links-now](../decisions/an-edit-says-what-the-message-links-now.md)).
+An edit carries the **whole set of `a` and `q` its new words earn**, by the
+rule a send uses (§13.1): an `a` per address and a `q` per message the body
+names, by a `nostr:` reference or an app link that resolves (§7.7), none for
+text in code, minus the comment's own file (its `A`) and the message it replies
+to (its `e`). A words-only edit that keeps every link still carries them all.
+The candidates for a file's Mentioned in are read by these, and confirmed
+against the folded body (§6.4).
+
+The people a body earns — `p` and `urgent` (§13.1) — and its `part` pointers
+(§13.6.1) stay as first published (CON-25, 2026-10-02). An edit carries none of
+them and never notifies anyone: a person named only in an edit has no tag, and
+one an edit removed keeps it. A `part` is drawn only while the folded body still
+names its address. *Until 2026-10-27* an edit carried no `a` or `q` either, and
+edits written before then carry none: a link an old edit added is not listed.
 
 **Attachments fold separately from the body** (amended 2026-09-23). CON-5 found
 62 attachments whose bytes existed only in Convex. The only event that can
@@ -3362,7 +3388,14 @@ object's `a`, or a message's `q` (§6.4). A reader draws it as the reference's
 chip. A URL that names nothing by §7.7 — an identity two authors hold included,
 as §13.6.2 resolves one — earns no tag and stays a link, and a link
 to one block earns its `part` (§13.6.1). A writer's editor MAY draw the URL as
-its chip while it is written; what it sends is the URL.
+its chip while it is written; what it sends is the URL. *Clarified 2026-10-27
+(PEEKM-7):* a URL earns its tag exactly where a reader draws it as the
+reference (`valuesIn`, §13.6.2): a URL in a code span or code block earns
+nothing, a link on words `[A](B)` earns B's tag and never A's, and an `http://`
+URL is matched against the `https://` shapes apps declare like any other host,
+so it names nothing and stays a link. Peek, Ship, Leaf and the agent take the
+tags from one reader, `linkReader` in `@estiva-app/interop`; Ship tagged a URL
+in code before it, and Leaf tagged no URL at all.
 
 #### An urgent mention — decided 2026-10-02 (CON-17)
 
@@ -3430,9 +3463,9 @@ tags:    ["h", <folder>], ["q", <event id>]
   (NIP-C7) read a `kind:9`'s `q` as quoting that message, which is close to how
   Estiva apps draw it. An incoming NIP-C7 reply, which carries a `q` and no `e`,
   is read as a reference.
-- An edit carries no `q` (§6.8). If the referenced message is deleted, the
-  `q` points at nothing and the reader draws the reference from the body,
-  never blank.
+- An edit carries the `q` set its new words earn, by this rule (§6.8, amended
+  2026-10-27). If the referenced message is deleted, the `q` points at nothing
+  and the reader draws the reference from the body, never blank.
 
 A link's `href` MUST use the `http`, `https`, `mailto` or `nostr` scheme. A
 reader MUST refuse any other scheme and render the link as text.
@@ -4208,8 +4241,8 @@ walk a manifest chain that ends in `card` without changing the wire. A card
 under a message follows the author's layout, not the manifest's `widget`.
 
 - **The body names it.** A writer MUST NOT add an `embed` for a value the body
-  does not name (an edit's carried set may hold one, which draws nothing), and writes the matching `a`/`q` on the original message only:
-  an edit carries none (§6.8). A reader draws a card for a value only while the
+  does not name (an edit's carried set may hold one, which draws nothing), and writes the matching `a`/`q`
+  on the message and on every edit, for what its words name then (§6.8, amended 2026-10-27). A reader draws a card for a value only while the
   folded body names it, by a `nostr:` reference or by an app URL that resolves
   to it (§7.7), written bare or as a link's target, and checks nothing else. A
   link on words names its target and keeps its words; a URL written in a
@@ -4285,6 +4318,13 @@ link — as does one whose object has not resolved yet, or resolves as one the
 reader cannot read, so a reader never draws an empty chip in place of what was
 written. `linksAsReferences` in `@estiva-app/protocol` applies this rule.
 A reader that cannot resolve links draws the URL.
+
+A chip or card written as a URL opens that URL as written, in the app whose
+host it names, only when it is `https` and its host is the reader's own, the
+one the file opens on, or one a published manifest declares (§7.7); otherwise
+it opens the file as the reader would open its reference. The same rule in
+every app (clarified 2026-10-27, PEEKM-7; Leaf's rule since WBM-11, now
+`linkReader().opener` in `@estiva-app/interop`).
 
 A link to one block (§7.7) is its object's chip in a sentence too, and the
 chip opens the URL as written, so a click lands on the block. Alone on its
