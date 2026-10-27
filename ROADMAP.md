@@ -61,7 +61,7 @@ The live projects after the sweep of 2026-10-19. The sweep of 2026-10-08 applied
 | **Workspace apps** (`39395f98`) | a manifest or lookalike file from a key the workspace did not add changes nothing a member sees | the roster's `app` role, with Ship and Peek added |
 | **Composition 2: share a run of blocks** (`f66ec8f6`) | share a run of blocks in a description (a heading, its paragraph and its bullets) as one live card in a conversation, chosen by selecting them | `93fcdbe9` (select whole blocks; its ref COM-1 repeats the finished Composition's) |
 | **UI Guardrails** (`24684889`) | *no Goal line yet*; its done-when closed 2026-09-30 (UIG-26) | seven next-phase tickets; whether to close it is Katerina's call |
-| **Peek / Ship: Feedback & Bugs** | *intake, no Goal*: a blocker is fixed from there, the rest is a Later line | `97fb9174` (items leave the Screener between sessions), SHI-49/SHI-50 (mentions written in Ship). *Agent: Feedback & Improvements* is the same kind of intake and has nothing open |
+| **Peek / Ship: Feedback & Bugs** | *intake, no Goal*: a blocker is fixed from there, the rest is a Later line | `97fb9174` (items leave the Screener between sessions). *Agent: Feedback & Improvements* is the same kind of intake and has nothing open |
 
 Parked, with their ideas in their descriptions: *Private folders / topic / files* (`d6fe01c4`, no open issues), *Transforming file types*, *Navigation & structure in Nostr for Business* (`0527cd72`, no issues yet), *Huddles* and *Highlights on the relay* (archived). Peek's highlights stay an experiment and must not be published to `kind:9802` while the model is unsettled: 9802 is append-only.
 
