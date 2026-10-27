@@ -139,6 +139,7 @@ export const isInternal = (file) => INTERNAL.has(file) || INTERNAL_DIRS.some((di
  * page, from architecture/README.md).
  */
 export const DRAWINGS = [
+  'architecture/leaf-works-for-everyday-documents.html',
   'architecture/estiva.html',
   'architecture/template.html',
 ]
