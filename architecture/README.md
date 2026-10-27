@@ -16,4 +16,7 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
-*None yet.*
+- [Leaf works for everyday documents](leaf-works-for-everyday-documents.html) —
+  Shaped, 2026-10-27. Leaf gets pictures, a fixed tree, and the move, archive,
+  delete and members Peek already has. Read at
+  `https://docs.estiva.app/architecture/leaf-works-for-everyday-documents.html`.

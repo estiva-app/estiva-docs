@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leaf everyday documents</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
+.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
+.legend .lf::before { opacity: .45; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+/* Below 560px a diagram scrolls inside its figure instead of shrinking its text. */
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .f { opacity: .45; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+  </defs>
+</svg>
+<main>
+
+<h1>Leaf works for everyday documents</h1>
+<p class="sub"><span class="state">Shaped, 2026-10-27</span> · <a href="https://ship.estiva.app/project/leaf-works-for-everyday-documents-bb74525f-33dd-4d8b-988c-564f3772903a">Ship project</a> · Goal: Miky and Katerina write and keep real documents in Leaf without hitting a bug or missing something Peek and Ship already do.</p>
+
+<p>Nothing new goes on the wire. Leaf starts using what Peek and Ship already use: the shared rules for moving, archiving and deleting a file and for who is in it, the relay's file storage for pictures, and a page shell that can fold away. The shared editor and page shell get fixes that Ship picks up too.</p>
+
+<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lq">waits on the prototype</span><span class="lf">untouched, for orientation</span></div>
+
+<h2>Map</h2>
+
+<h3>Today</h3>
+<figure>
+<svg viewBox="0 0 720 280" role="img">
+<title>Today: Leaf writes a document's text and comments to the relay using the shared editor; Peek and Ship already move, archive, delete and show members through the shared file rules; Ship already uploads pictures</title>
+<g class="f"><rect class="b" x="20" y="20" width="176" height="58" rx="8"/><text x="36" y="44" class="h">Peek</text><text x="36" y="62" class="m">moves, archives, members</text></g>
+<g class="f"><rect class="b" x="200" y="20" width="190" height="58" rx="8"/><text x="216" y="44" class="h">Ship</text><text x="216" y="62" class="m">uploads, archives, members</text></g>
+<rect class="b" x="460" y="20" width="240" height="58" rx="8"/><text x="476" y="44" class="h">Leaf</text><text x="476" y="62" class="m">writes text and comments only</text>
+<rect class="b" x="460" y="120" width="240" height="58" rx="8"/><text x="476" y="144" class="h">Shared editor and page shell</text><text x="476" y="162" class="m">@estiva-app/ui</text>
+<rect class="b" x="20" y="120" width="330" height="58" rx="8"/><text x="36" y="144" class="h">Shared file rules</text><text x="36" y="162" class="m">move, archive, delete, members · interop, conversation</text>
+<rect class="b" x="200" y="212" width="500" height="54" rx="8"/><text x="216" y="236" class="h">Relay</text><text x="216" y="254" class="m">stores every event and every uploaded file · checks who may write</text>
+<path class="a" d="M580,78 L580,116"/>
+<path class="a f" d="M95,78 L95,116"/>
+<path class="a f" d="M275,78 L275,116"/>
+<path class="a" d="M700,78 L712,78 L712,240 L704,240"/>
+<path class="a f" d="M185,178 L185,196 L260,196 L260,208"/>
+</svg>
+<figcaption>Leaf already reads members' names and pictures, and its manifest already says a document can be moved, archived and deleted, so Peek offers those for a Leaf document today. Leaf itself offers none of them.</figcaption>
+</figure>
+
+<h3>After</h3>
+<figure>
+<svg viewBox="0 0 720 300" role="img">
+<title>After: Leaf draws pictures and fixes its tree (M1); uploads pictures and folds its panels away (M2); moves, archives, deletes and shows members through the shared file rules (M3); the shared editor and shell are fixed for Ship too</title>
+<g class="f"><rect class="b" x="20" y="20" width="176" height="58" rx="8"/><text x="36" y="44" class="h">Peek</text><text x="36" y="62" class="m">moves, archives, members</text></g>
+<g class="f"><rect class="b" x="200" y="20" width="190" height="58" rx="8"/><text x="216" y="44" class="h">Ship</text><text x="216" y="62" class="m">editor fix on its next bump</text></g>
+<rect class="ok" x="460" y="20" width="240" height="58" rx="8"/><text x="476" y="44" class="h">Leaf</text><text x="476" y="62" class="m">pictures, tree, menu, members</text>
+<rect class="ok" x="460" y="130" width="240" height="58" rx="8"/><text x="476" y="154" class="h">Shared editor and page shell</text><text x="476" y="172" class="m">"/" fix · panels fold away</text>
+<rect class="b" x="20" y="130" width="330" height="58" rx="8"/><text x="36" y="154" class="h">Shared file rules</text><text x="36" y="172" class="m">move, archive, delete, members · interop, conversation</text>
+<rect class="b" x="200" y="232" width="500" height="54" rx="8"/><text x="216" y="256" class="h">Relay</text><text x="216" y="274" class="m">stores every event and every uploaded file · checks who may write</text>
+<rect class="q" x="560" y="96" width="130" height="26" rx="6"/><text x="570" y="114" class="m">header prototype</text>
+<path class="a" d="M520,78 L520,126"/>
+<path class="a f" d="M95,78 L95,126"/>
+<path class="a f" d="M275,78 L275,126"/>
+<path class="an" d="M460,50 L400,50 L400,110 L340,110 L340,126"/>
+<text x="372" y="96" class="tag">M3</text><text x="408" y="92" class="m">move · archive</text><text x="408" y="106" class="m">delete · members</text>
+<path class="an" d="M700,78 L712,78 L712,260 L704,260"/>
+<text x="640" y="214" class="tag">M2</text><text x="560" y="228" class="m">uploads pictures</text>
+<text x="420" y="214" class="tag">M1 · M2</text><text x="420" y="228" class="m">fixes Ship picks up</text>
+<path class="a f" d="M185,188 L185,216 L260,216 L260,228"/>
+</svg>
+<figcaption>M1 fixes Leaf's pictures and tree and the shared editor's "/". M2 turns on picture uploads (the editor and the save already handle them) and lets the comments column and the sidebar fold away. M3 has Leaf call the same shared file rules Peek uses. The dashed header prototype (M1) decides how M2's and M3's controls look before they are built. Who may move, archive or delete a file does not change, so no Access view is drawn.</figcaption>
+</figure>
+
+<h2>Checked</h2>
+<ul>
+<li>Leaf reads pictures but drops them in comments, the owner row and the account menu: leaf <code>src/comments/people.tsx</code>, <code>src/comments/CommentsColumn.tsx</code> (no <code>picture</code> on the author line), <code>src/App.tsx</code> (origin/main bf7d767, after PEEKM-6).</li>
+<li>Every document gets an expand arrow: leaf <code>src/folders/tree.tsx:57-66</code> with Leaf's manifest declaring children for documents.</li>
+<li>The shared editor has three heading levels and an upload hook; Leaf does not pass it, Ship does: ui <code>src/DocumentEditor.tsx:351</code>, leaf <code>src/document/LiveDocument.tsx:149</code>, ship <code>LiveDescription.tsx:158</code>.</li>
+<li>Leaf uploads go to the relay through <code>uploadBlob</code>: leaf <code>src/relay/blobs.ts:76</code>.</li>
+<li>Leaf's manifest declares archive, delete and move for documents, and Leaf offers none: leaf <code>src/manifest.ts</code>. Peek does all three through interop's planners (<code>useFileControls</code>, <code>MoveDialog</code>); members via conversation's <code>membersOf</code>.</li>
+<li>The shared page shell has no collapse; Peek's collapse is its own: ui <code>AppShell.tsx</code>, peek <code>src/layouts/PeekFrame.tsx:37</code>.</li>
+<li>Not verified: the cause of the "/" mid-line bug, not reproduced yet.</li>
+</ul>
+
+</main>
+</body>
+</html>
