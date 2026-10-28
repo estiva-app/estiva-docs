@@ -5,6 +5,14 @@
 - Decided by: Miky, in the shaping session of "Peek moves onto the shared box" (2026-10-20), on the brief "One conversation everywhere" ([page](briefs/one-conversation-everywhere.html))
 - Area: Messages
 
+> Superseded in part, 2026-10-28: the open question "whether Resolve and the
+> Highlights are offered in every app" is answered by
+> [anyone-who-may-comment-resolves-or-reopens-a-thread-and-the-newest-counts](anyone-who-may-comment-resolves-or-reopens-a-thread-and-the-newest-counts.md).
+> And "the work starts with her prototype": Miky decided on 20 October that
+> the agent makes the prototype, he reviews it, then Katerina (recorded in the
+> Ship project "One conversation in every app"); how it looks stays her call.
+> The rest of this record stands.
+
 ## Who it affects
 
 Miky and Katerina comment and chat in Peek, Ship and Leaf. With this call a
