@@ -922,6 +922,18 @@ its owners and admins (§3.3).
   delete what was written in it. A relay hiding the changes to a deleted
   address is the later fix; until then an app MUST NOT tell a person that
   deleting a file erases its text.
+- **The files directly under a deleted file move up one level.** *Added
+  2026-10-28 (LED-4; Miky, 2026-10-28).* After the relay accepts the
+  `kind:5`, the app that deleted the file SHOULD write a §6.2 change on each
+  file directly under it, on that file's own parent field (`parent` for a bare
+  file or a document, §6.7) and in that file's own Folder. The value is the
+  deleted file's own parent, or `''` for the Folder's top when it had none.
+  Any member may sign these changes (§6.2). "Directly under" is read from the
+  Folder's whole listing, archived files included: pages archived with the
+  deleted file come back, live, and are not archived on the way. A reader
+  draws a file whose parent is absent at the Folder's top (§6.7), so an app
+  that only deletes leaves those files there. The dialog says how many files
+  move, and where, before the delete.
 
 #### Corrected 2026-09-06: who a relay accepts a deletion from
 
