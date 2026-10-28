@@ -16,6 +16,11 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [One conversation in every app](one-conversation-in-every-app.html) —
+  Shaped, 2026-10-28. A conversation becomes one shared piece that Peek, Ship
+  and Leaf each place and colour, and Ship joins the apps that resolve a
+  thread. Read at
+  `https://docs.estiva.app/architecture/one-conversation-in-every-app.html`.
 - [Leaf works for everyday documents](leaf-works-for-everyday-documents.html) —
   Shaped, 2026-10-27. Leaf gets pictures, a fixed tree, and the move, archive,
   delete and members Peek already has. Read at

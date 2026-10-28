@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One conversation in every app</title>
+<!--
+  Template for a project's architecture page (process/ARCHITECTURE.md).
+  Copy to architecture/<project-slug>.html, then redraw every example below:
+  the drawings here show the visual language, not any real project.
+  Classes: .b box · .w card · .ok new · .bad goes away · .q undecided (dashed)
+  · .f untouched (faint) · .a arrow · .an new arrow · .aq undecided arrow
+  · .m muted second line · .h bold label · .tag milestone tag.
+-->
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.example { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
+.legend .lgone::before { background: var(--warn-bg); border-color: var(--warn); }
+.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
+.legend .lf::before { opacity: .45; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+/* Below 560px a diagram scrolls inside its figure instead of shrinking its text. */
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); stroke-width: 1.5; }
+svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .f { opacity: .45; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
+svg .aq { stroke: var(--accent); fill: none; stroke-width: 1.6; stroke-dasharray: 5 4; marker-end: url(#arr-q); }
+svg .life { stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 3 4; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 560px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+tr.new td { background: var(--ok-bg); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+</style>
+</head>
+<body>
+<!-- Arrowheads, shared by every diagram on the page. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+    <marker id="arr-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<main>
+
+<h1>One conversation in every app</h1>
+<p class="sub"><span class="state">Shaped, 2026-10-28</span> · <a href="https://ship.estiva.app/project/one-conversation-in-every-app-a7e53554-0934-445d-a81e-339330c286ee">Ship project</a> · Goal: a conversation looks and works the same in Peek, Ship and Leaf, as one shared piece each app places and colours.</p>
+
+<p>Today each app draws its own comment cards, threads and menus around the shared comment box. After this project the conversation is one shared piece: each app only says where it sits, gives it the data, and colours it. Ship also joins the apps that resolve a thread. Nothing on the relay changes. Start with the Map.</p>
+
+<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lgone">goes away</span><span class="lq">waits on a decision</span><span class="lf">untouched, for orientation</span></div>
+
+<h2 id="map">Map</h2>
+
+<h3>Today</h3>
+<figure>
+<svg viewBox="0 0 720 330" role="img">
+<title>Today: Peek, Ship and Leaf each draw their own conversation (cards, thread, menu, notes) around the shared comment box and reaction row. Ship also folds threads with its own copy of the rules. Ship does not show or offer Resolve. The relay is unchanged by this project.</title>
+<rect class="b" x="20" y="20" width="210" height="120" rx="8"/><text x="36" y="44" class="h">Peek</text><text x="36" y="62" class="m">topics, threads, DMs</text>
+<rect class="bad" x="34" y="74" width="182" height="54" rx="6"/><text x="46" y="96">its own cards, thread,</text><text x="46" y="114">menu and notes</text>
+<rect class="b" x="255" y="20" width="210" height="120" rx="8"/><text x="271" y="44" class="h">Ship</text><text x="271" y="62" class="m">Activity · no Resolve</text>
+<rect class="bad" x="269" y="74" width="182" height="54" rx="6"/><text x="281" y="96">its own cards, thread,</text><text x="281" y="114">menu, notes and fold</text>
+<rect class="b" x="490" y="20" width="210" height="120" rx="8"/><text x="506" y="44" class="h">Leaf</text><text x="506" y="62" class="m">column beside the blocks</text>
+<rect class="bad" x="504" y="74" width="182" height="54" rx="6"/><text x="516" y="96">its own cards, thread,</text><text x="516" y="114">menu and notes</text>
+<rect class="b" x="20" y="180" width="330" height="62" rx="8"/><text x="36" y="204" class="h">Shared UI kit</text><text x="36" y="222" class="m">comment box · reaction row (since stage 1)</text>
+<rect class="b" x="370" y="180" width="330" height="62" rx="8"/><text x="386" y="204" class="h">Shared conversation rules</text><text x="386" y="222" class="m">folds edits, threads, reactions, resolves</text>
+<path class="a" d="M125,140 L125,176"/><path class="a" d="M360,140 L360,160 L185,160 L185,176"/><path class="a" d="M595,140 L595,160 L300,160 L300,176"/>
+<path class="a" d="M160,140 L160,150 L470,150 L470,176"/><path class="a" d="M630,140 L630,176"/>
+<g class="f"><rect class="b" x="200" y="272" width="320" height="46" rx="8"/><text x="216" y="292" class="h">Relay</text><text x="216" y="308" class="m">comments, replies, edits, deletes, reactions, resolves</text></g>
+</svg>
+<figcaption>Three drawings of one conversation, and they already differ: a deleted comment, "(edited)", a link alone on its line, quoted words, Resolve, the words for a refusal. Ship reads threads with its own fold, not the shared one (Peek uses the shared fold only in part). Estiva ID and the agent are left out: this project changes neither, apart from one entry in Ship's signing list (Flow).</figcaption>
+</figure>
+
+<h3>After</h3>
+<figure>
+<svg viewBox="0 0 720 400" role="img">
+<title>After: the prototype is judged first (milestone 1). The shared UI kit gains one conversation, and the shared rules gain one shape for a message and a thread (milestone 2). Peek, Ship and Leaf each place it, give it data and colour it (milestone 3). The relay is unchanged.</title>
+<rect class="q" x="20" y="14" width="680" height="46" rx="8"/><text x="36" y="34" class="h">Prototype in Storybook</text><text x="36" y="51" class="m">how it looks: Miky judges, then Katerina, before the build</text><text x="650" y="34" class="tag">M1</text>
+<rect class="ok" x="20" y="90" width="210" height="96" rx="8"/><text x="36" y="114" class="h">Peek</text><text x="36" y="134">places it in its third column</text><text x="36" y="152" class="m">its data · Signal colours</text><text x="36" y="170" class="m">no Highlights</text><text x="196" y="114" class="tag">M3</text>
+<rect class="ok" x="255" y="90" width="210" height="96" rx="8"/><text x="271" y="114" class="h">Ship</text><text x="271" y="134">places it under a comment</text><text x="271" y="152" class="m">its data · Ship colours</text><text x="271" y="170" class="m">now resolves threads</text><text x="431" y="114" class="tag">M3</text>
+<rect class="ok" x="490" y="90" width="210" height="96" rx="8"/><text x="506" y="114" class="h">Leaf</text><text x="506" y="134">places it beside the blocks</text><text x="506" y="152" class="m">its data · Leaf colours</text><text x="506" y="170" class="m">highlights stay on the page</text><text x="666" y="114" class="tag">M3</text>
+<rect class="ok" x="20" y="236" width="330" height="84" rx="8"/><text x="36" y="260" class="h">Shared UI kit</text><text x="36" y="280">one conversation: cards, thread, menu</text><text x="36" y="296" class="m">notes, link rows, quotes, Resolve, words</text><text x="36" y="312" class="m">+ comment box · reaction row</text><text x="316" y="260" class="tag">M2</text>
+<rect class="ok" x="370" y="236" width="330" height="84" rx="8"/><text x="386" y="260" class="h">Shared conversation rules</text><text x="386" y="280">one shape for a message and a thread</text><text x="386" y="298" class="m">one fold, one line rule, one set of words</text><text x="666" y="260" class="tag">M2</text>
+<path class="an" d="M125,186 L125,232"/><path class="an" d="M360,186 L360,212 L200,212 L200,232"/><path class="an" d="M595,186 L595,212 L290,212 L290,232"/>
+<path class="a" d="M350,278 L366,278"/>
+<g class="f"><rect class="b" x="200" y="344" width="320" height="46" rx="8"/><text x="216" y="364" class="h">Relay</text><text x="216" y="380" class="m">unchanged: the same events</text></g>
+</svg>
+<figcaption>Each app now supplies only three things: where the conversation sits, its data, and its colours (the record). The kit's conversation reads the shared shape, so every app draws one fold of the same events. The thread is one piece wherever it opens (Miky, 28 October).</figcaption>
+</figure>
+
+<h2 id="objects">Objects</h2>
+<p>Unchanged. A comment, a reply, an edit, a delete, a reaction and a resolve are the same events as today (SPEC §6.4, §6.6; KINDS.md). What changes is that every app reads them into one shape and draws them one way. A Highlight is not one of them: it has no shape on the relay, and this project does not give it one (<em>Highlights on the relay</em>).</p>
+
+<h2 id="flow">Flow: Katerina resolves a thread in Ship, Miky sees it in Peek and Leaf</h2>
+<figure>
+<svg viewBox="0 0 720 346" role="img">
+<title>After: Katerina resolves a thread on a Ship issue with a note. Ship asks Estiva ID to sign the resolve, which Ship's list of events now includes. Ship sends it to the issue's Folder; the relay checks she may write there and stores it. Peek and Leaf receive it and show who resolved it and the note, and fold the thread away. Today Ship has no Resolve and shows none.</title>
+<rect class="b" x="20" y="14" width="150" height="40" rx="8"/><text x="34" y="39" class="h">Katerina · Ship</text>
+<rect class="ok" x="205" y="14" width="150" height="40" rx="8"/><text x="219" y="39" class="h">Estiva ID</text>
+<rect class="b" x="390" y="14" width="130" height="40" rx="8"/><text x="436" y="39" class="h">Relay</text>
+<rect class="b" x="555" y="14" width="145" height="40" rx="8"/><text x="566" y="39" class="h">Peek, Leaf · Miky</text>
+<line class="life" x1="95" y1="54" x2="95" y2="330"/><line class="life" x1="280" y1="54" x2="280" y2="330"/><line class="life" x1="455" y1="54" x2="455" y2="330"/><line class="life" x1="627" y1="54" x2="627" y2="330"/>
+<rect class="ok" x="30" y="70" width="190" height="40" rx="6"/><text x="40" y="88">1  Resolve, with a note</text><text x="40" y="104" class="m">new in Ship · <tspan class="tag">M3</tspan></text>
+<path class="an" d="M95,140 L276,140"/><text x="105" y="134">2  asks to sign the resolve</text>
+<text x="290" y="164">3  Ship may sign it</text><text x="290" y="180" class="m">now on Ship's list</text><text x="290" y="196" class="tag">M3</text>
+<path class="a" d="M95,226 L451,226"/><text x="105" y="220">4  sends it to the issue's Folder</text>
+<text x="465" y="250">5  she may write here:</text><text x="465" y="266" class="m">stores it</text>
+<path class="a" d="M455,290 L623,290"/><text x="465" y="284">6  pushes it live</text>
+<rect class="ok" x="540" y="300" width="170" height="36" rx="6"/><text x="548" y="315">7  "Katerina resolved"</text><text x="548" y="330" class="m">her note · folded · <tspan class="tag">M3</tspan></text>
+</svg>
+<figcaption>Today Ship cannot start this flow: it has no Resolve, its signing list leaves out the resolve event, and it ignores a resolve written by Peek or Leaf. Peek already shows who resolved and the note; Leaf shows only that a thread is resolved. After, every app shows the same, and the flow starts from any of the three. Reopen is the same flow.</figcaption>
+</figure>
+
+<h2 id="access">Access</h2>
+<div class="tw">
+<table>
+<thead><tr><th>What</th><th>Who can see it</th><th>Who can change it</th><th>Checked by</th></tr></thead>
+<tbody>
+<tr class="new"><td>Resolving or reopening a thread</td><td>Whoever can read the Folder</td><td>Anyone who may write in the Folder, from Peek and Leaf today, and from Ship after (M3). Not offered on a thread under a deleted comment, or on an archived file</td><td>The relay (who may write in the Folder); Estiva ID (which apps may sign it)</td></tr>
+<tr class="new"><td>A reply under a deleted comment</td><td>Whoever can read the Folder, under "This comment was deleted."</td><td>No new reply in any app; each reply's author can still edit or delete their own. Ship takes replies there today</td><td>Each app, by SPEC §6's delete rule, through the shared conversation (M2)</td></tr>
+<tr><td>A comment or a reply</td><td>Whoever can read the Folder it is written in</td><td>Edited or deleted by its author or the person whose agent wrote it; also removed by the Folder's owners and admins</td><td>The relay (unchanged)</td></tr>
+</tbody>
+</table>
+</div>
+<p class="sub">Green rows change. The first widens which app may sign a resolve, not who may resolve: the relay already takes one from anyone who may write in the Folder.</p>
+
+<h2 id="checked">Checked</h2>
+<ul>
+<li>Read on 2026-10-28 from <code>origin/main</code> of estiva-ui (bcb738e, ui 0.89.0), estiva-foundation (fd8da3b), peek-app (d01104c), estiva-ship (9bc70b4), leaf (cba66ad) and estiva-id, and from <code>origin/nfb-demo-kinds</code> for the relay. Nothing probed on production.</li>
+<li><strong>Each app's own cards.</strong> Peek <code>src/components/ConversationCard.tsx</code> (504 lines), <code>ReplyCard.tsx</code> (423), <code>ThreadPanel.tsx</code> (515); DMs go through the same <code>views/useFileConversationView.tsx</code>. Ship <code>src/components/conversations/ThreadList.tsx:92-210</code>, <code>src/components/ConversationThread.tsx</code>. Leaf <code>src/comments/CommentsColumn.tsx:457-611, 707-796</code>.</li>
+<li><strong>Shared UI kit.</strong> <code>CommentBox</code>, <code>ReactionRow</code> and <code>CommentHighlights</code> in estiva-ui <code>src/</code>; no conversation card or thread component there.</li>
+<li><strong>Shared conversation rules.</strong> <code>@estiva-app/conversation</code> <code>src/index.ts</code>: <code>groupThreads</code>, <code>foldEdits</code>, <code>decorationsOf</code>, <code>groupReactions</code>, <code>offersEditAndDelete</code>. Leaf uses <code>groupThreads</code>; Ship folds with its own <code>src/nostr/fold.ts:485</code>; no shared message or thread type.</li>
+<li><strong>Ship has no Resolve.</strong> No use of <code>buildResolution</code> or the resolve kind in estiva-ship; <code>decorationsOf</code> is called (<code>src/nostr/store.ts:33</code>) and its resolutions ignored. Peek writes at <code>src/nostr/fileConversation.ts:826</code>, Leaf at <code>src/comments/comments.ts:331</code>.</li>
+<li><strong>Signing list.</strong> estiva-id <code>src/db/seed.ts:235</code> (Peek, has 9101), <code>:380</code> (Leaf, has 9101); Ship's grant in <code>protocol/KINDS.md:177</code> has none.</li>
+<li><strong>Relay takes a resolve from a Folder writer.</strong> buzz <code>crates/buzz-relay/src/handlers/ingest.rs:687-692</code> (MessagesWrite).</li>
+<li><strong>Deleted comment rule.</strong> estiva-docs <code>protocol/SPEC.md</code> §6, "A deleted comment's replies stay" (COMM-5). Ship moves a reply up instead: <code>ConversationThread.tsx:215-217</code>.</li>
+<li><strong>Highlights.</strong> Peek <code>src/data/topicData.ts:36</code>; <code>/</code> dropped them 2026-10-26 (<code>src/components/ui/SlashMenu.tsx:15-18</code>).</li>
+<li>Not verified: what the running images are, and Peek's exact use of the shared fold beyond the imports.</li>
+</ul>
+
+</main>
+</body>
+</html>
