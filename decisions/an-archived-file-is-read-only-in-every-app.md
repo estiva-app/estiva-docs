@@ -10,6 +10,13 @@
 > [a-file-is-archived-with-the-closest-archived-file-above-it](a-file-is-archived-with-the-closest-archived-file-above-it.md).
 > The rest of this record stands.
 
+> Noted, 2026-10-28: Leaf has its own Unarchive since LED-4 (a Leaf page's ⋯
+> menu), so its lines no longer send you to Peek. A Leaf page archived itself
+> says "Archived. Unarchive it to comment." and "Archived. Unarchive it to
+> edit.", and a page under an archived page says "Unarchive the document to
+> edit." Miky decided this in the LED-4 kickoff session (2026-10-28). The rule
+> itself is unchanged: an archived Leaf page is still fully read-only.
+
 ## Who it affects
 
 Miky or Katerina opens a file that is archived, in Peek, Ship or Leaf. Every
