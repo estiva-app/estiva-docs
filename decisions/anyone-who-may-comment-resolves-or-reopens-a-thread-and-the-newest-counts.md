@@ -2,7 +2,7 @@
 
 - Date: 2026-10-28
 - Status: Accepted
-- Decided by: Miky, in the shaping session of "One conversation in every app" (2026-10-28), answering three questions: Resolve in every app, whose resolve counts, and what a resolved thread does
+- Decided by: Miky, in the shaping session of "One conversation in every app" (2026-10-28), answering four questions: Resolve in every app, whose resolve counts, what a resolved thread does, and whether the Highlights come back in this stage
 - Area: Messages
 
 > Supersedes in part
@@ -29,8 +29,7 @@ rule, and needs no lookup of roles to show it.
   that it is resolved, and moves it to a "Resolved" section at the end.
 - SPEC did not say whose resolve counts, and the shared conversation package
   said each app decides.
-- The resolve event already exists, and Peek and Leaf write it. Every resolve
-  on production fits each of the options below.
+- The resolve event already exists, and Peek and Leaf write it.
 
 ## Decision
 
@@ -45,8 +44,6 @@ rule, and needs no lookup of roles to show it.
   the prototype.
 - **No Highlights in this stage.** No app offers them. Their shape on the relay
   is decided together with what reads them, in *Highlights on the relay*.
-- SPEC gets the rule in its section on resolving a thread, written with the
-  Ship issue "One shape for a message and a thread".
 
 ## Rejected alternatives
 
@@ -60,12 +57,17 @@ rule, and needs no lookup of roles to show it.
 - **Shown everywhere, offered only by Peek and Leaf.** Ship would show "X
   resolved" but offer no Resolve, because an issue already has its own status.
   People would still meet two models.
-- **Resolve stays as it is.** Ship keeps showing nothing.
+- **Resolve stays as it is.** Peek and Leaf keep theirs and Ship still shows
+  nothing, so a thread resolved in Peek or Leaf reads as open in Ship. It goes
+  against "everywhere it works the same".
 - **A resolved thread moves to a Resolved section**, as Leaf does: a long page
-  stays tidy, but in Peek messages vanish from where they were said. **Or it
-  stays open with a resolved line**: nothing hides, and nothing is tidied.
-- **Highlights now**, with their shape decided in this stage (it needs a
-  protocol brief and splits the project), **or retired for good.**
+  stays tidy, but in Peek messages vanish from where they were said.
+- **A resolved thread stays open, with a resolved line**: nothing hides, and
+  nothing is tidied either.
+- **Highlights now**, with their shape decided in this stage: it needs a
+  protocol brief first, a SPEC section and more issues, and splits the project.
+- **Highlights retired for good**: *Highlights on the relay* would close, and
+  Resolve would be the only mark on a thread.
 
 ## Consequences
 
@@ -73,6 +75,11 @@ rule, and needs no lookup of roles to show it.
   it.
 - A resolve made in one app reads the same in the others, from the shared
   conversation.
-- Two-way: the event and its tags do not change, and every resolve already on
-  the relay fits the rule. Undoing it means writing a narrower rule into SPEC
+- SPEC gets the rule in a section on resolving a thread, written with the Ship
+  issue "One shape for a message and a thread". "May comment" is read from the
+  Folder the comment was filed in: a reader counts a resolve or reopen only
+  when it is filed in that Folder, as it reads a change (SPEC §6.2), and
+  "newest" is the fold's order (§6.3).
+- Two-way: the event keeps its kind and tags, gaining at most a `ts` for
+  ordering. Undoing it means writing a narrower rule into SPEC
   and every reader.
