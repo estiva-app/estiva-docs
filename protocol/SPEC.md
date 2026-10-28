@@ -65,6 +65,22 @@ the same workspace, in every app.
 - An app MUST NOT allow a user to select the relay at runtime as though it were
   a preference. It is deployment configuration.
 
+The `Host` lookup has three failure answers, and a client tells them apart by
+the status code or the `error:` prefix, never by the prose
+([a-busy-relay-says-it-is-busy](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-busy-relay-says-it-is-busy.md)):
+
+- **A host the relay does not know**: `404` with the body
+  `relay: no community is configured for this host`, byte for byte. It is the
+  only answer that names "no community", and it never echoes the host.
+- **A relay that cannot reach its database** (a full or closed pool, a lost
+  connection), during the lookup or a read: busy. On connecting and on a bridge
+  request it is `503` with `Retry-After`; on a websocket read it is
+  `CLOSED "error: relay busy"` in place of `EOSE`. A client keeps what it has
+  and asks again with backoff, then shows the error. A read the database cut
+  off for running too long closes `CLOSED "error: query timed out"` instead, and
+  a client does not repeat it unchanged.
+- **Any other lookup failure**: a generic `500`, never the unknown-host text.
+
 Objects are **discovered, not indexed**: an app asks the relay for a kind with
 no `#h` filter and lets access control decide what comes back. An object in a
 Folder you are not a member of is simply not in the response.
