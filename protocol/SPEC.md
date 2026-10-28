@@ -69,6 +69,39 @@ Objects are **discovered, not indexed**: an app asks the relay for a kind with
 no `#h` filter and lets access control decide what comes back. An object in a
 Folder you are not a member of is simply not in the response.
 
+### When the relay cannot answer
+
+A client MUST tell these answers apart by the status code and the exact tokens
+below (a `CLOSED` reason, or a bridge body's `error` value), never by other
+prose. None of them echoes the host or the internal error; the relay logs the
+real reason
+([a-busy-relay-says-it-is-busy](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-busy-relay-says-it-is-busy.md)).
+
+- **A host the relay does not know**: `404`, and the relay MUST NOT use this
+  text for any other failure. On the websocket upgrade the body is
+  `relay: no community is configured for this host`, byte for byte; on the HTTP
+  bridge (§5) it is that text as the `error` value of a JSON body. A door that
+  hides what exists answers its own `404` instead (a git repository, a workflow
+  hook).
+- **Busy** — the relay cannot get to its storage in time (out of connections,
+  or the connection lost):
+  - while resolving the host, on the upgrade or the bridge: `503` with
+    `Retry-After`;
+  - on a bridge read: `503` with the `error` value
+    `relay busy, retry shortly`;
+  - on a websocket read: `CLOSED "error: relay busy"`, and no `EOSE` for that
+    read.
+- **A read that ran too long**: `CLOSED "error: query timed out"` on the
+  websocket, `503` with the `error` value `query timed out` on the bridge.
+- **Any other failure to resolve the host**: a generic `500`. The workflow
+  hook door answers its `404` instead, so hook ids cannot be probed.
+
+A client SHOULD keep what it shows and ask a busy answer again with backoff,
+then show the error; it MAY treat a `502` from a proxy in front of the relay,
+while the relay restarts, as busy. It MUST NOT repeat a timed-out read
+unchanged: the same read would be cut off again, and asking adds to the load
+that cut it off.
+
 ---
 
 ## 3. The Folder
