@@ -65,25 +65,35 @@ the same workspace, in every app.
 - An app MUST NOT allow a user to select the relay at runtime as though it were
   a preference. It is deployment configuration.
 
-The `Host` lookup has three failure answers, and a client tells them apart by
-the status code or the `error:` prefix, never by the prose
-([a-busy-relay-says-it-is-busy](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-busy-relay-says-it-is-busy.md)):
-
-- **A host the relay does not know**: `404` with the body
-  `relay: no community is configured for this host`, byte for byte. It is the
-  only answer that names "no community", and it never echoes the host.
-- **A relay that cannot reach its database** (a full or closed pool, a lost
-  connection), during the lookup or a read: busy. On connecting and on a bridge
-  request it is `503` with `Retry-After`; on a websocket read it is
-  `CLOSED "error: relay busy"` in place of `EOSE`. A client keeps what it has
-  and asks again with backoff, then shows the error. A read the database cut
-  off for running too long closes `CLOSED "error: query timed out"` instead, and
-  a client does not repeat it unchanged.
-- **Any other lookup failure**: a generic `500`, never the unknown-host text.
-
 Objects are **discovered, not indexed**: an app asks the relay for a kind with
 no `#h` filter and lets access control decide what comes back. An object in a
 Folder you are not a member of is simply not in the response.
+
+### When the relay cannot answer
+
+A client MUST tell these answers apart by the status code or the `error:`
+prefix, never by the prose. No failure answer echoes the host or the internal
+error; the relay logs the real reason
+([a-busy-relay-says-it-is-busy](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-busy-relay-says-it-is-busy.md)).
+
+On connecting, and on a request to the HTTP bridge (§5):
+
+- **A host the relay does not know**: the relay MUST answer `404` with the body
+  `relay: no community is configured for this host`, byte for byte, and MUST NOT
+  use that text for any other failure.
+- **Busy** — the relay cannot get to its storage in time (out of connections,
+  or the connection lost): it MUST answer `503` with `Retry-After`.
+- **Any other failure to resolve the host**: a generic `500`.
+
+On a websocket read:
+
+- **Busy**, as above: the relay MUST close the read with
+  `CLOSED "error: relay busy"` and MUST NOT send `EOSE` for it.
+- **A read that ran too long**: `CLOSED "error: query timed out"`.
+
+A client SHOULD keep what it shows and ask a busy answer again with backoff,
+then show the error. It MUST NOT repeat a timed-out read unchanged: the same
+read would be cut off again, and asking adds to the load that cut it off.
 
 ---
 
