@@ -59,8 +59,9 @@ file model, Slack Connect and Notion-like files with their own properties.
 Proposed (the brief's recommendation, option A):
 
 - **Every file is a NIP-AR artifact, as upstream defines it.** Its type is a
-  name: `estiva.issue`, `estiva.project`, `estiva.document`, `estiva.topic`,
-  an app's own (`acme.candidate`), or a row of a person's database. The
+  name: a shared type carries the protocol's name (`osnova.issue`,
+  `osnova.project`, `osnova.document`, `osnova.topic`), an app's own type
+  carries the app's (`acme.candidate`), or it is a row of a person's database. The
   relay keeps saves in order and refuses a stale one; the app merges and saves
   again. Every save is signed by a person; the relay signs no summary.
 - **Text stays in the save, and a list asks for saves without it**: a query
@@ -74,9 +75,18 @@ Proposed (the brief's recommendation, option A):
 - **A file's home Folder does not move for now**; where it is listed stays the
   Folder listing. Upstream's move, which changes who reads, waits for the
   navigation rework's access call.
-- **Type names are curated as the numbers were**: Estiva's public directory,
-  `estiva.*` ours, an app's own prefix for its types and extensions, a breaking
-  change is a new name, a type goes upstream once a second company uses it.
+- **A shared type belongs to the standard, not to Estiva** (Miky, 29 Oct:
+  someone who builds an alternative to Ship with properties of their own
+  should still write the same issue type). Shared types are `osnova.*`, named
+  for the protocol, in the Osnova directory, which Estiva curates in public
+  until adopters or a foundation take it over. `estiva.*` is left for what
+  only Estiva's apps use, as `acme.*` is for Acme's; an app's extensions use
+  its own prefix (`acme.story-points` on an `osnova.issue`). A type names one
+  file (`osnova.issue`, not `osnova.issues`). A breaking change is a new name,
+  and a type goes upstream once a second company uses it. The prefix is
+  permanent on the wire, so the protocol's name is final before the first
+  file is written (Peek topic "Osnova Application Protocol", 13 Oct: "let's
+  sleep on it").
   A property anyone filters on is a tag named by its id; long text goes in the
   body; a link to many is kept on the many side.
 - **In a shared Folder the host's relay orders each file's saves**; the
@@ -90,13 +100,16 @@ own),
 [a-files-text-is-a-readable-snapshot](a-files-text-is-a-readable-snapshot.md)
 ("the last save wins"),
 [estiva-curates-shared-types-in-a-public-directory](estiva-curates-shared-types-in-a-public-directory.md)
-(numbers and the kind registry), and
+(numbers and the kind registry; the directory becomes the Osnova directory), and
 [a-shared-folder-lives-on-both-relays-and-its-host-runs-it](a-shared-folder-lives-on-both-relays-and-its-host-runs-it.md)
 ("every relay folds the same events into the same result").
 
 ## Rejected alternatives
 
-None yet; the brief's other options, as they stand:
+None yet; the brief's other options, as they stand. For the shared types'
+names: Estiva's own prefix (`estiva.issue`, the brief's first version) reads as
+Estiva's to change and has a rival tracker write into a competitor's name; no
+prefix (`issue`) leaves nobody owning the meaning. For the file model:
 
 - **B · Artifacts' saves with a number of our own per type.** The same for
   Miky and Katerina, but our own variant of NIP-AR for good, and upstream
