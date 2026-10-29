@@ -1,4 +1,4 @@
-# Every file is an upstream Buzz artifact: each save is a whole copy, the relay decides which save is current, and a file's type is a name
+# A file's own state is an upstream Buzz artifact the relay keeps in order; everything else names the file by one reference
 
 - Date: 2026-10-29
 - Status: Proposed
@@ -7,144 +7,147 @@
 ## Who it affects
 
 Miky and Katerina: a list (a Ship project, a Leaf Folder) loads each file as it
-is now, and stays that size however many more edits pile up. When two of them
-save the same page within a minute, the second save is refused as made on a
-stale copy and their app merges both, instead of the newer clock silently
-winning. History shows whole versions.
+is now, and stays that size however many edits pile up. Leaf and Ship already
+say "Katerina saved a newer version. Load it (replaces your changes)", which
+offers only to lose one person's words; with the relay refusing a save made on
+an out-of-date copy in every app and agent, the app can keep both. History
+shows whole versions. Who is on a file, comments, listings and unread state
+behave as today.
 
-An outside company runs plain upstream Buzz and holds Estiva's files with no
-Estiva code on its relay. An HR builder invents `acme.candidate` with Salary
-band as a filterable tag and picks no number.
+An outside company holds a file's own state on upstream Buzz as it ships, and
+needs our listings, membership and unread state beside it. A builder invents
+`acme.candidate` with filterable properties as tags and asks nobody for a
+number.
 
-It came up on 29 October, shaping "A load stays the same size as edits pile up"
-(initiative "Peek, Ship and Leaf are fast", step 3). Brief v1 recommended that
-the relay hand back the newest change of each field. Miky asked why we don't
-adopt Buzz, said not to weigh migration, and asked for one brief covering the
-file model, Slack Connect and Notion-like files with their own properties.
+It came up on 29 October, shaping "A load stays the same size as edits pile
+up" (initiative "Peek, Ship and Leaf are fast", step 3), on the brief "What a
+file is" (version 3, after a product and protocol review of version 2).
 
 ## Context
 
 - A file today is a root event (`30840`, `30842`, `30850`, `30851`) plus
-  `kind:1851` changes, "set this field to this value", each signed by whoever
-  made it. Every app folds all of them: the newest change per field wins, by
-  the author's clock. A text save is a `1851` with the whole text (SPEC §6.2,
-  §6.3, §6.10).
+  `kind:1851` changes, one field each, folded newest per field by `ts`, then
+  `created_at`, then id (SPEC §6.1–§6.3, §6.10). Membership is a `1851` per
+  person, `member:<P>` (§11.8). Comments, mentions, listings, read state,
+  cards and parts name a file by `kind:pubkey:d` (§6.4, §3, §11.1, §13.6).
 - Production, 29 Oct: 2,732 text saves, 42.0 MB, and 3,649 other changes,
-  2.2 MB, across 1,163 files; growth about 13 MB a week. The newest value of
-  every field is 1.5 MB, every file's newest text 5.1 MB. As whole-file saves
-  the same history would weigh 53.5 MB. 62 of 6,381 changes followed a
-  different person's change to the same file within 60 s, 29 of them on text.
-- Upstream Buzz merged NIP-AR "Channel Artifacts" on 28 Sep (#7919): a
-  `kind:45010` event per save, each a whole snapshot naming the save it was
-  made on (`prev`). The relay owns identity (`(community, d)`), access (read
-  and write follow the home channel's `h`) and order (a save not made on the
-  current one is refused); clients own the type, a name such as `buzz.task`.
-  It answers current state and history over HTTP `/query`, with exact matches
-  on tags of any name, and `/count`. Moving changes the home and who can read;
-  deleting is a restorable soft delete; `kind:5` is refused. Upstream uses it
-  only for agent and team settings (NIP-AP, #8295).
-- Our relay carries it behind an Estiva-added `artifacts` build feature, off;
-  production's NIP-11 advertises none, and production holds no artifact.
-  Upstream has no such switch.
-- Limits: 256 tags, 128-byte tag names, 4 KB values, 64 KB of tags,
-  32 predicates; pages of 1,000, offset at most 10,000; no sort, no range, no
-  "changed since", and no way to leave `content` out of a current-state answer.
-- The four Files records of 26 Oct chose a number per shared type, a
-  relay-signed summary per file, and text in an event of its own. The Slack
-  Connect record has the host's relay say yes or no to every change in a
-  shared Folder.
+  2.2 MB, across 1,171 files, growing 8–17 MB a week; a cold Ship load is
+  53 MB, 43.8 MB of it `1851`. The newest value of every field is 1.5 MB, every
+  file's newest text 5.1 MB.
+- Two saves crossing, 29 Oct: Miky's and Katerina's keys never changed one file
+  within a minute of each other. Of 17 text saves within 60 s of another
+  person's, 16 were QA-1, QA-2 or Claude; text was lost twice, both in QA
+  probes. Leaf's and Ship's shared editor shows the notice above while the
+  cursor is in the page; a save names no version it was made on; the agent's
+  `edit-issue` does not check between its read and its write.
+- Upstream Buzz merged NIP-AR "Channel Artifacts" on 28 Sep (#7919):
+  `kind:45010` saves, each a whole snapshot naming the save it was made on
+  (`prev`); identity `(community, d)`; read and write follow the home `h`; a
+  stale save is refused. Delete and restore are saves anyone who may post in
+  the home may make; `9005` redaction by the author, a channel admin or the
+  agent's owner; redacting the current save retires the artifact. `d` and
+  `type` are immutable, which NIP-AP relies on. `/query` answers current state
+  and history with exact tag matches, always with `content`; a live REQ
+  refuses multi-letter tags on artifacts; a save sends no push. Upstream has no
+  artifact search.
+- Our relay gates artifacts behind an `artifacts` build feature, off. Search
+  indexes messages, comments, profiles and file titles (`1851` `title`/`ref`),
+  not file text. Event content is capped at 256 KB.
+- The four Files records of 26 Oct chose a relay-signed summary per file, text
+  in an event of its own and a number per shared type; none is built and the
+  SPEC does not describe them yet. On 29 Oct Miky decided that shared types
+  carry the protocol's name, builders name their own types and launch,
+  standardised types convert, Leaf tabs are sections of one document, old
+  chips and references are migrated or dropped with no compatibility layer,
+  and search must work before any type moves.
 
 ## Decision
 
-Proposed (the brief's recommendation, option A):
+Proposed (the brief's recommendation, option A as a hybrid):
 
-- **Every file is a NIP-AR artifact, as upstream defines it.** Its type is a
-  name: a shared type carries the protocol's name (`osnova.issue`,
-  `osnova.project`, `osnova.document`, `osnova.topic`), an app's own type
-  carries the app's (`acme.candidate`), or it is a row of a person's database. The
-  relay keeps saves in order and refuses a stale one; the app merges and saves
-  again. Every save is signed by a person; the relay signs no summary.
-- **Text stays in the save, and a list asks for saves without it**: a query
-  option our relay adds and we propose upstream. A relay without it refuses
-  the request, and the app reads whole saves.
-- **Estiva ID limits which types an app or agent signs**, as it limits kinds
-  today; the relay stays type-blind, as upstream.
-- **A comment is a `kind:1111` naming the file's first save** (`E` = the
-  `op=create` revision, `K` = `45010`). Links and mentions name the file by
-  its id, as today.
-- **A file's home Folder does not move for now**; where it is listed stays the
-  Folder listing. Upstream's move, which changes who reads, waits for the
-  navigation rework's access call.
-- **A shared type belongs to the standard, not to Estiva** (Miky, 29 Oct:
-  someone who builds an alternative to Ship with properties of their own
-  should still write the same issue type). Shared types are `osnova.*`, named
-  for the protocol, in the Osnova directory, which Estiva curates in public
-  until adopters or a foundation take it over. `estiva.*` is left for what
-  only Estiva's apps use, as `acme.*` is for Acme's; an app's extensions use
-  its own prefix (`acme.story-points` on an `osnova.issue`). A type names one
-  file (`osnova.issue`, not `osnova.issues`). A breaking change is a new name.
-  A builder names its own types and launches without asking anyone (Miky,
-  29 Oct); a type is standardised later, from a reference implementation and
-  once a second company uses it, and its files then convert to the `osnova.*`
-  name with one "convert" save each, keeping id, links, conversation and
-  history (a rule proposed upstream, which NIP-AR's immutable `type` lacks). The prefix is
-  permanent on the wire, so the protocol's name is final before the first
-  file is written (Peek topic "Osnova Application Protocol", 13 Oct: "let's
-  sleep on it").
-  A property anyone filters on is a tag named by its id; long text goes in the
-  body; a link to many is kept on the many side.
+- **A file's own state is a NIP-AR artifact**: its fields and its text, whole
+  in each save. The relay keeps saves in order and refuses a stale one; the app
+  merges different fields without asking and asks only about a block both
+  people changed (D4, to prototype). Every save is signed by a person.
+- **One reference names a file everywhere (D1)**: its workspace-unique `d`, in
+  one single-letter tag that every comment, mention, listing, unread state,
+  card and chip uses, in the SPEC and proposed upstream beside NIP-AR. Old
+  references are rewritten by the migration or left dead
+  ([early-shapes-are-migrated-or-deleted](early-shapes-are-migrated-or-deleted.md)).
+- **Who is on a file stays beside it (D2)**: one small event per join, add or
+  leave, naming the file by that reference; the three membership records stand.
+- **Shared types carry the protocol's name** (Miky, 29 Oct): `osnova.issue`,
+  `osnova.project`, `osnova.document`, `osnova.topic`, singular, in the Osnova
+  directory Estiva curates in public; `estiva.*` and `acme.*` for an app's own
+  types and extensions. Builders name their own types and launch; a
+  standardised type converts with one "convert" save that keeps the id (D6),
+  allowed only for types whose directory entry names the target, proposed
+  upstream. The protocol's name is final before the first file is written.
+- **A list reads current saves without their text**, a query option our relay
+  adds and proposes upstream; Estiva ID limits which types an app or agent
+  signs; a move changes only where a file is listed until the navigation
+  rework's access call.
+- **Search covers each file's current version only**: title, text-valued
+  properties and text, every word as a word start, under the home's read
+  access; a Done-when leg of the first stage.
+- **Delete is restorable, by anyone who may edit the file; removing a save for
+  good is an admin's separate action (D3).** A project's home is its Folder or
+  team, Company by default (D5).
 - **In a shared Folder the host's relay orders each file's saves**; the
-  partner's relay passes saves on and keeps the host's chain. A shared file
-  keeps the host's id on both relays.
+  exchange carries the order and limits what the host may remove of a
+  partner's words.
+- **Migration**: each file's current state becomes its first save; older
+  changes stay readable as they are, never re-signed as versions nobody saved.
 
 Supersedes in part, if accepted:
 [a-files-type-is-a-shared-meaning-any-app-extends](a-files-type-is-a-shared-meaning-any-app-extends.md)
-(a number per shared type; the relay-signed summary; text in an event of its
-own),
+(numbers, the relay-signed summary, text in an event of its own),
 [a-files-text-is-a-readable-snapshot](a-files-text-is-a-readable-snapshot.md)
 ("the last save wins"),
 [estiva-curates-shared-types-in-a-public-directory](estiva-curates-shared-types-in-a-public-directory.md)
-(numbers and the kind registry; the directory becomes the Osnova directory), and
+(numbers and the kind registry),
+[a-card-changes-what-a-files-app-shares](a-card-changes-what-a-files-app-shares.md)
+("none converts into another"; "the owner keeps a field to itself by not
+sharing it" becomes per type),
+[a-file-keeps-every-change-for-good](a-file-keeps-every-change-for-good.md)
+("deleting a file is to remove every save"),
 [a-shared-folder-lives-on-both-relays-and-its-host-runs-it](a-shared-folder-lives-on-both-relays-and-its-host-runs-it.md)
-("every relay folds the same events into the same result").
+("every relay folds the same events into the same result"), and SPEC §6.5
+("nobody may delete another person's work").
 
 ## Rejected alternatives
 
-None yet; the brief's other options, as they stand. For the shared types'
-names: Estiva's own prefix (`estiva.issue`, the brief's first version) reads as
-Estiva's to change and has a rival tracker write into a competitor's name; no
-prefix (`issue`) leaves nobody owning the meaning. For the file model:
+None yet; the brief's other options, as they stand:
 
-- **B · Artifacts' saves with a number of our own per type.** The same for
-  Miky and Katerina, but our own variant of NIP-AR for good, and upstream
-  relays refuse our files. It follows the Nostr community's rule, a number per
-  meaning, and keeps type filtering on any relay and in live feeds; but an
-  artifact needs an artifact-aware relay whatever its number, so a plain relay
-  can filter the type yet not tell which save is current.
-- **C · Keep field changes; the relay hands back the newest of each (do
-  less).** Two-way and small to build. The newest clock keeps winning silently,
-  the fold stays ours in the relay and every app, both relays in a shared
-  Folder must fold identically, and a database view needs the same index
-  artifacts already have, built again by us.
+- **The 26 Oct shape (Accepted, not built).** The relay adds up field changes
+  and signs a summary; text in its own event; a number per type. Flat lists,
+  but two saves crossing stay each app's problem, the relay repeats every
+  app's fold, and Miky's 29 Oct naming call changes its numbers anyway.
+- **C · Field changes ordered by the relay.** Each change names the one it
+  follows for its field; the relay refuses a stale one and answers the newest
+  of each. Linear's shape: per-field authority kept, different fields never
+  collide, close to two-way. New relay code of our own (a head per file and
+  field, a backfill, a bulk read), our own standard, and an index of current
+  values built by us. The strong alternative if Block refuses the reference,
+  leave-out-text or convert proposals.
+- **B · A with a number per type.** The same for people; our own variant of
+  NIP-AR for good, refused by upstream relays, against Miky's naming call.
+- For the reference: today's `kind:pubkey:d` rules out A and converting;
+  naming the first save (version 2) loses the file when that save is redacted.
+- For membership: inside the file's saves, adding a person becomes editing the
+  file, and a leave is a save by the leaver.
 
 ## Consequences
 
-- One-way: every file and its history are re-signed as artifacts
-  ([early-shapes-are-migrated-or-deleted](early-shapes-are-migrated-or-deleted.md)).
-- Lists stop growing with edits; history weighs about a fifth more and is read
-  only by the History panel.
-- Two people changing different fields at once collide too; the app merges
-  that without asking.
-- We follow a month-old draft: upstream's changes are ours to take or argue.
-- A plain Nostr app sees each save as a separate post.
-- It leans the navigation rework's open access call: an artifact is read by
-  its home's readers, so a team or a space deciding who reads fits as it is,
-  and a file deciding its own readers would need a channel per file. Upstream
-  also lets whoever may post in a space edit every file homed there, which a
-  front door that everyone posts in has to answer.
-- A list someone curates (a topic listing files from any team) stays a list;
-  a relationship a file's own editors set (an issue's project) is a tag on the
-  file.
-- Judged by Miky's four questions for Osnova (29 Oct): one company across all
-  its apps, builders integrating with existing apps, cross-app conversations
-  and workflows, and intelligence better than today's SaaS.
+- One-way: every file moves; old chips in signed messages are republished or
+  left dead.
+- Lists stop growing with edits; history weighs about a fifth more and only the
+  History panel reads it.
+- A status change from a list must fetch the whole save; conformance tests
+  guard against an app saving an empty text from a row.
+- A live feed narrows by Folder, not by type; an assignment needs its own
+  notification, since a save sends no push.
+- A Folder delete must count artifacts, or it hides them.
+- We follow a month-old draft and propose three changes upstream.
+- Under navigation: an artifact is read by its home's readers, which leans the
+  access brief's open call toward a team or space deciding who reads.

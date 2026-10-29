@@ -170,7 +170,7 @@ properties and its history.
 - [Estiva curates the shared types in public, in a directory of types any builder starts from, and the optional App Store's review helps builders agree but forces no one](estiva-curates-shared-types-in-a-public-directory.md) — Accepted, 2026-10-26
 - [A type of file and its properties are defined by an app's listing or by a person's database, in one schema shape; app types come first, and people's databases come with the Notion-like app](an-apps-listing-or-a-persons-database-defines-a-type.md) — Accepted, 2026-10-26
 - [A file keeps every change and every text save for good, and has a History panel that shows them](a-file-keeps-every-change-for-good.md) — Accepted, 2026-10-26
-- [Every file is an upstream Buzz artifact: each save is a whole copy, the relay decides which save is current, and a file's type is a name](every-file-is-an-artifact-the-relay-keeps-in-order.md) — Proposed, 2026-10-29
+- [A file's own state is an upstream Buzz artifact the relay keeps in order; everything else names the file by one reference](every-file-is-an-artifact-the-relay-keeps-in-order.md) — Proposed, 2026-10-29
 
 ## Documents
 
