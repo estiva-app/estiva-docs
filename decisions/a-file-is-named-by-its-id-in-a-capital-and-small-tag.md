@@ -2,7 +2,7 @@
 
 - Date: 2026-10-29
 - Status: Accepted
-- Decided by: Miky, in the shaping session of "A load stays the same size as edits pile up: projects" (2026-10-29), on the brief "Pointing at a file" ([page](briefs/pointing-at-a-file.html)): option 1, as recommended
+- Decided by: Miky, in the shaping session of "A load stays the same size as edits pile up: projects" (2026-10-29), on the brief "Pointing at a file" ([page](briefs/pointing-at-a-file.html)): option 1, as recommended; and, in the same session at the review of estiva-docs#349, that a picked link carries only the file's id
 - Area: Files
 
 > Supersedes in part
@@ -59,8 +59,11 @@ The brief Miky decided on:
   the link in its text, a Folder's listing, who is on the file (kind 1851
   `member:<P>` targeted by `o`, SPEC §11.8), and block links and cards (`part`
   and `embed` take `<d>`, §13.6.1–§13.6.2).
-- A chip in text is the file's link. A pick from `[` or Cmd+K inserts the app
-  URL, as a paste does (§13.1, C25). A type whose app publishes no link has no
+- A chip in text is the file's link. A pick from `[` or Cmd+K inserts the
+  app's link form that carries only the file's id, never its title (Ship's
+  `/#/project/<d>`), so someone who cannot open the file learns nothing from
+  the message and a rename leaves nothing stale (§13.1, C25). A pasted link
+  stays as the person pasted it. A type whose app publishes no link has no
   chip in text.
 - Unread state keys a file by its id, which looks like a Folder's; the SPEC
   adds the rule that tells the two apart (§11.1).
@@ -72,6 +75,13 @@ Carried out by the project "A load stays the same size as edits pile up:
 projects", in the SPEC and in every app, for projects first.
 
 ## Rejected alternatives
+
+- **A picked chip saves the readable link** (`/project/<slug>-<d>`, as the
+  brief drew it). Copied text reads better, but anyone in the conversation,
+  a partner company's relay included, could read the title of a file they
+  cannot open, it stays after a rename, and the person picking never sees that
+  a title went into the message. Today a reader without access sees only a
+  locked chip.
 
 - **Borrow Nostr's tag for things outside Nostr** (`["I", "osnova:<d>"]`,
   `["K", "osnova"]`, NIP-73). Plain Nostr comment apps would thread our
