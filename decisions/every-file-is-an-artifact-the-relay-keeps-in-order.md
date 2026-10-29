@@ -113,8 +113,10 @@ prefix (`issue`) leaves nobody owning the meaning. For the file model:
 
 - **B · Artifacts' saves with a number of our own per type.** The same for
   Miky and Katerina, but our own variant of NIP-AR for good, and upstream
-  relays refuse our files. A number buys no plain-Nostr reader, because an
-  artifact needs an artifact-aware relay whatever its number.
+  relays refuse our files. It follows the Nostr community's rule, a number per
+  meaning, and keeps type filtering on any relay and in live feeds; but an
+  artifact needs an artifact-aware relay whatever its number, so a plain relay
+  can filter the type yet not tell which save is current.
 - **C · Keep field changes; the relay hands back the newest of each (do
   less).** Two-way and small to build. The newest clock keeps winning silently,
   the fold stays ours in the relay and every app, both relays in a shared
