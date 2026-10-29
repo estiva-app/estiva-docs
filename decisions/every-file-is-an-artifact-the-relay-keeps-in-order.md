@@ -82,8 +82,12 @@ Proposed (the brief's recommendation, option A):
   until adopters or a foundation take it over. `estiva.*` is left for what
   only Estiva's apps use, as `acme.*` is for Acme's; an app's extensions use
   its own prefix (`acme.story-points` on an `osnova.issue`). A type names one
-  file (`osnova.issue`, not `osnova.issues`). A breaking change is a new name,
-  and a type goes upstream once a second company uses it. The prefix is
+  file (`osnova.issue`, not `osnova.issues`). A breaking change is a new name.
+  A builder names its own types and launches without asking anyone (Miky,
+  29 Oct); a type is standardised later, from a reference implementation and
+  once a second company uses it, and its files then convert to the `osnova.*`
+  name with one "convert" save each, keeping id, links, conversation and
+  history (a rule proposed upstream, which NIP-AR's immutable `type` lacks). The prefix is
   permanent on the wire, so the protocol's name is final before the first
   file is written (Peek topic "Osnova Application Protocol", 13 Oct: "let's
   sleep on it").
