@@ -34,7 +34,6 @@ a { color: var(--accent); }
 .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
 .legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
 .legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
-.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
 .legend .lf::before { opacity: .45; }
 figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
 figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
@@ -46,7 +45,6 @@ svg .h { font-weight: 600; }
 svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
 svg .b { fill: var(--box); stroke: var(--line); }
 svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
-svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
 svg .f { opacity: .45; }
 svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
 svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
@@ -93,7 +91,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <h3>After, as built</h3>
 <figure>
 <svg viewBox="0 0 720 300" role="img">
-<title>As built: Leaf draws pictures and fixes its tree (M1); uploads pictures and folds its panels away (M2); moves, archives and shows members through the shared file rules, and deletes by its own plan (M3); an archived page names and opens the file it was archived with (M5); the shared editor and shell are fixed, and Ship has not taken the fix yet</title>
+<title>As built: Leaf draws pictures and fixes its tree (M1); uploads pictures and folds its panels away (M2); moves, archives, deletes and shows members through the shared file rules, and moves a deleted page's pages up a level itself (M3); an archived page names and opens the file it was archived with (M5); the shared editor and shell are fixed, and Ship has not taken the fix yet</title>
 <g class="f"><rect class="b" x="20" y="20" width="176" height="58" rx="8"/><text x="36" y="44" class="h">Peek</text><text x="36" y="62" class="m">moves, archives, members</text></g>
 <g class="f"><rect class="b" x="200" y="20" width="190" height="58" rx="8"/><text x="216" y="44" class="h">Ship</text><text x="216" y="62" class="m">still on ui 0.88.0</text></g>
 <rect class="ok" x="460" y="20" width="240" height="58" rx="8"/><text x="476" y="44" class="h">Leaf</text><text x="476" y="62" class="m">pictures, tree, menu, members</text>
@@ -104,19 +102,19 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <path class="a f" d="M95,78 L95,126"/>
 <path class="a f" d="M275,78 L275,126"/>
 <path class="an" d="M460,50 L400,50 L400,110 L340,110 L340,126"/>
-<text x="348" y="96" class="tag">M3 · M5</text><text x="408" y="92" class="m">move · archive</text><text x="408" y="106" class="m">delete · members</text>
+<text x="394" y="96" class="tag" text-anchor="end">M3 · M5</text><text x="408" y="92" class="m">move · archive</text><text x="408" y="106" class="m">delete · members</text>
 <path class="an" d="M700,78 L712,78 L712,260 L704,260"/>
-<text x="640" y="214" class="tag">M2</text><text x="560" y="228" class="m">uploads pictures</text>
+<text x="560" y="228" class="tag">M2</text><text x="584" y="228" class="m">uploads pictures</text>
 <text x="476" y="206" class="tag">M1 · M2</text><text x="540" y="206" class="m">in ui 0.88.1 and 0.90.1</text>
 <path class="a f" d="M185,188 L185,216 L260,216 L260,228"/>
 </svg>
-<figcaption>As built. M1 fixed Leaf's pictures and tree and the shared editor's "/" (ui 0.88.1); the header prototype was judged and its controls were built to it. M2 turned on picture uploads and folds the comments column and the sidebar away (the sidebar's fold is ui 0.90.1). M3 has Leaf move, archive and show members through the shared file rules Peek uses; Delete is planned in Leaf itself, its pages moving up a level (SPEC §6.5). M5 has an archived page show Peek's and Ship's notice and open the page or project it was archived with, read through the same rules. Ship is still on ui 0.88.0, so it has neither fix yet. Who may move, archive or delete a file did not change, so no Access view is drawn. Leaf's look pass (milestone 4) moved to a later project.</figcaption>
+<figcaption>As built. M1 fixed Leaf's pictures and tree and the shared editor's "/" (ui 0.88.1); the header prototype was judged and its controls were built to it. M2 turned on picture uploads and folds the comments column and the sidebar away (the sidebar's fold is ui 0.90.1). M3 has Leaf move, archive, delete and show members through the shared file rules Peek uses; moving the pages under a deleted page up a level is Leaf's own (SPEC §6.5). M5 has an archived page show Peek's and Ship's notice and open the page or project it was archived with, read through the same rules. Ship is still on ui 0.88.0, so it has neither fix yet. Who may move, archive or delete a file did not change, so no Access view is drawn. Leaf's look pass (milestone 4, LED-7) goes to a new project, Leaf looks finished (Miky, 2026-10-29).</figcaption>
 </figure>
 
 <h2>Checked</h2>
 <h3>As built, 2026-10-29</h3>
 <ul>
-<li>Members through conversation's <code>membersOf</code> and <code>buildMembershipChange</code>: leaf <code>src/document/fileFacts.ts:2,74,121</code>. Move through interop's <code>planMoveFromFolders</code>: <code>src/document/fileMenu.ts:317</code>. Delete by Leaf's own <code>planDelete</code>: <code>src/document/fileMenu.ts:99</code>. Archived-with reads: <code>src/document/save.ts:19</code> (origin/main 2b7b1d3).</li>
+<li>Members through conversation's <code>membersOf</code> and <code>buildMembershipChange</code>: leaf <code>src/document/fileFacts.ts:2,74,121</code>. Move through interop's <code>planMoveFromFolders</code>: <code>src/document/fileMenu.ts:317</code>. Archive and Delete through interop's <code>buildActionEvent</code>(s) from Leaf's manifest: <code>src/document/fileMenu.ts:48,146</code>; a deleted page's pages moved up by Leaf's <code>planDelete</code>: <code>:99</code>. Archived-with reads: <code>src/document/save.ts:19</code> (origin/main 2b7b1d3).</li>
 <li>Shared ui: Leaf resolves <code>@estiva-app/ui</code> 0.90.1, Ship 0.88.0 (each repo's <code>package-lock.json</code> on origin/main).</li>
 <li>On production, each issue's Done when checked at its merge, 27–29 Oct: as Miky for the menu, Move, the folds, uploads and the archived notice; as QA-1 standing in for Katerina for pictures, "/", the tree's arrows and the header's members.</li>
 </ul>
