@@ -7,10 +7,13 @@
 
 > Supersedes in part
 > [every-file-is-an-artifact-the-relay-keeps-in-order](every-file-is-an-artifact-the-relay-keeps-in-order.md)
-> ("one single-letter tag": it is one letter in two cases) and
+> ("in one single-letter tag that every comment, mention, listing, unread
+> state, card and chip uses": it is one letter in two cases, and a chip in
+> text is the file's link) and
 > [a-link-is-stored-as-the-url-a-person-wrote](a-link-is-stored-as-the-url-a-person-wrote.md)
 > ("a pick from the `[` menu or Cmd+K still inserts the `nostr:` reference":
-> it now inserts the file's link). The rest of each stands.
+> it now inserts the file's link, which also answers the question that record
+> left open). The rest of each stands.
 
 ## Who it affects
 
@@ -39,7 +42,8 @@ letter is not enough.
   neither in its name, and is not an addressable event, so no `naddr` names it
   truly. A typed or pasted link carries only the id and keeps working.
 - The 14 Oct record kept the `nostr:` reference for a pick from `[` or Cmd+K
-  because "those picks have no link to keep". Every type with an app has one.
+  because "those picks have no link to keep". A file whose app publishes a
+  link has one to keep.
 - No NIP uses `o` or `O`, nor does our SPEC or relay; the relay filters by any
   one-letter tag (checked 29 Oct, on the brief).
 
@@ -74,7 +78,8 @@ projects", in the SPEC and in every app, for projects first.
   comments, as comments on an outside thing they cannot open, which no business
   reader uses. The price: a file on our own relay is filed as "content outside
   Nostr" in every event, every app parses a prefix, and the type can only say
-  "osnova", so nobody can ask for the comments on every project.
+  "osnova", so nobody can ask for the comments on every project. Putting the
+  type in the prefix would not fix that: converting a file would rename it.
 - **Keep today's address tag** (`["A", "45010:<creator>:<d>"]`, `naddr` chips).
   Least new code, and picked chips would keep the internal form. But it breaks
   Nostr's base rule (NIP-01: the address tag points at a record its author
@@ -94,7 +99,7 @@ projects", in the SPEC and in every app, for projects first.
 - After a type converts, older comments still name the old type, so a
   comment's `K` is a hint, not the file's type.
 - Drawing a link as a chip needs the app's link rules, as the 14 Oct record
-  already accepted. A copied message's text now always carries a link that
+  already accepted. A chip picked from now on copies out as a link that
   opens.
 - Not decided here: what happens to chips already in old signed messages,
   republished or left dead.

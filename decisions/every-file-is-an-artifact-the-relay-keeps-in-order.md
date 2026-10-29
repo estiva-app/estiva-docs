@@ -5,6 +5,13 @@
 - Decided by: Miky, in the shaping session of "A load stays the same size as edits pile up" (2026-10-29), on the brief "What a file is" v3 ([page](briefs/what-a-file-is.html)): D1 a and D2 a first; then A as a hybrid, after asking for the trade-offs side by side; then D3–D6 as recommended
 - Area: Files
 
+> Superseded in part, 2026-10-29: the part "in one single-letter tag that
+> every comment, mention, listing, unread state, card and chip uses" is
+> replaced by
+> [a-file-is-named-by-its-id-in-a-capital-and-small-tag](a-file-is-named-by-its-id-in-a-capital-and-small-tag.md):
+> one letter in two cases, and a chip in text is the file's link. The rest of
+> this record stands.
+
 > Supersedes in part
 > [a-files-type-is-a-shared-meaning-any-app-extends](a-files-type-is-a-shared-meaning-any-app-extends.md)
 > (a number per type, the relay-signed summary, text in an event of its own),

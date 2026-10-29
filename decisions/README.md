@@ -149,7 +149,7 @@ heading here.
 ## Links & widgets
 
 - [A file's address is the same in every app with only the host changed, every app answers it, and a pasted one is that file on any Estiva app's host](a-files-path-is-the-same-on-every-apps-host.md) — Accepted, 2026-10-20
-- [A link to a file is stored as the URL a person wrote, in descriptions and in messages](a-link-is-stored-as-the-url-a-person-wrote.md) — Accepted, 2026-10-14
+- [A link to a file is stored as the URL a person wrote, in descriptions and in messages](a-link-is-stored-as-the-url-a-person-wrote.md) — Accepted, 2026-10-14; its part "a pick from the `[` menu or Cmd+K still inserts the `nostr:` reference" superseded by "A file is named by its id in a new pair of tags", 2026-10-29
 - [A link pasted into a message is sent as Estiva's internal reference, not the link](a-pasted-link-in-a-message-is-sent-as-the-reference.md) — Superseded by the one above, 2026-10-13
 - [Where a link sits decides how it draws, and one file's card is added under a message: a link on words counts as naming its file](a-link-on-words-counts-toward-the-card.md) — Accepted, 2026-10-17
 - [Where a link sits decides how it draws, and one file's card is added under a message: a part counts, a person or a Folder alone on its line stays a chip](where-a-link-sits-and-which-file-gets-the-card.md) — Superseded by the one above, 2026-10-16
@@ -171,7 +171,7 @@ properties and its history.
 - [A type of file and its properties are defined by an app's listing or by a person's database, in one schema shape; app types come first, and people's databases come with the Notion-like app](an-apps-listing-or-a-persons-database-defines-a-type.md) — Accepted, 2026-10-26
 - [A file keeps every change and every text save for good, and has a History panel that shows them](a-file-keeps-every-change-for-good.md) — Accepted, 2026-10-26
 - [A file is named by its id in a new pair of tags, a capital one for "about it" and a small one for "mentions it", and a chip picked from a menu is saved as the file's link](a-file-is-named-by-its-id-in-a-capital-and-small-tag.md) — Accepted, 2026-10-29
-- [A file's own state is an upstream Buzz artifact the relay keeps in order; everything else names the file by one reference](every-file-is-an-artifact-the-relay-keeps-in-order.md) — Accepted, 2026-10-29
+- [A file's own state is an upstream Buzz artifact the relay keeps in order; everything else names the file by one reference](every-file-is-an-artifact-the-relay-keeps-in-order.md) — Accepted, 2026-10-29; its part "in one single-letter tag that every … card and chip uses" superseded by the one above, 2026-10-29
 
 ## Documents
 
