@@ -33,6 +33,14 @@ was removed, and an agent removed from a Folder does not reach it through its
 owner until someone adds it back. Removing an agent that only reached the
 Folder through its owner is accepted and remembered the same way.
 
+This keeps someone out of a **private** Folder only. An open Folder is open to
+everyone in the workspace, members or not, so removing a person or an agent
+from it only takes them off its member list: they still read and post there,
+as with a public channel in Slack. To keep someone out, the Folder is made
+private. Miky chose this on 28 Oct 2026, when the relay catch-up showed that
+every Folder in use was open. He turned down two other answers: an open Folder
+that excludes whoever was removed, and keeping only removed agents out.
+
 It is carried out by the Ship issue
 [Our relay runs current upstream Buzz](https://ship.estiva.app/issue/fd9fd483-08f8-4ede-ad4c-790189f4160b).
 
