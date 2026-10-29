@@ -5,6 +5,13 @@
 - Decided by: Miky, in the brief session of 26 October, on the brief "Two companies, one Folder" ([page](briefs/two-companies-one-folder.html)): B, after asking for his own version to be added as option D; and the recommended answer to both calls it brings
 - Area: Folders
 
+> Superseded in part, 2026-10-29: "every relay folds the same events into the
+> same result" is replaced, for a file's own state, by
+> [every-file-is-an-artifact-the-relay-keeps-in-order](every-file-is-an-artifact-the-relay-keeps-in-order.md):
+> the host's relay orders each file's saves, the exchange carries that order,
+> and it limits what the host may remove of a partner's words. The rest of
+> this record stands.
+
 ## Who it affects
 
 Miky shares a Folder with a partner company, Acme, much as in Slack Connect: a

@@ -5,6 +5,13 @@
 - Decided by: Miky, in the brief session of 26 October, on the brief "Files, Types, History" ([page](briefs/files-properties-schemas.html)): "Go: E"
 - Area: Files
 
+> Superseded in part, 2026-10-29: a number per type, the relay-signed summary
+> of each file and text in an event of its own are replaced by
+> [every-file-is-an-artifact-the-relay-keeps-in-order](every-file-is-an-artifact-the-relay-keeps-in-order.md):
+> a file's own state is an artifact named by its type (`osnova.issue`), kept
+> whole in each save by the relay. A type as a shared meaning any app extends
+> stands.
+
 > Supersedes in part three Accepted records; the rest of each stands:
 > - [a-files-text-is-a-readable-snapshot](a-files-text-is-a-readable-snapshot.md):
 >   only "written as a change to the file's `description` field (`kind:1851`)".
