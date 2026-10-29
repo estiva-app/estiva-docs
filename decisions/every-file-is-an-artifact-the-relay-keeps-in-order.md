@@ -1,8 +1,27 @@
 # A file's own state is an upstream Buzz artifact the relay keeps in order; everything else names the file by one reference
 
 - Date: 2026-10-29
-- Status: Proposed
+- Status: Accepted
+- Decided by: Miky, in the shaping session of "A load stays the same size as edits pile up" (2026-10-29), on the brief "What a file is" v3 ([page](briefs/what-a-file-is.html)): D1 a and D2 a first; then A as a hybrid, after asking for the trade-offs side by side; then D3–D6 as recommended
 - Area: Files
+
+> Supersedes in part
+> [a-files-type-is-a-shared-meaning-any-app-extends](a-files-type-is-a-shared-meaning-any-app-extends.md)
+> (a number per type, the relay-signed summary, text in an event of its own),
+> [a-files-text-is-a-readable-snapshot](a-files-text-is-a-readable-snapshot.md)
+> ("the last save wins"),
+> [estiva-curates-shared-types-in-a-public-directory](estiva-curates-shared-types-in-a-public-directory.md)
+> (numbers and the kind registry),
+> [a-card-changes-what-a-files-app-shares](a-card-changes-what-a-files-app-shares.md)
+> ("none converts into another"; "the owner keeps a field to itself by not
+> sharing it" becomes per type),
+> [a-file-keeps-every-change-for-good](a-file-keeps-every-change-for-good.md)
+> ("deleting a file is to remove every save") and
+> [a-shared-folder-lives-on-both-relays-and-its-host-runs-it](a-shared-folder-lives-on-both-relays-and-its-host-runs-it.md)
+> ("every relay folds the same events into the same result"; the host may
+> remove a partner's save only within limits the exchange sets). The rest of
+> each stands. SPEC §6.5 ("nobody may delete another person's work") changes
+> with D3 when the SPEC describes artifacts.
 
 ## Who it affects
 
@@ -10,14 +29,15 @@ Miky and Katerina: a list (a Ship project, a Leaf Folder) loads each file as it
 is now, and stays that size however many edits pile up. Leaf and Ship already
 say "Katerina saved a newer version. Load it (replaces your changes)", which
 offers only to lose one person's words; with the relay refusing a save made on
-an out-of-date copy in every app and agent, the app can keep both. History
-shows whole versions. Who is on a file, comments, listings and unread state
-behave as today.
+an out-of-date copy in every app and agent, the app keeps both, and asks only
+about a block both people changed. History shows whole versions. Anyone who may
+edit a file can delete it and anyone can bring it back. Who is on a file,
+comments, listings and unread state behave as today.
 
 An outside company holds a file's own state on upstream Buzz as it ships, and
 needs our listings, membership and unread state beside it. A builder invents
 `acme.candidate` with filterable properties as tags and asks nobody for a
-number.
+number; when it is standardised, its files convert in place.
 
 It came up on 29 October, shaping "A load stays the same size as edits pile
 up" (initiative "Peek, Ship and Leaf are fast", step 3), on the brief "What a
@@ -53,6 +73,8 @@ file is" (version 3, after a product and protocol review of version 2).
 - Our relay gates artifacts behind an `artifacts` build feature, off. Search
   indexes messages, comments, profiles and file titles (`1851` `title`/`ref`),
   not file text. Event content is capped at 256 KB.
+- Today 24 of 34 projects are readable by everyone in the workspace; their
+  issues only by their Folder.
 - The four Files records of 26 Oct chose a relay-signed summary per file, text
   in an event of its own and a number per shared type; none is built and the
   SPEC does not describe them yet. On 29 Oct Miky decided that shared types
@@ -63,63 +85,50 @@ file is" (version 3, after a product and protocol review of version 2).
 
 ## Decision
 
-Proposed (the brief's recommendation, option A as a hybrid):
-
 - **A file's own state is a NIP-AR artifact**: its fields and its text, whole
-  in each save. The relay keeps saves in order and refuses a stale one; the app
-  merges different fields without asking and asks only about a block both
-  people changed (D4, to prototype). Every save is signed by a person.
-- **One reference names a file everywhere (D1; Miky chose it on 29 Oct, on the
-  brief "What a file is" v3)**: its workspace-unique `d`, in
+  in each save. The relay keeps saves in order and refuses a stale one. Every
+  save is signed by a person.
+- **A refused save merges (D4)**: different fields and different blocks merge
+  without asking; only a block both people changed asks. Katerina designs how
+  it looks, from a Storybook prototype, before it is built.
+- **One reference names a file everywhere (D1)**: its workspace-unique `d`, in
   one single-letter tag that every comment, mention, listing, unread state,
   card and chip uses, in the SPEC and proposed upstream beside NIP-AR. Old
   references are rewritten by the migration or left dead
   ([early-shapes-are-migrated-or-deleted](early-shapes-are-migrated-or-deleted.md)).
-- **Who is on a file stays beside it (D2; Miky chose it on 29 Oct, on the same
-  brief)**: one small event per join, add or
+- **Who is on a file stays beside it (D2)**: one small event per join, add or
   leave, naming the file by that reference; the three membership records stand.
 - **Shared types carry the protocol's name** (Miky, 29 Oct): `osnova.issue`,
   `osnova.project`, `osnova.document`, `osnova.topic`, singular, in the Osnova
   directory Estiva curates in public; `estiva.*` and `acme.*` for an app's own
-  types and extensions. Builders name their own types and launch; a
-  standardised type converts with one "convert" save that keeps the id (D6),
-  allowed only for types whose directory entry names the target, proposed
-  upstream. The protocol's name is final before the first file is written.
+  types and extensions. Builders name their own types and launch. The
+  protocol's name is final before the first file is written.
+- **A standardised type converts in place (D6)**: one "convert" save changes
+  the type and keeps the id, links, conversation and history; it is allowed
+  only for types whose directory entry names the target, so agent settings are
+  never touched.
 - **A list reads current saves without their text**, a query option our relay
-  adds and proposes upstream; Estiva ID limits which types an app or agent
-  signs; a move changes only where a file is listed until the navigation
-  rework's access call.
+  adds. Estiva ID limits which types an app or agent signs; a move changes only
+  where a file is listed until the navigation rework's access call.
+- **Upstream**: the reference, lists without text and convert are proposed to
+  Block during the first stage; any they refuse we carry as our rule.
 - **Search covers each file's current version only**: title, text-valued
   properties and text, every word as a word start, under the home's read
   access; a Done-when leg of the first stage.
-- **Delete is restorable, by anyone who may edit the file; removing a save for
-  good is an admin's separate action (D3).** A project's home is its Folder or
-  team, Company by default (D5).
+- **Delete is restorable, by anyone who may edit the file, and shows who did it
+  (D3)**; removing a save for good, for a pasted password, is an admin's
+  separate action.
+- **A project's home is its Folder or team, Company by default (D5)**; its
+  readers are the home's members.
 - **In a shared Folder the host's relay orders each file's saves**; the
   exchange carries the order and limits what the host may remove of a
   partner's words.
 - **Migration**: each file's current state becomes its first save; older
   changes stay readable as they are, never re-signed as versions nobody saved.
-
-Supersedes in part, if accepted:
-[a-files-type-is-a-shared-meaning-any-app-extends](a-files-type-is-a-shared-meaning-any-app-extends.md)
-(numbers, the relay-signed summary, text in an event of its own),
-[a-files-text-is-a-readable-snapshot](a-files-text-is-a-readable-snapshot.md)
-("the last save wins"),
-[estiva-curates-shared-types-in-a-public-directory](estiva-curates-shared-types-in-a-public-directory.md)
-(numbers and the kind registry),
-[a-card-changes-what-a-files-app-shares](a-card-changes-what-a-files-app-shares.md)
-("none converts into another"; "the owner keeps a field to itself by not
-sharing it" becomes per type),
-[a-file-keeps-every-change-for-good](a-file-keeps-every-change-for-good.md)
-("deleting a file is to remove every save"),
-[a-shared-folder-lives-on-both-relays-and-its-host-runs-it](a-shared-folder-lives-on-both-relays-and-its-host-runs-it.md)
-("every relay folds the same events into the same result"), and SPEC §6.5
-("nobody may delete another person's work").
+- Built in stages, one type end to end with search first, by the project "A
+  load stays the same size as edits pile up".
 
 ## Rejected alternatives
-
-None yet; the brief's other options, as they stand:
 
 - **The 26 Oct shape (Accepted, not built).** The relay adds up field changes
   and signs a summary; text in its own event; a number per type. Flat lists,
@@ -129,15 +138,29 @@ None yet; the brief's other options, as they stand:
   follows for its field; the relay refuses a stale one and answers the newest
   of each. Linear's shape: per-field authority kept, different fields never
   collide, close to two-way. New relay code of our own (a head per file and
-  field, a backfill, a bulk read), our own standard, and an index of current
-  values built by us. The strong alternative if Block refuses the reference,
-  leave-out-text or convert proposals.
+  field, a backfill, a bulk read), our own standard that an outside company
+  gets only by running our relay, and an index of current values built by us.
+- **Ask Block first, then A or C.** Holds the call until Block answers on the
+  three proposals. Turned down: A is taken, and what Block refuses we carry.
 - **B · A with a number per type.** The same for people; our own variant of
   NIP-AR for good, refused by upstream relays, against Miky's naming call.
-- For the reference: today's `kind:pubkey:d` rules out A and converting;
-  naming the first save (version 2) loses the file when that save is redacted.
-- For membership: inside the file's saves, adding a person becomes editing the
-  file, and a leave is a save by the leaver.
+- **The reference (D1):** today's `kind:pubkey:d` rules out artifacts and
+  converting; naming the first save (version 2) loses the file when that save
+  is redacted.
+- **Membership (D2):** inside the file's saves, adding a person becomes editing
+  the file, and a leave is a save by the leaver.
+- **Delete (D3):** author only, restorable, means our relay refusing deletes
+  upstream allows; today's author-only hide keeps two records but diverges
+  from upstream.
+- **A refused save (D4):** keeping theirs and offering "Your version" to copy
+  back loses nothing but leaves the merge to the person; building live
+  co-editing first is much larger and delays the project.
+- **Who reads a project (D5):** always Company leaks a private team's project
+  names; the same Folder as its issues makes today's workspace-wide projects
+  private.
+- **Convert (D6):** a new file naming the one it replaces fits upstream's
+  "id and type never change", but every link and conversation takes an extra
+  hop.
 
 ## Consequences
 
@@ -150,6 +173,8 @@ None yet; the brief's other options, as they stand:
 - A live feed narrows by Folder, not by type; an assignment needs its own
   notification, since a save sends no push.
 - A Folder delete must count artifacts, or it hides them.
-- We follow a month-old draft and propose three changes upstream.
+- We follow a month-old draft, propose three changes upstream, and may carry
+  them as our own.
 - Under navigation: an artifact is read by its home's readers, which leans the
-  access brief's open call toward a team or space deciding who reads.
+  access brief's open call ("Who leads, who reads") toward a team or space
+  deciding who reads, and makes it more urgent (D5).

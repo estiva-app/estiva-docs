@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What a File Is</title>
+<style>
+:root{--bg:#fbfaf7;--ink:#1d1d1b;--muted:#6b6a64;--box:#ffffff;--line:#c9c6bd;--accent:#2f6fde;--accent-soft:#e3ecfb;--warn:#b5521b;--warn-soft:#f8e6da;--ok:#2e7d4f;--ok-soft:#e0f1e7;--rule:#e7e4dc}
+@media (prefers-color-scheme: dark){:root{--bg:#161615;--ink:#ecebe6;--muted:#a3a19a;--box:#22221f;--line:#4a4842;--accent:#7aa7f5;--accent-soft:#1f2c44;--warn:#ec9a6a;--warn-soft:#3d2719;--ok:#7cc79a;--ok-soft:#1b3326;--rule:#2d2c29}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+main{max-width:760px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.6rem;line-height:1.25;margin:0 0 6px}
+h2{font-size:1.15rem;margin:34px 0 8px;padding-top:14px;border-top:1px solid var(--rule)}
+h3{font-size:1rem;margin:18px 0 4px}
+p,li{margin:6px 0}
+.sub{color:var(--muted);margin:0 0 18px}
+.q{background:var(--accent-soft);border-left:4px solid var(--accent);padding:12px 14px;border-radius:6px;font-size:1.05rem}
+.note{background:var(--warn-soft);border-left:4px solid var(--warn);padding:10px 14px;border-radius:6px}
+.pick{background:var(--ok-soft);border-left:4px solid var(--ok);padding:12px 14px;border-radius:6px}
+.opt{border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:14px 0;background:var(--box)}
+.opt h3{margin-top:4px}
+.call{border:1px solid var(--accent);border-radius:8px;padding:10px 14px;margin:16px 0;background:var(--box)}
+.call h3{margin-top:4px}
+.rec{color:var(--ok);font-weight:600}
+.tag{display:inline-block;font-size:.78rem;padding:1px 8px;border-radius:10px;background:var(--rule);color:var(--muted);margin-left:6px;vertical-align:middle}
+svg{width:100%;height:auto;display:block;margin:8px 0}
+svg text{font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;fill:var(--ink)}
+svg .m{fill:var(--muted);font-size:12px}
+svg .t{font-weight:600}
+svg .b{fill:var(--box);stroke:var(--line);stroke-width:1.2}
+svg .hot{fill:var(--warn-soft);stroke:var(--warn);stroke-width:1.2}
+svg .new{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+svg .good{fill:var(--ok-soft);stroke:var(--ok);stroke-width:1.4}
+svg .dash{fill:none;stroke:var(--muted);stroke-width:1.2;stroke-dasharray:5 4}
+svg .ar{stroke:var(--ink);stroke-width:1.4;fill:none;marker-end:url(#h)}
+svg .ara{stroke:var(--accent);stroke-width:1.6;fill:none;marker-end:url(#ha)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:620px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--rule)}
+small,.small{font-size:.86rem;color:var(--muted)}
+code{font-size:.86em}
+nav.toc{font-size:.9rem;color:var(--muted)}
+nav.toc a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="var(--ink)"/></marker>
+<marker id="ha" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="var(--accent)"/></marker>
+</defs></svg>
+
+<h1>What a file is</h1>
+<p class="sub">Decision brief, version 3, 29 Oct 2026. It replaces version 2 from the same morning, after a fresh product and protocol review found that "adopt artifacts as they are" cannot be built as drawn, and that several of its facts were wrong. Initiative "Peek, Ship and Leaf are fast", step 3. About twelve minutes; the tables can be skimmed.</p>
+
+<p class="q"><strong>The question.</strong> For every app and every company on Osnova, what is a file? A pile of "set this field" changes that each app adds up, with the newest clock winning? Or a record whose current version the relay keeps, refusing any save made on an out-of-date copy?</p>
+
+<p><strong>Two calls come first</strong>, because every option that changes the file needs them: <a href="#d1">D1, one reference that names a file everywhere</a>, and <a href="#d2">D2, membership kept beside the file</a>. The main call and D3–D6 follow.</p>
+
+<nav class="toc">On this page: <a href="#today">Today</a> · <a href="#reach">Why it reaches beyond</a> · <a href="#options">Four options</a> · <a href="#person">Two people saving at once</a> · <a href="#d1">D1</a> · <a href="#d2">D2</a> · <a href="#search">Search</a> · <a href="#connect">Two companies</a> · <a href="#calls">Calls kept from v2</a> · <a href="#later">D3–D6</a> · <a href="#overturns">What it overturns</a> · <a href="#tradeoffs">Trade-offs</a> · <a href="#rec">Recommendation</a> · <a href="#checked">Checked</a></nav>
+
+<h2 id="today">Today</h2>
+<p>A file (an issue, a project, a Leaf page) is a starting record plus a growing pile of changes, each one "set this field to this value", signed by whoever made it. Every app reads the whole pile and adds it up. For each field the newest change wins, by the clock of the device that made it. A text save is one such change and carries a whole copy of the text. Who is on a file is one change per person ("Katerina: on this file").</p>
+<p>On production on 29 Oct the pile holds <strong>2,732 text saves weighing 42.0 MB</strong> and 3,649 other changes weighing 2.2 MB, across 1,171 files. It has grown 8–17 MB a week this month. A cold Ship load downloads 53 MB, and 43.8 MB of that is this pile. What a list actually needs is much smaller: the newest value of every field is 1.5 MB, and every file's newest text is another 5.1 MB.</p>
+<p><strong>Already decided.</strong> On 26 Oct you chose (brief "Files, Types, History") that the relay keeps a small summary of each file's current state and signs it itself, that the text moves to an event of its own where the last save wins, and that every shared type gets a number of its own. None of it is built, and the SPEC does not describe it yet. On 29 Oct you added: a shared type carries the protocol's name (<code>osnova.issue</code>, singular); a builder names its own types and launches; a type that is standardised later converts; Leaf tabs are sections of one document; old chips and references are migrated or dropped, with no compatibility layer; and search must work before any type moves.</p>
+<p><strong>The new fact behind v2 still holds.</strong> Upstream Buzz added <em>artifacts</em> on 28 Sep: an editable record in one channel (for us, a Folder), where each save is a whole copy that names the save it was made on. The relay refuses a save made on an out-of-date copy. Our relay carries artifacts behind a switch that is off. Upstream uses them only for agent settings, and the standard is a draft.</p>
+
+<h2 id="reach">Why it reaches beyond this project</h2>
+<ul>
+<li><strong>It sets what a file is for every app and every outside company.</strong> Ship, Leaf, Peek, the agent and anything a partner builds read and write files one way.</li>
+<li><strong>It sets who protects a person's words when two saves cross.</strong> That can be each app on its own, as Leaf and Ship do today, or the relay for every app and agent.</li>
+<li><strong>It sets how everything else names a file</strong> (comments, mentions, listings, unread state, pasted chips), and so whether a file can change type (D1).</li>
+<li><strong>It sets who orders a shared file's changes</strong> when two companies share a Folder.</li>
+<li><strong>Door:</strong> the 26 Oct shape, A and B are one-way. Each moves every file and needs a second migration to undo. C is close to two-way: it adds a rule the relay can stop enforcing, and old changes stay valid.</li>
+</ul>
+
+<h2 id="options">Four options</h2>
+<svg viewBox="0 0 680 452" role="img"><title>Four options: what apps write, what the relay keeps, what a list reads, and what happens when two saves cross</title>
+<text class="m" x="0" y="14">what apps write</text><text class="m" x="200" y="14">what the relay keeps</text><text class="m" x="470" y="14">a list reads · two saves cross</text>
+<text class="t" x="0" y="38">Baseline · the 26 Oct shape (Accepted)</text>
+<rect class="b" x="0" y="46" width="180" height="58" rx="5"/><text x="10" y="66">field changes;</text><text class="m" x="10" y="84">text as its own event</text>
+<path class="ar" d="M180 75 H198"/>
+<rect class="b" x="200" y="46" width="250" height="58" rx="6"/><text x="210" y="66">adds them up and signs</text><text class="m" x="210" y="84">a summary per file</text>
+<path class="ar" d="M450 75 H468"/>
+<rect class="hot" x="470" y="46" width="210" height="58" rx="5"/><text x="480" y="66">summaries</text><text class="m" x="480" y="84">newest clock wins</text>
+<text class="t" x="0" y="140">C · the relay orders each field</text>
+<rect class="b" x="0" y="148" width="180" height="58" rx="5"/><text x="10" y="168">field changes, each</text><text class="m" x="10" y="186">naming the one it follows</text>
+<path class="ar" d="M180 177 H198"/>
+<rect class="new" x="200" y="148" width="250" height="58" rx="6"/><text x="210" y="168">orders each field, refuses</text><text class="m" x="210" y="186">a stale one; newest of each</text>
+<path class="ar" d="M450 177 H468"/>
+<rect class="good" x="470" y="148" width="210" height="58" rx="5"/><text x="480" y="168">newest values</text><text class="m" x="480" y="186">same field only: app is told</text>
+<text class="t" x="0" y="242">A · hybrid: the file's state is an artifact</text>
+<rect class="b" x="0" y="250" width="180" height="76" rx="5"/><text x="10" y="270">whole saves of the file;</text><text class="m" x="10" y="288">membership, comments,</text><text class="m" x="10" y="304">listings: beside it, by</text><text class="m" x="10" y="320">one reference (D1, D2)</text>
+<path class="ar" d="M180 288 H198"/>
+<rect class="new" x="200" y="250" width="250" height="76" rx="6"/><text x="210" y="270">orders saves (upstream's</text><text class="m" x="210" y="288">artifacts), refuses a stale</text><text class="m" x="210" y="304">one; answers current saves</text>
+<path class="ar" d="M450 288 H468"/>
+<rect class="good" x="470" y="250" width="210" height="76" rx="5"/><text x="480" y="270">current saves, no text</text><text class="m" x="480" y="288">any field: app is told;</text><text class="m" x="480" y="304">different fields merge</text><text class="m" x="480" y="320">without asking</text>
+<text class="t" x="0" y="362">B · A, with a number per type</text>
+<rect class="b" x="0" y="370" width="180" height="58" rx="5"/><text x="10" y="390">as A, one number</text><text class="m" x="10" y="408">per type</text>
+<path class="ar" d="M180 399 H198"/>
+<rect class="b" x="200" y="370" width="250" height="58" rx="6"/><text x="210" y="390">our variant of artifacts</text><text class="m" x="210" y="408">upstream relays refuse it</text>
+<path class="ar" d="M450 399 H468"/>
+<rect class="good" x="470" y="370" width="210" height="58" rx="5"/><text x="480" y="390">as A</text><text class="m" x="480" y="408">as A</text>
+<text class="m" x="0" y="448">In all four, a list stops growing with edits. Only C, A and B let the relay protect a save.</text>
+</svg>
+
+<div class="opt">
+<h3>Baseline · the 26 Oct shape <span class="tag">Accepted, not built</span></h3>
+<p><strong>What you see.</strong> Lists of summaries, flat as edits pile up. Two saves crossing behave as today: the newest clock wins, and Leaf's and Ship's notice is the only warning.</p>
+<p><strong>Outside company.</strong> It needs our relay to add up changes and sign summaries. A plain relay works slowly, and upstream Buzz answers none of it.</p>
+<p><strong>What could go wrong.</strong> The relay's summary repeats every app's adding-up rules (which Folder a change counts in, who may take a person off), and the two must never disagree. Your naming call of 29 Oct means one kind of starting record carrying a type name, instead of a number per type. That is a change to this shape as well.</p>
+</div>
+
+<div class="opt">
+<h3>C · Field changes, ordered by the relay</h3>
+<p><strong>What you see.</strong> Lists of current values, flat. Katerina changing the status while you edit the text never collide, because those are different fields. Two people editing the same text are protected: the second save is refused and the app is told. History stays the change list, as today.</p>
+<p><strong>Outside company.</strong> It writes field changes, each naming the one it follows, and our relay orders them. This is our own rule, offered as a standard of our own. Upstream Buzz relays answer none of it.</p>
+<p><strong>What could go wrong.</strong> It is new relay code: a head per file and field, a check on every change, a backfill from production, and a bulk "current values" read. Every app must say which change each one follows. A change that does not say so is either refused, which breaks plain Nostr clients, or races, which is today's behaviour. A database view ("candidates whose stage is Offer") needs an index of current values that we build ourselves. Linear works this way: one server orders every change, and the newest value per field wins.</p>
+</div>
+
+<div class="opt">
+<h3>A · Hybrid: the file's state is an artifact <span class="tag">recommended</span></h3>
+<p><strong>What you see.</strong> Lists of current saves, flat. A save made on an out-of-date copy is refused in every app and in the agent. Different fields merge without asking, and only the same text asks (D4). History lists whole versions. Who is on a file, comments, listings and unread state work as today, as their own events that name the file by one reference (D1, D2).</p>
+<p><strong>Outside company.</strong> The file's own state runs on upstream Buzz as it ships. Listings, membership rules and unread state are still ours, so a partner relay needs them too. "No Estiva code" (v2) was overstated. A builder writes <code>acme.candidate</code>, with filterable properties as tags, and asks nobody for a number.</p>
+<p><strong>What could go wrong.</strong> A status change from a list row must first fetch the whole save. An app that saves from the row without the text would write an empty text that the relay accepts as current: conformance tests guard this. A live feed can be narrowed by Folder, but not by type. A save sends no push, so an assignment needs its own notification. Upstream's standard is a month-old draft and may change. History weighs about a fifth more (53.5 MB instead of 44 MB), and only the History panel reads it.</p>
+</div>
+
+<div class="opt">
+<h3>B · A, with a number per type</h3>
+<p>The same for Miky and Katerina. A number would still let a relay that does not know artifacts narrow a live feed to issues, but such a relay cannot tell which save is current anyway. B costs our own variant of upstream's standard for good, and upstream relays refuse our files. Your 29 Oct call on names already points away from it. v2 claimed that converting is harder under B. It is not: B also names a file by its id, not its number.</p>
+</div>
+
+<h2 id="person">Two people saving at once: what people meet</h2>
+<p><strong>Leaf and Ship already warn you.</strong> When Katerina saves while your cursor is in the page, both apps show "Katerina saved a newer version. <u>Load it</u> (replaces your changes)." That gives you two choices, and both lose words. If you load hers, your typing is discarded. If you keep typing and leave, your save replaces her text. If your cursor is not in the page, her text replaces yours on screen without a word. The agent's <code>edit-issue</code> reads first and then writes with no check, so a save made in between is replaced. Peek edits no texts.</p>
+<p><strong>How often it bites, measured 29 Oct.</strong> Between Miky and Katerina: never the same field within a minute. There were 17 text saves within 60 s of another person's text save. Sixteen were QA-1 and QA-2 probes or Claude, and one was Katerina after her own Claude (13 Sep). Words were lost twice, both times in QA two-person probes. v2's "29 times" counted any field followed by a text save, test accounts included.</p>
+<p><strong>So the case is not today's pain.</strong> It is the case the notice already admits: the right moment, with a third choice missing. With C or A the relay refuses the out-of-date save in every app and agent, so the app can offer "keep both" instead of "lose one" (D4). That matters more as agents and automations edit beside people (Osnova's fourth question), and in a Folder two companies share. The 26 Oct shape leaves it to each app.</p>
+
+<h2 id="d1">D1 · One reference that names a file everywhere <span class="tag">big · asked first</span></h2>
+<p>Today a file is named by its type, its author and its id together, in comment roots (3,520 comments), mentions, Folder listings (723 listing changes), unread state, cards and block links. A pasted chip carries the same name, and it is pasted into 190 comments, 16 messages and 14 issue texts. An artifact has no author in its name. Converting a type (your 29 Oct call) also breaks any name that includes the type.</p>
+<svg viewBox="0 0 680 190" role="img"><title>Every event that points at a file names it by one reference: the file's id in the workspace</title>
+<rect class="b" x="0" y="6" width="150" height="28" rx="4"/><text x="10" y="25">A comment</text>
+<rect class="b" x="0" y="42" width="150" height="28" rx="4"/><text x="10" y="61">A mention</text>
+<rect class="b" x="0" y="78" width="150" height="28" rx="4"/><text x="10" y="97">A Folder listing</text>
+<rect class="b" x="0" y="114" width="150" height="28" rx="4"/><text x="10" y="133">Unread state</text>
+<rect class="b" x="0" y="150" width="150" height="28" rx="4"/><text x="10" y="169">A pasted chip, a card</text>
+<path class="ara" d="M150 20 L300 86"/><path class="ara" d="M150 56 L300 90"/><path class="ara" d="M150 92 H300"/><path class="ara" d="M150 128 L300 94"/><path class="ara" d="M150 164 L300 98"/>
+<rect class="good" x="302" y="62" width="200" height="60" rx="6"/><text x="312" y="86">The file's id</text><text class="m" x="312" y="104">unique in the workspace</text>
+<rect class="dash" x="530" y="40" width="150" height="104" rx="6"/><text class="m" x="540" y="62">not in the name:</text><text class="m" x="540" y="80">its type (converts)</text><text class="m" x="540" y="98">its author</text><text class="m" x="540" y="116">its Folder (moves)</text>
+</svg>
+<ul>
+<li><strong>a · The file's id, in one marker that every event uses</strong> <span class="tag">recommended</span>. It is written into the SPEC and proposed upstream beside artifacts. Ids are already unique across every type and author (Accepted 3 Oct), so this works under every option.</li>
+<li><strong>b · Keep type, author and id.</strong> This works for the 26 Oct shape and for C, but it rules out A and B, and it rules out converting.</li>
+<li><strong>c · Name the file's first save</strong> (v2's pick). Removing that save, a pasted password or "delete this version", hides it everywhere, and the file then cannot be found. The first save also no longer says the type.</li>
+</ul>
+<p><span class="rec">Recommend a.</span> A file's name should hold only what never changes. Old chips and references are rewritten by the migration or left dead, as you decided. Comments, listings and unread state are rewritten; signed messages carrying a chip are republished or keep a dead chip, and the migration decides which.</p>
+
+<h2 id="d2">D2 · Who is on a file stays beside it <span class="tag">big · asked first</span></h2>
+<p>Today anyone may add a person to a file, only you can take yourself off, and a mention in a file's text adds the person without an unread. Each is one small change about one person. If the file became whole saves and its people were part of each save, every add would be a new version of the file, written by someone who needs to be able to edit it. A leave would be a save of the file by the person leaving. A live feed of "files I am on" would bring every edit of every one of them.</p>
+<svg viewBox="0 0 680 150" role="img"><title>The file's saves hold its own fields and text; joins, adds and leaves are small events beside it, each naming the file</title>
+<rect class="new" x="0" y="10" width="300" height="130" rx="6"/><text class="t" x="12" y="32">The file (its saves)</text><text class="m" x="12" y="54">title, status, assignee, project</text><text class="m" x="12" y="72">properties as tags</text><text class="m" x="12" y="90">the text</text><text class="m" x="12" y="114">edited by those who may edit</text>
+<rect class="b" x="400" y="10" width="280" height="34" rx="4"/><text x="410" y="32">Katerina joined</text>
+<rect class="b" x="400" y="54" width="280" height="34" rx="4"/><text x="410" y="76">Claude added Miky (a mention)</text>
+<rect class="b" x="400" y="98" width="280" height="34" rx="4"/><text x="410" y="120">Miky left (only he can)</text>
+<path class="ara" d="M400 27 H302"/><path class="ara" d="M400 71 H302"/><path class="ara" d="M400 115 H302"/>
+</svg>
+<ul>
+<li><strong>a · Beside the file: one small event per join, add or leave, naming the file by its reference</strong> <span class="tag">recommended</span>. Your three membership records stand word for word.</li>
+<li><strong>b · Inside the file's saves</strong>, as upstream's people tags. Adding someone becomes editing the file, and it collides with the people writing it.</li>
+</ul>
+<p><span class="rec">Recommend a.</span> Who follows a file is about the person, not the file. This is only a question under A and B. Under the 26 Oct shape and C, membership already is per-person changes.</p>
+
+<h2 id="search">Search, before any type moves</h2>
+<p>You made search a condition of the first stage. Today the relay searches messages, comments and profiles, and finds files by title only, not by their text. Upstream has no artifact search: its word search would match every old save as well as the current one, on raw data, and would miss titles.</p>
+<ul>
+<li><strong>What it searches:</strong> each file's current version only, meaning its title, its text-valued properties and its text.</li>
+<li><strong>How it matches:</strong> every word as a word start, as Accepted on 19 Oct.</li>
+<li><strong>Who sees a hit:</strong> only someone who can read the file's home.</li>
+<li><strong>Built as:</strong> the relay updates the index on every accepted save (A), on every newest value (C), or from the summary (the 26 Oct shape). This is ours to design and to propose upstream for A.</li>
+<li>It is a Done-when leg of the first stage, not a later ticket.</li>
+</ul>
+
+<h2 id="connect">Two companies sharing a Folder</h2>
+<p>The Accepted record (26 Oct): a shared Folder lives on both companies' relays, the host's relay runs it, and "every relay folds the same events into the same result". Nothing is built.</p>
+<ul>
+<li><strong>C and A both need the host to order.</strong> The partner's relay passes each change on to the host and waits for "accepted" or "out of date". When the host is down, partners cannot save shared files, which the record's "the host says yes or no" already implies. The exchange between relays must carry that order, as well as removals and redactions.</li>
+<li><strong>Under A, a host admin can remove a partner's save</strong> under upstream's rules, and removing the current save retires the file. The record says "the host can take a person out, not delete their words", so the exchange must limit this.</li>
+<li>The 26 Oct shape keeps "every relay adds up the same", with clocks deciding.</li>
+</ul>
+
+<h2 id="calls">Calls kept from v2, if A</h2>
+<ul>
+<li><strong>1 · A list reads current saves without their text</strong>: an option our relay adds and we propose upstream. Lists carry 1.5 MB instead of 6.6 MB, and a relay without the option refuses the request plainly. <span class="rec">Still recommended.</span></li>
+<li><strong>2 · Estiva ID limits which types an app or agent signs</strong>, as it limits kinds today. A key that signs directly bypasses it, as it does today. Limits are per type, not per field (see "What it overturns"). <span class="rec">Still recommended.</span></li>
+<li><strong>4 · Moving a file changes only where it is listed</strong>, for now. Upstream's move changes who reads, and keeps old versions readable only to the old Folder. It waits for the navigation rework's access call. <span class="rec">Still recommended.</span></li>
+<li><strong>5 · Names:</strong> decided 29 Oct. Shared types are <code>osnova.issue</code>, <code>osnova.project</code>, <code>osnova.document</code>, <code>osnova.topic</code>. Builders name their own types and launch. The prefix is permanent on the wire, so the protocol's name is final before the first file is written.</li>
+<li>v2's call 3 (a comment names the first save) is replaced by D1.</li>
+</ul>
+
+<h2 id="later">Four smaller calls, after the main one</h2>
+<div class="call">
+<h3>D3 · What Delete means</h3>
+<p>Today only the author (or the person whose agent made it) can delete, a delete hides the file's starting record, and its history stays readable. Upstream: anyone who may post in the home may delete <em>or restore</em>, and a delete is a save saying "deleted". Separately, the author or a Folder admin can remove one save for good.</p>
+<p><span class="rec">Recommend:</span> Delete is restorable, by anyone who may edit the file, and is shown with who did it. "Remove for good" is a separate action for admins, for a pasted password. This overturns "nobody may delete another person's work" and "deleting removes every save".</p>
+</div>
+<div class="call">
+<h3>D4 · A save refused because someone saved first: what you see</h3>
+<p>Under C or A. Your call on the behaviour, and Katerina's on the look, from a Storybook prototype first.</p>
+<p><span class="rec">Recommend:</span> merge block by block, and ask only about a block both people changed. The alternatives are to keep theirs and offer "Your version" to copy back, or to build the live co-editing layer (Accepted for later) first.</p>
+</div>
+<div class="call">
+<h3>D5 · Who reads a project</h3>
+<p>Today 24 of 34 projects are readable by everyone in the workspace. Their issues are readable only by their Folder. An artifact needs a home, and the home's members are its readers.</p>
+<p><span class="rec">Recommend:</span> a project's home is its Folder or team, Company by default, which matches the navigation direction. That makes the access brief's call ("Who leads, who reads") a little more urgent.</p>
+</div>
+<div class="call">
+<h3>D6 · How a type converts</h3>
+<p>You decided that a standardised type converts. Upstream says an artifact's id and type never change, and its agent-settings standard depends on that.</p>
+<p><span class="rec">Recommend:</span> a "convert" save that changes the type and keeps the id, links, conversation and history. It is allowed only for types whose directory entry says what they convert to, so agent settings are never touched, and it is proposed upstream. If upstream refuses, we carry it as our rule. The alternative is a new file that names the one it replaces, with links pointing at the old one.</p>
+</div>
+
+<h2 id="overturns">What each option overturns</h2>
+<div class="tw"><table>
+<tr><th>Accepted record</th><th>26 Oct shape</th><th>C</th><th>A</th><th>B</th></tr>
+<tr><td>A file's type is a shared meaning (26 Oct): a number per type, a relay-signed summary, text in its own event</td><td>Is this record; names change the numbers</td><td>Summary becomes ordered fields; numbers become names</td><td>All three replaced</td><td>Summary and text event replaced</td></tr>
+<tr><td>A file's text is a readable snapshot, "the last save wins"</td><td>Stands</td><td>A stale save is refused</td><td>Same as C</td><td>Same as C</td></tr>
+<tr><td>Estiva curates shared types (numbers, the kind registry)</td><td colspan="4">Changed in every option by your 29 Oct call: names under <code>osnova.*</code>, the Osnova directory</td></tr>
+<tr><td>A card changes what a file's app shares: "none converts into another"; "the owner keeps a field to itself by not sharing it"</td><td>Convert overturns the first (29 Oct); the second stands</td><td>Same</td><td>Both: whole saves let any app that writes the type change every field</td><td>Same as A</td></tr>
+<tr><td>A file keeps every change for good: "deleting removes every save"</td><td>Stands</td><td>Stands</td><td>Delete becomes restorable (D3)</td><td>Same as A</td></tr>
+<tr><td>SPEC: nobody deletes another person's work</td><td>Stands</td><td>Stands</td><td>Overturned by D3</td><td>Same as A</td></tr>
+<tr><td>A shared Folder lives on both relays: "every relay folds the same"; "the host cannot delete their words"</td><td>Stands</td><td>The host orders each field</td><td>The host orders saves; its removals must be limited</td><td>Same as A</td></tr>
+<tr><td>Membership records (three)</td><td>Stand</td><td>Stand</td><td>Stand with D2 a</td><td>Same as A</td></tr>
+<tr><td>Moving never changes who reads; ids unique; what belongs to a file is stored with it</td><td colspan="4">Stand (with call 4; the unique id becomes D1's reference)</td></tr>
+</table></div>
+
+<h2 id="tradeoffs">Trade-offs</h2>
+<div class="tw"><table>
+<tr><th></th><th>Protocol shape</th><th>What Miky and Katerina see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td><strong>26 Oct</strong></td><td>Ours: apps add up, the relay adds up again and signs</td><td>Flat lists; saves crossing as today</td><td>Needs our relay</td><td>One-way</td><td>Large: summary, text move, migration</td></tr>
+<tr><td><strong>C</strong></td><td>Ours: the relay orders each field</td><td>Flat lists; the same text is protected; different fields never collide</td><td>Needs our relay; our standard</td><td>Close to two-way</td><td>Medium: new relay ordering, backfill, apps send "follows"</td></tr>
+<tr><td><strong>A</strong></td><td>Upstream's for the file; ours beside it, keyed on one reference</td><td>Flat lists; every save protected; history as versions</td><td>Upstream Buzz for files, plus our listings and membership</td><td>One-way</td><td>Large: every app, the migration, search, reference, convert</td></tr>
+<tr><td><strong>B</strong></td><td>Our variant of upstream's</td><td>Same as A</td><td>Needs our relay</td><td>One-way, and we carry the variant</td><td>A, plus the variant</td></tr>
+</table></div>
+<p class="small"><strong>Osnova's four questions.</strong> One company across all its apps: A and C both answer "everything assigned to me" from current state. A asks one question across every type, while C needs our index. Builders integrating: A is a standard Block also runs, and C is ours alone. Cross-app actions and agents: in A and C an agent's out-of-date save is refused instead of silently undoing a person's, while the 26 Oct shape leaves that to each app. Intelligence: the same, plus versions an agent can diff.</p>
+
+<h2 id="rec">Recommendation</h2>
+<div class="pick">
+<p><strong>A, as a hybrid: the file's own state is an upstream artifact named <code>osnova.issue</code> and so on, and membership, comments, listings, unread state and references are their own events, keyed on one reference to the file (D1 a, D2 a).</strong></p>
+<p><strong>For the person.</strong> Leaf and Ship already tell you when someone saved first, but they can only offer to lose your words or theirs. With the relay refusing an out-of-date save in every app and agent, "keep both" becomes possible everywhere (D4). Lists stop growing with edits.</p>
+<p><strong>For the protocol.</strong> The relay owns identity, access and order; apps own meaning. A builder gets one shape for any type, the same as Block's, with no number to request. The pieces that stay ours (listings, membership, unread state, search) all hang on one reference that never changes.</p>
+<p><strong>C is the strong alternative.</strong> It is Linear's shape, it keeps per-field authority, and it is nearly two-way. It would be the better pick if upstream refuses our three proposals (the reference, leaving the text out, convert), because A would then be our own variant anyway. Ask Block before the first stage builds.</p>
+<p>Cost does not tip it: A is the largest build. It is staged with one type end to end, search included.</p>
+</div>
+
+<h2 id="checked">Checked</h2>
+<ul>
+<li><strong>Production, 29 Oct (read-only queries):</strong> the pile's size above. Who saved within 60 s of another person: Miky's and Katerina's keys never within a minute of each other; Miky and his Claude 22 times, never on the same field; the 17 close text pairs and the 2 lost texts as above. Chips pasted in 190 comments, 16 messages and 14 issue texts. The busiest file has 3 people added by membership changes.</li>
+<li><strong>Leaf and Ship:</strong> the notice and its copy in the shared editor (estiva-ui DocumentEditor), its "replaces your changes", and that a save names no version it was made on. The agent's <code>edit-issue</code> does not check between its read and its write. Peek has no text editor.</li>
+<li><strong>Relay:</strong> artifacts are behind a switch that is off. Upstream's delete and restore are allowed to anyone who may post in the home. Removing the current save retires the file. Search finds file titles, not text. The text limit is 256 KB (512 KB is the message frame). A Folder delete counts only today's four file kinds, so it would hide artifacts. No part of the 26 Oct summary is built. C's ordering needs a new table and a new read; the artifact machinery shows the pattern.</li>
+<li><strong>SPEC and records</strong> on <code>origin/main</code>: each row of "What it overturns", the membership rules, and projects being readable workspace-wide (24 of 34, measured 29 Sep).</li>
+<li><strong>Migration:</strong> CON-20 re-signed old events with their authors' own keys, exported from Estiva ID. Turning a field change into a whole save would put a version in someone's name that they never saved. So under A, each file's current state becomes its first save, and older changes stay readable as they are.</li>
+<li><strong>Not checked:</strong> whether Block would take the reference, the leave-out-text option or convert; whether production's search index would pick up artifacts as configured today.</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="small">NIP-AR <code>kind:45010</code>/<code>45011</code>, tags <code>d h type op prev</code>, <code>/query</code> current|history, identity <code>(community, d)</code>; gate <code>artifacts</code> feature (buzz <code>ingest.rs:2751</code>, <code>nip11.rs:289</code>); delete/restore NIP-AR.md:73-76, redaction <code>9005</code> side_effects.rs ~442; no push for 45010 (<code>PUSH_MATCH_KINDS</code>); multi-letter tags refused on REQ for artifacts; <code>MAX_EVENT_CONTENT_BYTES</code> 256 KB; 9008 refusal counts <code>30840/30842/30850/30851</code>. Today: roots <code>30840/30842/30850/30851</code> + <code>kind:1851</code> (SPEC §6.1–§6.3, §6.10), membership <code>member:&lt;P&gt;</code> (§11.8), addresses <code>kind:pubkey:d</code> in <code>1111 A</code>, <code>a</code>, <code>30890</code>/<code>1852</code>, read state (§11.1), <code>part</code>/<code>embed</code> (§13.6), <code>urls</code> (§7.7); delete §6.5; <code>buzz-channel</code> projects §3.1/§7.3. D1 a: one single-letter tag carrying <code>d</code>. Leaf notice: estiva-ui <code>DocumentEditor.tsx:546</code>. Queries: <code>~/flat-load-scratch/census.sql</code>, <code>collisions.sql</code> + <code>collisions.mjs</code>, <code>references.sql</code>. Review: <code>what-a-file-is-review.md</code>. Record: estiva-docs#348. v2 kept at <code>~/flat-load-scratch/what-a-file-is-v2.html</code>.</p>
+</main>
+</body>
+</html>

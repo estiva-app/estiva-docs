@@ -6,6 +6,13 @@
 - Area: Documents
 - Supersedes: a-document-app-writes-what-a-files-app-shares.md
 
+> Superseded in part, 2026-10-29, by
+> [every-file-is-an-artifact-the-relay-keeps-in-order](every-file-is-an-artifact-the-relay-keeps-in-order.md):
+> "none converts into another" is replaced by a "convert" save for types whose
+> directory entry names the target; "the owner keeps a field to itself by not
+> sharing it" now holds per type, since any app that writes a type saves the
+> whole file. The rest of this record stands.
+
 ## Who it affects
 
 On 21 October Miky compared one comment linking *Widgets 2: build 2 —

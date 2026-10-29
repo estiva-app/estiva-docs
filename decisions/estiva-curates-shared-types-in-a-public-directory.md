@@ -5,6 +5,12 @@
 - Decided by: Miky, in the brief session of 26 October, on the brief "Files, Types, History" ([page](briefs/files-properties-schemas.html)), call 2: "Estiva in public with a directory of types, the optional App Store helping consensus"
 - Area: Files
 
+> Superseded in part, 2026-10-29: numbers and the kind registry are replaced
+> by names, `osnova.*` in the Osnova directory, by
+> [every-file-is-an-artifact-the-relay-keeps-in-order](every-file-is-an-artifact-the-relay-keeps-in-order.md);
+> a directory entry also says what a type converts to. The rest of this record
+> stands.
+
 ## Who it affects
 
 The brief's example, from Miky's own: an HR expert at an outside company starts an HR app from Estiva's public

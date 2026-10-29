@@ -10,6 +10,12 @@
 > [a-files-type-is-a-shared-meaning-any-app-extends](a-files-type-is-a-shared-meaning-any-app-extends.md):
 > each save is an event of its own. The rest of this record stands.
 
+> Superseded in part, 2026-10-29: "the last save wins" is replaced by
+> [every-file-is-an-artifact-the-relay-keeps-in-order](every-file-is-an-artifact-the-relay-keeps-in-order.md):
+> the text is part of the file's whole save, the relay refuses a save made on
+> an out-of-date copy, and the app merges it. A full readable copy and live
+> co-editing on top later stand.
+
 ## Who it affects
 
 Miky and the friend he wants as Estiva's first outside user write one page

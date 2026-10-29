@@ -5,6 +5,13 @@
 - Decided by: Miky, in the brief session of 26 October, on the brief "Files, Types, History" ([page](briefs/files-properties-schemas.html)), call 4: "everything, for good"
 - Area: Files
 
+> Superseded in part, 2026-10-29: "deleting a file is to remove every save" is
+> replaced by
+> [every-file-is-an-artifact-the-relay-keeps-in-order](every-file-is-an-artifact-the-relay-keeps-in-order.md):
+> a delete is restorable, by anyone who may edit the file, and removing a save
+> for good is an admin's separate action. History is whole versions. The rest
+> of this record stands.
+
 ## Who it affects
 
 Miky or Katerina opens a file's History and sees every property change as a
