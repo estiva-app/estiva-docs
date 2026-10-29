@@ -69,12 +69,14 @@ Proposed (the brief's recommendation, option A as a hybrid):
   in each save. The relay keeps saves in order and refuses a stale one; the app
   merges different fields without asking and asks only about a block both
   people changed (D4, to prototype). Every save is signed by a person.
-- **One reference names a file everywhere (D1)**: its workspace-unique `d`, in
+- **One reference names a file everywhere (D1; Miky chose it on 29 Oct, on the
+  brief "What a file is" v3)**: its workspace-unique `d`, in
   one single-letter tag that every comment, mention, listing, unread state,
   card and chip uses, in the SPEC and proposed upstream beside NIP-AR. Old
   references are rewritten by the migration or left dead
   ([early-shapes-are-migrated-or-deleted](early-shapes-are-migrated-or-deleted.md)).
-- **Who is on a file stays beside it (D2)**: one small event per join, add or
+- **Who is on a file stays beside it (D2; Miky chose it on 29 Oct, on the same
+  brief)**: one small event per join, add or
   leave, naming the file by that reference; the three membership records stand.
 - **Shared types carry the protocol's name** (Miky, 29 Oct): `osnova.issue`,
   `osnova.project`, `osnova.document`, `osnova.topic`, singular, in the Osnova
