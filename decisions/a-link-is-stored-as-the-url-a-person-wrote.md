@@ -6,6 +6,12 @@
 - Supersedes: a-pasted-link-in-a-message-is-sent-as-the-reference.md
 - Area: Links & widgets
 
+> Superseded in part, 2026-10-29: the part "A pick from the `[` menu or Cmd+K
+> still inserts the `nostr:` reference", and the question left open under
+> Consequences of whether those picks should write the link, are replaced by
+> [a-file-is-named-by-its-id-in-a-capital-and-small-tag](a-file-is-named-by-its-id-in-a-capital-and-small-tag.md):
+> a picked chip is saved as the file's link. The rest of this record stands.
+
 ## Who it affects
 
 Katerina pastes a link to an issue into a Peek message or a page description.
