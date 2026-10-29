@@ -133,3 +133,14 @@ prefix (`issue`) leaves nobody owning the meaning. For the file model:
   that without asking.
 - We follow a month-old draft: upstream's changes are ours to take or argue.
 - A plain Nostr app sees each save as a separate post.
+- It leans the navigation rework's open access call: an artifact is read by
+  its home's readers, so a team or a space deciding who reads fits as it is,
+  and a file deciding its own readers would need a channel per file. Upstream
+  also lets whoever may post in a space edit every file homed there, which a
+  front door that everyone posts in has to answer.
+- A list someone curates (a topic listing files from any team) stays a list;
+  a relationship a file's own editors set (an issue's project) is a tag on the
+  file.
+- Judged by Miky's four questions for Osnova (29 Oct): one company across all
+  its apps, builders integrating with existing apps, cross-app conversations
+  and workflows, and intelligence better than today's SaaS.
