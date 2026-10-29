@@ -126,6 +126,7 @@ heading here.
 - [A mention in a file's text adds the person, as the Add button does, and being added shows no unread until a document has its own read state](a-mention-in-a-files-text-adds-the-person-with-no-unread.md) — Accepted, 2026-10-20
 - [A mention in a file's text adds the person, as the Add button does, and being added shows one unread](a-mention-in-a-files-text-adds-the-person.md) — Superseded by the one above, 2026-10-20
 - [A person mentioned in a file's text is told once and becomes a member, and a later save that still names them changes nothing](a-person-mentioned-in-a-files-text-is-told-once.md) — Superseded by the one above, 2026-10-20
+- [A file's unread state is kept under "file:" and its id, so reading a file can never mark a Folder's chat read](a-files-unread-state-is-keyed-file-and-its-id.md) — Accepted, 2026-10-29
 
 ## Messages
 
