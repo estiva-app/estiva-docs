@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pointing at a File</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 6px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .8rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); vertical-align: middle; }
+.q { background: var(--chip); border-left: 4px solid var(--accent); padding: 12px 14px; border-radius: 6px; font-size: 1.05rem; }
+.note { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.pick { background: var(--ok-bg); border-left: 4px solid var(--ok); padding: 10px 14px; border-radius: 6px; }
+.opt { border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; margin: 16px 0; background: var(--card); }
+.opt figure { background: var(--bg); }
+.small, small { font-size: .88rem; color: var(--muted); }
+figure { margin: 12px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+/* Drawn 340 units wide, so text stays at about 13px on a phone without scrolling. */
+figure svg { width: 100%; max-width: 440px; height: auto; display: block; margin: 0 auto; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .wt { fill: var(--warn); font-size: 12px; font-weight: 600; }
+svg .ot { fill: var(--ok); font-size: 12px; font-weight: 600; }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); stroke-width: 1.5; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.6; marker-end: url(#arr); }
+svg .am { stroke: var(--ink); fill: none; stroke-width: 1.4; stroke-dasharray: 5 4; marker-end: url(#arr); }
+svg .ag { stroke: var(--muted); fill: none; stroke-width: 1.2; marker-end: url(#arr); }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; min-width: 560px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+td.rec { background: var(--ok-bg); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; overflow-wrap: anywhere; }
+/* On a phone a drawing in an option runs to the option's edges, so its text stays at full size. */
+@media (max-width: 480px) {
+  .opt { padding: 10px; }
+  .opt figure { margin: 10px -10px; padding: 8px 0; border-left: 0; border-right: 0; border-radius: 0; }
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+  </defs>
+</svg>
+<main>
+
+<h1>Pointing at a file</h1>
+<p class="sub"><span class="state">Decision brief, 29 Oct 2026</span> · The one open part of D1 in the Accepted record <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-file-is-an-artifact-the-relay-keeps-in-order.md">Every file is an artifact the relay keeps in order</a>, for the project on the architecture page, which draws the whole project; this page draws only what points at a file. About five minutes.</p>
+
+<p class="q"><strong>The question.</strong> When a comment, a mention, a Folder's list or a chip points at a file, what does it write, so that any app, ours or an outside company's, can find the file and tell "about it" from "mentions it"?</p>
+
+<h2>Today</h2>
+<p>A project is named by its <strong>address</strong>: type number, author's key and id. A comment carries it as "about it", which apps show as the conversation. A message carries it as "mentions it", shown under <em>Mentioned in</em>, and its chip is the same address in Nostr's link form. The Folder's list, who is on it, unread state, cards and block links copy it too.</p>
+<p><strong>Already decided.</strong> On 29 Oct you chose (D1 a, brief "What a file is") that one reference names a file everywhere: its id, "in one single-letter tag". The letter was left open. On 14 Oct you chose that a link is stored as the URL a person wrote; only a chip picked from the <kbd>[</kbd> menu or Cmd+K still saves the internal form.</p>
+<div class="note"><p><strong>What the protocol review found, checked: one marker is not enough.</strong></p>
+<ul>
+<li><strong>"About it" and "mentions it" differ by the marker's case</strong>: a capital letter for the file a comment is about, a small one for a file it mentions. Nostr's comments need both cases. So the reference is a <em>pair</em>: one letter, two cases.</li>
+<li><strong>The chip in the text has no form for the new file.</strong> It encodes a type number and an author's key, and a file the relay keeps has neither in its name. A typed or pasted link, like <code>ship.estiva.app/project/plan-&lt;id&gt;</code>, carries only the id and keeps working.</li>
+</ul></div>
+
+<figure>
+<svg viewBox="0 0 340 404" role="img">
+<title>Today: a comment, a message and everything else name the project by its address, which is its type number, its author's key and its id. A comment carries it as "about it" in a capital marker; a message carries it as "mentions it" in a small marker, and its chip in the text encodes the same address.</title>
+<rect class="w" x="8" y="8" width="244" height="66" rx="8"/>
+<text x="20" y="30" class="h">A comment on the project</text>
+<text x="20" y="48">about it: its address</text>
+<text x="20" y="64" class="m">A = 30850 : Miky's key : id</text>
+<rect class="w" x="8" y="86" width="244" height="102" rx="8"/>
+<text x="20" y="108" class="h">A message that names it</text>
+<text x="20" y="126">chip in the text: its address</text>
+<text x="20" y="142" class="m">nostr:naddr1… = type, key, id</text>
+<text x="20" y="162">mentions it: its address</text>
+<text x="20" y="178" class="m">a = 30850 : Miky's key : id</text>
+<rect class="w" x="8" y="200" width="244" height="66" rx="8"/>
+<text x="20" y="222" class="h">Everything else</text>
+<text x="20" y="240" class="m">Folder's list, who is on it, unread,</text>
+<text x="20" y="256" class="m">cards, block links: its address</text>
+<path class="a" d="M252,44 H304 V298"/>
+<path class="am" d="M252,158 H288 V298"/>
+<path class="ag" d="M252,233 H272 V298"/>
+<rect class="bad" x="8" y="304" width="324" height="68" rx="8"/>
+<text x="20" y="326" class="h">The project</text>
+<text x="20" y="344">its address: type : author's key : id</text>
+<text x="20" y="362" class="m">a record signed by its author, Miky</text>
+<path class="a" d="M8,392 H36"/><text x="44" y="396" class="m">about it</text>
+<path class="am" d="M110,392 H138"/><text x="146" y="396" class="m">mentions it</text>
+</svg>
+<figcaption>Today every pointer copies the author's key. A file the relay keeps is saved by anyone, so a key in its name would say nothing true.</figcaption>
+</figure>
+
+<h2>Why it reaches beyond this project</h2>
+<ul>
+<li><strong>One rule for every app and every outside company</strong> that points at a file, for projects first, then issues, documents and topics. It is also what we ask Block and Nostr's comment standard to adopt.</li>
+<li><strong>One-way.</strong> Every comment, listing and chip written from this stage on carries it. Undoing it means re-signing each of them by its own author, as the September comment move did with keys from Estiva ID. Unread state only ever grows, so a wrong unread key stays for good.</li>
+</ul>
+
+<h2>Three options</h2>
+
+<div class="opt">
+<h3>1 · A new pair of markers that hold the file's id <span class="state">recommended</span></h3>
+<figure>
+<svg viewBox="0 0 340 444" role="img">
+<title>Option 1: a comment carries "about it" as the file's id in a new capital marker, with the file's type beside it. A message's chip is the file's link, and it carries "mentions it" as the id in the small marker. Everything else carries the small marker. The project is named only by its id.</title>
+<rect class="w" x="8" y="8" width="244" height="66" rx="8"/>
+<text x="20" y="30" class="h">A comment on the project</text>
+<text x="20" y="48">about it: its id, and its type</text>
+<text x="20" y="64" class="m">O = id · K = osnova.project</text>
+<rect class="w" x="8" y="86" width="244" height="102" rx="8"/>
+<text x="20" y="108" class="h">A message that names it</text>
+<text x="20" y="126">chip in the text: its link</text>
+<text x="20" y="142" class="m">ship.estiva.app/project/plan-‹id›</text>
+<text x="20" y="162">mentions it: its id</text>
+<text x="20" y="178" class="m">o = id</text>
+<rect class="w" x="8" y="200" width="244" height="66" rx="8"/>
+<text x="20" y="222" class="h">Everything else</text>
+<text x="20" y="240" class="m">Folder's list, who is on it, unread,</text>
+<text x="20" y="256" class="m">cards, block links: its id (o)</text>
+<path class="a" d="M252,44 H304 V298"/>
+<path class="am" d="M252,158 H288 V298"/>
+<path class="ag" d="M252,233 H272 V298"/>
+<rect class="ok" x="8" y="304" width="324" height="68" rx="8"/>
+<text x="20" y="326" class="h">The project</text>
+<text x="20" y="344">named only by its id, which never changes</text>
+<text x="20" y="362" class="m">one record the relay keeps; anyone may save it</text>
+<text x="8" y="392" class="ot">Any app asks: about this id? naming this id?</text>
+<text x="8" y="408" class="m">A plain Nostr comment app knows no O: no thread.</text>
+<path class="a" d="M8,430 H36"/><text x="44" y="434" class="m">about it</text>
+<path class="am" d="M110,430 H138"/><text x="146" y="434" class="m">mentions it</text>
+</svg>
+</figure>
+<p><strong>What you see.</strong> Nothing changes on screen. One thing differs: a chip picked from the <kbd>[</kbd> menu or Cmd+K is saved as the file's link, so a copied message carries a link that opens, as a pasted one already does.</p>
+<p><strong>Outside company.</strong> Three plain questions, one meaning each: comments on this file, everything that names it, comments on any project. The same works for its own types, such as <code>acme.candidate</code>.</p>
+<p><strong>What could go wrong.</strong> Two proposals, to Block and to Nostr's comment standard; what they refuse we carry as our rule. A plain Nostr comment app shows no thread, but no business reader uses one. After a type converts, older comments still name the old type, so a comment's type is only a hint. A file's id looks like a Folder's id, so unread state needs a rule to tell them apart. A type whose app publishes no link has no chip in text. An outside app needs our link rules to draw a link as a chip, as already accepted on 14 Oct.</p>
+</div>
+
+<div class="opt">
+<h3>2 · Borrow Nostr's marker for things outside Nostr</h3>
+<figure>
+<svg viewBox="0 0 340 444" role="img">
+<title>Option 2: a comment carries "about it" as "osnova:" plus the id, in the marker Nostr uses for web pages and books; its type says only "osnova". A message's chip is the file's link, and it carries "mentions it" with the same prefix. A plain Nostr comment app threads it as a comment on an outside thing.</title>
+<rect class="w" x="8" y="8" width="244" height="66" rx="8"/>
+<text x="20" y="30" class="h">A comment on the project</text>
+<text x="20" y="48">about it: "osnova:" + its id</text>
+<text x="20" y="64" class="m">I = osnova:id · K = osnova</text>
+<rect class="w" x="8" y="86" width="244" height="102" rx="8"/>
+<text x="20" y="108" class="h">A message that names it</text>
+<text x="20" y="126">chip in the text: its link</text>
+<text x="20" y="142" class="m">ship.estiva.app/project/plan-‹id›</text>
+<text x="20" y="162">mentions it: "osnova:" + its id</text>
+<text x="20" y="178" class="m">i = osnova:id</text>
+<rect class="w" x="8" y="200" width="244" height="66" rx="8"/>
+<text x="20" y="222" class="h">Everything else</text>
+<text x="20" y="240" class="m">Folder's list, who is on it, unread,</text>
+<text x="20" y="256" class="m">cards, block links: osnova:id (i)</text>
+<path class="a" d="M252,44 H304 V298"/>
+<path class="am" d="M252,158 H288 V298"/>
+<path class="ag" d="M252,233 H272 V298"/>
+<rect class="w" x="8" y="304" width="324" height="68" rx="8"/>
+<text x="20" y="326" class="h">The project</text>
+<text x="20" y="344">named by its id, behind a prefix</text>
+<text x="20" y="362" class="m">filed as "content outside Nostr", in every event</text>
+<text x="8" y="392" class="wt">A plain Nostr comment app threads it as a</text>
+<text x="8" y="408" class="wt">comment on an outside thing it cannot open.</text>
+<path class="a" d="M8,430 H36"/><text x="44" y="434" class="m">about it</text>
+<path class="am" d="M110,430 H138"/><text x="146" y="434" class="m">mentions it</text>
+</svg>
+</figure>
+<p><strong>What you see.</strong> The same as 1.</p>
+<p><strong>Outside company.</strong> Plain Nostr comment apps thread our comments, as comments on an outside thing, like a web page, that they cannot open. Every app strips an <code>osnova:</code> prefix. The type can only say "osnova", so nobody can ask for "comments on any project".</p>
+<p><strong>What could go wrong.</strong> A file on our own relay is filed as "content outside Nostr" in every event, in the standard we ask others to adopt. The type cannot go into the prefix, because converting would rename the file.</p>
+</div>
+
+<div class="opt">
+<h3>3 · Do less: keep today's address marker</h3>
+<figure>
+<svg viewBox="0 0 340 444" role="img">
+<title>Option 3: comments, messages and everything else keep today's address marker, with the new record's type number and its creator's key. The project is saved by Miky, then by Katerina. A standard Nostr app reads the address as Miky's latest save, so it never sees Katerina's.</title>
+<rect class="w" x="8" y="8" width="244" height="66" rx="8"/>
+<text x="20" y="30" class="h">A comment on the project</text>
+<text x="20" y="48">about it: its address, as today</text>
+<text x="20" y="64" class="m">A = 45010 : Miky's key : id</text>
+<rect class="w" x="8" y="86" width="244" height="102" rx="8"/>
+<text x="20" y="108" class="h">A message that names it</text>
+<text x="20" y="126">chip in the text: its address</text>
+<text x="20" y="142" class="m">naddr1… = 45010, Miky's key, id</text>
+<text x="20" y="162">mentions it: the same address</text>
+<text x="20" y="178" class="m">a = 45010 : Miky's key : id</text>
+<rect class="w" x="8" y="200" width="244" height="66" rx="8"/>
+<text x="20" y="222" class="h">Everything else</text>
+<text x="20" y="240" class="m">Folder's list, who is on it, unread,</text>
+<text x="20" y="256" class="m">cards, block links: the same address</text>
+<path class="a" d="M252,44 H304 V298"/>
+<path class="am" d="M252,158 H288 V298"/>
+<path class="ag" d="M252,233 H272 V298"/>
+<rect class="bad" x="8" y="304" width="324" height="68" rx="8"/>
+<text x="20" y="326" class="h">The project</text>
+<text x="20" y="344">saved by Miky, then by Katerina</text>
+<text x="20" y="362" class="m">Miky's key in its name says nothing true</text>
+<text x="8" y="392" class="wt">A standard Nostr app asks for Miky's saves</text>
+<text x="8" y="408" class="wt">of this id, so it never sees Katerina's.</text>
+<path class="a" d="M8,430 H36"/><text x="44" y="434" class="m">about it</text>
+<path class="am" d="M110,430 H138"/><text x="146" y="434" class="m">mentions it</text>
+</svg>
+</figure>
+<p><strong>What you see.</strong> The same in our apps. Picked chips keep the internal form, so the 14 Oct record stands.</p>
+<p><strong>Outside company.</strong> Every Nostr library reads this marker as "this author's latest save" and asks for Miky's saves only. A builder has to learn that this one number means something else.</p>
+<p><strong>What could go wrong.</strong> Nostr's base rule says this marker points at a record its author replaces; the new record is saved by anyone, in the relay's order. The same marker means two things, by reader, and the creator's key stays in every pointer for good. The 29 Oct record turned this name down, so 3 reverses D1. It saves no re-signing: every pointer is rewritten either way.</p>
+</div>
+
+<h2>Trade-offs</h2>
+<div class="tw"><table>
+<tr><th></th><th>1 · New pair, the id</th><th>2 · The outside-Nostr marker</th><th>3 · Today's address marker</th></tr>
+<tr><th>Protocol shape</th><td class="rec">One meaning per marker. Today's about/mentions rule carries over unchanged. Two new letters, proposed upstream.</td><td>A marker meant for things outside Nostr. Every value carries a prefix every app parses.</td><td>Breaks Nostr's base rule. The author in the name identifies nothing.</td></tr>
+<tr><th>What Miky and Katerina see</th><td class="rec">No change. A picked chip copies out as a link.</td><td>No change.</td><td>No change in our apps. Another app may show an old version.</td></tr>
+<tr><th>What an outside company gets</th><td class="rec">"About this file", "names this file", "comments on projects", for its own types too. Plain Nostr comment apps show no thread.</td><td>Plain Nostr comment apps thread it, as an outside thing. No "comments on projects".</td><td>A familiar marker that every library resolves the wrong way.</td></tr>
+<tr><th>Undo cost</th><td>One-way: re-sign every pointer, each by its author.</td><td>One-way, the same.</td><td>One-way, though it looks two-way.</td></tr>
+<tr><th>Build cost</th><td>What the stage already plans: every pointer is rewritten anyway. The relay already filters by any one-letter marker.</td><td>As 1, plus a prefix parser in every app.</td><td>Least new code. Every reader special-cases the new record.</td></tr>
+</table></div>
+
+<h2>How others do it</h2>
+<ul>
+<li><strong>Block's artifacts</strong>: one artifact names another by its bare id, as option 1 does, but in a long-named marker a standard Nostr filter cannot ask for, and with no "about versus mentions".</li>
+<li><strong>Nostr comments</strong>: the top of a thread is an address, an event or an outside thing. The new record is none of the three, so every option bends something.</li>
+<li><strong>Notion</strong>: a mention stores the page's id, and so does its link. One server reads it; on an open protocol a stranger's code needs a standard marker.</li>
+<li><strong>Slack</strong>: a pasted link stays a link and unfurls into a card, as you chose on 14 Oct.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<div class="pick">
+<p><strong>Option 1.</strong> A new pair of markers holds the file's id. The capital one means "about it", with the file's type beside it, and the small one means "mentions it". A chip in text is the file's link.</p>
+<p><strong>For the protocol.</strong> One meaning per marker, and the SPEC's "about" and "mentions" rule carries over letter for letter. A builder asks three plain questions, for its own types too. Upstream it is the cleanest proposal: a fourth thing a comment can be about.</p>
+<p><strong>For the person.</strong> Nothing changes on screen. A picked chip becomes a link, which finishes your 14 Oct call that a file has one address people recognise.</p>
+<p><strong>Cost does not tip it</strong>: 1 and 3 re-sign the same events. Option 2 buys threading in plain Nostr comment apps, which no business reader uses, at the price of the wrong meaning.</p>
+</div>
+
+<h3>Does option 1 keep the Accepted record?</h3>
+<p><strong>No. It amends it in two places, so it needs a new record that you merge.</strong></p>
+<ul>
+<li>The record says "one single-letter tag". Option 1 is one letter in two cases, as the address marker is today, and Nostr filters treat the two cases as two markers. A builder following the record's words would lose "about versus mentions".</li>
+<li>The record does not say what a chip writes in the text. Option 1 makes it the link, which changes one line of the 14 Oct record <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-link-is-stored-as-the-url-a-person-wrote.md">A link is stored as the URL a person wrote</a>: a pick from <kbd>[</kbd> or Cmd+K saves the link, not the internal form. That line's reason, "no link to keep", no longer holds.</li>
+</ul>
+<p>Asking this page writes a <strong>Proposed</strong> record that supersedes those two parts and nothing else; your merge is the accept. Option 2 would amend it the same way; option 3 reverses D1.</p>
+<p class="small">Not asked here: chips already in old signed messages, republished or left dead. The architecture page marks it as a separate call.</p>
+
+<h2>Checked</h2>
+<ul class="small">
+<li><strong>"About" versus "mentions" is told by case</strong>: true. SPEC §6.4, <code>protocol/SPEC.md:670-671, 692-698, 715-719</code> (estiva-docs <code>origin/main</code> bee5013): capital <code>A</code> is the comment's root, small <code>a</code> not equal to it is a mention. NIP-22 (<code>22.md:13-14, 44</code>, nips 400d157, 27 Oct) requires a capital root and a small parent, each with its <code>K</code>/<code>k</code>.</li>
+<li><strong>A chip in text encodes the type number and the author's key</strong>: true. <code>fileReference</code> builds <code>nostr:naddr</code> from <code>kind:pubkey:d</code> (estiva-foundation <code>packages/conversation/src/references.ts:278-280</code>), and <code>encodeNaddr</code> writes the author and kind (<code>packages/protocol/src/nip19.ts:276-300</code>). An editor's link chip resolves to the same form (<code>packages/protocol/src/embeds.ts:474-480</code>). In a description it is a <code>reference</code> mark with that URI (SPEC §13.1 <code>:3404</code>, §13.3 <code>:3726</code>). An artifact is identified by "(community, d)" and "is not a NIP-01 addressable event" (buzz <code>nfb-demo-kinds</code> 7764733, <code>docs/nips/NIP-AR.md:55</code>), so no <code>naddr</code> names it truly.</li>
+<li><strong>Typed links survive</strong>: true. Ship declares <code>/project/&lt;slug&gt;-&lt;d&gt;</code> and <code>/#/project/&lt;d&gt;</code> (estiva-ship <code>src/nostr/manifest.ts:897-900</code>), resolved by the id (SPEC §7.7 <code>:2325</code>). Each line's third field says the old type number <code>30850</code> and must change with the move.</li>
+<li><strong>The 14 Oct record</strong>: "one way to address a file: its URL" (<code>decisions/a-link-is-stored-as-the-url-a-person-wrote.md:15</code>); "a pick … still inserts the <code>nostr:</code> reference" (<code>:49</code>); drawing a link as a chip needs the app's link rules (<code>:20</code>).</li>
+<li><strong>Who is on a file</strong> is targeted by the address marker: <code>["a", F] ["field","member:&lt;P&gt;"]</code> (SPEC §11.8 <code>:3099</code>). <strong>Block links and cards</strong> carry the address: <code>part</code> (§13.6.1 <code>:4152</code>), <code>embed</code> takes what <code>a</code> carries (§13.6.2 <code>:4276</code>). <strong>Unread state</strong> keys a file by its address and a channel by a bare UUID (§11.1 <code>:2769-2770</code>), so a bare file id would share the channel's shape. That is the rule option 1 still needs.</li>
+<li><strong>Option 3 breaks NIP-01</strong>: the address marker is for addressable or replaceable events only (<code>01.md:80-82, 99</code>), and NIP-AR says kind 45010 is neither (<code>NIP-AR.md:55</code>). <strong>Option 2's meaning</strong>: NIP-73 is "External Content IDs" such as ISBNs and URLs (<code>73.md:8-12</code>). For those, NIP-22's <code>K</code> holds a type word, not a number (<code>22.md:46-49</code>, examples <code>"web"</code>, <code>"podcast:item:guid"</code>). Option 1's <code>K = osnova.project</code> follows that precedent.</li>
+<li><strong>Upstream practice</strong>: NIP-AR's example names another artifact by a bare UUID in a <code>project</code> tag (<code>NIP-AR.md:28</code>), and attaches a conversation by <code>root</code> (<code>:44, 63</code>). <code>d</code> and <code>type</code> never change there (<code>:55</code>). Converting is one of our three upstream proposals.</li>
+<li><strong>Letters</strong>: the NIPs README no longer has its standardized-tags table (nips 400d157). I grepped every NIP for <code>["x",</code> instead. <code>c</code> is in NIP-34 and 66, <code>f</code> in 69, <code>F</code> in CC, <code>n</code> in CC, 66 and 87, and <code>N</code> in 66 only. None of <code>o O b B j J v V w W</code> appears. Our SPEC and relay use no <code>o</code>/<code>O</code>. The relay filters by any one-letter marker (buzz <code>crates/buzz-db/src/store/event.rs:101-103</code>).</li>
+<li><strong>Not checked</strong>: whether Block and the NIP maintainers would take <code>O</code>/<code>o</code>; whether the relay needs an index for <code>#O</code>/<code>#o</code> at Miky's scale (<code>#a</code> has its own fast path, <code>req.rs:1116</code>); how the relay treats a comment with no <code>A</code>/<code>E</code>/<code>I</code> root (its note says it scopes comments by them, <code>ingest.rs:611-613</code>; ours also carry the Folder, so the Folder gate applies); Notion's storage, which is from its public API as remembered.</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="small">Option 1: a comment <code>["O",&lt;d&gt;] ["K","osnova.project"]</code>, plus <code>["o",&lt;d&gt;] ["k","osnova.project"]</code> on a top-level comment (NIP-22 parent = root); a mention <code>["o",&lt;d&gt;]</code> beside the link in the body; membership as <code>kind:1851</code> <code>member:&lt;P&gt;</code> targeted by <code>o</code> instead of <code>a</code> (SPEC §11.8); <code>part</code>/<code>embed</code> value = <code>&lt;d&gt;</code> (§13.6.1–2); Folder listings (<code>30890</code>/<code>1852</code>) by <code>o</code>; read-state context id for a file to be specified (§11.1); picker inserts the app URL (§13.1, C25). Option 2: <code>["I","osnova:&lt;d&gt;"] ["K","osnova"]</code>, <code>i</code> for mentions (NIP-73). Option 3: <code>["A","45010:&lt;creator&gt;:&lt;d&gt;"] ["K","45010"]</code>, <code>a</code> for mentions, <code>nostr:naddr</code> with kind 45010. Today: <code>30850:&lt;pubkey&gt;:&lt;d&gt;</code> in <code>1111 A</code>/<code>a</code>, <code>kind:9 a</code>, <code>1851 a</code>, <code>30890</code>/<code>1852</code>, NIP-RS context ids, <code>part</code>, <code>embed</code>; chip <code>nostr:naddr1…</code>. Records: <code>every-file-is-an-artifact-the-relay-keeps-in-order</code> (D1, estiva-docs#348), <code>a-link-is-stored-as-the-url-a-person-wrote</code> (OPT-19), <code>early-shapes-are-migrated-or-deleted</code>. Upstream: Buzz NIP-AR (<code>kind:45010</code>), NIP-01, NIP-19, NIP-22, NIP-27, NIP-73. Taken letters: NIP-34, 66, 69, 87, CC.</p>
+
+</main>
+</body>
+</html>
