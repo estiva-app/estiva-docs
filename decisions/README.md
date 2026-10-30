@@ -120,7 +120,7 @@ heading here.
 
 ## Read state
 
-- [You are told about the files you are a member of, the same in every app, and following is retired](membership-replaces-following.md) — Accepted, 2026-09-30
+- [You are told about the files you are a member of, the same in every app, and following is retired](membership-replaces-following.md) — Accepted, 2026-09-30; its part "following is retired" superseded, for teams and places, by the record on following below, 2026-10-30
 - [A Folder has no read state of its own: its chat is unread for you only when a message names you](a-folders-own-chat-is-unread-only-for-a-mention.md) — Accepted, 2026-10-01
 - [A reply is read only when you open its thread, not when you read the conversation it sits in](a-reply-is-read-only-when-its-thread-is-opened.md) — Accepted, 2026-10-03
 - [Anyone may add a person to a file, including someone who left it](anyone-may-add-a-person-to-a-file.md) — Accepted, 2026-10-06
@@ -128,7 +128,8 @@ heading here.
 - [A mention in a file's text adds the person, as the Add button does, and being added shows one unread](a-mention-in-a-files-text-adds-the-person.md) — Superseded by the one above, 2026-10-20
 - [A person mentioned in a file's text is told once and becomes a member, and a later save that still names them changes nothing](a-person-mentioned-in-a-files-text-is-told-once.md) — Superseded by the one above, 2026-10-20
 - [A file's unread state is kept under "file:" and its id, so reading a file can never mark a Folder's chat read](a-files-unread-state-is-keyed-file-and-its-id.md) — Accepted, 2026-10-29
-- [Following a topic is being its member; choosing All tells you about its files' conversations, and that choice is yours alone](following-a-topic-is-being-its-member.md) — Proposed, 2026-10-30
+- [A team has members and followers, and you follow a topic or space at All, at Important, or not at all; a team's members and a place's followers at each level are visible, and the rest of what you follow is yours](a-team-has-members-and-followers-and-a-place-is-followed-at-a-level.md) — Accepted, 2026-10-30
+- [Writing in a topic or space puts you in that conversation, never in the place; you follow a place only by your choice or by a team's default, which is worked out and never written; and All never makes you a member of the files a topic lists](writing-in-a-place-never-follows-it.md) — Proposed, 2026-10-30
 
 ## Messages
 

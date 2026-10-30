@@ -5,6 +5,12 @@
 - Decided by: Miky, in the CON-19 issue conversation
 - Area: Read state
 
+> Superseded in part, 2026-10-30: "Following is retired" no longer holds for
+> teams and places. Following comes back for them in
+> [a-team-has-members-and-followers-and-a-place-is-followed-at-a-level](a-team-has-members-and-followers-and-a-place-is-followed-at-a-level.md).
+> The old private list Peek kept per file stays retired, and the rest of this
+> record stands.
+
 ## Who it affects
 
 Miky and Katerina are told about the files they are part of: ones they
