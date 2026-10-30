@@ -426,8 +426,8 @@ that is private to its author is the exception, and a relay names it.
 
 **Which fields are words** (*added 2026-10-30*, record
 [search-looks-in-the-base-and-every-field-an-added-app-marks-as-words](https://github.com/estiva-app/estiva-docs/blob/main/decisions/search-looks-in-the-base-and-every-field-an-added-app-marks-as-words.md)).
-The fields this table names are a base type's word fields, built into the
-relay. Search reads them together with every field an app the workspace added
+The object and `kind:1851` rows of this table are the base types' word
+fields, built into the relay. Search reads them together with every field an app the workspace added
 marks as words in its listing (§7.10). A mark steers search and ranking only,
 and a listing from an app the workspace has not added counts for nothing.
 Until the relay knows which apps a workspace added, it reads the base's fields
@@ -673,28 +673,35 @@ its `value` and carries the option's stage beside it, last:
 ```
 
 - **The tag names its field**: `["stage", <field>, <stage>]`, where `<stage>` is
-  `open`, `started`, `done` or `dropped`. The same form serves a change that
-  sets several fields, one `stage` per staged field it sets. The tag's name is
-  the protocol's, not declared in `records` (§7.1), so an app with its own
-  change kind writes the same tag.
-- **A writer writes the stage of the option it offered**, from the layer it
-  offered it from (§7.4), on every change to a staged field, the owner's own
-  included. A field cleared to `''` carries no stage.
+  `open`, `started`, `done` or `dropped`. The tag's name is the protocol's,
+  not declared in `records` (§7.1), so an app with its own change kind writes
+  the same tag. Naming the field keeps one form when a change may set several
+  fields (record
+  [one-change-may-set-several-fields-taken-whole-or-refused-whole](https://github.com/estiva-app/estiva-docs/blob/main/decisions/one-change-may-set-several-fields-taken-whole-or-refused-whole.md),
+  specified with the field-by-field shape): it will carry one `stage` per
+  staged field it sets.
+- **A root that sets a staged property** — a creation, §7.3 — carries the same
+  tag, last, beside the property's tag.
+- **A writer MUST write the stage of the option it offered**, from the layer
+  it offered it from (§7.4), on every change or root that sets a staged field,
+  the owner's own included. A field cleared to `''` carries no stage.
 - **The change's stage is what counts.** A reader counting progress uses the
   stage on the change that set the field's current value, even where the
   company's statuses give that option another stage today, so every app counts
   a file the same way whether or not it can read the company's statuses.
   Changing what an option means changes only the changes written after it.
-- **A reader honours a `stage` only when its field is a field the change sets
-  and that field is staged**, and ignores it otherwise: on a title change, on a
-  choice field whose options carry no stage, or naming another field.
+- **A reader honours a `stage` only when its field is a field the change (or
+  root) sets and that field is staged**, and ignores it otherwise: on a title
+  change, on a choice field whose options carry no stage, or naming another
+  field.
 - **A change with no stage**, written before this rule or by an app that does
   not write it, or one whose stage is outside the four (which counts as absent,
   not as a fifth stage), is counted by the stage the tracker's listing gives
   that option (§7.4), and failing that by the reader's own reading of the
   label, as before this rule. A reader never takes it from the company's
-  statuses, for the reason above. "The tracker's listing" is the listing of
-  the tracker the workspace added first.
+  statuses, for the reason above. "The tracker's listing" is the manifest a
+  consumer resolves for the file's kind (§7); once a relay knows which apps a
+  workspace added, it is the first tracker the workspace added.
 - **A reader shows an option it cannot look up by its id**, because it cannot
   read the company's statuses, no layer lists it, or it was removed. It counts
   it by the change's stage; the label and colour come only from a layer that
@@ -722,8 +729,8 @@ addressable *record* are NIP-01's, where the later `created_at` and then the
 - An object with no change events has its **default** state. Defaults are
   declared in the manifest (§7), not assumed. For a staged field (§6.2) the
   default is the tracker's listing's and is read, never the company's: a
-  company's own default status is applied when a file is created, by the app
-  that creates it, as a change with its stage (§7.3). A reader that took the
+  company's own default status reaches a file only as a value the app that
+  creates it sets, with its stage (§7.3). A reader that took the
   company's default at read time would count the same file differently for a
   member and for a guest who cannot read the company's statuses.
 - A value outside the declared vocabulary MUST be displayed rather than
@@ -2448,9 +2455,8 @@ option's stage with it, as §6.2's `stage` tag, after every other tag. No
 declaration key asks for it: the vocabulary's stages are the request. The
 options a consumer offers, and so the stage it writes, come from the layers
 of §7.4, the company's own over the listing's. A creation action that sets a
-staged property writes its stage too, and one that sets none writes the
-default of the layer that names it as a §6.2 change with its stage, published
-after the root (below), so a new file starts with a stage on the relay.
+staged property writes `["stage", <property>, <stage>]` on the root, last.
+A file created without one reads the listing's default (§6.3).
 
 **`type: "pubkey"` names a person** (SHA-28, decided 2026-10-05), on a scalar
 input or on a property. Its value is a person's key as 64 lowercase hex, or `''`
@@ -3026,7 +3032,8 @@ A manifest MAY mark fields as words, per kind, for search (§5.2) to read:
 ```
 
 - **It counts only from an app the workspace added**, and only for the fields
-  of its own kinds and the fields it adds to a base type (TYPES.md). A base
+  of its own kinds and, on a base type, fields its directory entry (TYPES.md)
+  does not list. A base
   type's own word fields are built into the relay and no listing changes
   them, so a project's core is searched alike on every relay with the same
   base.
@@ -3118,7 +3125,7 @@ staged field, or writes one, also conforms to these.
 
 | # | Check |
 | --- | --- |
-| C32 | **A status change carries its stage.** Setting a status, from any control or a creation, writes one `1851` with `field` `status`, `value` the option's id and, last, `["stage", "status", <the option's stage>]`. Clearing it writes no `stage`. A change to a field whose vocabulary has no stages, such as `archived`, carries none |
+| C32 | **A status change carries its stage.** Setting a status from any control writes one `1851` with `field` `status`, `value` the option's id and, last, `["stage", "status", <the option's stage>]`; a creation that sets a status carries the same `stage` last on its root. Clearing it writes no `stage`. A change to a field whose vocabulary has no stages, such as `archived`, carries none |
 | C33 | **The change's stage counts.** A file whose current status change has value `in_progress` and stage `done` counts as done, even though the listing gives `in_progress` the stage `started`. A change whose stage is `paused` counts by the listing's stage. A change with no stage counts as before this rule. A `["stage","title","done"]` on a title change, or a `["stage","priority","done"]` on a status change, is ignored |
 | C34 | **An unknown option is shown.** A file whose current status is `triage` with stage `started`, an id no layer the reader can read lists, shows `triage` as its status and counts as underway; it is not dropped from a list, a board or a count |
 
