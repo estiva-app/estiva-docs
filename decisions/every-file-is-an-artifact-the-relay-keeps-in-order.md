@@ -12,6 +12,19 @@
 > one letter in two cases, and a chip in text is the file's link. The rest of
 > this record stands.
 
+> Superseded in part, 2026-10-30: "a file's own state is a NIP-AR artifact:
+> its fields and its text, whole in each save", with a convert being one save,
+> a list reading current saves, proposing lists without text and convert to
+> Block, the host ordering each file's saves, and the migration writing each
+> file's current state as its first save, is replaced by
+> [a-file-is-its-fields-each-kept-in-order-by-the-relay](a-file-is-its-fields-each-kept-in-order-by-the-relay.md):
+> a file is its fields, each field's changes kept in order by the relay, the
+> text one field saved whole, nothing re-signed. The premise that decided A,
+> "an outside company holds a file's own state on upstream Buzz as it ships",
+> was false: upstream refuses every other kind Osnova needs. "Upstream has no
+> artifact search" was false too. D1–D6 as product calls, the type names,
+> search over the current version and the staged build stand.
+
 > Supersedes in part
 > [a-files-type-is-a-shared-meaning-any-app-extends](a-files-type-is-a-shared-meaning-any-app-extends.md)
 > (a number per type, the relay-signed summary, text in an event of its own),

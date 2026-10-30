@@ -1783,6 +1783,13 @@ Search (§5.2) does not match a summary.
 existing subsections for the reason §7.5 gives.* Record
 [every-file-is-an-artifact-the-relay-keeps-in-order](https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-file-is-an-artifact-the-relay-keeps-in-order.md).
 
+> **Being replaced (2026-10-30).** Files will not move to artifacts. A file is
+> its fields, each field's changes kept in order by the relay, and the text is
+> one field saved whole
+> ([a-file-is-its-fields-each-kept-in-order-by-the-relay](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-file-is-its-fields-each-kept-in-order-by-the-relay.md)).
+> This section is rewritten to that shape before any app writes a file; no app
+> writes an artifact. §6.4's `O`/`o` reference stands.
+
 A file's own state — its fields and its text — is an upstream Buzz NIP-AR
 **artifact**: a `kind:45010` save holding the whole file, which the relay keeps
 in order. Everything else names the file by its id (§6.4's `O`/`o`). It

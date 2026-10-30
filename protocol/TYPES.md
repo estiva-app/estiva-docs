@@ -1,5 +1,10 @@
 # File types: the Osnova directory
 
+> **Being rewritten (2026-10-30).** Files will not be artifacts: a file is its
+> fields, each kept in order by the relay
+> ([a-file-is-its-fields-each-kept-in-order-by-the-relay](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-file-is-its-fields-each-kept-in-order-by-the-relay.md)).
+> The type names and the fields below stand; where each is kept changes.
+
 A file kept as an artifact ([SPEC §6.13](SPEC.md)) says what it is in its
 `type` tag. This page is the public directory of the shared types, the ones
 every Osnova app reads the same way. It names each type's fields and where each
