@@ -699,13 +699,14 @@ its `value` and carries the option's stage beside it, last:
   not as a fifth stage), is counted by the stage the tracker's listing gives
   that option (§7.4), and failing that by the reader's own reading of the
   label, as before this rule. A reader never takes it from the company's
-  statuses, for the reason above. "The tracker's listing" is the manifest a
-  consumer resolves for the file's kind (§7); once a relay knows which apps a
-  workspace added, it is the first tracker the workspace added.
+  statuses, for the reason above. §7.4 says which app is the tracker and
+  what its listing is.
 - **A reader shows an option it cannot look up by its id**, because it cannot
-  read the company's statuses, no layer lists it, or it was removed. It counts
-  it by the change's stage; the label and colour come only from a layer that
-  lists it. This is §6.3's rule that a value outside the vocabulary is shown,
+  read the company's statuses or the option was removed. It counts it by the
+  change's stage. The label and colour come only from the company's statuses,
+  and from the tracker's listing until a company has saved its own, so a
+  reader that cannot read the company's statuses shows the id: after "In
+  Progress" is renamed "Doing", it still shows `in_progress`. This is §6.3's rule that a value outside the vocabulary is shown,
   not swallowed, applied to a staged field.
 
 A file kept as an artifact (§6.13) carries its status as a tag on its save,
@@ -2622,8 +2623,17 @@ options come in layers, each over the one before:
    listing's;
 4. later, a person's database, writing the same property shape.
 
-A reader looks an id up from the top layer it can read down. **Renaming an
-option keeps its id**, so a rename changes no file. A vocabulary is **staged**
+A reader takes an option's label and colour from the company's own, and from
+the listing's until a company has saved its own; one that cannot read the
+company's shows the id (§6.2). **Renaming an option keeps its id**, so a
+rename changes no file.
+
+**The tracker** is the app whose manifest publishes the kind's staged
+vocabulary, and **its listing** is that manifest (§7), not a Folder's listing
+(§3.1). Once a relay knows which apps a workspace added (record
+[an-app-counts-only-once-the-workspace-adds-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/an-app-counts-only-once-the-workspace-adds-it.md)),
+it is the first such app the workspace added; until then it is the manifest a
+consumer resolves for the kind (today, for projects and issues, Ship's). A vocabulary is **staged**
 when its options carry a stage, and a change to a field it maps writes the
 option's stage (§6.2). A vocabulary that is not a status may carry none (Ship's
 `archived` does not), and its fields are not staged.
@@ -3127,7 +3137,7 @@ staged field, or writes one, also conforms to these.
 | --- | --- |
 | C32 | **A status change carries its stage.** Setting a status from any control writes one `1851` with `field` `status`, `value` the option's id and, last, `["stage", "status", <the option's stage>]`; a creation that sets a status carries the same `stage` last on its root. Clearing it writes no `stage`. A change to a field whose vocabulary has no stages, such as `archived`, carries none |
 | C33 | **The change's stage counts.** A file whose current status change has value `in_progress` and stage `done` counts as done, even though the listing gives `in_progress` the stage `started`. A change whose stage is `paused` counts by the listing's stage. A change with no stage counts as before this rule. A `["stage","title","done"]` on a title change, or a `["stage","priority","done"]` on a status change, is ignored |
-| C34 | **An unknown option is shown.** A file whose current status is `triage` with stage `started`, an id no layer the reader can read lists, shows `triage` as its status and counts as underway; it is not dropped from a list, a board or a count |
+| C34 | **An unknown option is shown.** A file whose current status is `triage` with stage `started`, an id no layer the reader can read lists, shows `triage` as its status and counts as `started`; it is not dropped from a list, a board or a count |
 
 ### 9.1 Reference checks
 
