@@ -101,6 +101,12 @@ labels, priorities and its own columns go in the same place.
   that sets only the status leaves the old stage standing, and the two
   disagree; and a change that sets two fields names no single field, so an
   app that reads changes today drops it, and with it the status.
+- **The file's stage counts wherever the file can be read**, the change's only
+  as a fallback. Turned down: when an app writes a wrong stage, a member and a
+  guest, or an app without the file, would count the same project
+  differently. Under the chosen rule a wrong stage can make "Planned" count as
+  done, which is no more than anyone who may set a status could already do by
+  setting Completed.
 
 ## Consequences
 
