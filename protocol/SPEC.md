@@ -418,6 +418,7 @@ picker can reach a file in a Folder the client has not loaded (*decided
 | An object: any kind `30000`–`39999` except the relay-signed `39000`–`39009` and the private kinds below | its root `title` tag; on a `30851` also its root `ref` (§6.1). Never `content`, so a description is not searchable. |
 | A `kind:1851` change (§6.2) with `field` `title`, aimed at such an object | its `value` |
 | A `kind:1851` with `field` `ref`, aimed at a `30851:` address | its `value` |
+| A file kept as an artifact (`kind:45010`, §6.13): its current save only, while it is not deleted | its `title`, its `summary`, the fields its type names (a project's `key`), and the words of its text in a format the save names and the relay reads (§13.3 *Search text*). Never an older save, a delete, or a save removed for good |
 | Any other `kind:1851`; app data (`kind:30078`); a kind only its author may read or that carries ciphertext (on the reference relay `30179`, `30300`, `30350`, `30622`), and a `kind:1851` aimed at one | nothing |
 
 The object row is a rule rather than a list, so a new object kind is searchable
@@ -430,7 +431,13 @@ object ever had: a renamed object is found by its old title through the old
 resolves each hit to its object (the root itself, or the `kind:1851`'s `a`),
 folds it (§6.3), and shows it only if the object resolves and its *current*
 title or ref holds the words, by the rule below. A relay answers at most 500
-events per filter.
+events per filter. **A `45010` hit is not a candidate**: it is the file's
+current save, found by any of the fields above, so a reader shows it as it is
+and does not drop it because its title lacks the words (*decided 2026-10-30*,
+record
+[search-finds-a-file-by-the-words-of-its-current-save](https://github.com/estiva-app/estiva-docs/blob/main/decisions/search-finds-a-file-by-the-words-of-its-current-save.md)).
+§6.13 says how a list query searches files and what each hit says about its
+match.
 
 **What a search matches** (*decided 2026-10-19*, record
 [search-matches-every-word-as-a-word-start](https://github.com/estiva-app/estiva-docs/blob/main/decisions/search-matches-every-word-as-a-word-start.md)).
@@ -1775,7 +1782,8 @@ NIP-99's.
   the `subtitle` slot, by default and without its owner declaring it (§7.2).
   An app writes it through the summary change action (§7.3).
 
-Search (§5.2) does not match a summary.
+Search (§5.2) does not match a summary, except a file kept as an artifact's
+(§6.13), whose current summary it matches.
 
 ### 6.13 A file kept as an artifact
 
@@ -1806,6 +1814,15 @@ Every other field is a tag the type's directory entry names, so a list can
 draw a row without the text: for a project, `status`, the lead as `p`, `key`,
 `summary` and `archived`. `content` is the text. Every save is whole and
 signed by the person who made it.
+
+**A save names its text's format** (*decided 2026-10-30*, record
+[search-finds-a-file-by-the-words-of-its-current-save](https://github.com/estiva-app/estiva-docs/blob/main/decisions/search-finds-a-file-by-the-words-of-its-current-save.md)):
+a save with text carries `["content-format", <format>]`, as §13.4 asks of every
+block document; a project's is `estiva-blocks-1` (§13.3). The Estiva relay
+refuses a project save with text and no `content-format`, with `invalid: a
+project's text must name its format in a content-format tag`. Another type's
+unlabelled text is accepted and not searched; §13.4's marker-text reading of
+an unlabelled body is for the old shapes, which no save is.
 
 **The relay keeps the order.** A save whose `prev` is not the current save is
 refused with `conflict: artifact head changed`, and a save on the current one
@@ -1863,6 +1880,37 @@ same size. `omit` is the Estiva relay's addition to NIP-AR, advertised as
 `REQ` `{"kinds": [45010], "#h": [<folder>]}`, which returns current saves
 only; a save sends no push.
 
+**A list query searches by the words of each current save.** It takes
+`search`, a person's typing read by §5.2's rule, on `"artifact": "current"`
+only:
+
+```json
+{"artifact": "current", "kinds": [45010], "#type": ["osnova.project"], "#h": ["<folder>"], "search": "launch pla", "omit": ["content"]}
+```
+
+It matches a save's `title`, `summary`, the fields its type names (a
+project's `key`; status, lead and archived are not words) and the words of its
+text (§13.3 *Search text*), and never an older save, a deleted file or a save
+removed for good. Access is the list's: only files whose home the reader may
+read, so a file in a Folder the reader cannot read is not found, `#h` naming it
+included. Rows come best first: **a match in the title, then in the summary and
+key, then in the text**; among those, more typed words matched whole, then
+closeness. Each row carries the relay's word on why it is there, beside
+`omitted`:
+
+```json
+"match": {"field": "text", "words": "the launch plan mentions the rollout in the middle of"}
+```
+
+`field` is the first of `title`, `summary`, `key` and `text` that holds every
+typed word alone, or `several` when they are spread over more than one, which
+ranks above `text`. `words` are the words around the match in the text, plain
+text with no markers, present when the field is `text` or `several`; how a row
+draws them is the app's design. Like `omitted`, `match` is the relay's
+statement, never part of what was signed. The ordinary search (§5.2) finds the
+same current saves by the same words, without `match`. A relay MAY index only
+the first 256 KiB of a save's text words.
+
 **Which apps may sign one.** Estiva ID signs a `45010` only of a type the
 app's credential lists (`allowed_types`, KINDS.md §5); an empty list signs
 none. Peek, Ship, Leaf and the agents may sign `osnova.project` and no other
@@ -1881,8 +1929,10 @@ whether it is on (`"refuses_old_projects"`). It is **off** on production
 
 **NIP-11.** The relay advertises NIP-AR in an `artifacts` object (upstream's:
 `version`, `revision_kind` `45010`, `removal_kind` `45011`, `query`, `count`,
-`modes`, and its limits). The Estiva relay adds three keys to it: `omit`,
-`moves` and `refuses_old_projects`. `refuses_old_projects` is Estiva's alone and
+`modes`, and its limits). The Estiva relay adds four keys to it: `omit`,
+`moves`, `refuses_old_projects`, and `search`, `{"formats": ["estiva-blocks-1"]}`:
+the list query takes `search`, and these are the text formats whose words it
+reads. `refuses_old_projects` is Estiva's alone and
 lasts only while the old shape exists: when the fence retires it leaves the
 object, so a reader treats it as absent-means-off.
 
@@ -2871,6 +2921,20 @@ reads the `accepted` field back, with two negative controls — a tampered event
 relay must refuse, and a `kind:0` the identity service must refuse — so "it works"
 is distinguishable from "the rule was removed". It needs a workspace credential,
 which is why it is a hand-run check rather than a CI job.
+
+**Search over files kept as artifacts (§6.13)** is checked with a project whose
+text, a block document labelled `estiva-blocks-1`, holds a word nobody has
+written: the start of that word finds it by the list query, with `match.field`
+`text` and the word in `match.words`, and by the ordinary search; the middle of
+the word, and the word `paragraph`, do not. Saved again without the word, it is
+not found by it; a project with the word in its title comes above it; deleted,
+it is not found, and restored it is; its current save removed for good, it is
+not found. In a Folder the reader is not a member of, the reader finds nothing,
+`#h` naming it included, while a member finds it. A project save with text and
+no `content-format` is refused. A nonsense word answers `[]`. The reference
+relay runs these through its own save transaction on Postgres
+(`crates/buzz-search/tests/postgres_fts_integration.rs`), and against
+production as two QA identities.
 
 **Search (§5.2)** is checked against a relay holding one object titled *Remove
 Short summary from few places*, asked once over `/query` and once by a `REQ`
@@ -4173,6 +4237,19 @@ being its children's text joined by `\n`, compared exactly, code unit for code
 unit, with no Unicode normalisation, so an offset into it is an offset into the
 block's own text. It is the text as stored, not as drawn: a mention is its `nostr:` text (§13.1), never the
 name a reader draws for it, and nothing is trimmed.
+
+#### Search text
+
+*Added 2026-10-30 (ALO-3), record
+[search-finds-a-file-by-the-words-of-its-current-save](https://github.com/estiva-app/estiva-docs/blob/main/decisions/search-finds-a-file-by-the-words-of-its-current-save.md).*
+What a relay searches of a block document (§5.2, §6.13) is its words, never its
+JSON: the `text` of every `text` run, in document order, each block ending its
+line. No `attrs` contributes — not a link's `href`, a language, an attachment's
+URL or a widget's settings — and neither do block ids, types or mark names. A
+run marked `reference` contributes nothing, so a mention is not a word; a link
+on words contributes its words. A body that does not parse as JSON contributes
+no text and is never searched as it is. Only a body whose event names
+`estiva-blocks-1` (§13.4) is read this way.
 
 ### 13.4 Reading what is already published
 

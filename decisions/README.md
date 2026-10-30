@@ -215,6 +215,7 @@ properties and its history.
 
 - [Search matches every typed word as the start of a word; quotes ask for an exact phrase and a minus leaves a word out](search-matches-every-word-as-a-word-start.md) — Accepted, 2026-10-19
 - [A minus before a quoted phrase leaves out anything with those words next to each other](a-minus-before-a-phrase-leaves-the-phrase-out.md) — Accepted, 2026-10-19
+- [Search finds a file by the words of its current save: title first, then its summary and key, then its text, read by the format each save names, and each hit says where it matched](search-finds-a-file-by-the-words-of-its-current-save.md) — Accepted, 2026-10-30
 
 ## Protocol
 

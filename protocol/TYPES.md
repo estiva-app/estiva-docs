@@ -33,7 +33,7 @@ it. Defined 2026-10-30; until Ship moves its projects, a project is still the
 | key | `key` | 3–6 letters `A`–`Z`, the prefix of its issues' refs ([SPEC §6.1](SPEC.md)) |
 | summary | `summary` | one or two sentences of plain text, about 240 characters ([SPEC §6.12](SPEC.md)) |
 | archived | `archived` | `true` while it is archived; absent otherwise ([SPEC §6.5](SPEC.md)) |
-| text | `content` | the project's description |
+| text | `content` | the project's description, a block document ([SPEC §13.3](SPEC.md)) labelled `["content-format", "estiva-blocks-1"]`; a save with text and no label is refused |
 
 **Its statuses are each company's own**, starting from its tracker's defaults
 ([each-company-defines-its-own-statuses](https://github.com/estiva-app/estiva-docs/blob/main/decisions/each-company-defines-its-own-statuses.md),
@@ -54,6 +54,11 @@ Its home (`h`) is the Folder that lists it; a project listed in none lives in
 the workspace's Company Folder (Estiva's is Estiva HQ), as does a new one made
 with no Folder.
 
-How a project's text is encoded in `content`, and which apps open it, are
-settled when Ship moves its projects (the next milestone of the project "A load
-stays the same size as edits pile up: projects").
+**Search** finds a project by the words of its current title, summary, key and
+text, title first ([SPEC §6.13](SPEC.md); decided 2026-10-30, record
+[search-finds-a-file-by-the-words-of-its-current-save](https://github.com/estiva-app/estiva-docs/blob/main/decisions/search-finds-a-file-by-the-words-of-its-current-save.md)).
+Its status, lead and archived state are not words.
+
+Which apps open a project's text is settled when Ship moves its projects (the
+next milestone of the project "A load stays the same size as edits pile up:
+projects").
