@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Each company sets its own statuses</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
+.legend .lgone::before { background: var(--warn-bg); border-color: var(--warn); }
+.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
+.legend .lf::before { opacity: .45; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); stroke-width: 1.5; }
+svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .f { opacity: .45; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
+svg .aq { stroke: var(--accent); fill: none; stroke-width: 1.6; stroke-dasharray: 5 4; marker-end: url(#arr-q); }
+svg .ab { stroke: var(--warn); fill: none; stroke-width: 1.6; stroke-dasharray: 2 3; marker-end: url(#arr-bad); }
+svg .life { stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 3 4; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 560px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+tr.new td { background: var(--ok-bg); }
+tr.later td { border-style: dashed; color: var(--muted); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+    <marker id="arr-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+    <marker id="arr-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--warn)"/></marker>
+  </defs>
+</svg>
+<main>
+
+<h1>Each company sets its own statuses</h1>
+<p class="sub"><span class="state">Shaped, 2026-10-30</span> · Goal: Peek, Leaf, Ship and the agent count a project's and an issue's progress the same way, even for a status only some of them know, and the SPEC says where a company's own statuses will live and which fields search reads.</p>
+
+<p>Today a status change says only which status, such as <em>In Progress</em>. To count progress, Peek and Leaf look up what that status means in Ship's listing, and guess from its words when they cannot. After this project every status change also carries its stage (open, started, done or dropped), so any app counts from the change itself. The SPEC also says where a company's own statuses will live and which fields search reads. Nothing writes that company file yet. The only screen change is for a status no app lists: Ship's board puts it in the first column of its stage, and a status picker shows it greyed, by its id. Start with the Objects view.</p>
+
+<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lgone">goes away</span><span class="lq">later project, or waits on a decision</span><span class="lf">untouched, for orientation</span></div>
+
+<h2>Map</h2>
+
+<h3>Today</h3>
+<figure>
+<svg viewBox="0 0 720 300" role="img">
+<title>Today: Ship and the agent write a status change naming only the status. Ship's statuses are in its code and in its listing. Peek and Leaf read the change through the shared packages and look up its meaning in Ship's listing, guessing from the words when it is missing.</title>
+<rect class="b" x="20" y="20" width="160" height="70" rx="8"/><text x="36" y="44" class="h">Ship</text><text x="36" y="62" class="m">its four project and four</text><text x="36" y="78" class="m">issue statuses, in its code</text>
+<rect class="b" x="200" y="20" width="150" height="70" rx="8"/><text x="216" y="44" class="h">Agent</text><text x="216" y="62" class="m">set-status: own code</text><text x="216" y="78" class="m">reads via the packages</text>
+<rect class="b" x="370" y="20" width="150" height="70" rx="8"/><text x="386" y="44" class="h">Peek</text><text x="386" y="62" class="m">project card: 2/3 done</text><text x="386" y="78" class="m">card picker, launcher</text>
+<rect class="b" x="540" y="20" width="160" height="70" rx="8"/><text x="556" y="44" class="h">Leaf</text><text x="556" y="62" class="m">a card's status picker</text>
+<rect class="b" x="370" y="120" width="330" height="50" rx="8"/><text x="386" y="142" class="h">Shared packages</text><text x="386" y="160" class="m">look up a status's stage in Ship's listing, else guess</text>
+<rect class="b" x="20" y="210" width="680" height="70" rx="8"/><text x="36" y="234" class="h">The relay</text>
+<rect class="w" x="36" y="244" width="250" height="28" rx="6"/><text x="46" y="263" class="m">status change: status = in_progress</text>
+<rect class="w" x="306" y="244" width="250" height="28" rx="6"/><text x="316" y="263" class="m">Ship's listing: each status's stage</text>
+<path class="a" d="M100,90 L100,240"/><text x="108" y="160" class="m">writes</text>
+<path class="a" d="M275,90 L275,240"/>
+<path class="a" d="M600,170 L600,190 L430,190 L430,240"/><text x="608" y="196" class="m">reads both, writes a picked status</text>
+<path class="a" d="M445,120 L445,94"/>
+<path class="a" d="M620,120 L620,94"/>
+</svg>
+<figcaption>Ship folds and writes its projects and issues with its own code, beside the shared packages rather than through them; the agent writes with its own code too, and reads through the packages (it stopped keeping a copy of Ship's code). Ship's board draws only its four statuses, so an issue in any other status vanishes from it. The meaning of a status lives in one place: Ship's listing. Ship's issue page shows a status it does not know by its value. Peek falls back to a word list, which once left Peek's panel blank for an app whose statuses were spelled differently (the note in <code>projection.ts:5040–5045</code>). Estiva ID and the Folders are left out: this project does not touch them.</figcaption>
+</figure>
+
+<h3>After</h3>
+<figure>
+<svg viewBox="0 0 720 380" role="img">
+<title>After: the rule for a status and its stage lives once, in the shared packages. Ship, the agent, Peek and Leaf all read and write a status through them; the packages count from the stage on the change (milestone 2) and put the stage on every status change (milestone 3). The SPEC says it all (milestone 1). Later projects, drawn dashed: the company's statuses file with its admin editor, and the relay reading words that added apps mark.</title>
+<rect class="ok" x="20" y="20" width="160" height="70" rx="8"/><text x="36" y="44" class="h">Ship</text><text x="36" y="62" class="m">reads, writes status</text><text x="36" y="78" class="m">through the packages</text><text x="140" y="44" class="tag">M2 M3</text>
+<rect class="ok" x="200" y="20" width="150" height="70" rx="8"/><text x="216" y="44" class="h">Agent</text><text x="216" y="62" class="m">reads and writes it</text><text x="216" y="78" class="m">through the packages</text><text x="300" y="44" class="tag">M2 M3</text>
+<rect class="ok" x="370" y="20" width="150" height="70" rx="8"/><text x="386" y="44" class="h">Peek</text><text x="472" y="44" class="tag">M2 M3</text><text x="386" y="62" class="m">counts from the change</text><text x="386" y="78" class="m">its picker writes both</text>
+<rect class="ok" x="540" y="20" width="160" height="70" rx="8"/><text x="556" y="44" class="h">Leaf</text><text x="652" y="44" class="tag">M2 M3</text><text x="556" y="62" class="m">counts from the change</text><text x="556" y="78" class="m">its picker writes both</text>
+<rect class="ok" x="20" y="120" width="680" height="50" rx="8"/><text x="36" y="142" class="h">Shared packages: the one rule</text><text x="36" y="160" class="m">reads a change's stage · puts it on a status change · osnova.project, osnova.issue</text><text x="640" y="142" class="tag">M2 M3</text>
+<rect class="b" x="20" y="210" width="680" height="70" rx="8"/><text x="36" y="234" class="h">The relay</text>
+<rect class="ok" x="36" y="244" width="360" height="28" rx="6"/><text x="46" y="263" class="m">status change: status = in_progress, stage = started</text>
+<rect class="w" x="416" y="244" width="200" height="28" rx="6"/><text x="426" y="263" class="m">Ship's listing (fallback)</text>
+<path class="an" d="M100,90 L100,116"/>
+<path class="an" d="M275,90 L275,116"/>
+<path class="a" d="M445,90 L445,116"/>
+<path class="a" d="M620,90 L620,116"/>
+<path class="an" d="M216,170 L216,240"/><text x="226" y="196" class="m">reads the stage, writes both</text>
+<rect class="q" x="20" y="300" width="330" height="62" rx="8"/><text x="36" y="322" class="h">Later: the company's statuses</text><text x="36" y="340" class="m">a file in the Company Folder, edited by admins</text><text x="36" y="356" class="m">the SPEC says it now (M1)</text>
+<rect class="q" x="370" y="300" width="330" height="62" rx="8"/><text x="386" y="322" class="h">Later: search reads apps' marks</text><text x="386" y="340" class="m">after the workspace can add apps (WOR-1, WOR-2)</text><text x="386" y="356" class="m">the SPEC says it now (M1)</text>
+<path class="aq" d="M185,300 L185,284"/>
+<path class="aq" d="M535,300 L535,284"/>
+</svg>
+<figcaption>Ship's projects and issues are the first example of the Osnova protocol, so the shared packages represent them and every app goes through them, Ship included (Miky, 30 Oct). Ship and the agent stop keeping their own copy of the status rule; Peek and Leaf change only by updating the packages, which read the stage (M2) and, when someone picks a status on a card, write it (M3). The rest of Ship's own fold moves later: projects with "A load stays the same size as edits pile up: projects", issues in their own stage. Counting no longer depends on Ship's listing, so a status that only one company has is still counted. Ship's listing stays as the fallback for changes written before this project. The two dashed boxes are later projects: the SPEC describes them now, and nothing builds them here.</figcaption>
+</figure>
+
+<h2>Objects</h2>
+
+<h3>What a status change carries</h3>
+<figure>
+<svg viewBox="0 0 720 200" role="img">
+<title>Today a status change sets one field, the status. After, it still sets one field, the status option's id, and carries the option's stage beside the value.</title>
+<text x="20" y="26" class="h">Today</text>
+<rect class="b" x="20" y="38" width="320" height="120" rx="8"/><text x="36" y="62" class="h">A change</text><text x="36" y="80" class="m">signed by whoever sets it · one field</text>
+<rect class="w" x="36" y="96" width="288" height="44" rx="6"/><text x="48" y="116">status = in_progress</text><text x="48" y="132" class="m">what it means: look it up in Ship's listing</text>
+<text x="380" y="26" class="h">After</text><text x="660" y="26" class="tag">M1 M3</text>
+<rect class="ok" x="380" y="38" width="320" height="140" rx="8"/><text x="396" y="62" class="h">A change</text><text x="396" y="80" class="m">signed by whoever sets it · still one field</text>
+<rect class="w" x="396" y="96" width="288" height="66" rx="6"/><text x="408" y="116">status = in_progress</text><text x="560" y="116" class="m">the option's id</text><text x="408" y="148">+ stage started</text><text x="560" y="148" class="m">beside the value</text>
+</svg>
+<figcaption>The id stays the same when a company renames an option, so a rename changes no project or issue. A reader that cannot look the id up shows the id and still counts the stage. The stage rides on the status change itself (Miky, 30 Oct), so a status-only change never leaves a stale stage behind, today's readers keep reading the value, and milestone 3 waits on nothing from the project "A load stays the same size as edits pile up: projects". Inside a change that sets several fields, the stage names its field: <code>["stage","status","started"]</code>.</figcaption>
+</figure>
+
+<h3>Where a status's options come from</h3>
+<figure>
+<svg viewBox="0 0 720 230" role="img">
+<title>The Status property in layers: the public type says a project or issue has a Status; the tracker's listing gives default options; later the company's own file holds the company's options; later still, a person's database writes the same shape.</title>
+<rect class="ok" x="20" y="20" width="160" height="96" rx="8"/><text x="36" y="44" class="h">1. The type</text><text x="36" y="62" class="m">a project has a Status;</text><text x="36" y="78" class="m">an issue too (new)</text><text x="36" y="102" class="m">public directory</text><text x="140" y="44" class="tag">M1</text>
+<rect class="b" x="196" y="20" width="160" height="96" rx="8"/><text x="212" y="44" class="h">2. Tracker defaults</text><text x="212" y="62" class="m">Ship's listing: its four</text><text x="212" y="78" class="m">project and four issue</text><text x="212" y="94" class="m">statuses, as today</text>
+<rect class="q" x="372" y="20" width="160" height="96" rx="8"/><text x="388" y="44" class="h">3. The company's</text><text x="388" y="62" class="m">a file per type in the</text><text x="388" y="78" class="m">Company Folder, admins</text><text x="388" y="94" class="m">edit · SPEC now (M1)</text>
+<rect class="q" x="548" y="20" width="152" height="96" rx="8"/><text x="564" y="44" class="h">4. A person's</text><text x="564" y="62" class="m">database writes the</text><text x="564" y="78" class="m">same property shape</text><text x="564" y="94" class="m">later</text>
+<path class="a" d="M180,68 L192,68"/><path class="aq" d="M356,68 L368,68"/><path class="aq" d="M532,68 L544,68"/>
+<rect class="w" x="20" y="140" width="680" height="72" rx="8"/><text x="36" y="164" class="h">Each option, in every layer</text><text x="36" y="184" class="m">a fixed id · a label · a colour · a stage: open, started, done or dropped</text><text x="36" y="200" class="m">until an admin first saves the company's file, every app uses the tracker's defaults, as today</text>
+</svg>
+<figcaption>Only layer 1 changes in what this project builds: TYPES.md gains the issue's fields beside the project's. Layer 3 is written into the SPEC, and nothing writes the file until the admin editor's project.</figcaption>
+</figure>
+
+<h3>What a person sees for a status no app lists</h3>
+<figure>
+<svg viewBox="0 0 720 110" role="img">
+<title>A status no app lists: on Ship's board it sits in the first column of its stage, by its id; in a status picker it shows greyed as the current value, by its id; its colour is open, for Katerina.</title>
+<rect class="ok" x="20" y="20" width="220" height="70" rx="8"/><text x="36" y="44" class="h">Ship's board</text><text x="200" y="44" class="tag">M2</text><text x="36" y="62" class="m">first column of its stage,</text><text x="36" y="78" class="m">by its id (today: vanishes)</text>
+<rect class="ok" x="250" y="20" width="220" height="70" rx="8"/><text x="266" y="44" class="h">Status pickers</text><text x="430" y="44" class="tag">M2</text><text x="266" y="62" class="m">Ship, Peek and Leaf cards:</text><text x="266" y="78" class="m">current value, greyed, by id</text>
+<rect class="q" x="480" y="20" width="220" height="70" rx="8"/><text x="496" y="44" class="h">Its colour</text><text x="496" y="62" class="m">open: Katerina decides</text><text x="496" y="78" class="m">(suggested: neutral grey)</text>
+</svg>
+<figcaption>Decided by Miky, 30 Oct: the board column and the greyed picker value. The colour waits on Katerina.</figcaption>
+</figure>
+
+<h2>Flow: QA-1 gives an issue a status no app lists, seen in Peek</h2>
+<figure>
+<svg viewBox="0 0 720 260" role="img">
+<title>QA-1 gives an issue a status no app lists, with the stage started. The change carries the status and its stage, written through the shared packages. The relay stores it and pushes it live to Peek. Peek counts the issue as underway from the change and shows the status by its id.</title>
+<text x="40" y="26" class="h">QA-1</text><text x="200" y="26" class="h">Ship</text><text x="380" y="26" class="h">The relay</text><text x="580" y="26" class="h">Peek</text>
+<path class="life" d="M66,36 L66,248"/><path class="life" d="M220,36 L220,248"/><path class="life" d="M410,36 L410,248"/><path class="life" d="M600,36 L600,248"/>
+<path class="a" d="M66,64 L216,64"/><text x="76" y="56" class="m">sets blocked_qa (started)</text>
+<path class="an" d="M220,104 L406,104"/><text x="230" y="96" class="m">status, stage beside it</text><text x="230" y="140" class="m">via the shared packages</text><text x="230" y="124" class="tag">M3</text>
+<path class="a" d="M410,144 L596,144"/><text x="420" y="136" class="m">pushes it live</text>
+<rect class="ok" x="452" y="168" width="248" height="56" rx="8"/><text x="466" y="190" class="h">Counts it as underway</text><text x="466" y="208" class="m">shown by its id, greyed in the picker</text><text x="664" y="190" class="tag">M2</text>
+</svg>
+<figcaption>No usage scenario is real yet (to find: a day Miky or Katerina needed a status Ship lacks). This flow is the Done when's check, run as QA-1. A change written before this project has no stage, and Peek counts it as today.</figcaption>
+</figure>
+
+<h2>Access</h2>
+<div class="tw">
+<table>
+<tr><th>What</th><th>Who can change it</th><th>Where that is checked</th></tr>
+<tr><td>A project's or issue's status (and, after, its stage)</td><td>Anyone who may edit the file, as today</td><td>Unchanged by this project</td></tr>
+<tr><td>A tracker's default options</td><td>The app that publishes the listing</td><td>Which app's listing counts is settled by the issue "Only an app the workspace added can publish an app manifest"</td></tr>
+<tr class="later"><td>The company's statuses file (later; the SPEC says it now)</td><td>The workspace's owners and admins on the relay's roster; a change from anyone else, an app's key included, is refused by the relay</td><td>The file is marked "only admins write here", and the relay keeps to the mark for any type (Miky, 30 Oct). The SPEC says it now; the relay rule is built with the editor's project.</td></tr>
+</table>
+</div>
+
+<h2>Checked</h2>
+<ul>
+<li><b>Ship's statuses in code and listing.</b> <code>estiva-ship:src/nostr/kinds.ts:172–184</code> (four project and four issue statuses, each with a stage); listing <code>src/nostr/manifest.ts:290,356</code>; an unknown value shown by itself, <code>kinds.ts:207</code>. Ship <code>origin/main</code>, 30 Oct.</li>
+<li><b>Status writes.</b> Ship <code>src/api/writes.ts:118,384</code> (one field per change); Ship's declared actions <code>manifest.ts:443,475</code>, used by Leaf's card picker (<code>leaf:src/document/save.ts:179</code>) and Peek's launcher (<code>peek:src/lib/actionCatalogue.ts</code>); agent <code>lib/agent/apps/ship.ts:500,2119</code>. <code>origin/main</code>, 30 Oct.</li>
+<li><b>Shared packages look up the stage, then guess.</b> <code>estiva-foundation:packages/interop/src/projection.ts:5116–5138</code>, used at <code>:5572</code>; <code>isClosedStatus</code> for the <code>[</code> picker. <code>origin/main</code>, 30 Oct.</li>
+<li><b>A status change stays one field.</b> Today's readers drop a change that names no field and ignore tags they do not know (Ship <code>src/nostr/fold.ts:214</code>, <code>origin/main</code>, 30 Oct), so a status change with a stage beside it reads as today in an app that has not updated.</li>
+<li><b>Who is an admin, readable by every member.</b> The relay's member list (<code>kind:13534</code>) carries each member's role (<code>["member", key, role]</code>, buzz <code>crates/buzz-db/src/store/relay_members.rs</code>, ours and upstream), and the agent, a member, read it on production on 30 Oct.</li>
+<li><b>The issue as a base type.</b> Record <code>osnovas-base-types-keep-their-records-and-every-new-type-starts-named</code> names <code>osnova.issue</code>; <code>protocol/TYPES.md</code> lists only <code>osnova.project</code>'s fields (estiva-docs <code>origin/main</code> d05f52e).</li>
+<li><b>Who goes through the shared packages.</b> Ship depends on <code>@estiva-app/interop</code> 0.70 but folds its projects and issues in <code>src/nostr/fold.ts</code> and writes them in <code>src/api/writes.ts</code> without it; the agent reads Ship's workspace through interop (<code>lib/agent/apps/ship-workspace.ts</code>, PER-21) and writes a status with its own code (<code>ship.ts</code>). <code>origin/main</code>, 30 Oct.</li>
+<li><b>The company's file, search marks and the admins-only mark.</b> Records merged by Miky in estiva-docs#358 and #362, all three Accepted on <code>origin/main</code>, 30 Oct.</li>
+<li><b>Leaf has no status code of its own.</b> Nothing in Leaf's <code>src</code> reads a stage (only a test fixture of Ship's listing does); its cards count and draw a status through the shared packages, so Leaf changes only by updating them. Leaf <code>origin/main</code>, 30 Oct.</li>
+</ul>
+
+</main>
+</body>
+</html>
