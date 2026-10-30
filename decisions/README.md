@@ -172,7 +172,8 @@ properties and its history.
 - [A type of file and its properties are defined by an app's listing or by a person's database, in one schema shape; app types come first, and people's databases come with the Notion-like app](an-apps-listing-or-a-persons-database-defines-a-type.md) — Accepted, 2026-10-26
 - [A file keeps every change and every text save for good, and has a History panel that shows them](a-file-keeps-every-change-for-good.md) — Accepted, 2026-10-26
 - [A file is named by its id in a new pair of tags, a capital one for "about it" and a small one for "mentions it", and a chip picked from a menu is saved as the file's link](a-file-is-named-by-its-id-in-a-capital-and-small-tag.md) — Accepted, 2026-10-29
-- [Each company defines its own statuses for a shared type, starting from the defaults its tracker provides; the shared part is what each status means](each-company-defines-its-own-statuses.md) — Accepted, 2026-10-30
+- [Each company defines its own statuses for a shared type, starting from the defaults its tracker provides; the shared part is what each status means](each-company-defines-its-own-statuses.md) — Accepted, 2026-10-30; its three open rules answered by the one below
+- [A company's statuses are its own layer of a type's properties, kept in a file the workspace's admins edit, and every status change also carries its stage](a-companys-statuses-are-its-own-layer-of-a-types-properties.md) — Accepted, 2026-10-30
 - [A file's own state is an upstream Buzz artifact the relay keeps in order; everything else names the file by one reference](every-file-is-an-artifact-the-relay-keeps-in-order.md) — Accepted, 2026-10-29; its part "in one single-letter tag that every … card and chip uses" superseded by the one above, 2026-10-29; its part "a file's own state is a NIP-AR artifact, whole in each save" superseded by the one below, 2026-10-30
 - [A file is its fields, and the relay keeps each field's changes in order; the text is one field, saved whole](a-file-is-its-fields-each-kept-in-order-by-the-relay.md) — Accepted, 2026-10-30
 - [What the relay knows about a type changes how files are found and ranked, never whether a save is accepted](a-types-declaration-changes-how-files-are-found-never-what-is-accepted.md) — Accepted, 2026-10-30
@@ -219,6 +220,7 @@ properties and its history.
 
 - [Search matches every typed word as the start of a word; quotes ask for an exact phrase and a minus leaves a word out](search-matches-every-word-as-a-word-start.md) — Accepted, 2026-10-19
 - [A minus before a quoted phrase leaves out anything with those words next to each other](a-minus-before-a-phrase-leaves-the-phrase-out.md) — Accepted, 2026-10-19
+- [Search looks in a base type's built-in word fields and in every field an added app marks as words in its listing](search-looks-in-the-base-and-every-field-an-added-app-marks-as-words.md) — Accepted, 2026-10-30
 
 ## Protocol
 
