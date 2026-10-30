@@ -198,7 +198,7 @@ produce the same events in the same order.
 | **delete** | `kind:9008` with the Folder's `h` | by the relay, while the Folder holds a file — a `30840`, `30842`, `30850` or `30851` under its `h`, an artifact whose home it is (deleted ones included, §6.13), or anything its listing names — and to anybody but the channel's owner, the person who owns an owner-role agent in the channel, or an owner or admin of the workspace on the relay's roster |
 | **place** a new file | the file's root, with this Folder's `h` (or the tag its owner's `placement` names, §7.3) — under a parent, the parent's own Folder instead (§6.7); then `kind:1852` `add` naming its address | — |
 | **unlist** a deleted file | the `kind:5`; then `kind:1852` `remove` naming its address, in each Folder whose state names it (§7.3) | — |
-| **move** a file to another Folder | `kind:1852` `add` in the target; then `kind:1852` `remove` in the source — one pair for the file and one for each file listed beneath it (§6.7), so a subtree moves whole. The file's `h` does not change | by the consumer, when the target is private and the file's `h` names any other channel (§3.1: the move would look private and not be) |
+| **move** a file to another Folder | `kind:1852` `add` in the target; then `kind:1852` `remove` in the source — one pair for the file and one for each file nested beneath it (§6.7 Nesting), so a subtree moves whole; never the files a topic lists (§6.14). The file's `h` does not change | by the consumer, when the target is private and the file's `h` names any other channel (§3.1: the move would look private and not be) |
 | **start a conversation** | `kind:9` with the Folder's `h` (§6.4) | — |
 
 - **Delete is for an empty Folder.** The relay refuses a `kind:9008` while the
@@ -571,14 +571,27 @@ CON-33*).
 
 | Kind | Tag order |
 | --- | --- |
-| `1851` | `a`, `field`, `value`, `h`, `ts` |
+| `1851` | `a`, [`O`], `field`, `value`, `h`, [`content-format`], `ts`, then any `A`, `o`, `imeta` and `p` |
 
-A move — a change to a `movedBy` field (§7.2) — also carries `A` after `ts`,
-naming the new parent. It is an index, not a second target: `a` is the only
-tag a change targets. A change whose value is a §13.3 block document carries
-`["content-format","estiva-blocks-1"]` between `h` and `ts`, and one `imeta`
-per attachment after `ts` (§13.4) — the order Ship's `buildChange` and
-`@estiva-app/interop` write.
+The bracketed tags and those after `ts` appear only where a rule asks for them:
+
+- **`O`, the file the change is about, by its id** (*added 2026-10-30*; record
+  [a-change-is-about-its-file-as-a-comment-is](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-change-is-about-its-file-as-a-comment-is.md)).
+  A change MAY carry `["O", <d>]` naming by its id the file its `a` names, as a
+  comment names its file (§6.4); a list entry (`lists:<d>`, §6.14) MUST. It is
+  the same target, not a second one, and carries no `K`: the `a` says the
+  kind. A reader ignores a change whose `O` is not its `a`'s `d`, whether it
+  asked by `#a` or by `#O`.
+- **`A`**, on a move — a change to a `movedBy` field (§7.2) — naming the new
+  parent. It is an index, not a second target: `a` (with `O`, the same file) is
+  the only file a change targets.
+- **`o`**, any other file the change points at, by its id (§6.4): the file a
+  list entry lists (§6.14).
+- **`content-format`** `estiva-blocks-1`, on a change whose value is a §13.3
+  block document, with one `imeta` per attachment (§13.4).
+- **`p`**, the person a change names, where the relay indexes them (§11.8).
+
+That is the order Ship's `buildChange` and `@estiva-app/interop` write.
 
 - A change event is authored by **whoever acts**, not by the object's author.
 - A change event MUST set exactly **one** field. Two fields in one event would
@@ -690,7 +703,7 @@ middle.
 | lowercase `a`/`e`/`k`/`p` (on a `1111`) | the immediate **parent** — the comment being replied to |
 | `h` tag | the Folder the thread lives in, which is what gates who reads it |
 | `nostr:naddr…` in the body | the object, as a person types it |
-| `O` / `o` with `K` / `k` | a file kept as an artifact (§6.13), by its id — below |
+| `O` / `o` | any file, by its id: `O` the file an event is about, `o` another file it points at — below; with `K` / `k` for a file kept as an artifact (§6.13) |
 
 **A file kept as an artifact is named by its id, in `O` and `o`** (*added
 2026-10-30*, ALO-2; record
@@ -703,12 +716,24 @@ saved (§6.13), so `A`/`a` cannot name it. Instead:
   with `["k", <type>]`, as NIP-22's parent equals its root; a reply's lowercase
   tags name the comment it answers, as above.
 - Anything that mentions or lists the file carries `["o", <d>]`: a message
-  beside the link in its text, a Folder's listing (§3.3), a membership change
-  (§11.8), and block links and cards (§13.6.1–§13.6.2).
+  beside the link in its text, a Folder's listing (§3.3), a list entry
+  (§6.14), and block links and cards (§13.6.1–§13.6.2). Who is on the file is
+  a change about it, by `O` (§11.8).
 - A reader asks by `#O` for the comments about a file and by `#o` for
   everything that names it, as for any single-letter tag (checked on
   production over `/query` 2026-10-30: a comment found by `#O`, the comment and
   a message by `#o`, the Folder's listing by `#o`).
+
+**Any file is named by its id the same way** (*added 2026-10-30*; record
+[a-change-is-about-its-file-as-a-comment-is](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-change-is-about-its-file-as-a-comment-is.md)),
+not only one kept as an artifact: `O` is the file an event is about (a
+comment's file, a change's file, §6.2) and `o` any other file it points at (a
+mention, a listing, a move's new parent). A file with an address keeps its
+`a`/`A` beside the id where a rule asks for it. The first change to carry the
+pair is a list entry (§6.14): `O` names the topic it changes and `o` the file
+it lists, so `#O` asks for what changed on a file and `#o` for what points at
+it. A comment on a `30850`, `30851`, `30840` or `30842` still roots at its `A`
+until that type moves to being named by id (§6.13).
 
 The pair is proposed upstream beside NIP-AR, as a fourth thing a comment can
 be about (§6.13). What Block or NIP-22 refuses, Estiva carries as its own rule.
@@ -916,7 +941,8 @@ its owners and admins (§3.3).
   archived, itself or up its parent chain, a writer SHOULD NOT offer a new
   `kind:1111` rooted at it (replies included), a `kind:7` on it or on its
   comments, a `kind:40003` or `kind:5` on its comments, a `kind:5` taking back
-  a reaction on it or on its comments, or a new child under it. Its own Archive and Unarchive, Delete, and a move out of an archived
+  a reaction on it or on its comments, a new child under it, or a change to
+  its list of files (`lists:<d>`, §6.14). Its own Archive and Unarchive, Delete, and a move out of an archived
   parent stay offered. A reader MUST show such events whatever their
   `created_at`: an older app, an outside client or an agent can still write
   one. Reading reactions still follows §6.6.
@@ -1335,9 +1361,10 @@ the line between them is the kind.
 own Folder (§6.2's `h` rule). The fields: `title` and `parent`, each seeded by
 the root tag of the same name and overridden by the change stream — the way an
 issue's `project` field works; `summary`, seeded by its root tag (§6.12);
-`archived` (§6.5); and `member:<p>` (§11.8). A consumer MUST read `parent`
-before the `a` tag. There is no `description`: a reader ignores a
-`description` change aimed at a `30840`.
+`archived` (§6.5); `member:<p>` (§11.8); and `lists:<d>`, the topic's list of
+files from any Folder (§6.14). A consumer MUST read `parent` before the `a`
+tag. There is no `description`: a reader ignores a `description` change aimed
+at a `30840`.
 
 **Projection.** A bare file has no `kind:31990`, and **a consumer MUST NOT let
 one claim it**. Its projection is this section: `title` from the tag with the
@@ -1905,6 +1932,111 @@ checked on production as QA-1 and QA-2 on the QA Folder (buzz#38,
 estiva-id#90). No app writes or reads an artifact yet: projects move in the
 next milestone of the project "A load stays the same size as edits pile up:
 projects", and Ship, Peek, Leaf and the agent follow this section then.
+
+### 6.14 A file's list of other files
+
+*Added 2026-10-30*; record
+[a-topic-keeps-its-own-list-of-files](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-topic-keeps-its-own-list-of-files.md).
+A file may keep a list of other files from any Folder, one entry per file,
+naming each by its id. Each listed file stays in its own Folder and its own
+tree, and one file may be on many lists. A topic (`kind:30840`, §6.7) is the
+reference: Estiva's apps read only topics' lists (Miky, 2026-10-30). Any other
+type may carry one under the same rules, an outside company's own type
+included, as any type carries a summary (§6.12).
+
+**An entry** is a `kind:1851` on the file that keeps the list (§6.2), signed by
+whoever adds or removes the listed file, with its tags in this order:
+
+| tag | |
+| --- | --- |
+| `a` | the address of the file keeping the list: the topic |
+| `O` | the topic's `d`: the file the change is about (§6.2) |
+| `field` | `lists:<d>`, where `<d>` is the listed file's id |
+| `value` | `true` lists the file; `false` takes it off |
+| `h` | the topic's Folder (§6.2's `h` rule) |
+| `ts` | §6.2 |
+| `o` | `<d>` again: the file the change points at (§6.4) |
+
+No `K`, `k` or `p`. `content` is empty, or a note the person wrote; each app
+says "added to" and "removed from" in its own words. Taking a file off is a `false` entry, never a `kind:5` of the entry
+that listed it: deleting the newest entry only lets the one before it stand
+again (§6.3).
+
+Why one change per entry and not a list: a NIP-51 set is one author's
+replaceable list, and a topic is listed into by everyone in its Folder, so each
+save would overwrite the others'. One change per file lets people add and
+remove at once, and the listed file's id sits in the field's name because §6.3
+folds last write wins per field.
+
+**The fold.** The newest entry per list (`a`) and listed file counts (§6.3),
+and the file is on the list only when that entry's `value` is exactly `true`.
+A reader skips a change, and folds nothing from it, when:
+
+- its field is `lists:<d>` and none of its `o` tags is `<d>`, byte for byte. An
+  `o` that no `lists:` field names is not an entry: a move or another relation
+  carries `o` too;
+- its `O` is not its `a`'s `d` (§6.2);
+- `<d>` is the list's own `d`: a file is not on its own list;
+- it fails §6.2's `h` rule against the list's root, or that root is deleted
+  (§6.5, a `kind:5` today) or not one the reader can read. A list whose root
+  names no Folder takes no entry: §6.2's exception for such roots does not
+  apply.
+
+The Folder check comes before the fold: an entry filed in another Folder is
+never the newest, so it cannot hide the entry before it.
+
+An entry is read by everyone who reads the topic's Folder, as a Folder's own
+listing is (§3.2): it tells them the listed id, who listed it and when,
+whether or not they can read the file.
+
+**Reading it.**
+
+- **Which topics list a file** is `{"kinds":[1851], "#o":[<d>]}`, folded per
+  list. A file's own changes, its list among them, are `{"kinds":[1851],
+  "#O":[<d>]}` or `#a`, so asking what changed on a file never returns an entry
+  that only lists it.
+- **A listed id resolves** by `#d` over the file kinds the reader knows
+  (`30840`, `30842`, `30850` and `30851` for Estiva's apps, and any type whose
+  manifest it read, §7), never a bare `#d`: a Folder's `kind:39000` shares its
+  uuid (§11.1), and an id held only by one resolves to nothing. An id that no
+  file the reader can read holds, or that two files hold (record
+  [a-files-id-is-unique-across-every-kind](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-files-id-is-unique-across-every-kind.md)),
+  is not drawn and not counted, because the count is the disclosure (§3.2).
+- **A listed topic** is drawn as a file. Its own list is not expanded into the
+  one that lists it.
+- **A listed file that is archived**, itself or up its parent chain (§6.5),
+  is still listed: archiving removes no entry, and the reader knows from the
+  file that it is archived. How it is drawn, among the files or apart, is each
+  app's. An archived topic's list takes no new entry (§6.5).
+- **No order is promised.** The entries' times are there; an app sorts as its
+  design says.
+
+**A topic is a flat lens.** Its files are its list, wherever each sits in its
+Folder's tree and however deep. A file nested under the topic by `parent`
+(§6.7 Nesting) is on the list only once it is listed. Nesting stays in the
+tree.
+
+**A listing grants nothing and moves nothing.** Who reads the listed file is
+its own Folder's rule (§3.1). A listing is not:
+
+- **a Folder's listing.** The listing §3.3 counts, when the relay refuses to
+  delete a Folder that holds a file, is the Folder's `kind:30890`; an entry
+  filed in a Folder adds nothing to it. A §3.3 move carries the files nested
+  under the moved file, never the files it lists.
+- **a parent.** The §6.5 archive chain never walks a list.
+- **a membership.** An entry carries no `p` and is not a message in a stream,
+  so it makes nobody a member of the listed file or of the topic (§11.8).
+- **a mention.** Mentioned in and a file's activity read messages and comments
+  (`kind:9`, `1111`, `40003`, §6.4). A reader that finds them by `#o` keeps to
+  those kinds, so an entry never shows as one.
+
+Checked on production 2026-10-30, as QA-1 and QA-2: QA-1's entries listing a
+QA project and a document filed in another Folder were accepted; QA-2 found
+each by `#o` and both by the topic's `#O`; the project's own changes by `#O`
+and by `#a` held no entry; after QA-1's `false` entry the document's topics
+folded to none while the project stayed listed. An entry filed in a Folder
+QA-2 cannot read was returned to QA-1 by `#o` and not to QA-2. Conformance:
+C31 (§9).
 
 ---
 
@@ -2838,7 +2970,7 @@ throwaway relay or a fake query.
 | C14 | **Deletion left to the relay.** After the author's `kind:5`, the next read no longer holds the message, and the app shows nothing for it from local state. A non-author's `kind:5` is refused and the refusal is shown in the relay's words. Edit and Delete are offered only on the viewer's own message — not on another person's or an agent's (§6.5, 2026-10-06) |
 | C15 | **Attachment fold.** An edit carrying `imeta` replaces the message's set. A later edit with none leaves the message with no files. An edit carrying one file on a message with two leaves one (§6.8) |
 | C16 | **Reply shape.** A reply to a comment is a `kind:1111` with the comment's `A`/`K`/`P`, `e`/`k`/`p` naming the top-level comment, the comment's `h`, and no lowercase `a` for the object. A reply to a comment carrying a `block` copies its `block` and `quote` verbatim, before the `h` (§13.6). A reply read back threads under that comment in every conforming app (§6.4) |
-| C17 | **Membership fold.** The file's author is a member from the earliest root version (for a file kept as an artifact, the signer of its first save, §11.8; its membership changes are targeted by `o`, and one whose `h` is not the file's home is ignored). Writing in the stream, a body mention, an assignee change carrying `["p", P]`, and `member:<P>`=`true` by anyone each make the person a member. A comment's `p` tag alone does not, nor an assignee change without a `p`, nor an unassign, nor a `kind:9` with an `a`. An edit of the root after the author left does not re-join them. A `member:<P>`=`false` signed by someone else is ignored. One signed by `P` ends membership until a later trigger, and member-since is then that trigger's second. Two changes inside one second order by `ts` (§11.8) |
+| C17 | **Membership fold.** The file's author is a member from the earliest root version (for a file kept as an artifact, the signer of its first save, §11.8; its membership changes are targeted by `O`, and one whose `h` is not the file's home is ignored). Writing in the stream, a body mention, an assignee change carrying `["p", P]`, and `member:<P>`=`true` by anyone each make the person a member. A comment's `p` tag alone does not, nor an assignee change without a `p`, nor an unassign, nor a `kind:9` with an `a`. An edit of the root after the author left does not re-join them. A `member:<P>`=`false` signed by someone else is ignored. One signed by `P` ends membership until a later trigger, and member-since is then that trigger's second. Two changes inside one second order by `ts` (§11.8) |
 | C18 | **Unread for a member.** Someone mentioned for the first time on a year-old file has one unread message, the mention. The person's own messages are never unread. A reply is read once its thread's marker or the reply floor passes it, or the file's marker passes it and it is at or before T0; the channel's marker never reads a file. A muted file shows only the messages that mention the person (§11.3, §11.8) |
 | C19 | **Urgent mention.** A message urgent for `P` carries `["urgent", P]` and `["p", P]` and names `P` in its body as published as an ordinary reference. It is urgent for `P` and for nobody else it names. An `urgent` tag for a person the body does not name is not urgent. An app that does not draw urgency renders it as an ordinary mention (§13.1) |
 | C20 | **Card fold.** A message with `["embed", V, "compact"]` whose body names `V` draws `V`'s row under it, and one with `detailed` its card. An edit with `["embed", V, "none"]` removes it and, with a byte-identical body, does not mark the message edited. A later edit with no `embed` leaves it removed. An `embed` for a value the folded body does not name draws nothing, and one for a value first named in an edit draws, with no `a` on the edit. With a `part` and an `embed` on the same address, the part wins. An unknown layout draws as `compact`. A reader that does not know `embed` draws the reference (§6.8, §13.6.2) |
@@ -2852,6 +2984,7 @@ throwaway relay or a fake query.
 | C28 | **A mention in a file's text.** A save of a file's block document that names `P` with a `reference`, edited from a version that did not, is written with `member:<P>`=`true` on the file, signed by the writer and carrying `["p", P]`, and the save carries no `p` for `P`; `P` is a member, and with no message in the file's stream nothing is unread for `P`. A creation naming `P` writes the same change; a save naming only the writer writes none. `P` leaves; a save that changes another word and still names `P` writes no change, and `P` stays out. A save that drops `P`, then one that names `P` again, writes the change again: `P` is a member again (§11.8, §13.1) |
 | C29 | **A host-swapped address.** With kept shapes `https://a.example/issue/<slug>-<d>` (30851) and `https://a.example/#/issue/<d>` from a manifest on `a.example`, and only `https://b.example/document/<slug>-<d>` from one on `b.example`: a message written with `https://b.example/issue/<any>-<d of V>` keeps that URL in its body, carries `["a", V]`, draws as C21 places it, opens that URL, and `V` lists it as a mention. `https://c.example/issue/<any>-<d of V>`, with no kept shape on `c.example`; `http://b.example/issue/…` and `https://b.example:8443/issue/…`; and `https://b.example/#/issue/<d of V>` carry no tag and stay links. A manifest whose `web` is on `c.example` and that declares `urls` on `a.example` adds no shape and no origin. A manifest on `c.example` that declares `https://c.example/issue/<slug>-<d>` for kind `K`: on `b.example`, a `d` held under both `30851` and `K` names nothing and carries no tag; on `a.example`, the link is `V` (§7.7, §13.1) |
 | C30 | **A save from a list row** (*added 2026-10-30*, §6.13). An app changing one field of a file kept as an artifact from a list row (a status, a lead) first reads the whole current save, `#d` with no `omit`, checks its signature, and saves that save with the one field changed and its `content` unchanged, naming it in `prev`. Given a row that says its text was left out, the app never publishes a save whose `content` is empty or taken from the row |
+| C31 | **A topic's list** (*added 2026-10-30*, §6.14). An entry the app writes carries `a`, `O` (the topic's `d`), `field` `lists:<d>`, `value`, `h` (the topic root's), `ts`, `["o", <d>]`, in that order, and no `p`. Of two entries for one topic and file inside one second, the later by `ts` counts; a file is listed only by `true`, and `"1"` or an empty value lists nothing. Ignored, without hiding an older good entry: one whose `o` is not the field's `<d>` (with `o` naming it second, it counts); one whose `O` is not its `a`'s `d`; one listing the topic's own `d`; one whose `h` is not the topic root's. Which topics list a file names the topic for `#o`; a file's own changes by `#O` hold no entry listing it. A listed id held by two files, or only by a Folder's `39000`, is not drawn and not counted |
 
 C11 and C12 both have a failure that is invisible from the app that has it.
 A merged mention looks like somebody said it here. A forged edit looks like an
@@ -3350,11 +3483,12 @@ accepted a `member:<P>` change on an issue, and both `#p` and `#a` returned it.
 **On a file kept as an artifact** (*added 2026-10-30*, §6.13; record
 [every-file-is-an-artifact-the-relay-keeps-in-order](https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-file-is-an-artifact-the-relay-keeps-in-order.md),
 D2), who is on the file stays beside it, not in its saves: the same
-`kind:1851`, targeted by `["o", <d>]` in place of `a`, with the file's home as
+`kind:1851`, targeted by `["O", <d>]` in place of `a` (§6.2; record
+[a-change-is-about-its-file-as-a-comment-is](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-change-is-about-its-file-as-a-comment-is.md)), with the file's home as
 its `h`. Adding a person never edits the file, and a leave is never a save by
 the leaver. **Created it** is the signer of the file's first save (`op`
 `create`), joining at that save's `created_at`, which no later save moves. A
-reader finds the membership changes by `#o`, and ignores one whose first `h`
+reader finds the membership changes by `#O`, and ignores one whose first `h`
 is not the file's home, as §6.2 has a reader ignore a change filed in another
 Folder.
 

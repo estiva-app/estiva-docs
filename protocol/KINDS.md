@@ -39,7 +39,7 @@ nobody held the whole list.
 | --- | --- | --- |
 | `30850` | Project | Addressable. Root event carries immutable facts only. Its `key` (3–6 letters, root seed + `1851` override) prefixes its issues' refs — SPEC §6.1 |
 | `30851` | Issue | Addressable. **Status and assignee are not on it** — see §4 |
-| `1851` | Change | Regular, append-only. Authored by whoever acts, not by the object's author. `field` `summary` is a file's one-line summary, plain text, on every file kind — SPEC §6.12 |
+| `1851` | Change | Regular, append-only. Authored by whoever acts, not by the object's author. `field` `summary` is a file's one-line summary, plain text, on every file kind — SPEC §6.12. `field` `lists:<d>` lists file `<d>` in the file it changes (a topic's list), with `O` = that file's `d` and `o` = `<d>` — SPEC §6.14 |
 | `31989` / `31990` | Handler recommendation / information | NIP-89 manifest. Global, not channel-scoped — discovery must work before you are a member of anything |
 
 ### Documents — owned through a manifest; Leaf the first owner
