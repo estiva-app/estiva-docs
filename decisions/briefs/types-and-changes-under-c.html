@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Types and Changes</title>
+<style>
+:root{--bg:#fbfaf7;--ink:#1d1d1b;--muted:#6b6a64;--box:#ffffff;--line:#c9c6bd;--accent:#2f6fde;--accent-soft:#e3ecfb;--warn:#b5521b;--warn-soft:#f8e6da;--ok:#2e7d4f;--ok-soft:#e0f1e7;--rule:#e7e4dc}
+@media (prefers-color-scheme: dark){:root{--bg:#161615;--ink:#ecebe6;--muted:#a3a19a;--box:#22221f;--line:#4a4842;--accent:#7aa7f5;--accent-soft:#1f2c44;--warn:#ec9a6a;--warn-soft:#3d2719;--ok:#7cc79a;--ok-soft:#1b3326;--rule:#2d2c29}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+main{max-width:760px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.6rem;line-height:1.25;margin:0 0 6px}
+h2{font-size:1.2rem;margin:40px 0 8px;padding-top:14px;border-top:2px solid var(--rule)}
+h3{font-size:1rem;margin:20px 0 4px}
+p,li{margin:6px 0}
+.sub{color:var(--muted);margin:0 0 18px}
+.q{background:var(--accent-soft);border-left:4px solid var(--accent);padding:12px 14px;border-radius:6px;font-size:1.05rem}
+.pick{background:var(--ok-soft);border-left:4px solid var(--ok);padding:12px 14px;border-radius:6px}
+.note{background:var(--warn-soft);border-left:4px solid var(--warn);padding:10px 14px;border-radius:6px}
+.opt{border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:14px 0;background:var(--box)}
+.opt h3{margin-top:4px}
+.tag{display:inline-block;font-size:.78rem;padding:1px 8px;border-radius:10px;background:var(--rule);color:var(--muted);margin-left:6px;vertical-align:middle}
+svg{width:100%;height:auto;display:block;margin:8px 0}
+svg text{font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;fill:var(--ink)}
+svg .m{fill:var(--muted);font-size:12px}
+svg .t{font-weight:600}
+svg .b{fill:var(--box);stroke:var(--line);stroke-width:1.2}
+svg .hot{fill:var(--warn-soft);stroke:var(--warn);stroke-width:1.2}
+svg .new{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+svg .good{fill:var(--ok-soft);stroke:var(--ok);stroke-width:1.4}
+svg .ar{stroke:var(--ink);stroke-width:1.3;fill:none;marker-end:url(#h)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:620px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--rule)}
+small,.small{font-size:.86rem;color:var(--muted)}
+code{font-size:.86em}
+nav.toc{font-size:.9rem;color:var(--muted)}
+nav.toc a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+<h1>Three calls the fields shape left open</h1>
+<p class="sub">Decision brief, 30 Oct 2026. Initiative "Re-architecting Osnova protocol"; project "A load stays the same size as edits pile up: projects". This morning you chose C: a file is its fields, each kept in order by the relay, and the text is one field saved whole. That record names three things it leaves open. Each is asked on its own. About six minutes.</p>
+<nav class="toc">1 · <a href="#one">How a file says its type</a> &nbsp;·&nbsp; 2 · <a href="#two">Several fields at once</a> &nbsp;·&nbsp; 3 · <a href="#three">Tuesday's version</a> &nbsp;·&nbsp; <a href="#checked">Checked</a></nav>
+
+<!-- ============ 1 ============ -->
+<h2 id="one">1 · How a file says what type it is</h2>
+<p class="q"><b>The question.</b> When a builder launches its own type of file, a candidate in an HR app, what does its first record look like? And do projects, issues, documents and topics change to look the same?</p>
+
+<h3>Today</h3>
+<p>Each of our four types has its own first record, its own number: one for a project, one for an issue, one for a document, one for a topic. Every field change after it names the file. No builder type exists yet.</p>
+<p>On 29 Oct you decided types carry <b>names</b>, not numbers: <code>osnova.project</code> for the shared ones, <code>acme.candidate</code> for a builder's own, launched without asking anyone. That name rode on the whole-file save. Under C there is no whole-file save, so the name needs a new home: the file's first record. A comment that names a file already carries the type's name beside its id (the reference you chose on 29 Oct).</p>
+
+<h3>Why it reaches beyond this ticket</h3>
+<p>It is the first thing any builder writes. It decides whether a builder's type that several apps start using can become a shared type without its files moving. Once a builder's files are on the relay, every app reads that shape for good: one-way per file written. Moving our four types is one-way at the move.</p>
+
+<h3>The picture</h3>
+<svg viewBox="0 0 720 430" role="img">
+<title>Three ways a file says its type: numbers kept for four types and one named first record for the rest; everything on the named first record; or no builder types yet</title>
+<defs><marker id="h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker></defs>
+<text x="10" y="20" class="t">A · the four keep their records; everything new is one named record</text>
+<rect x="10" y="32" width="96" height="44" rx="6" class="b"/><text x="20" y="52">Project</text><text x="20" y="68" class="m">its own record</text>
+<rect x="114" y="32" width="96" height="44" rx="6" class="b"/><text x="124" y="52">Issue</text><text x="124" y="68" class="m">its own record</text>
+<rect x="218" y="32" width="96" height="44" rx="6" class="b"/><text x="228" y="52">Document</text><text x="228" y="68" class="m">its own record</text>
+<rect x="322" y="32" width="96" height="44" rx="6" class="b"/><text x="332" y="52">Topic</text><text x="332" y="68" class="m">its own record</text>
+<rect x="436" y="32" width="274" height="44" rx="6" class="new"/><text x="446" y="52">One named first record</text><text x="446" y="68" class="m">acme.candidate · a new shared type</text>
+<text x="10" y="96" class="m">Each of the four is read as its name: the project record means osnova.project. Nothing moves.</text>
+<text x="10" y="112" class="m">A builder's type several apps adopt becomes shared by a line in the directory: no file moves.</text>
+
+<text x="10" y="150" class="t">B · everything on the named record; the four move to it</text>
+<rect x="10" y="162" width="408" height="44" rx="6" class="hot"/><text x="20" y="182">Project · Issue · Document · Topic</text><text x="20" y="198" class="m">every first record re-signed by its author</text>
+<line x1="418" y1="184" x2="434" y2="184" class="ar"/>
+<rect x="436" y="162" width="274" height="44" rx="6" class="new"/><text x="446" y="182">One named first record</text><text x="446" y="198" class="m">every type, old and new</text>
+<text x="10" y="226" class="m">One shape for every reader. The move re-signs at least 922 first records (94 projects, 828 issues,</text>
+<text x="10" y="242" class="m">documents and topics not counted), possible only while Estiva ID holds every author's key.</text>
+
+<text x="10" y="280" class="t">Do less · the four keep their records; no builder type yet</text>
+<rect x="10" y="292" width="408" height="44" rx="6" class="b"/><text x="20" y="312">Project · Issue · Document · Topic</text><text x="20" y="328" class="m">as today</text>
+<rect x="436" y="292" width="274" height="44" rx="6" class="b" stroke-dasharray="5 4"/><text x="446" y="312">A builder's type</text><text x="446" y="328" class="m">shaped when the first builder asks</text>
+<text x="10" y="356" class="m">The SPEC says how to write a project, issue, document or topic, and "not yet" to a builder.</text>
+
+<rect x="10" y="378" width="700" height="40" rx="6" class="good"/>
+<text x="20" y="396">In all three, every later change names the file by its id and the change it follows,</text>
+<text x="20" y="411">so a comment, a chip or a listing reads the same whatever the first record is.</text>
+</svg>
+
+<div class="opt"><h3>A · The four keep their records, and every new type uses one named first record <span class="tag">recommended</span></h3>
+<p><b>What you see.</b> Nothing changes for Miky or Katerina. The HR app launches "Candidate" by writing named first records; Ship and Peek show one as a plain file with its title and fields. If a second company's app starts using candidates, the directory gets an entry and nobody's files move.</p>
+<p><b>Outside company.</b> One rule for every type it makes, plus a short fixed table: these four old records mean these four names. It never writes the old ones for a new type.</p>
+<p><b>What could go wrong.</b> Two shapes for files, forever: four by number, everything else by name. Every reader carries the four-line table. A list "everything of type osnova.project" has to look in two places if a project is ever written the new way, so the SPEC says projects, issues, documents and topics keep their own records for new files too.</p></div>
+
+<div class="opt"><h3>B · Everything uses the named first record, and the four move to it</h3>
+<p><b>What you see.</b> Nothing, after a move like the one C removed: an announced moment, agents stopped, every first record re-signed by its author.</p>
+<p><b>Outside company.</b> One shape for every file, no table.</p>
+<p><b>What could go wrong.</b> It brings back the one-way move C was chosen to avoid. Katerina has to sign in for hers; any author without a key held by Estiva ID leaves their files behind. Everything that names a file by its old address (comments, listings, chips) must then be read by id alone.</p></div>
+
+<div class="opt"><h3>Do less · Keep the four, and decide a builder's type when a builder needs one</h3>
+<p><b>What you see.</b> Nothing.</p>
+<p><b>Outside company.</b> Cannot launch its own type yet, which the directory promises ("launches with them, asking nobody").</p>
+<p><b>What could go wrong.</b> The SPEC rewrite this project owes leaves a hole exactly where the next builder starts, and "Apps declare their types to the relay" has no file of a declared type to point at.</p></div>
+
+<div class="tw"><table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td>A</td><td>Four records by number, read as names; one named first record for every other type</td><td>Nothing changes; a builder's type shows as a plain file</td><td>One rule plus a four-line table; becomes shared with no move</td><td>Two-way until a builder writes a file; then each written file stays readable</td><td>A new first-record kind and the table in the shared code</td></tr>
+<tr><td>B</td><td>One named first record for every type</td><td>An announced move</td><td>One rule, no table</td><td>One-way at the move; needs every author's key</td><td>The move: re-sign at least 922 records, rewrite readers</td></tr>
+<tr><td>Do less</td><td>As today</td><td>Nothing</td><td>Cannot launch a type</td><td>Two-way</td><td>None now</td></tr>
+</table></div>
+
+<h3>How others do it</h3>
+<p><b>Buzz (upstream):</b> one kind for every artifact, with the type as a name in a tag, so a builder never asks for a number: A's shape for everything new. <b>Nostr's habit</b> is one number per shared meaning, which is why our four have numbers; the kind registry keeps those. <b>Notion, Airtable:</b> one record shape whose type is a reference to a schema, never a new table type per customer.</p>
+
+<div class="pick"><b>Recommendation: A.</b> A builder's type should become a shared one by agreement, a line in the directory, never by moving every file of it; only a named first record allows that. Keeping the four where they are is C's own principle, nothing that names a file is re-signed, and moving them would rebuild the one-way move you removed this morning for one gain: a four-line table readers no longer carry.</div>
+
+<!-- ============ 2 ============ -->
+<h2 id="two">2 · Several fields changed at once</h2>
+<p class="q"><b>The question.</b> When one action changes several fields, Claude setting an issue's title, status and text in one command, is that one change or several?</p>
+
+<h3>Today</h3>
+<p>The SPEC says one change sets exactly one field, because two fields in one change would need a rule for when only part of it applies. The agent writes one change per field. This morning's record says several fields changed together are refused together, so a half-applied change never shows, and leaves open how they are written.</p>
+<p>Where it happens: the agent's edit with several flags; a status with its stage, if a save carries the stage beside the status (owed by the statuses record you accepted today); restoring an older value of several fields; a type change with its new fields.</p>
+
+<h3>Why it reaches beyond this ticket</h3>
+<p>It is the one rule every reader of changes must follow, ours and every builder's. A reader that only knows "one field per change" misreads the other shape. Two-way while only our apps write it; one-way once a builder's app does.</p>
+
+<h3>The picture</h3>
+<svg viewBox="0 0 720 300" role="img">
+<title>Claude changes title, status and text of one issue; while Katerina has just changed the status. Today, one change with several fields, a bundle of one-field changes, and each field alone.</title>
+<text x="10" y="18" class="m">Katerina has just set the status. Claude, from an older copy, sends title + status + text.</text>
+<text x="10" y="48" class="t">Today</text>
+<rect x="120" y="32" width="120" height="28" rx="5" class="good"/><text x="130" y="51">title ✓ lands</text>
+<rect x="250" y="32" width="120" height="28" rx="5" class="hot"/><text x="260" y="51">status lands</text>
+<rect x="380" y="32" width="120" height="28" rx="5" class="good"/><text x="390" y="51">text ✓ lands</text>
+<text x="510" y="45" class="m">Katerina's status is</text><text x="510" y="59" class="m">overwritten unseen</text>
+
+<text x="10" y="104" class="t">1 · one change</text>
+<rect x="120" y="86" width="380" height="30" rx="5" class="new"/><text x="130" y="106">title + status + text, each naming what it follows</text>
+<line x1="500" y1="101" x2="540" y2="101" class="ar"/><text x="548" y="98">all refused;</text><text x="548" y="113" class="m">Claude merges, resends</text>
+
+<text x="10" y="164" class="t">2 · a bundle</text>
+<rect x="120" y="146" width="120" height="30" rx="5" class="new"/><text x="130" y="166">title</text>
+<rect x="250" y="146" width="120" height="30" rx="5" class="new"/><text x="260" y="166">status</text>
+<rect x="380" y="146" width="120" height="30" rx="5" class="new"/><text x="390" y="166">text</text>
+<rect x="114" y="140" width="392" height="42" rx="7" fill="none" stroke="var(--accent)" stroke-dasharray="5 4"/>
+<line x1="506" y1="161" x2="540" y2="161" class="ar"/><text x="548" y="158">all refused;</text><text x="548" y="173" class="m">relay unpacks, stores 3</text>
+
+<text x="10" y="224" class="t">3 · each alone</text>
+<rect x="120" y="206" width="120" height="30" rx="5" class="good"/><text x="130" y="226">title ✓</text>
+<rect x="250" y="206" width="120" height="30" rx="5" class="hot"/><text x="260" y="226">status refused</text>
+<rect x="380" y="206" width="120" height="30" rx="5" class="good"/><text x="390" y="226">text ✓</text>
+<text x="510" y="226" class="m">half-applied shows</text>
+<text x="10" y="272" class="m">In 1 and 2 nobody sees a title from Claude's edit beside Katerina's status before Claude has seen hers.</text>
+<text x="10" y="288" class="m">History: 1 shows one line per act; 2 and 3 show three lines.</text>
+</svg>
+
+<div class="opt"><h3>1 · One change may set several fields, each naming the change it follows <span class="tag">recommended</span></h3>
+<p><b>What you see.</b> Claude's three-field edit lands whole or not at all; History shows "Claude changed title, status and text" as one line. One field changed is still one change, as today.</p>
+<p><b>Outside company.</b> One rule: a change sets one or more fields. The relay accepts or refuses it as one.</p>
+<p><b>What could go wrong.</b> Every reader of changes learns the new form before any app writes it; old one-field changes stay valid. A wide change refused because one field moved costs the writer a re-read of all of them.</p></div>
+
+<div class="opt"><h3>2 · Several one-field changes in a bundle the relay takes or refuses together</h3>
+<p><b>What you see.</b> The same as 1, but History shows three lines.</p>
+<p><b>Outside company.</b> Keeps "one field per change" and learns a second shape, the bundle, which the relay opens and stores as separate changes.</p>
+<p><b>What could go wrong.</b> Nostr has no bundle: someone watching the file sees the three changes arrive one by one, so a half-applied state is briefly visible to watchers anyway. The relay re-publishes events it did not sign itself.</p></div>
+
+<div class="opt"><h3>3 · Do less: each field alone</h3>
+<p><b>What you see.</b> Claude's title and text land, the status is refused and the agent says so; for a moment the issue shows a mix nobody chose. A status and its stage would be one field, so they never part.</p>
+<p><b>Outside company.</b> Nothing new to learn.</p>
+<p><b>What could go wrong.</b> It changes one line of this morning's record ("refused together"). Every app that changes two related fields has to clean up a half-done change itself.</p></div>
+
+<div class="tw"><table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td>1</td><td>A change sets one or more fields</td><td>Whole or nothing; one history line per act</td><td>One rule, one shape</td><td>Two-way until a builder writes it</td><td>Readers parse several fields; relay checks each</td></tr>
+<tr><td>2</td><td>One-field changes plus a bundle</td><td>Whole or nothing; three lines</td><td>Two shapes</td><td>Two-way until a builder writes it</td><td>Relay unpacks and stores; a new envelope</td></tr>
+<tr><td>3</td><td>As today</td><td>Mixes show; agent reports the refused field</td><td>Nothing new</td><td>Two-way</td><td>None</td></tr>
+</table></div>
+
+<h3>How others do it</h3>
+<p><b>Linear, Jira, Salesforce:</b> one update carries the fields it changes and applies as one; Jira's history then lists each field. <b>Notion:</b> one transaction of several small operations, applied together.</p>
+
+<div class="pick"><b>Recommendation: 1.</b> One act by one person is one signed event, which is Nostr's own unit, and History then reads as what the person did. It is the shape every tracker an outside company already knows, and the relay has one thing to accept or refuse, without opening bundles of events it did not sign.</div>
+
+<!-- ============ 3 ============ -->
+<h2 id="three">3 · "Go back to Tuesday's version"</h2>
+<p class="q"><b>The question.</b> When someone wants a file back as it was on Tuesday, what do they get: Tuesday's text, or Tuesday's whole file, every field included?</p>
+
+<h3>Today</h3>
+<p>On 26 Oct you decided every file gets a History panel: field changes are a list, text saves are versions you can open, and Restore writes the text back as a new save under your name. Issues have that panel; projects have none, and this project adds none. Under the whole-file shape, Tuesday's whole file would have been one save; under C it is worked out from the changes.</p>
+
+<h3>Why it reaches beyond this ticket</h3>
+<p>It says whether a restore may change fields other people changed since. Two-way: every change is kept, so a whole-file view can be added later on top.</p>
+
+<svg viewBox="0 0 720 150" role="img">
+<title>A project changed by three people since Tuesday; restoring the text only, or the whole file</title>
+<text x="10" y="18" class="m">An example. Since Tuesday: the text was rewritten badly; Katerina set Started; Claude set a new lead.</text>
+<text x="10" y="54" class="t">Text only</text>
+<rect x="120" y="38" width="170" height="28" rx="5" class="good"/><text x="130" y="57">text ← Tuesday's</text>
+<rect x="300" y="38" width="190" height="28" rx="5" class="b"/><text x="310" y="57">status Started stays</text>
+<rect x="500" y="38" width="200" height="28" rx="5" class="b"/><text x="510" y="57">new lead stays</text>
+<text x="10" y="112" class="t">Whole file</text>
+<rect x="120" y="96" width="170" height="28" rx="5" class="good"/><text x="130" y="115">text ← Tuesday's</text>
+<rect x="300" y="96" width="190" height="28" rx="5" class="hot"/><text x="310" y="115">status back to Planned</text>
+<rect x="500" y="96" width="200" height="28" rx="5" class="hot"/><text x="510" y="115">old lead back</text>
+<text x="10" y="144" class="m">The whole-file restore undoes Katerina's and Claude's changes, which had nothing to do with the text.</text>
+</svg>
+
+<div class="opt"><h3>Text and each field on its own, as decided 26 Oct <span class="tag">recommended</span></h3>
+<p><b>What you see.</b> History lists who changed which field; Tuesday's text opens and restores as a new save under your name. A status or a lead goes back by setting it. When projects get a History panel, it is this one.</p>
+<p><b>What could go wrong.</b> Someone who wants every field as it was on Tuesday sets them one by one.</p></div>
+
+<div class="opt"><h3>Also the whole file as of Tuesday</h3>
+<p><b>What you see.</b> A "Tuesday" view of every field and the text, and one Restore that sets them all, in one change (call 2, option 1).</p>
+<p><b>What could go wrong.</b> One click quietly undoes other people's unrelated changes made since, exactly what C keeps apart.</p></div>
+
+<div class="pick"><b>Recommendation: text and each field on its own.</b> People bring back words, as Katerina's Claude did on "UI Guardrails" on 13 Sep; a field is set back by setting it. It is what you decided on 26 Oct and asks nothing new; a whole-file view can come later on top, since every change is kept.</div>
+
+<h2 id="checked">Checked</h2>
+<ul class="small">
+<li>Today's four first records, one number each (project, issue, topic, document): SPEC §6.1 table, estiva-docs <code>origin/main</code> a426e44. One field per change, and why: SPEC §6.2.</li>
+<li>Types carry names, <code>osnova.*</code> shared and <code>acme.*</code> a builder's own, launched without asking: record every-file-is-an-artifact (29 Oct), its standing part; "the protocol's type names stand": record a-file-is-its-fields (30 Oct). Numbers per type were superseded on 29 Oct.</li>
+<li>The open three: record a-file-is-its-fields, Consequences, last line. "Several fields changed together are refused together": same record.</li>
+<li>The reference carries the type's name beside the id: record a-file-is-named-by-its-id-in-a-capital-and-small-tag; ALO-4's Decided line.</li>
+<li>No builder type on production; no generic first-record kind in KINDS.md.</li>
+<li>The agent writes one change per field: <code>estiva-agent</code> <code>lib/agent/apps/ship.ts:2295</code> (origin/main fced10a).</li>
+<li>Re-sign count: 94 project first records and 828 issue records (ALO-8 counts, production 29 Oct); documents and topics not counted.</li>
+<li>History panel and Restore: record a-file-keeps-every-change-for-good (26 Oct). "UI Guardrails", 13 Sep: ALO-1, read on production 29 Oct.</li>
+<li>Status with its stage, owed: record each-company-defines-its-own-statuses (30 Oct), rule 2.</li>
+<li>Not checked: how Linear, Jira, Salesforce, Notion and Airtable apply multi-field updates (general knowledge, one line each). Upstream Buzz's type-as-a-tag: NIP-AR, read 30 Oct for the whole-file brief.</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="small">Record <code>a-file-is-its-fields-each-kept-in-order-by-the-relay</code> (Accepted 30 Oct, estiva-docs#355), "Open, for the reshaped project". Call 1: today's roots <code>30850</code>/<code>30851</code>/<code>30840</code>/<code>30842</code>; A adds one generic first-record kind with the type name in a single-letter tag (REQ-filterable) and a fixed table kind→name for the four; B re-signs every root. Call 2: <code>kind:1851</code> today sets one <code>field</code>/<code>value</code>; option 1 lets one <code>1851</code> carry several (field, value, prev) entries, all-or-nothing at the relay; option 2 is an envelope of signed <code>1851</code>s. Call 3: record <code>a-file-keeps-every-change-for-good</code>. SPEC §6.1–§6.3, §6.13 and TYPES.md are rewritten with the answers (project ALO).</p>
+</main>
+</body>
+</html>
