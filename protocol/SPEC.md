@@ -2618,9 +2618,10 @@ options come in layers, each over the one before:
 2. the tracker's listing gives the default options, as this vocabulary (Ship's
    project statuses: Planned, In Progress, Completed, Cancelled);
 3. the company's own options, starting from the defaults of the tracker the
-   workspace added, which its owners and admins edit; where they are kept is
-   specified with that file, and until a company saves its own, apps use the
-   listing's;
+   workspace added, which its owners and admins edit; a change to them from
+   anyone else, an app's key included, MUST change nothing a reader shows or
+   counts; where they are kept is specified with that file, and until a
+   company saves its own, apps use the listing's;
 4. later, a person's database, writing the same property shape.
 
 A reader takes an option's label and colour from the company's own, and from
@@ -2632,8 +2633,10 @@ rename changes no file.
 vocabulary, and **its listing** is that manifest (§7), not a Folder's listing
 (§3.1). Once a relay knows which apps a workspace added (record
 [an-app-counts-only-once-the-workspace-adds-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/an-app-counts-only-once-the-workspace-adds-it.md)),
-it is the first such app the workspace added; until then it is the manifest a
-consumer resolves for the kind (today, for projects and issues, Ship's). A vocabulary is **staged**
+it is the first such app the workspace added. Until then a reader and a
+writer take a base type's default options and their stages from its directory
+entry (TYPES.md), never from a manifest they resolved, and for any other kind
+a reader counts a change with no stage by its own reading of the label. A vocabulary is **staged**
 when its options carry a stage, and a change to a field it maps writes the
 option's stage (§6.2). A vocabulary that is not a status may carry none (Ship's
 `archived` does not), and its fields are not staged.
@@ -3042,8 +3045,7 @@ A manifest MAY mark fields as words, per kind, for search (§5.2) to read:
 ```
 
 - **It counts only from an app the workspace added**, and only for the fields
-  of its own kinds and, on a base type, fields its directory entry (TYPES.md)
-  does not list. A base
+  of its own kinds and the fields it adds to a base type. A base
   type's own word fields are built into the relay and no listing changes
   them, so a project's core is searched alike on every relay with the same
   base.
