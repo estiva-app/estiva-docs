@@ -580,7 +580,8 @@ The bracketed tags and those after `ts` appear only where a rule asks for them:
   A change MAY carry `["O", <d>]` naming by its id the file its `a` names, as a
   comment names its file (§6.4); a list entry (`lists:<d>`, §6.14) MUST. It is
   the same target, not a second one, and carries no `K`: the `a` says the
-  kind. A reader ignores a change whose `O` is not its `a`'s `d`.
+  kind. A reader of a list entry ignores one whose `O` is not its `a`'s `d`
+  (§6.14).
 - **`A`**, on a move — a change to a `movedBy` field (§7.2) — naming the new
   parent. It is an index, not a second target: `a` (with `O`, the same file) is
   the only file a change targets.
@@ -1956,8 +1957,8 @@ whoever adds or removes the listed file, with its tags in this order:
 | `ts` | §6.2 |
 | `o` | `<d>` again: the file the change points at (§6.4) |
 
-No `K`, `k` or `p`. `content` is the note an activity feed shows ("List",
-"Unlist"). Taking a file off is a `false` entry, never a `kind:5` of the entry
+No `K`, `k` or `p`. `content` is empty, or a note the person wrote; each app
+says "added to" and "removed from" in its own words. Taking a file off is a `false` entry, never a `kind:5` of the entry
 that listed it: deleting the newest entry only lets the one before it stand
 again (§6.3).
 
@@ -1995,8 +1996,11 @@ A reader skips a change, and folds nothing from it, when:
 - **A listed topic** is drawn as a file. Its own list is not expanded into the
   one that lists it.
 - **A listed file that is archived**, itself or up its parent chain (§6.5),
-  stays on the list and is drawn archived, never hidden from the topic. An
-  archived topic's list takes no new entry (§6.5).
+  is still listed: archiving removes no entry, and the reader knows from the
+  file that it is archived. How it is drawn, among the files or apart, is each
+  app's. An archived topic's list takes no new entry (§6.5).
+- **No order is promised.** The entries' times are there; an app sorts as its
+  design says.
 
 **A topic is a flat lens.** Its files are its list, wherever each sits in its
 Folder's tree and however deep. A file nested under the topic by `parent`
