@@ -178,6 +178,7 @@ properties and its history.
 - [What the relay knows about a type changes how files are found and ranked, never whether a save is accepted](a-types-declaration-changes-how-files-are-found-never-what-is-accepted.md) — Accepted, 2026-10-30
 - [Today's four types are Osnova's base and keep their own records; every new type starts with one named record, and joining the base moves no file](osnovas-base-types-keep-their-records-and-every-new-type-starts-named.md) — Accepted, 2026-10-30
 - [One change may set several fields of a file, and the relay takes it whole or refuses it whole](one-change-may-set-several-fields-taken-whole-or-refused-whole.md) — Accepted, 2026-10-30
+- [A change names the file it changes the way a comment names the file it is on, and every other file it points at the way a mention does](a-change-is-about-its-file-as-a-comment-is.md) — Proposed, 2026-10-30
 
 ## Documents
 
