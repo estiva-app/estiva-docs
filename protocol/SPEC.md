@@ -4018,7 +4018,9 @@ for a reader and an editor alike, and no save writes one.
 - **Values.** On a line that is only the link, `detailed` draws the object's
   closed `card` (§7.5) in the row's place. No attribute, `none`, `compact`, a
   value the reader does not know and one that is not a string all draw the
-  row. In a sentence, any value draws the chip only.
+  row. In a sentence, any value draws the chip only. A message draws an
+  unknown value's row under itself instead (§13.6.2, "An unknown value, in a
+  message and in a document", side by side).
 - **Writing it.** An editor's Row removes the attribute and its Card writes
   `detailed` (a-lone-links-chip-menu-offers-row-or-card). No writer writes
   `compact` or `none`; a mark that already carries one is kept as written.
@@ -4551,6 +4553,17 @@ The values are a density, not a widget name, so a richer `detailed` can later
 walk a manifest chain that ends in `card` without changing the wire. A card
 under a message follows the author's layout, not the manifest's `widget`.
 
+**An unknown value, in a message and in a document.** Both read a value they
+do not know as the smallest thing the writer could have meant, a row. Only
+where the row goes differs: a message has a place under it, and a document
+does not (§13.3, "A reference's card"). *Said side by side 2026-10-30; no
+rule changed.*
+
+| an unknown value for `V` | in a message: `["embed", V, <value>]` | in a document: `attrs.embed` on `V`'s reference |
+| --- | --- | --- |
+| `V` alone on its line | `V`'s row under the message, and nothing on the line | `V`'s row in place, on the line |
+| `V` in a sentence | `V`'s chip in the sentence, and `V`'s row under the message | `V`'s chip only |
+
 - **The body names it.** A writer MUST NOT add an `embed` for a value the body
   does not name (an edit's carried set may hold one, which draws nothing), and writes the matching `a`/`q`
   on the message and on every edit, for what its words name then (§6.8, amended 2026-10-27). A reader draws a card for a value only while the
@@ -4571,7 +4584,8 @@ under a message follows the author's layout, not the manifest's `widget`.
   and a writer MUST NOT write both.
 - **Unknown layout.** A reader draws a layout value it does not know as
   `compact`: the author asked for a card, and the smallest is the safe reading.
-  `none` is defined from the start, so no reader ever draws it.
+  `none` is defined from the start, so no reader ever draws it. A document's
+  lone link draws that row in its own place instead (the table above).
 - **Order.** Cards are drawn in the order their references first appear in the
   body.
 - **Pointer, never copy.** A card is resolved as the viewer and never written
