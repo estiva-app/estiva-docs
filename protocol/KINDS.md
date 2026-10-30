@@ -48,15 +48,22 @@ nobody held the whole list.
 | --- | --- | --- |
 | `30842` | Document | **A file type an app owns — SPEC §6.11, decided 2026-10-14 (Miky).** Addressable, the bare file's shape (`d`, `title`, `h`, `[a]`); claimed by an app's `kind:31990` `k` tag, not built in, so any app may own it. `MessagesWrite`; `h` required at ingest. Its text is the `1851` `description` fold (SPEC §6.10). Not a topic: a `30840` never becomes one, nor the reverse. Taken after `30841`, which is retired (§6) |
 
+### A file kept as an artifact — upstream NIP-AR ([SPEC §6.13](SPEC.md))
+
+| Kind | Name | Notes |
+| --- | --- | --- |
+| `45010` | Artifact save | **A file's whole state in one save — SPEC §6.13, decided 2026-10-29 (Miky).** Upstream Buzz NIP-AR. Regular; the relay keeps the saves of one `d` in order and refuses one whose `prev` is not the current save (`conflict: artifact head changed`). `type` names what the file is (`osnova.project`, [TYPES.md](TYPES.md)); every field a list shows is a tag, the text is `content`. Written in its home's `h`; a `move` is refused on this relay. Granted per type by Estiva ID (§5). Projects first; no app writes one yet (2026-10-30) |
+| `45011` | Artifact removal | **Relay-signed**, never an app's. Written by the relay when a save is removed for good (a `9005` from the home's owners or admins); it cannot itself be deleted |
+
 ### Folders — written by every app, owned by none ([SPEC §3](SPEC.md))
 
 | Kind | Name | Notes |
 | --- | --- | --- |
 | `9007` | Folder create (NIP-29 create group) | The container. Followed by a `1852` so the Folder has state from birth. See §3 |
 | `9002` | Folder rename (NIP-29 edit metadata) | The only rename: owners and admins only (relay). The Folder's title is the `39000` name; a `1852` never carries one |
-| `9008` | Folder delete (NIP-29 delete group) | **Refused by the relay while the Folder holds a file** (`30840`/`30842`/`30850`/`30851` under its `h`, or anything its listing names); channel owner, the owner of its owner-role agent, or a workspace owner/admin. An accepted one hides every event under the `h` |
-| `1852` | Folder command | `add` / `remove` / `set` addresses; any member may send one, so it carries no name. Never names a `39000:` address — Folders do not nest |
-| `30890` | Folder state | **Relay-signed**, never an app's. What a Folder lists. A NIP-29 group without one is a conversation space, not a Folder |
+| `9008` | Folder delete (NIP-29 delete group) | **Refused by the relay while the Folder holds a file** (`30840`/`30842`/`30850`/`30851` under its `h`, an artifact whose home it is — deleted ones included — or anything its listing names); channel owner, the owner of its owner-role agent, or a workspace owner/admin. An accepted one hides every event under the `h` |
+| `1852` | Folder command | `add` / `remove` / `set` addresses, or an artifact by its id in an `o` tag (SPEC §3.3); any member may send one, so it carries no name. Never names a `39000:` address — Folders do not nest |
+| `30890` | Folder state | **Relay-signed**, never an app's. What a Folder lists: addresses in `a` tags, artifacts by id in `o` tags. A NIP-29 group without one is a conversation space, not a Folder |
 | `39000` | Group metadata | Relay-signed, NIP-29. The Folder's address; no `kind:31990` may claim it |
 | `9000` / `9001` | Add / remove member | NIP-29, unchanged |
 
@@ -134,6 +141,11 @@ of the three.
 | `AdminChannels` | Channel administration | `9007` |
 | `AdminUsers` | Membership administration | `9030`, `9031` |
 
+`45010` takes NIP-AR's own path (`handlers/artifact.rs`): the signer must be
+able to write in its home `h`, and the relay checks `prev` and the id in one
+transaction (SPEC §6.13). A client's `45011` is refused: only the relay writes
+one.
+
 `MessagesWrite` on `1851` is doing real work: it is what lets one member set a
 field on another member's object, which is the normal case in a tracker.
 
@@ -168,14 +180,28 @@ over a `REQ` and `/query`:
 Gate 1 of three. Estiva ID's `/sign` refuses any kind not in the calling app's
 `allowed_kinds`, returning `422 policy_violation / kind_not_allowed`.
 
+**A `45010` is checked by its type too** (*added 2026-10-30*, estiva-id#90).
+Beside `allowed_kinds` each credential holds `allowed_types`, and `/sign`
+refuses a `45010` whose `type` tag is not in it, or that has none, with
+`422 type_not_allowed`. An empty list refuses every `45010`, so granting the
+kind alone signs nothing. The token says which types the app may save
+(`allowed_types`). The list limits what Estiva's apps and agents sign; the
+relay accepts any type (SPEC §6.13).
+
 Source of truth: `SEED_APPS` in `estiva-id/src/db/seed.ts`, stored in the
 `app_credentials` table.
 
-| App | `client_id` | Allowed kinds |
-| --- | --- | --- |
-| Estiva Peek | `estiva-peek` | `9, 7, 5, 9007, 27235, 1851, 9101, 9002, 9008, 1111, 30078, 41010, 41011, 41012, 22242, 30851, 40003, 1852, 24242, 30840, 30850` |
-| Estiva Ship | `estiva-ship` | `30850, 30851, 1851, 9, 5, 9007, 9002, 31989, 27235, 1111, 30078, 7, 40003, 1852, 24242, 22242` |
-| Estiva Leaf | `estiva-leaf` | `27235, 22242, 30842, 1852, 1851, 1111, 40003, 5, 24242, 9101, 7` |
+| App | `client_id` | Allowed kinds | Allowed types |
+| --- | --- | --- | --- |
+| Estiva Peek | `estiva-peek` | `9, 7, 5, 9007, 27235, 1851, 9101, 9002, 9008, 1111, 30078, 41010, 41011, 41012, 22242, 30851, 40003, 1852, 24242, 30840, 30850, 45010` | `osnova.project` |
+| Estiva Ship | `estiva-ship` | `30850, 30851, 1851, 9, 5, 9007, 9002, 31989, 27235, 1111, 30078, 7, 40003, 1852, 24242, 22242, 45010` | `osnova.project` |
+| Estiva Leaf | `estiva-leaf` | `27235, 22242, 30842, 1852, 1851, 1111, 40003, 5, 24242, 9101, 7, 45010` | `osnova.project` |
+
+*`45010` and `osnova.project` read from the rows after the re-seed,
+2026-10-30.* The agents' credentials are not seeded: `claude-agent`,
+`pc-0a4935` and `vscode-604525` were granted `45010` and `osnova.project` the
+same day, beside the kinds each already held. No credential holds `9005`, so no
+app or agent removes a save for good (SPEC §6.13).
 
 *Copied from `seed.ts` on origin/main, 2026-10-03 (MAN-3); Leaf's row
 2026-10-14 (Leaf 1), its `9101` 2026-10-16 (LEAF-5: resolving a comment's
@@ -203,7 +229,7 @@ Read the live values rather than trusting this page, because a seed change only
 reaches production through a manual re-seed:
 
 ```bash
-docker compose exec -T postgres psql -U estiva_id -d estiva_id -tAc "select client_id, allowed_kinds from app_credentials"
+docker compose exec -T postgres psql -U estiva_id -d estiva_id -tAc "select client_id, allowed_kinds, allowed_types from app_credentials"
 ```
 
 ---

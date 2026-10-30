@@ -169,7 +169,7 @@ consulted. **A consumer MUST NOT let a `kind:31990` claim `39000`.**
 | `title` | the `name` of its `kind:39000`, and only that. The relay lets only the channel's owners and admins change it (`kind:9002`), while any member may send a `kind:1852`; so a `name` in the state is never shown (Miky, 2026-10-03) |
 | `subtitle` | the `about` of its `kind:39000` (NIP-29), changed as the name is, by owners and admins with `kind:9002`. It is the Folder's one-liner, a file's summary (§6.12) is not: a reader ignores a `summary` change aimed at a `39000`. A consumer cuts it at 120 characters, as `@estiva-app/interop` does. *Added 2026-10-15* |
 | `noun` | `folder` (§7.9), the protocol's own word as a comment's is (§7.8), so a consumer labels one "Folder" and never by the app that opens it. *Added 2026-10-16* |
-| list | the addresses its `kind:30890` names, in the order it names them, folded with each file's own projection; an address the reader cannot resolve is not drawn, because the count is the disclosure. Never `kind:9` messages: they are the conversation, below. With no `kind:30890` the group has no list, not an empty one. A Folder referenced in a sentence draws its name only, with no list, and its consumer does not read the list for it: reading it costs a Folder page's read (Miky, 2026-10-16) |
+| list | the addresses its `kind:30890` names, and the artifacts it names by id in `o` tags (§3.3, §6.13), in the order it names them, folded with each file's own projection; an address the reader cannot resolve is not drawn, because the count is the disclosure. Never `kind:9` messages: they are the conversation, below. With no `kind:30890` the group has no list, not an empty one. A Folder referenced in a sentence draws its name only, with no list, and its consumer does not read the list for it: reading it costs a Folder page's read (Miky, 2026-10-16) |
 | conversation | `kind:9` messages carrying the Folder's `h` — the Folder's own conversation, §6.4's chat, §11.1's general stream. An `a` on one is a mention (§6.4) and does not take it out of the Folder's conversation. Threads and replies follow §6.4 |
 | `archived` | the `archived` field of `kind:1851` changes on its address (§6.2), counting only a change carrying the Folder's own `h` whose author the relay lists as the Folder's owner or admin (`kind:39001`) — the same people who may rename it (Miky, 2026-10-03) |
 | open in | the `naddr` `web` template of the generic app declaring the `conversation` aspect (§7.8), as for a bare file; with no such app the Folder still draws, with nowhere to open |
@@ -195,7 +195,7 @@ produce the same events in the same order.
 | **create** | `kind:9007` with a new id and its `name`; then `kind:1852` `add` with no addresses and no `name`, so the Folder has state from birth | — |
 | **rename** | `kind:9002` with the new `name`. Nothing else: a `kind:1852` never carries a name | by the relay, to anybody but the channel's owners and admins |
 | **archive** / **restore** | `kind:1851` on the Folder's address, `field` `archived`, `value` `true` (or empty to restore), `h` the Folder itself; `content` MAY carry what the person said about it | by the consumer, to anybody but the Folder's owners and admins; a reader ignores one from anybody else (§3.2) |
-| **delete** | `kind:9008` with the Folder's `h` | by the relay, while the Folder holds a file — a `30840`, `30842`, `30850` or `30851` under its `h`, or any address its listing names — and to anybody but the channel's owner, the person who owns an owner-role agent in the channel, or an owner or admin of the workspace on the relay's roster |
+| **delete** | `kind:9008` with the Folder's `h` | by the relay, while the Folder holds a file — a `30840`, `30842`, `30850` or `30851` under its `h`, an artifact whose home it is (deleted ones included, §6.13), or anything its listing names — and to anybody but the channel's owner, the person who owns an owner-role agent in the channel, or an owner or admin of the workspace on the relay's roster |
 | **place** a new file | the file's root, with this Folder's `h` (or the tag its owner's `placement` names, §7.3) — under a parent, the parent's own Folder instead (§6.7); then `kind:1852` `add` naming its address | — |
 | **unlist** a deleted file | the `kind:5`; then `kind:1852` `remove` naming its address, in each Folder whose state names it (§7.3) | — |
 | **move** a file to another Folder | `kind:1852` `add` in the target; then `kind:1852` `remove` in the source — one pair for the file and one for each file listed beneath it (§6.7), so a subtree moves whole. The file's `h` does not change | by the consumer, when the target is private and the file's `h` names any other channel (§3.1: the move would look private and not be) |
@@ -206,11 +206,24 @@ produce the same events in the same order.
   count ("folder holds N file(s) … remove them first"), and a consumer shows
   that reason. An accepted delete still hides **every** event under the `h` —
   the Folder's conversation, and any comment, change or other app's kind filed
-  there — because only the four file kinds are counted. A relay that does not refuse a Folder with files hides
+  there — because only the file kinds are counted. **An artifact homed in the
+  Folder counts even when it is deleted** (*added 2026-10-30*, §6.13): a
+  deleted file can be restored, and a Folder delete would hide it for good,
+  which only an admin may do (§6.5). The reason then ends "a deleted file counts
+  until an admin removes it for good". A relay that does not refuse a Folder with files hides
   those too — what happened to the `Folders` Folder on 2026-09-14 — so the
   refusal is a conformance requirement of the relay, not a courtesy. **Archive** is the
   reversible way to put a Folder away: its state, contents and channel are
   untouched.
+- **A file kept as an artifact is listed by its id** (*added 2026-10-30*,
+  §6.13, §6.4). Place, unlist and move name it as `["o", <d>]` in the
+  `kind:1852` where an address would be, and the relay-signed `kind:30890`
+  lists it as `["o", <d>]`. Its home does not change: a move changes only
+  where it is listed, as above, while its saves stay in its home (a save that
+  changes its `h` is refused, §6.13). Checked on production
+  2026-10-30: a `1852` `add` by `o` listed a project in the QA Folder and in a
+  second Folder, the listing was found by `#o`, and a `remove` by `o` took it
+  off.
 - **Move adds before it removes.** State is per Folder, so there is no atomic
   move; a failure between the two leaves the file listed in both — visible,
   obviously wrong, fixed by moving again — where the other order would leave it
@@ -498,6 +511,12 @@ Reference root events:
 | `30840` | Bare file | `d`, `title`, `h`, `[a]`, `[summary]` — §6.7 |
 | `30842` | Document | `d`, `title`, `h`, `[a]`, `[summary]` — §6.11 |
 
+**A file kept as an artifact has no root** (*added 2026-10-30*, §6.13). Each
+save holds the whole file, so this section, §6.2 and §6.3 do not apply to it.
+A project is the first file to move (`osnova.project`); until it moves, the
+`30850` above is how a project is written, and the relay can refuse that shape
+once the move is done (§6.13).
+
 *Clarified 2026-10-15.* The order is part of each event's id preimage, so a
 writer adding a tag puts it last and moves no other. It is not a rule a reader
 may lean on: **a reader finds every tag by name, never by position.** Production
@@ -671,6 +690,28 @@ middle.
 | lowercase `a`/`e`/`k`/`p` (on a `1111`) | the immediate **parent** — the comment being replied to |
 | `h` tag | the Folder the thread lives in, which is what gates who reads it |
 | `nostr:naddr…` in the body | the object, as a person types it |
+| `O` / `o` with `K` / `k` | a file kept as an artifact (§6.13), by its id — below |
+
+**A file kept as an artifact is named by its id, in `O` and `o`** (*added
+2026-10-30*, ALO-2; record
+[a-file-is-named-by-its-id-in-a-capital-and-small-tag](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-file-is-named-by-its-id-in-a-capital-and-small-tag.md)).
+Such a file has no address: it is many saves under one `d`, signed by whoever
+saved (§6.13), so `A`/`a` cannot name it. Instead:
+
+- A comment about the file carries `["O", <d>]` with `["K", <type>]`, such as
+  `osnova.project`, as its root. A top-level comment also carries `["o", <d>]`
+  with `["k", <type>]`, as NIP-22's parent equals its root; a reply's lowercase
+  tags name the comment it answers, as above.
+- Anything that mentions or lists the file carries `["o", <d>]`: a message
+  beside the link in its text, a Folder's listing (§3.3), a membership change
+  (§11.8), and block links and cards (§13.6.1–§13.6.2).
+- A reader asks by `#O` for the comments about a file and by `#o` for
+  everything that names it, as for any single-letter tag (checked on
+  production over `/query` 2026-10-30: a comment found by `#O`, the comment and
+  a message by `#o`, the Folder's listing by `#o`).
+
+The pair is proposed upstream beside NIP-AR, as a fourth thing a comment can
+be about (§6.13). What Block or NIP-22 refuses, Estiva carries as its own rule.
 
 A thread belongs to whatever anyone in it referenced, at any point. A thread
 that mentions an object halfway through is from then on about that object, and
@@ -898,6 +939,29 @@ its owners and admins (§3.3).
   listing it is archived, and whether a `kind:9` may be sent in an archived
   Folder, wait for the Folders-as-labels rework; until then each app keeps
   what it does today.
+
+**A file kept as an artifact** (*added 2026-10-30*, §6.13; record
+[every-file-is-an-artifact-the-relay-keeps-in-order](https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-file-is-an-artifact-the-relay-keeps-in-order.md),
+D3) is archived, deleted and restored by saves, not by the events below:
+
+- **Archive** is a save carrying `["archived", "true"]`; a save without it
+  restores. The rules above on what an archived file hides still apply.
+- **Delete** is a save with `op` `delete`, and **restore** one with `op`
+  `restore`, by anyone who may write in the file's home — not only its author.
+  The signer of the delete is who deleted it, shown with it. A deleted file
+  leaves current-state reads and lists, keeps its id and its saves, and comes
+  back whole with a restore.
+- **A `kind:5` naming a save is refused** by the relay (NIP-AR), so the author
+  rule below never applies to an artifact. For an artifact this replaces "nobody
+  may delete another person's work".
+- **Only an admin removes a save for good**, for a pasted password: a
+  `kind:9005` from the home's owners or admins, or an owner or admin of the
+  workspace on the relay's roster. The
+  relay refuses one from anybody else, the save's own author included, with
+  `only an admin removes a file's save for good; to hide the file, save it as
+  deleted`, and the relay's removal record (`45011`) cannot itself be deleted.
+  This is the relay's rule; no Estiva app offers the action yet, and Estiva ID
+  grants no app or agent `9005` (KINDS.md §5).
 
 **Delete** is a NIP-09 `kind:5`, and three properties are normative:
 
@@ -1544,6 +1608,14 @@ carries no `content-format` and is read by §13.4's rule.
   shape.
 - **Delete** hides the root and not its saves (§6.5).
 
+**A file kept as an artifact carries its text in each save's `content`**
+(*added 2026-10-30*, §6.13). There is no `description` change: a save is the
+whole file, its fields and its text, and the relay orders saves by `prev`
+instead of the newest write winning. Two people saving at once no longer lose
+one save: the second is refused, and its app merges (§6.13). A list reads the
+saves without their text, so the cost above is paid only when a file is
+opened. The 256 KiB `content` cap now bounds the text.
+
 ### 6.11 The document
 
 *Added 2026-10-14 (Leaf 1; decided by Miky 2026-10-14). Numbered after the
@@ -1695,6 +1767,127 @@ NIP-99's.
   An app writes it through the summary change action (§7.3).
 
 Search (§5.2) does not match a summary.
+
+### 6.13 A file kept as an artifact
+
+*Added 2026-10-30 (ALO-2; decided by Miky 2026-10-29). Numbered after the
+existing subsections for the reason §7.5 gives.* Record
+[every-file-is-an-artifact-the-relay-keeps-in-order](https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-file-is-an-artifact-the-relay-keeps-in-order.md).
+
+A file's own state — its fields and its text — is an upstream Buzz NIP-AR
+**artifact**: a `kind:45010` save holding the whole file, which the relay keeps
+in order. Everything else names the file by its id (§6.4's `O`/`o`). It
+replaces the root and change stream of §6.1–§6.3, one type at a time; a
+project (`osnova.project`) is the first. Until a type moves, §6.1–§6.3 are how
+it is written.
+
+**A save.** Tags, as NIP-AR defines them:
+
+| tag | value |
+| --- | --- |
+| `ar` | `1`, the envelope version |
+| `d` | the file's id, a lowercase UUID, never changed |
+| `h` | the file's home: the Folder or team whose members read and write it |
+| `type` | what the file is, `osnova.project` ([TYPES.md](TYPES.md)); never changed |
+| `title` | its title; absent on a delete |
+| `op` | `create`, `update`, `delete` or `restore` (NIP-AR's `move` is refused, below) |
+| `prev` | the id of the save this one was made on; absent only on `create` |
+
+Every other field is a tag the type's directory entry names, so a list can
+draw a row without the text: for a project, `status`, the lead as `p`, `key`,
+`summary` and `archived`. `content` is the text. Every save is whole and
+signed by the person who made it.
+
+**The relay keeps the order.** A save whose `prev` is not the current save is
+refused with `conflict: artifact head changed`, and a save on the current one
+is accepted (checked on production 2026-10-30, as QA-1 and QA-2). An app MUST
+NOT answer the refusal by overwriting what it finds: it reads the current save
+and merges its own changes onto it.
+Different fields and different blocks merge without asking; only a block both
+people changed asks the person. How that looks is designed from a prototype
+before it is built (Miky, 2026-10-29). The id the relay accepted is the next
+`prev`: a current-state read just after an accepted save may still answer the
+save before it for a moment (up to about a second, measured 2026-10-30), so an
+app keeps the accepted id rather than re-reading a list for it.
+
+**One id, one file** (record
+[a-files-id-is-unique-across-every-kind](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-files-id-is-unique-across-every-kind.md)).
+The Estiva relay refuses a `create` whose `d` is already held — by another
+artifact, by any channel (a Folder, a DM or a conversation space, deleted ones
+included), or by an old-shape file (`30840`, `30842`, `30850`, `30851`, any
+author, deleted ones included) — with `conflict: artifact identity is taken`;
+and a new channel whose id an artifact holds, deleted ones included, with
+`duplicate: a file already has this id` (both checked on production
+2026-10-30). An app that is refused makes a new id and tries again without
+telling the person. The move of a type to artifacts names its own one
+exemption. Upstream refuses only an id another artifact holds.
+
+**A file keeps its home.** A save that changes its `h` (`op` `move`) is
+refused with `restricted: a file keeps its home; list it in another Folder
+instead of moving it`, and NIP-11 says so (`"moves": false`). Listing it in
+another Folder works, by `o` (§3.3), and does not change who reads it. Who reads
+a moved file waits for the navigation rework's access call. When a project
+moves to an artifact, its home is the Folder that lists it; one listed in none
+lives in the Company Folder, Estiva HQ, as does a new project made with no
+Folder (Miky, 2026-10-29).
+
+**Archive, delete, restore and removal for good** are saves and one admin
+action (§6.5).
+
+**A list reads current saves without their text.** On `/query`:
+
+```json
+{"artifact": "current", "kinds": [45010], "#type": ["osnova.project"], "#h": ["<folder>"], "omit": ["content"]}
+```
+
+Each row is the current save without `content` and without `sig`, and says so
+in `"omitted": ["content", "sig"]`; it never carries `content: ""`. A deleted
+file is not listed. A row's `id` is the current save's, so it is the `prev` of
+the next save. **A row is asserted by the relay**: without its `sig` and
+`content` it cannot be checked against a signature, so an app draws it and
+never builds a save from it (C30). To change a file, read its whole current
+save (`#d`, no `omit`). Measured on production 2026-10-30: 50 saves of up to
+11 KB of text left a project's row at 668 bytes, and the Folder's list at the
+same size. `omit` is the Estiva relay's addition to NIP-AR, advertised as
+`"omit": ["content"]`; elsewhere a list gets the text too. Live updates stay a
+`REQ` `{"kinds": [45010], "#h": [<folder>]}`, which returns current saves
+only; a save sends no push.
+
+**Which apps may sign one.** Estiva ID signs a `45010` only of a type the
+app's credential lists (`allowed_types`, KINDS.md §5); an empty list signs
+none. Peek, Ship, Leaf and the agents may sign `osnova.project` and no other
+type (2026-10-30). This limits Estiva's apps, not what the relay accepts.
+
+**Moving a type from its old shape.** Each file's current state becomes its
+first save; its older changes stay readable
+as they are and are never re-signed as versions nobody saved. The old root is
+then deleted with a `kind:5`. While the move runs, the relay can refuse the old
+shape: a client's `kind:30850`, and any client event whose `a` or `A` names a
+`30850:` address, except a `kind:5`, with `restricted: projects have moved to a
+new format; reload the app and try again`. Only the event's own tags are read.
+The switch is per deployment (`BUZZ_REFUSE_OLD_PROJECTS`) and NIP-11 says
+whether it is on (`"refuses_old_projects"`). It is **off** on production
+(2026-10-30); the issue that moves projects turns it on.
+
+**NIP-11.** The relay advertises NIP-AR in an `artifacts` object (upstream's:
+`version`, `revision_kind` `45010`, `removal_kind` `45011`, `query`, `count`,
+`modes`, and its limits). The Estiva relay adds three keys to it: `omit`,
+`moves` and `refuses_old_projects`. `refuses_old_projects` is Estiva's alone and
+lasts only while the old shape exists: when the fence retires it leaves the
+object, so a reader treats it as absent-means-off.
+
+**Upstream.** NIP-AR is upstream Buzz's (merged 2026-09-28). Four pieces of this
+section are Estiva's and are proposed to Block with this text: the `O`/`o`
+reference (§6.4), lists without text (`omit`), converting a file to a
+standardised type in place, and `file:` as an optional NIP-RS well-known
+scheme (§11.1). What they refuse, Estiva carries as its own rule. Converting
+is not specified yet.
+
+**Where it stands (2026-10-30).** The relay and Estiva ID parts are built and
+checked on production as QA-1 and QA-2 on the QA Folder (buzz#38,
+estiva-id#90). No app writes or reads an artifact yet: projects move in the
+next milestone of the project "A load stays the same size as edits pile up:
+projects", and Ship, Peek, Leaf and the agent follow this section then.
 
 ---
 
@@ -2628,7 +2821,7 @@ throwaway relay or a fake query.
 | C14 | **Deletion left to the relay.** After the author's `kind:5`, the next read no longer holds the message, and the app shows nothing for it from local state. A non-author's `kind:5` is refused and the refusal is shown in the relay's words. Edit and Delete are offered only on the viewer's own message — not on another person's or an agent's (§6.5, 2026-10-06) |
 | C15 | **Attachment fold.** An edit carrying `imeta` replaces the message's set. A later edit with none leaves the message with no files. An edit carrying one file on a message with two leaves one (§6.8) |
 | C16 | **Reply shape.** A reply to a comment is a `kind:1111` with the comment's `A`/`K`/`P`, `e`/`k`/`p` naming the top-level comment, the comment's `h`, and no lowercase `a` for the object. A reply to a comment carrying a `block` copies its `block` and `quote` verbatim, before the `h` (§13.6). A reply read back threads under that comment in every conforming app (§6.4) |
-| C17 | **Membership fold.** The file's author is a member from the earliest root version. Writing in the stream, a body mention, an assignee change carrying `["p", P]`, and `member:<P>`=`true` by anyone each make the person a member. A comment's `p` tag alone does not, nor an assignee change without a `p`, nor an unassign, nor a `kind:9` with an `a`. An edit of the root after the author left does not re-join them. A `member:<P>`=`false` signed by someone else is ignored. One signed by `P` ends membership until a later trigger, and member-since is then that trigger's second. Two changes inside one second order by `ts` (§11.8) |
+| C17 | **Membership fold.** The file's author is a member from the earliest root version (for a file kept as an artifact, the signer of its first save, §11.8; its membership changes are targeted by `o`). Writing in the stream, a body mention, an assignee change carrying `["p", P]`, and `member:<P>`=`true` by anyone each make the person a member. A comment's `p` tag alone does not, nor an assignee change without a `p`, nor an unassign, nor a `kind:9` with an `a`. An edit of the root after the author left does not re-join them. A `member:<P>`=`false` signed by someone else is ignored. One signed by `P` ends membership until a later trigger, and member-since is then that trigger's second. Two changes inside one second order by `ts` (§11.8) |
 | C18 | **Unread for a member.** Someone mentioned for the first time on a year-old file has one unread message, the mention. The person's own messages are never unread. A reply is read once its thread's marker or the reply floor passes it, or the file's marker passes it and it is at or before T0; the channel's marker never reads a file. A muted file shows only the messages that mention the person (§11.3, §11.8) |
 | C19 | **Urgent mention.** A message urgent for `P` carries `["urgent", P]` and `["p", P]` and names `P` in its body as published as an ordinary reference. It is urgent for `P` and for nobody else it names. An `urgent` tag for a person the body does not name is not urgent. An app that does not draw urgency renders it as an ordinary mention (§13.1) |
 | C20 | **Card fold.** A message with `["embed", V, "compact"]` whose body names `V` draws `V`'s row under it, and one with `detailed` its card. An edit with `["embed", V, "none"]` removes it and, with a byte-identical body, does not mark the message edited. A later edit with no `embed` leaves it removed. An `embed` for a value the folded body does not name draws nothing, and one for a value first named in an edit draws, with no `a` on the edit. With a `part` and an `embed` on the same address, the part wins. An unknown layout draws as `compact`. A reader that does not know `embed` draws the reference (§6.8, §13.6.2) |
@@ -2641,6 +2834,7 @@ throwaway relay or a fake query.
 | C27 | **The default card.** A writer that adds the default writes `["embed", V, "detailed"]` for a body naming one file `V`, also beside a Folder, a person or a message reference; none for a body naming two files, or a file and a block link (whose `part` it writes, with no `embed`); none for `V` on `V`'s own conversation, where `V` does not count, so `V` and one other file `W` there give `W` the default; never `compact` for a value it adds. An edit that adds the first file to a body adds its default and carries the whole folded set; an edit that changes a word of a body whose card was removed before sending writes no `embed`; an edit that puts `V` back into a body it was taken out of adds its default when the edit's body names no other file, also over an earlier `["embed", V, "none"]`. A link on words counts by its target: a body naming `V` only as `[words](U)` gets `V`'s default; with a second file, on words or bare, none; with a URL no app claims beside it, `V`'s (§13.6.2) |
 | C28 | **A mention in a file's text.** A save of a file's block document that names `P` with a `reference`, edited from a version that did not, is written with `member:<P>`=`true` on the file, signed by the writer and carrying `["p", P]`, and the save carries no `p` for `P`; `P` is a member, and with no message in the file's stream nothing is unread for `P`. A creation naming `P` writes the same change; a save naming only the writer writes none. `P` leaves; a save that changes another word and still names `P` writes no change, and `P` stays out. A save that drops `P`, then one that names `P` again, writes the change again: `P` is a member again (§11.8, §13.1) |
 | C29 | **A host-swapped address.** With kept shapes `https://a.example/issue/<slug>-<d>` (30851) and `https://a.example/#/issue/<d>` from a manifest on `a.example`, and only `https://b.example/document/<slug>-<d>` from one on `b.example`: a message written with `https://b.example/issue/<any>-<d of V>` keeps that URL in its body, carries `["a", V]`, draws as C21 places it, opens that URL, and `V` lists it as a mention. `https://c.example/issue/<any>-<d of V>`, with no kept shape on `c.example`; `http://b.example/issue/…` and `https://b.example:8443/issue/…`; and `https://b.example/#/issue/<d of V>` carry no tag and stay links. A manifest whose `web` is on `c.example` and that declares `urls` on `a.example` adds no shape and no origin. A manifest on `c.example` that declares `https://c.example/issue/<slug>-<d>` for kind `K`: on `b.example`, a `d` held under both `30851` and `K` names nothing and carries no tag; on `a.example`, the link is `V` (§7.7, §13.1) |
+| C30 | **A save from a list row** (*added 2026-10-30*, §6.13). An app changing one field of a file kept as an artifact from a list row (a status, a lead) first reads the whole current save, `#d` with no `omit`, checks its signature, and saves that save with the one field changed and its `content` unchanged, naming it in `prev`. Given a row that says its text was left out, the app never publishes a save whose `content` is empty or taken from the row |
 
 C11 and C12 both have a failure that is invisible from the app that has it.
 A merged mention looks like somebody said it here. A forged edit looks like an
@@ -2768,6 +2962,7 @@ does not already work. This section fixes the identifiers for the Estiva suite.
 | --- | --- | --- |
 | channel | `<channel-uuid>` — **bare, no prefix** | lowercase UUID v4 |
 | file | `<file-address>` — **bare, no prefix** (FOL-16) | `<kind>:<pubkey>:<d>`, kind 30000–39999, pubkey 64-char lowercase hex, `d` verbatim |
+| file kept as an artifact | `file:<d>` (*added 2026-10-30*) | lowercase UUID, the file's id (§6.13) |
 | thread | `thread:<root-event-id>` | 64-char lowercase hex |
 | message | `msg:<event-id>` | 64-char lowercase hex |
 | folder | `folder:<folder-address>` | **RESERVED, unspecified** — see §11.5 |
@@ -2806,6 +3001,20 @@ verbatim rather than replaced. A key beginning `thread:` or `msg:` whose
 remainder is not 64 lowercase hex characters is not a well-known context and
 MUST NOT be treated as one.
 
+**A file kept as an artifact is `file:<d>`** (*added 2026-10-30*, ALO-2; record
+[a-files-unread-state-is-keyed-file-and-its-id](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-files-unread-state-is-keyed-file-and-its-id.md)).
+Such a file has no address: a comment names it by its id in `O` (§6.4), and a
+file's id is a lowercase UUID, the same shape as a channel's. So its context
+is the id after a `file:` prefix, and the channel context keeps its bare uuid
+as above. The key is a fixed function of the root comment's `O` tag; nothing
+is looked up to derive it. A key beginning `file:` whose remainder is not a
+lowercase UUID is not a file context. The Estiva relay still refuses an id that
+any file or channel already holds (§6.13), so a link means one file, but this
+rule does not depend on that refusal: upstream Buzz does not make it, and a
+partner's relay in a shared Folder cannot be checked. `file:` is proposed
+upstream as an optional NIP-RS well-known scheme beside `thread:` and `msg:`
+(§6.13); if NIP-RS refuses it, Estiva keeps it as its own rule.
+
 #### Streams: which context a message answers to
 
 A channel's messages divide into **streams**, and a message answers to exactly
@@ -2816,7 +3025,8 @@ the marker of the stream it is in:
 - a root whose root-level `a` tag names a file — a `kind:1111` about that
   file — is in that **file's stream**, whose marker is the file's address. A
   root with two `a` tags is in both streams, and is unread in each until that
-  file has been read;
+  file has been read; a root whose `O` names a file kept as an artifact is in
+  that file's stream, whose marker is `file:<d>`;
 - a reply is in its root's stream, under `thread:<root>`.
 
 A thread attaches to a file by *comment* — its root's own `a` tag — and never
@@ -2946,6 +3156,12 @@ name for the third thing, "everything under it at once". An indicator over a
 Folder (§11.3), where an app draws one, is computed from the first two and
 needs no third.
 
+When comments name files by id (§6.4's `O`), a comment about a Folder as a
+file names it by its channel uuid and is kept under `file:<channel-uuid>`,
+apart from the Folder's chat, which keeps the bare uuid (*added 2026-10-30*,
+record
+[a-files-unread-state-is-keyed-file-and-its-id](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-files-unread-state-is-keyed-file-and-its-id.md)).
+
 **No huddle context is standardised.** If huddles land as channels they get the
 container scheme for free. Nothing is reserved for them.
 
@@ -2993,6 +3209,11 @@ inside its 90-day horizon, which is what lit a file's whole recent history the
 day a mention made someone follow it. For a **channel**, the choice is still
 the app's. What an app MUST NOT do in either case is write a marker to settle
 the question — that is a read it did not make.
+
+**A file moved to an artifact keeps what was read** (*added 2026-10-30*). Its
+marker is the later of its old address key (§11.1's bare address) and its
+`file:<d>` key. An app MAY copy the old value under the new key: that records a
+read the person did make, so it is not the marker the paragraph above forbids.
 
 **When a blob is full, the oldest markers go, and the reply floor pays for the
 threads among them** (CON-34, Miky 2026-10-05). `/nip44/encrypt` refuses a
@@ -3108,6 +3329,15 @@ were assigned to. An app that does not know the field folds it like any other
 
 Measured on production 2026-09-30, as the agent in the QA Folder: the relay
 accepted a `member:<P>` change on an issue, and both `#p` and `#a` returned it.
+
+**On a file kept as an artifact** (*added 2026-10-30*, §6.13; record
+[every-file-is-an-artifact-the-relay-keeps-in-order](https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-file-is-an-artifact-the-relay-keeps-in-order.md),
+D2), who is on the file stays beside it, not in its saves: the same
+`kind:1851`, targeted by `["o", <d>]` in place of `a`, with the file's home as
+its `h`. Adding a person never edits the file, and a leave is never a save by
+the leaver. **Created it** is the signer of the file's first save (`op`
+`create`), joining at that save's `created_at`, which no later save moves. A
+reader finds the membership changes by `#o`.
 
 #### A mention in a file's text
 
@@ -3415,6 +3645,16 @@ text. A reader that cannot resolve a reference MUST render the URI's own label
 or its shortened form, never blank. A reference to an object MAY also show one
 block of it, live, through a `part` tag (§13.6.1), and any reference MAY ask
 for a card under the message through an `embed` tag (§13.6.2).
+
+**A file kept as an artifact is linked by its app link** (*added 2026-10-30*,
+§6.13; record
+[a-file-is-named-by-its-id-in-a-capital-and-small-tag](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-file-is-named-by-its-id-in-a-capital-and-small-tag.md)).
+It has no address, so no `naddr`. A chip a person picks from `[` or Cmd+K
+inserts the app link form that carries only the file's id, never its title
+(Ship's `/#/project/<d>`), with `["o", <d>]` beside it (§6.4): someone who
+cannot open the file learns nothing from the message, and a rename leaves
+nothing stale. A pasted link stays as the person pasted it (C25). A type whose
+app publishes no link form has no chip in text.
 
 **A file's text is not a message** (*added 2026-10-20*, WBD-2). A save of a
 file's text — a root's content, or a change to a prose field (§7.3) — MUST NOT
@@ -4152,6 +4392,10 @@ tags:    ["h", <folder>], ["a", "30851:<pubkey>:<d>"],
          ["part", "30851:<pubkey>:<d>", "8373a025427f"]
 ```
 
+- **A file kept as an artifact** (§6.13) is named by its id: `["o", <d>]`
+  beside the message, and `["part", <d>, <block>…]` (*added 2026-10-30*,
+  §6.4). A reader tells the two forms apart by the value: an address has two
+  colons, an id is a lowercase UUID.
 - The pair is §13.6's. The relation is not. An anchor is what a comment is
   *about*, and a part is what a message *shows*. They are separate tags so a
   comment can be both, and so that a reader that knows neither still draws an
@@ -4273,8 +4517,9 @@ A block document (§13.3) draws its lines by the same rule, but has no card
 under it: a card a writer chose there takes its lone link's row's place
 (§13.3, "A reference's card").
 
-`["embed", <value>, <layout>]`. `<value>` is what an `a` or `q` carries for the
-same thing: an address, or a 64-hex event id. `<layout>` is how much to show:
+`["embed", <value>, <layout>]`. `<value>` is what an `a`, `o` or `q` carries
+for the same thing: an address, a file's id (a file kept as an artifact,
+§6.13, *added 2026-10-30*), or a 64-hex event id. `<layout>` is how much to show:
 
 | layout | what a reader draws under the message |
 | --- | --- |
