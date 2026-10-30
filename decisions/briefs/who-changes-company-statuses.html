@@ -91,7 +91,7 @@ code { font-size: 13px; background: var(--box); padding: 0 4px; border-radius: 4
 <p>Two facts shape the answer:</p>
 <ul>
 <li><b>Every member may write in the Company Folder.</b> That is its rule today, so this file would be the first thing in it that only some people may change.</li>
-<li><b>Every member can already see who is an admin.</b> The relay publishes its member list with each person's role, and every app reads that list for its <code>@</code> menu. Production on 30 Oct: 1 owner, 3 admins, 10 members.</li>
+<li><b>Every member can already see who is an admin.</b> The relay publishes its member list with each person's role, and every app reads that list for its <code>@</code> menu.</li>
 </ul>
 
 <figure>
@@ -218,12 +218,10 @@ code { font-size: 13px; background: var(--box); padding: 0 4px; border-radius: 4
 
 <h2>Checked</h2>
 <ul class="small">
-<li><b>Every member can read who is an admin.</b> The relay's member list carries each member's role, in our relay and in upstream Buzz (<code>crates/buzz-db/src/store/relay_members.rs</code>, <code>["member", key, role]</code>). The agent, a member, read it on production on 30 Oct: 1 owner, 3 admins, 10 members. The shared people list reads the same list (<code>packages/conversation/src/people.ts</code>). The relay's separate HTTP member read is admins-only (<code>crates/buzz-relay/src/api/members.rs</code>), but no option needs it. The pre-review said "the list names members only", and that is wrong.</li>
+<li><b>Every member can read who is an admin.</b> The relay's member list carries each member's role, in our relay and in upstream Buzz (<code>crates/buzz-db/src/store/relay_members.rs</code>, <code>["member", key, role]</code>). Read as a member on production on 30 Oct. The shared people list reads the same list (<code>packages/conversation/src/people.ts</code>). The relay's separate HTTP member read is admins-only (<code>crates/buzz-relay/src/api/members.rs</code>), but no option needs it. The pre-review said "the list names members only", and that is wrong.</li>
 <li><b>Taking a file's id first.</b> SPEC "One id, one file": the relay refuses a new file whose id is already held, by any author (<code>protocol/SPEC.md</code> ~1829, checked on production 30 Oct). So any file found by an id made from its type can be taken first by any member. C avoids this by finding the file by its mark, not by such an id.</li>
 <li><b>The relay never refuses by type.</b> Record <i>a-types-declaration-changes-how-files-are-found-never-what-is-accepted</i>, Decision: "The relay never refuses a save because of its type", while "the right to write there" still refuses (estiva-docs <code>origin/main</code>).</li>
-<li><b>Any member writes in the Company Folder</b>, and "admins" means the relay roster's owners and admins: record <i>a-companys-statuses-are-its-own-layer-of-a-types-properties</i> (estiva-docs#358, waiting on your merge).</li>
-<li><b>Worth knowing.</b> On production the agent's key is one of the 3 admins, so under B or C it could change the statuses.</li>
-<li><b>Not checked:</b> Matrix's exact rule, and who may edit Linear's statuses.</li>
+<li><b>Any member writes in the Company Folder</b>, and "admins" means the relay roster's owners and admins: record <i>a-companys-statuses-are-its-own-layer-of-a-types-properties</i> (estiva-docs#358, waiting on your merge).</li><li><b>Not checked:</b> Matrix's exact rule, and who may edit Linear's statuses.</li>
 </ul>
 
 <h2>For the record</h2>

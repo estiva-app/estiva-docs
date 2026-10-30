@@ -25,7 +25,7 @@ settings files.
 - Any member may write in the Company Folder.
 - The relay's member list carries each member's role, and every member can
   read it (buzz `crates/buzz-db/src/store/relay_members.rs`, ours and upstream;
-  the agent read it on production on 30 Oct: 1 owner, 3 admins, 10 members).
+  read as a member on production on 30 Oct).
 - The relay refuses a new file whose id is already held, by any author
   ([a-files-id-is-unique-across-every-kind](a-files-id-is-unique-across-every-kind.md)).
   So any member can take first a file id made from a type.
@@ -38,14 +38,19 @@ settings files.
 
 - **A file of any type may be created with a mark saying that only the
   workspace's owners and admins write it.** The relay creates a marked file
-  only for an owner or an admin, and then takes a change to it only from them.
-  The relay checks the role when each change is written, so a demoted admin's
-  earlier changes stand.
+  only for an owner or an admin, and then takes every write to it only from
+  them: a change, a move, an archive or a delete. The relay checks the role when
+  each write arrives, so a demoted admin's earlier changes stand, and a demoted
+  admin can no longer delete the file. The mark is read only from the file's
+  first record; the relay refuses it on any later change. In a shared Folder
+  the host's roster counts, as for every rule the host's relay keeps
+  ([a-shared-folder-lives-on-both-relays-and-its-host-runs-it](a-shared-folder-lives-on-both-relays-and-its-host-runs-it.md)).
 - **A company's statuses file is created with the mark.** Apps find it by its
   type and the mark, in the Company Folder, not by an id made from the type,
   so a file a member made first cannot take its place. A file of that type
-  without the mark changes nothing. If two marked files exist, the oldest one
-  counts.
+  without the mark changes nothing. If two marked files exist, the one the
+  relay stored first counts, never the date its author wrote on it; an admin
+  retires the other by archiving it.
 - The SPEC says so in the project "Each company sets its own statuses"
   (milestone 1).
 
@@ -58,7 +63,9 @@ From the brief "Who changes a company's statuses" (30 Oct):
   every app, ours and an outside company's, must repeat the
   check correctly. The relay keeps ignored changes in the file's order, so the
   next admin change follows one that every app skips. The member list holds only
-  today's roles, so a demoted admin's statuses would revert. Undo cost: low for
+  today's roles, so a demoted admin's statuses would revert. And no app could
+  find the file by an id made from its type, so each would have to search past
+  files members made first. Undo cost: low for
   the rule, but the ignored changes stay on the relay. Build cost: low.
 - **B · The relay refuses non-admins' changes to a statuses file, by type.**
   Turned down: it would supersede
@@ -72,5 +79,8 @@ From the brief "Who changes a company's statuses" (30 Oct):
   build, and is checked once, by the relay.
 - The mark stays on the file's first record for good. It is a new right that
   every Estiva relay enforces, and upstream Buzz has none unless we propose it.
-- The same shape can later name other groups, such as one team, without
-  changing what a file carries.
+- The same mark can later name a different group, such as one team, without
+  changing the shape.
+- The relay keeps to the mark from the project that writes the first marked
+  file (the statuses editor's); until then no marked file exists, and the SPEC
+  says the rule ahead of it.
