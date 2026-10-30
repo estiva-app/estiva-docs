@@ -15,8 +15,8 @@ settings files.
 
 ## Context
 
-- [a-companys-statuses-are-its-own-layer-of-a-types-properties](a-companys-statuses-are-its-own-layer-of-a-types-properties.md)
-  (Accepted 30 Oct, waiting on Miky's merge of estiva-docs#358) puts a
+- The record a-companys-statuses-are-its-own-layer-of-a-types-properties
+  (Accepted 30 Oct, in estiva-docs#358, waiting on Miky's merge) puts a
   company's statuses in one file per type in its Company Folder. Only the
   workspace's owners and admins on the relay's roster change it, and a change
   from anyone else changes nothing anyone sees. How that is enforced was left
