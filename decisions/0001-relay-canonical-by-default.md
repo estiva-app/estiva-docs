@@ -14,6 +14,15 @@
 > the generic fold, "the newest change per field wins", moves into the relay,
 > and what a field means stays each app's. The rest of this record stands.
 
+> Superseded in part, 2026-10-30: §6, "Documents use relay git — decided", was
+> overtaken without being named: on 13 Oct
+> [a-files-text-is-a-readable-snapshot](a-files-text-is-a-readable-snapshot.md)
+> stored a document's text as a readable snapshot in an event, and Leaf
+> shipped that way with no git; it is now replaced by
+> [a-file-is-its-fields-each-kept-in-order-by-the-relay](a-file-is-its-fields-each-kept-in-order-by-the-relay.md).
+> Git is not the substrate for documents or any file. Linking a file to a
+> code repository stays open for software teams.
+
 ---
 
 ## 1. Context

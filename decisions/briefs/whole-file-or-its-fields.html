@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Whole File or Fields</title>
+<style>
+:root{--bg:#fbfaf7;--ink:#1d1d1b;--muted:#6b6a64;--box:#ffffff;--line:#c9c6bd;--accent:#2f6fde;--accent-soft:#e3ecfb;--warn:#b5521b;--warn-soft:#f8e6da;--ok:#2e7d4f;--ok-soft:#e0f1e7;--rule:#e7e4dc}
+@media (prefers-color-scheme: dark){:root{--bg:#161615;--ink:#ecebe6;--muted:#a3a19a;--box:#22221f;--line:#4a4842;--accent:#7aa7f5;--accent-soft:#1f2c44;--warn:#ec9a6a;--warn-soft:#3d2719;--ok:#7cc79a;--ok-soft:#1b3326;--rule:#2d2c29}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+main{max-width:760px;margin:0 auto;padding:28px 16px 64px}
+h1{font-size:1.6rem;line-height:1.25;margin:0 0 6px}
+h2{font-size:1.15rem;margin:34px 0 8px;padding-top:14px;border-top:1px solid var(--rule)}
+h3{font-size:1rem;margin:18px 0 4px}
+p,li{margin:6px 0}
+.sub{color:var(--muted);margin:0 0 18px}
+.q{background:var(--accent-soft);border-left:4px solid var(--accent);padding:12px 14px;border-radius:6px;font-size:1.05rem}
+.note{background:var(--warn-soft);border-left:4px solid var(--warn);padding:10px 14px;border-radius:6px}
+.pick{background:var(--ok-soft);border-left:4px solid var(--ok);padding:12px 14px;border-radius:6px}
+.opt{border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin:14px 0;background:var(--box)}
+.opt h3{margin-top:4px}
+.tag{display:inline-block;font-size:.78rem;padding:1px 8px;border-radius:10px;background:var(--rule);color:var(--muted);margin-left:6px;vertical-align:middle}
+svg{width:100%;height:auto;display:block;margin:8px 0}
+svg text{font:13px -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;fill:var(--ink)}
+svg .m{fill:var(--muted);font-size:12px}
+svg .t{font-weight:600}
+svg .b{fill:var(--box);stroke:var(--line);stroke-width:1.2}
+svg .hot{fill:var(--warn-soft);stroke:var(--warn);stroke-width:1.2}
+svg .new{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.4}
+svg .good{fill:var(--ok-soft);stroke:var(--ok);stroke-width:1.4}
+svg .ar{stroke:var(--ink);stroke-width:1.4;fill:none;marker-end:url(#h)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.88rem;min-width:620px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--rule)}
+small,.small{font-size:.86rem;color:var(--muted)}
+code{font-size:.86em}
+nav.toc{font-size:.9rem;color:var(--muted)}
+nav.toc a{color:var(--accent)}
+</style>
+</head>
+<body>
+<main>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<marker id="h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="var(--ink)"/></marker>
+</defs></svg>
+
+<h1>A file: one whole record, or its fields?</h1>
+<p class="sub">Decision brief, 30 Oct 2026. It asks again a call you made on 29 Oct (brief "What a file is", A over C), because the fact that decided it turned out to be false. Initiative "Re-architecting Osnova protocol"; project "A load stays the same size as edits pile up: projects". About six minutes. A second, smaller question is at the end and is asked on its own.</p>
+
+<p class="q"><strong>The question.</strong> When people, apps and agents change the same file, does each save carry the whole file, every field and the text (A, chosen on 29 Oct)? Or does each change carry only the fields it touches, with the relay keeping each field in order (C)?</p>
+
+<nav class="toc">On this page: <a href="#why">Why again</a> · <a href="#today">Today</a> · <a href="#same">What stays either way</a> · <a href="#pic">The picture</a> · <a href="#options">Options</a> · <a href="#four">Four questions</a> · <a href="#tradeoffs">Trade-offs</a> · <a href="#others">How others do it</a> · <a href="#rec">Recommendation</a> · <a href="#refuse">The smaller question</a> · <a href="#checked">Checked</a></nav>
+
+<h2 id="why">Why this is asked again</h2>
+<p class="note"><strong>The deciding fact was wrong.</strong> On 29 Oct A won because "an outside company holds a file's own state on upstream Buzz as it ships", while C "is ours alone". Checked on 30 Oct: upstream Buzz refuses every kind of event it does not know, and it knows none of the others Osnova needs: listings, who is on a file, an app's listing, Folders, projects, issues. So an outside company has to run our relay under A, exactly as under C. Two independent reviews found this. Your rule is that a premise found false after you decided means asking again.</p>
+<p>Seen without that fact, what A really buys is <strong>relay code that Block writes and keeps working</strong>: the ordering, the current-and-history read, removal of a save. That is real, but it is a cost argument. And C has four advantages the 29 Oct page never set beside it: nothing is re-signed, a field change stays small, an app cannot wipe a field it does not know, and who changed which field is signed by that person.</p>
+<p><strong>Nothing irreversible has happened yet.</strong> No app writes a file this way; the only such files on production are the QA probe's. It becomes one-way when every project moves, the last step of the project.</p>
+
+<h2 id="today">Today</h2>
+<p>A file (an issue, a project, a Leaf page) is a starting record plus a pile of "set this field" changes, each signed by whoever made it. Each app adds the pile up, and for each field the newest clock wins. A text save carries a whole copy of the text. On 29 Oct the pile was 42 MB of text saves and 2.2 MB of other changes, and a cold Ship load downloaded 53 MB. Two saves crossing lose words silently: of 17 text saves within a minute of someone else's, 16 were QA-1, QA-2 or Claude.</p>
+
+<h2 id="same">What stays either way</h2>
+<p class="pick">Both reviews keep the core of what you decided, and so do both options below: the relay keeps each file's current state in order and refuses a save made on an out-of-date copy; everything names a file by its id; who is on a file stays beside it; lists stop growing with edits; search finds a file by its current words; shared types carry Osnova's name (<code>osnova.project</code>) and builders name their own and launch. Neither review offers git or Buzz's Projects-and-Issues screen as the file model: Buzz's issues cannot be edited, need a code repository, and are readable by the whole company.</p>
+
+<h2 id="pic">The picture</h2>
+<svg viewBox="0 0 680 300" role="img"><title>What the relay keeps for one project under A and under C; comments, members and listings stay beside the file in both</title>
+<text class="t" x="0" y="16">A · one line of whole saves</text>
+<text class="t" x="350" y="16">C · one line per field</text>
+<rect class="new" x="0" y="28" width="100" height="74" rx="5"/><text x="8" y="46">version 7</text><text class="m" x="8" y="64">status, lead,</text><text class="m" x="8" y="80">key, summary,</text><text class="m" x="8" y="96">text (9 KB)</text>
+<path class="ar" d="M100 65 H114"/>
+<rect class="new" x="116" y="28" width="100" height="74" rx="5"/><text x="124" y="46">version 8</text><text class="m" x="124" y="64">every field</text><text class="m" x="124" y="80">again, and the</text><text class="m" x="124" y="96">text again</text>
+<path class="ar" d="M216 65 H230"/>
+<rect class="new" x="232" y="28" width="100" height="74" rx="5"/><text x="240" y="46">version 9</text><text class="m" x="240" y="64">new status;</text><text class="m" x="240" y="80">all the rest</text><text class="m" x="240" y="96">copied</text>
+<text class="m" x="0" y="122">Each save names the one it was made on.</text>
+<text class="m" x="0" y="138">One person signs the whole file.</text>
+<rect class="b" x="350" y="28" width="96" height="30" rx="5"/><text x="358" y="48">starting record</text>
+<text class="m" x="470" y="48">type, id, home</text>
+<text x="350" y="80">Status</text><rect class="good" x="410" y="66" width="60" height="22" rx="4"/><text class="m" x="416" y="81">open</text><path class="ar" d="M470 77 H484"/><rect class="good" x="486" y="66" width="70" height="22" rx="4"/><text class="m" x="492" y="81">started</text><path class="ar" d="M556 77 H570"/><rect class="good" x="572" y="66" width="60" height="22" rx="4"/><text class="m" x="578" y="81">done</text>
+<text x="350" y="108">Lead</text><rect class="good" x="410" y="94" width="60" height="22" rx="4"/><text class="m" x="416" y="109">Miky</text>
+<text x="350" y="136">Text</text><rect class="new" x="410" y="122" width="76" height="22" rx="4"/><text class="m" x="416" y="137">save 11</text><path class="ar" d="M486 133 H500"/><rect class="new" x="502" y="122" width="76" height="22" rx="4"/><text class="m" x="508" y="137">save 12</text>
+<text class="m" x="350" y="162">Each change names the one it follows, for its field.</text>
+<text class="m" x="350" y="178">Whoever changed a field signs that change.</text>
+<rect class="b" x="0" y="200" width="680" height="70" rx="6"/>
+<text class="t" x="12" y="222">Beside the file, the same in both</text>
+<text class="m" x="12" y="242">comments · who is on it · which Folders list it · unread state · chips in messages</text>
+<text class="m" x="12" y="260">each its own event, naming the file by its id</text>
+<text class="m" x="0" y="290">A list reads the current state without the text in both: current saves in A, the newest value of each field in C.</text>
+</svg>
+
+<svg viewBox="0 0 680 250" role="img"><title>Two moments under each option: Katerina sets a status while Claude edits the text, and Miky and Claude both edit the text</title>
+<text class="m" x="0" y="14">what one change carries</text><text class="m" x="250" y="14">Katerina sets Status while</text><text class="m" x="250" y="28">Claude edits the text</text><text class="m" x="470" y="14">Miky and Claude both</text><text class="m" x="470" y="28">edit the text</text>
+<text class="t" x="0" y="56">A</text>
+<rect class="b" x="40" y="40" width="200" height="50" rx="5"/><text x="50" y="60">the whole file</text><text class="m" x="50" y="78">avg 9 KB now, up to 94 KB</text>
+<rect class="hot" x="250" y="40" width="210" height="50" rx="5"/><text x="260" y="60">Claude's save refused;</text><text class="m" x="260" y="78">his app merges, saves again</text>
+<rect class="good" x="470" y="40" width="210" height="50" rx="5"/><text x="480" y="60">second save refused;</text><text class="m" x="480" y="78">merged, asks on one block</text>
+<text class="t" x="0" y="126">C</text>
+<rect class="b" x="40" y="110" width="200" height="50" rx="5"/><text x="50" y="130">only what it changes</text><text class="m" x="50" y="148">status avg 0.6 KB; text whole</text>
+<rect class="good" x="250" y="110" width="210" height="50" rx="5"/><text x="260" y="130">no clash</text><text class="m" x="260" y="148">different fields</text>
+<rect class="good" x="470" y="110" width="210" height="50" rx="5"/><text x="480" y="130">same as A</text><text class="m" x="480" y="148">merged, asks on one block</text>
+<text class="t" x="0" y="196">Less</text>
+<rect class="b" x="40" y="180" width="200" height="50" rx="5"/><text x="50" y="200">only what it changes</text><text class="m" x="50" y="218">as today</text>
+<rect class="good" x="250" y="180" width="210" height="50" rx="5"/><text x="260" y="200">no clash</text><text class="m" x="260" y="218">different fields</text>
+<rect class="hot" x="470" y="180" width="210" height="50" rx="5"/><text x="480" y="200">newest clock wins;</text><text class="m" x="480" y="218">one person's words lost</text>
+</svg>
+
+<h2 id="options">Three options</h2>
+
+<div class="opt">
+<h3>A · A file is one record, saved whole <span class="tag">chosen 29 Oct</span></h3>
+<p><strong>What you see.</strong> Lists stay flat. A save made on an old copy is refused in every app and agent, and the app merges: different fields and blocks quietly, a block both people changed by asking. History shows whole versions, so "go back to Tuesday's version" is one step.</p>
+<p><strong>Outside company.</strong> Runs our relay. Reads one event and has the whole file. Writes the whole file back, and must keep every field it does not know: if it drops one, the HR app's "Salary band" on a candidate is gone from the current version until someone restores it.</p>
+<p><strong>What could go wrong.</strong> Every field change carries the whole text, to the relay and to everyone watching the Folder: Katerina's status flip on a 94 KB document is a 94 KB write. The largest file halves, from about 500 KB to 256 KB. The move re-signs about 1,500 events that name a project and deletes the old records, and undoing it is possible only while Estiva ID holds every author's key. Who changed which field is recovered by comparing versions; that is exact, but not signed by them. Upstream is reshaping the list and live reads right now, and our copy already differs from theirs in about ten places.</p>
+</div>
+
+<div class="opt">
+<h3>C · A file is its fields, each kept in order <span class="tag">recommended</span></h3>
+<p><strong>What you see.</strong> Lists stay flat. Katerina changing the status while Claude writes never collide. Two people editing the same text are handled exactly as in A: the second save is refused and merged. History is who changed what, as Ship's Activity shows today; going back to Tuesday is worked out from it.</p>
+<p><strong>Outside company.</strong> Runs our relay, as in A. Writes only what it changes, naming the change it follows for that field, and reads current values from the relay. It cannot wipe a field it does not know, because it never writes it.</p>
+<p><strong>What could go wrong.</strong> It is our relay code and our standard: an order per file and per field, a bulk read of current values, search over them. We maintain it, not Block. A change that names no previous change must be refused, or it races as today. Several fields changed together must be refused together, or a half-applied change shows. The artifact record and its SPEC section, one day old, are rewritten. Block's agent settings stay artifacts, so our relay carries both.</p>
+</div>
+
+<div class="opt">
+<h3>Do less · Lists read current values; nothing is refused</h3>
+<p><strong>What you see.</strong> Lists stay flat. Everything else is today: two text saves crossing, the newest clock wins, and Leaf's and Ship's notice is the only warning.</p>
+<p><strong>Outside company.</strong> Today's events, plus a read of current values from our relay.</p>
+<p><strong>What could go wrong.</strong> It fixes the load and nothing else. Agents are who collide (16 of 17 crossings), so as more agents edit, more words are lost without anyone seeing it.</p>
+</div>
+
+<h2 id="four">Osnova's four questions</h2>
+<div class="tw"><table>
+<tr><th>Your question (29 Oct)</th><th>A · whole record</th><th>C · fields in order</th><th>Do less</th></tr>
+<tr><td>1. One company across all its apps</td><td>One query across every type ("everything assigned to me"), answered by Block's code</td><td>The same query, answered by our read of current values</td><td>As C</td></tr>
+<tr><td>2. Builders integrate with the apps already there</td><td>Read and write one object. The least careful app, from any company, decides whether everyone's extra fields survive</td><td>Write only your own change. Another app's fields are safe by construction</td><td>As C, but no protection when two write the same field</td></tr>
+<tr><td>3. Cross-app conversations and workflows</td><td>Comments the same in all three. "Status became Done" is found by comparing two saves</td><td>Comments the same. Each change is a signed event an automation or another app can act on</td><td>As C, without the order</td></tr>
+<tr><td>4. Intelligence</td><td>A stale save is refused; every agent must merge fields and text correctly</td><td>An agent's field change never clashes with a person writing; only text needs merging; who changed what is signed</td><td>Agents overwrite people silently</td></tr>
+</table></div>
+<p class="small">The Nostr community's rule, "one kind per shared meaning", sits closer to C: a file stays a set of signed facts. A puts every type as a name on one Buzz kind, which you accepted on 29 Oct as an enterprise standard's choice.</p>
+
+<h2 id="tradeoffs">Trade-offs</h2>
+<div class="tw"><table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td><strong>A</strong></td><td>One record per file, whole saves in order, on Buzz's draft standard, which we extend in about ten places</td><td>Flat lists; crossing saves merged; whole versions in history</td><td>Our relay; one object; must keep fields it does not know</td><td><strong>One-way</strong> at the move: ~1,500 events re-signed, old records deleted</td><td>Relay side built and live; search in review; Block maintains the ordering, while our copy drifts from theirs</td></tr>
+<tr><td><strong>C</strong></td><td>A starting record and one ordered line of changes per field; text is one field, saved whole</td><td>Flat lists; fields never clash; text merged as in A; history as change list</td><td>Our relay; small changes; cannot wipe others' fields</td><td><strong>Close to two-way</strong>: a rule the relay can stop enforcing; nothing re-signed; old changes stay valid</td><td>New relay code of ours: order per field, current-values read, backfill, search re-pointed; SPEC rewritten</td></tr>
+<tr><td><strong>Do less</strong></td><td>Today's events plus a current-values read</td><td>Flat lists; text clashes lost silently</td><td>Our relay; plain changes</td><td>Two-way</td><td>Smallest</td></tr>
+</table></div>
+
+<h2 id="others">How others do it</h2>
+<ul>
+<li><strong>Linear:</strong> one server orders every change, field by field; the newest value per field wins. The closest to C.</li>
+<li><strong>Salesforce, HubSpot, Jira:</strong> an update sends only the fields it changes, and Jira's history is a list of field changes. Whole-record replace exists, but integrations are told to send only what they change, because whole writes wipe what another integration set.</li>
+<li><strong>Notion:</strong> edits are small operations on one block or one property, not a whole page.</li>
+<li><strong>Buzz (NIP-AR):</strong> whole saves, A's shape. Used upstream only for agent settings so far; Block's own proposal to make tasks and projects artifacts (#7771) was closed unmerged on 21 Sep, and Buzz's Projects screen uses git-forge issues instead.</li>
+</ul>
+
+<h2 id="rec">Recommendation</h2>
+<p class="pick"><strong>C: a file is its fields, each kept in order by the relay, and the text is one field saved whole.</strong> Osnova's point is many apps from many companies working on the same shared files, an HR app adding its fields to a candidate that a tracker from another company also edits. What those apps share is the field, not the whole file. C makes the field the unit that is signed, ordered and protected: an app cannot wipe what it does not know, a status flip cannot collide with someone's writing, and "Katerina set Stage to Offer" is a fact she signed. The text keeps A's rule, which is where whole saves fit. And if C turns out wrong, it can still be turned back.</p>
+<p>This reverses what I recommended on 29 Oct, and the reason is the corrected fact, not new taste. What A still has is Block writing and maintaining the ordering code. For a small team that is worth a lot, and it is a cost argument: if you weigh it above the four points, A stays defensible, and four changes then come before projects move (a reference that names the file's home, so two companies' ids cannot collide; aliases instead of converting a type in place; the relay never refusing by type, below; and talking to Block about the list and live reads they are building now).</p>
+<p class="small">If C: the artifact record is superseded in part; SPEC §6.13 is rewritten; the relay's artifact support stays for Buzz's agent settings only; search reads current values instead of current saves; and the move shrinks to adding the order rule, with nothing re-signed. If A: the record's premise is corrected and the four changes are asked at their tickets.</p>
+
+<h2 id="refuse">The smaller question, asked on its own</h2>
+<p class="q"><strong>When apps declare their types to the relay, may a declaration ever make the relay refuse a save, or only change how files are found and ranked?</strong></p>
+<p><strong>Today.</strong> The search record waiting on your merge (estiva-docs#354) has the relay keep a table per type of which fields are words, with the project's built in, and <strong>refuse a project save that has text but does not say its format</strong>. On 26 Oct you turned down "the relay is the workspace's database, refusing writes that do not fit a type" because two companies' relays in a shared Folder would disagree, one schema bug would break every app, and a new kind of property would wait for a relay release.</p>
+<ul>
+<li><strong>Find and rank, never refuse by type</strong> <span class="tag">recommended</span>. "A save with text says its format" holds for every type alike, a rule of the envelope. A declaration the relay lacks or gets wrong only makes search worse. #354 changes one sentence before you merge it.</li>
+<li><strong>Keep #354 as written.</strong> Projects are refused today; whether later declarations may refuse is decided in that project. It leaves the door open to the 26 Oct rejected shape, one ticket at a time.</li>
+<li><strong>Do less: never refuse for search's sake.</strong> Unlabelled text is simply not found. An app that forgets the label learns it only when search misses.</li>
+</ul>
+
+<h2 id="checked">Checked</h2>
+<ul class="small">
+<li>Upstream refuses unknown kinds: <code>required_scope_for_kind</code>, "Returns Err for unknown kinds — the relay rejects them" (Buzz <code>upstream/main</code> cc04cdca1, <code>handlers/ingest.rs</code>). Upstream's <code>kind.rs</code> has none of 1851, 1852, 30840, 30842, 30850, 30851, 30890, 31990; our fork has all.</li>
+<li>Upstream already searches only current artifact saves: <code>buzz-search/src/query.rs</code>, "Search is a current-state surface; old artifact snapshots cannot match". The 29 Oct record says it has none.</li>
+<li>Block #7771 (tasks and projects as artifacts) closed unmerged 21 Sep; #8522 (sync) and #8523 (incremental reads) open. NIP-AR: identity <code>(community, d)</code>; "Editors MUST preserve unfamiliar fields … or decline the edit".</li>
+<li>Sizes from the 29 Oct production query (<code>~/flat-load-scratch/newest.out</code>, <code>census.out</code>), not re-run: newest text avg 8,989 B, max 93,635 B; newest other value avg 601 B; 1,521 status and 526 assignee changes.</li>
+<li>Re-sign count from ALO-8: 828 issue records, 271 listings, 227 + 138 comment references, 13 reactions, 12 embeds, 5 edits, 1 message ≈ 1,495; 68 of 94 first saves signed by Claude's key.</li>
+<li>No app writes an artifact yet (ALO-3 Engineering, 30 Oct); #354 open with the per-type refusal.</li>
+<li><strong>Not checked:</strong> how Salesforce, HubSpot and Jira word their guidance (from general knowledge, one line each); C's relay design is a sketch, not built or measured; whether Block would take any of our additions (nothing filed).</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="small">Re-asks <code>decisions/every-file-is-an-artifact-the-relay-keeps-in-order.md</code> (Accepted 29 Oct), Rejected alternative "C · Field changes ordered by the relay". Sources: <code>~/apps-declare-types-scratch/review-protocol.md</code> findings 2, 4, 6, 10, 11; <code>review-buzz-git.md</code> §0, §5. A = <code>kind:45010</code> NIP-AR saves, <code>O</code>/<code>o</code> by <code>d</code>, SPEC §6.13, buzz#38 (ALO-2). C = <code>1851</code> changes with a per-field <code>prev</code>, relay head per (<code>d</code>, field), current-values read with <code>omit</code>; old <code>a</code> references stay valid because ids are unique across kinds (record <code>a-files-id-is-unique-across-every-kind</code>); whether the four shared types' starting records move to one record kind carrying the type name is a later, two-way call. Smaller question: estiva-docs#354, buzz#39 (ALO-3); 26 Oct option D in <code>a-files-type-is-a-shared-meaning-any-app-extends.md</code>. Next records owed either way: ADR 0001 §6 ("Documents use relay git") marked superseded in part; TYPES.md's "why not" for git-forge issues and projects.</p>
+</main>
+</body>
+</html>

@@ -1,5 +1,11 @@
 # Folders, Files and Components — working through the git model
 
+> **Overtaken (2026-10-30).** Its conclusion, git as the substrate for files,
+> was not built: a document's text became a snapshot in an event (13 Oct), and
+> a file is now its fields, each kept in order by the relay
+> ([a-file-is-its-fields-each-kept-in-order-by-the-relay](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-file-is-its-fields-each-kept-in-order-by-the-relay.md)).
+> Kept as the record of what was considered.
+
 Response to the proposal that **git provides folders and files**, leaving only
 Components to design, split into **static** (markup) and **dynamic** (widgets).
 

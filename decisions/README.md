@@ -173,7 +173,9 @@ properties and its history.
 - [A file keeps every change and every text save for good, and has a History panel that shows them](a-file-keeps-every-change-for-good.md) — Accepted, 2026-10-26
 - [A file is named by its id in a new pair of tags, a capital one for "about it" and a small one for "mentions it", and a chip picked from a menu is saved as the file's link](a-file-is-named-by-its-id-in-a-capital-and-small-tag.md) — Accepted, 2026-10-29
 - [Each company defines its own statuses for a shared type, starting from the defaults its tracker provides; the shared part is what each status means](each-company-defines-its-own-statuses.md) — Accepted, 2026-10-30
-- [A file's own state is an upstream Buzz artifact the relay keeps in order; everything else names the file by one reference](every-file-is-an-artifact-the-relay-keeps-in-order.md) — Accepted, 2026-10-29; its part "in one single-letter tag that every … card and chip uses" superseded by the one above, 2026-10-29
+- [A file's own state is an upstream Buzz artifact the relay keeps in order; everything else names the file by one reference](every-file-is-an-artifact-the-relay-keeps-in-order.md) — Accepted, 2026-10-29; its part "in one single-letter tag that every … card and chip uses" superseded by the one above, 2026-10-29; its part "a file's own state is a NIP-AR artifact, whole in each save" superseded by the one below, 2026-10-30
+- [A file is its fields, and the relay keeps each field's changes in order; the text is one field, saved whole](a-file-is-its-fields-each-kept-in-order-by-the-relay.md) — Accepted, 2026-10-30
+- [What the relay knows about a type changes how files are found and ranked, never whether a save is accepted](a-types-declaration-changes-how-files-are-found-never-what-is-accepted.md) — Accepted, 2026-10-30
 
 ## Documents
 
@@ -207,7 +209,7 @@ properties and its history.
 
 ## Infrastructure
 
-- [Relay-canonical by default; an app database is an exception](0001-relay-canonical-by-default.md) — Accepted, 2026-08-22; its part "share the wire format, never the interpretation", as far as it covers the fold, superseded by "A file's type is a shared meaning", 2026-10-26
+- [Relay-canonical by default; an app database is an exception](0001-relay-canonical-by-default.md) — Accepted, 2026-08-22; its part "share the wire format, never the interpretation", as far as it covers the fold, superseded by "A file's type is a shared meaning", 2026-10-26; its §6 "Documents use relay git" superseded by "A file is its fields", 2026-10-30
 - [Foundation packages: one repo, public npm, built ESM, and a named owner for a break](0002-foundation-packages.md) — Accepted, 2026-08-26
 - [The block editor is shared: its translation lives in @estiva-app/protocol and its editor nodes in @estiva-app/ui/editor](the-block-editor-kit-lives-in-protocol-and-ui.md) — Accepted, 2026-09-30
 
