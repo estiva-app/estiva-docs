@@ -1,7 +1,8 @@
 # A file can say that only the workspace's owners and admins write it, and the relay keeps to that, for any type
 
 - Date: 2026-10-30
-- Status: Proposed
+- Status: Accepted
+- Decided by: Miky, in the shaping session for "Each company sets its own statuses" (2026-10-30), on the brief "Who changes a company's statuses" ([page](briefs/who-changes-company-statuses.html)): C, an admins-only mark the relay keeps to, as recommended
 - Area: Files
 
 ## Who it affects
@@ -50,17 +51,17 @@ settings files.
 
 ## Rejected alternatives
 
-The brief "Who changes a company's statuses" (30 Oct) put these against it:
+From the brief "Who changes a company's statuses" (30 Oct):
 
 - **A · Do less: every app ignores changes from non-admins.** The relay
-  stores anyone's change, and each app checks the member list. It would be
-  turned down because every app, ours and an outside company's, must repeat the
+  stores anyone's change, and each app checks the member list. Turned down:
+  every app, ours and an outside company's, must repeat the
   check correctly. The relay keeps ignored changes in the file's order, so the
   next admin change follows one that every app skips. The member list holds only
   today's roles, so a demoted admin's statuses would revert. Undo cost: low for
   the rule, but the ignored changes stay on the relay. Build cost: low.
 - **B · The relay refuses non-admins' changes to a statuses file, by type.**
-  It would be turned down because it supersedes
+  Turned down: it would supersede
   [a-types-declaration-changes-how-files-are-found-never-what-is-accepted](a-types-declaration-changes-how-files-are-found-never-what-is-accepted.md),
   and every new settings type would wait for a relay release. Undo cost:
   medium. Build cost: medium.
