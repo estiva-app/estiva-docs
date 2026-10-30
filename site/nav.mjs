@@ -49,6 +49,7 @@ export const NAV = [
     items: [
       { file: 'protocol/SPEC.md', slug: 'spec', title: 'Specification' },
       { file: 'protocol/KINDS.md', slug: 'kinds', title: 'Event kinds' },
+      { file: 'protocol/TYPES.md', slug: 'types', title: 'File types' },
       { file: 'protocol/ADDING-A-KIND.md', slug: 'adding-a-kind', title: 'Adding a kind' },
       { file: 'protocol/RATIONALE.md', slug: 'rationale', title: 'Rationale' },
       { file: 'protocol/RFC-0.2-RECONCILIATION.md', slug: 'rfc-0-2', title: 'RFC 0.2 reconciliation' },
