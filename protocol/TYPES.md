@@ -28,23 +28,12 @@ it. Defined 2026-10-30; until Ship moves its projects, a project is still the
 | field | tag | value |
 | --- | --- | --- |
 | title | `title` | the project's name; absent on a delete save |
-| status | `status` | one of the ids below, each with what it means ([SPEC §7.4](SPEC.md)'s stage) |
+| status | `status` | `planned`, `in_progress`, `completed` or `cancelled`, as Ship writes a project's status today |
 | lead | `p` | the lead's pubkey, 64 lowercase hex; absent when there is none |
 | key | `key` | 3–6 letters `A`–`Z`, the prefix of its issues' refs ([SPEC §6.1](SPEC.md)) |
 | summary | `summary` | one or two sentences of plain text, about 240 characters ([SPEC §6.12](SPEC.md)) |
 | archived | `archived` | `true` while it is archived; absent otherwise ([SPEC §6.5](SPEC.md)) |
 | text | `content` | the project's description |
-
-Its statuses, as Ship writes them today. A new status is a compatible change
-to this list; a status is never renamed or given another meaning
-([a-files-type-is-a-shared-meaning-any-app-extends](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-files-type-is-a-shared-meaning-any-app-extends.md)).
-
-| id | label | stage |
-| --- | --- | --- |
-| `planned` | Planned | `open` |
-| `in_progress` | In Progress | `started` |
-| `completed` | Completed | `done` |
-| `cancelled` | Cancelled | `dropped` |
 
 Its home (`h`) is the Folder that lists it; a project listed in none lives in
 the workspace's Company Folder (Estiva's is Estiva HQ), as does a new one made
