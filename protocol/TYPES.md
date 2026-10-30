@@ -1,44 +1,59 @@
 # File types: the Osnova directory
 
-> **Being rewritten (2026-10-30).** Files will not be artifacts: a file is its
-> fields, each kept in order by the relay
-> ([a-file-is-its-fields-each-kept-in-order-by-the-relay](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-file-is-its-fields-each-kept-in-order-by-the-relay.md)).
-> The type names and the fields below stand; where each is kept changes.
+This page is the public directory of the shared types, the ones every Osnova app
+reads the same way. It names each type and its fields. A file is its fields
+([SPEC §6](SPEC.md)): a first record written once, and for each field one line
+of `kind:1851` changes the relay keeps in order.
 
-A file kept as an artifact ([SPEC §6.13](SPEC.md)) says what it is in its
-`type` tag. This page is the public directory of the shared types, the ones
-every Osnova app reads the same way. It names each type's fields and where each
-is kept in a save.
+- **Osnova's four base types keep their own first records**, and each kind is
+  read as its type's name:
 
+  | type | first record |
+  | --- | --- |
+  | `osnova.project` | `30850` |
+  | `osnova.issue` | `30851` |
+  | `osnova.document` | `30842` |
+  | `osnova.topic` | `30840` |
+
+- **Every other type starts with one named first record**, a `kind:30852`
+  whose `k` tag names its type ([SPEC §6.1](SPEC.md)). A type joins the base
+  when the relay builds it in and this page lists it; no file moves.
 - **Shared types carry the protocol's name**: `osnova.<noun>`, singular. The
   name is final before the first file of that type is written.
 - **An app names its own types** `<company>.<noun>` (`estiva.*`, `acme.*`) and
   launches with them, asking nobody. A type several apps use can become a
   shared one.
-- **Every field a list shows is a tag**, so a list read without the text
-  (SPEC §6.13) draws a row. The text is the save's `content`.
-- The relay accepts any type. Estiva ID limits which types each of Estiva's
-  apps and agents may sign ([KINDS.md §5](KINDS.md)).
+- **A field is a name**, set by a change's `field` or `set` ([SPEC §6.2](SPEC.md)).
+  A list reads each field's newest change but the text's
+  ([SPEC §6.13](SPEC.md)), so every field a list shows is drawn without the
+  text. The text is the `description` field, saved whole.
+- The relay accepts any named type but the four base names. Estiva ID limits
+  which types each of Estiva's apps and agents may make
+  ([KINDS.md §5](KINDS.md)).
 
-Record:
+Records:
+[a-file-is-its-fields-each-kept-in-order-by-the-relay](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-file-is-its-fields-each-kept-in-order-by-the-relay.md)
+and
+[osnovas-base-types-keep-their-records-and-every-new-type-starts-named](https://github.com/estiva-app/estiva-docs/blob/main/decisions/osnovas-base-types-keep-their-records-and-every-new-type-starts-named.md)
+(Miky, 2026-10-30); the type names from
 [every-file-is-an-artifact-the-relay-keeps-in-order](https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-file-is-an-artifact-the-relay-keeps-in-order.md)
-(Miky, 2026-10-29).
+(Miky, 2026-10-29), which stand.
 
 ## `osnova.project`
 
 A project: what a team is working toward, the issues under it, and who leads
-it. Defined 2026-10-30; until Ship moves its projects, a project is still the
-`30850` of [SPEC §6.1](SPEC.md).
+it. Its first record is a `kind:30850` ([SPEC §6.1](SPEC.md)).
 
-| field | tag | value |
+| field | first value, on the `30850` | value |
 | --- | --- | --- |
-| title | `title` | the project's name; absent on a delete save |
-| status | `status` | the company's own status; Ship's defaults are `planned`, `in_progress`, `completed` and `cancelled`, below |
-| lead | `p` | the lead's pubkey, 64 lowercase hex; absent when there is none |
-| key | `key` | 3–6 letters `A`–`Z`, the prefix of its issues' refs ([SPEC §6.1](SPEC.md)) |
-| summary | `summary` | one or two sentences of plain text, about 240 characters ([SPEC §6.12](SPEC.md)) |
-| archived | `archived` | `true` while it is archived; absent otherwise ([SPEC §6.5](SPEC.md)) |
-| text | `content` | the project's description |
+| `title` | `name` (older records: `title`) | the project's name |
+| `status` | — | the company's own status; Ship's defaults are `planned`, `in_progress`, `completed` and `cancelled`, below. A change carries its `stage` ([SPEC §6.2](SPEC.md)) |
+| `lead` | `lead` | the lead's pubkey, 64 lowercase hex, with `["p", <pubkey>]` beside it; empty when there is none |
+| `key` | `key` | 3–6 letters `A`–`Z`, the prefix of its issues' refs ([SPEC §6.1](SPEC.md)) |
+| `summary` | `summary` | one or two sentences of plain text, about 240 characters ([SPEC §6.12](SPEC.md)) |
+| `archived` | — | `true` while it is archived; empty otherwise ([SPEC §6.5](SPEC.md)) |
+| `deleted` | — | `true` while it is deleted; empty otherwise ([SPEC §6.5](SPEC.md)) |
+| `description` | `description`, else `content` | the project's text ([SPEC §6.10](SPEC.md)) |
 
 **Its statuses are each company's own**, starting from its tracker's defaults
 ([each-company-defines-its-own-statuses](https://github.com/estiva-app/estiva-docs/blob/main/decisions/each-company-defines-its-own-statuses.md),
@@ -52,13 +67,32 @@ four stages of [SPEC §7.4](SPEC.md). Ship's defaults:
 | `completed` | Completed | `done` |
 | `cancelled` | Cancelled | `dropped` |
 
-Where a company keeps its list, and how a list read without the text counts a
-status by its stage, are settled when Ship moves its projects.
+A project is placed by `buzz-channel` and listed in a Folder by that Folder's
+`kind:30890`; one in no other Folder names the workspace's Company Folder
+([SPEC §3.4](SPEC.md)), as does a new one made with no Folder. Its changes carry
+that Folder as their `h`.
 
-Its home (`h`) is the Folder that lists it; a project listed in none lives in
-the workspace's Company Folder (Estiva's is Estiva HQ), as does a new one made
-with no Folder.
+## Why projects and issues are not git's
 
-How a project's text is encoded in `content`, and which apps open it, are
-settled when Ship moves its projects (the next milestone of the project "A load
-stays the same size as edits pile up: projects").
+Nostr already has issues and projects for code: NIP-34's issue (`kind:1621`)
+and the NIP-MP project (`kind:30621`). Buzz's own Projects screen uses NIP-34
+issues. Osnova does not, for three reasons
+([a-file-is-its-fields-each-kept-in-order-by-the-relay](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-file-is-its-fields-each-kept-in-order-by-the-relay.md),
+rejected alternatives):
+
+- **A NIP-34 issue cannot be edited.** A `kind:1621` is a regular event: its
+  title and text are fixed when it is written. Osnova's issues are changed by
+  everyone working on them, field by field, all their life.
+- **A NIP-34 issue needs a repository.** It names the git repository it is
+  about, and is read by whoever reads that repository. Osnova's issues live in
+  a Folder, and the Folder's members are who reads them
+  ([SPEC §3.1](SPEC.md)); most work a company tracks has no repository.
+- **A NIP-MP project is replaced whole, by its author.** A `kind:30621` is
+  addressable, so only the person who wrote it can change it, and every change
+  carries the whole project. That is the shape [SPEC §6.1](SPEC.md) rules out
+  for anything several people change, and the whole-file shape the record
+  above turned down.
+
+Git itself, as the store for a file, splits the file across a second store with
+its own access, beside the relay's. A project or an issue is its fields on the
+relay, like every other file.
