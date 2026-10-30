@@ -176,6 +176,8 @@ properties and its history.
 - [A file's own state is an upstream Buzz artifact the relay keeps in order; everything else names the file by one reference](every-file-is-an-artifact-the-relay-keeps-in-order.md) — Accepted, 2026-10-29; its part "in one single-letter tag that every … card and chip uses" superseded by the one above, 2026-10-29; its part "a file's own state is a NIP-AR artifact, whole in each save" superseded by the one below, 2026-10-30
 - [A file is its fields, and the relay keeps each field's changes in order; the text is one field, saved whole](a-file-is-its-fields-each-kept-in-order-by-the-relay.md) — Accepted, 2026-10-30
 - [What the relay knows about a type changes how files are found and ranked, never whether a save is accepted](a-types-declaration-changes-how-files-are-found-never-what-is-accepted.md) — Accepted, 2026-10-30
+- [Today's four types are Osnova's base and keep their own records; every new type starts with one named record, and joining the base moves no file](osnovas-base-types-keep-their-records-and-every-new-type-starts-named.md) — Accepted, 2026-10-30
+- [One change may set several fields of a file, and the relay takes it whole or refuses it whole](one-change-may-set-several-fields-taken-whole-or-refused-whole.md) — Accepted, 2026-10-30
 
 ## Documents
 
