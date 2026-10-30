@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finding the Company Folder</title>
+<style>
+:root {
+  --bg: #fbfaf7; --ink: #1d1d1f; --muted: #5d5d66; --line: #8e8e98; --rule: #dcdad3;
+  --box: #efeee9; --card: #ffffff; --fold: #f3f1ea; --gate: #e6edfb; --team: #eaf4ec;
+  --accent: #2457c5; --warn: #b3401f; --ok: #2a7a46; --chip: #dfe6f6; --pick: #f2f6ff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17171a; --ink: #ececef; --muted: #a8a8b2; --line: #74747f; --rule: #34343b;
+    --box: #26262b; --card: #1f1f23; --fold: #222226; --gate: #1d2a45; --team: #1d3324;
+    --accent: #93b2ff; --warn: #ff9e80; --ok: #82d69e; --chip: #2b3553; --pick: #1c2338;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17171a; --ink: #ececef; --muted: #a8a8b2; --line: #74747f; --rule: #34343b;
+  --box: #26262b; --card: #1f1f23; --fold: #222226; --gate: #1d2a45; --team: #1d3324;
+  --accent: #93b2ff; --warn: #ff9e80; --ok: #82d69e; --chip: #2b3553; --pick: #1c2338;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0 auto; max-width: 760px; padding: 24px 16px 64px;
+  background: var(--bg); color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+h1 { font-size: 28px; line-height: 1.2; margin: 4px 0 4px; }
+h2 { font-size: 20px; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--rule); }
+h3 { font-size: 17px; margin: 22px 0 6px; }
+p, li { max-width: 70ch; }
+ul { padding-left: 20px; }
+li { margin: 3px 0; }
+.kicker { color: var(--muted); font-size: 14px; margin: 0; }
+.question { font-size: 19px; line-height: 1.45; font-weight: 600; }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+.door { background: var(--box); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.pick { background: var(--pick); border-left: 4px solid var(--accent); padding: 10px 14px; border-radius: 6px; }
+.opt { border: 1px solid var(--rule); border-radius: 10px; padding: 4px 16px 10px; margin: 14px 0; background: var(--card); }
+.opt h3 { margin-top: 12px; }
+.opt.rec { border-color: var(--accent); }
+.tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); vertical-align: 2px; margin-left: 6px; }
+.tablewrap { overflow-x: auto; margin: 10px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.4; min-width: 560px; }
+th, td { text-align: left; vertical-align: top; padding: 7px 8px; border-bottom: 1px solid var(--rule); }
+th { font-size: 13px; color: var(--muted); font-weight: 600; }
+td:first-child { font-weight: 600; min-width: 7.5em; }
+figure { margin: 18px 0 24px; overflow-x: auto; }
+figure svg { width: 100%; min-width: 600px; height: auto; display: block; }
+figcaption { font-size: 14px; color: var(--muted); margin-top: 6px; }
+figcaption b { color: var(--ink); }
+code { font-size: 13px; background: var(--box); padding: 0 4px; border-radius: 4px; }
+.gate { fill: var(--gate); stroke: var(--accent); stroke-width: 1.5; }
+.team { fill: var(--team); stroke: var(--ok); stroke-width: 1.3; }
+.fold { fill: var(--fold); stroke: var(--line); stroke-width: 1.2; }
+.file { fill: var(--card); stroke: var(--line); stroke-width: 1.2; }
+.bad { fill: var(--card); stroke: var(--warn); stroke-width: 1.4; }
+.dash { stroke-dasharray: 6 4; }
+.t { fill: var(--ink); font-size: 13px; }
+.b { font-weight: 700; }
+.ts { fill: var(--muted); font-size: 12px; }
+.ta { fill: var(--accent); font-size: 12px; font-weight: 600; }
+.tw { fill: var(--warn); font-size: 12px; font-weight: 600; }
+.tok { fill: var(--ok); font-size: 12px; font-weight: 600; }
+.arrow { fill: none; stroke: var(--ink); stroke-width: 1.3; }
+.arrowx { fill: none; stroke: var(--warn); stroke-width: 1.3; stroke-dasharray: 4 3; }
+.head { fill: var(--ink); }
+.headx { fill: var(--warn); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="ahx" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="headx" d="M0,0 L10,5 L0,10 z"/></marker>
+  </defs>
+</svg>
+
+<p class="kicker">Decision brief · project "A load stays the same size as edits pile up: projects" · 30 Oct 2026 · for Miky</p>
+<h1>How an app finds the Company Folder</h1>
+<p class="question">Two things you decided live in the workspace's Company Folder: a project filed in no Folder, and the company's own statuses. How does any app, ours or an outside company's, know which Folder that is?</p>
+
+<h2>Today</h2>
+<p>Estiva has five team Folders: Estiva HQ, Ship, Peek, Steer and Leaf. Estiva HQ is the Company Folder only because we call it that. Nothing on the relay says so, and no app's code knows it.</p>
+<p>On 29 and 30 Oct you decided, in three records, that a project in no Folder lives in the Company Folder, the one every member reads; that each company keeps its statuses in one file per type there; and that apps find that file "by its type and the admins-only mark, in the Company Folder". The SPEC still says how an app finds the Company Folder "is specified with the move". This SPEC rewrite removes that sentence, so it needs the answer.</p>
+<p>Two facts shape it:</p>
+<ul>
+<li><b>Only the relay writes what a Folder is.</b> A Folder's name, whether it is public, and its labels are published and signed by the relay. An owner or admin asks the relay to change a name or a label; nobody else can.</li>
+<li><b>The relay never makes a Folder by itself.</b> A new workspace starts with none. Every Folder is one somebody made.</li>
+</ul>
+
+<figure>
+<svg viewBox="0 0 720 190" role="img">
+<title>Today: an app lists the workspace's Folders from the relay. Five team Folders come back, Estiva HQ among them, and nothing says which one is the company's.</title>
+<rect class="file" x="20" y="60" width="140" height="60" rx="8"/><text class="t b" x="34" y="84">Any app</text><text class="ts" x="34" y="102">Ship, an outside app</text>
+<rect class="gate" x="220" y="50" width="160" height="80" rx="10"/><text class="t b" x="236" y="74">The relay</text><text class="ts" x="236" y="94">signs each Folder's</text><text class="ts" x="236" y="110">name, access, labels</text>
+<rect class="team" x="440" y="14" width="260" height="34" rx="8"/><text class="t" x="454" y="36">Estiva HQ</text><text class="tw" x="560" y="36">company? nothing says</text>
+<rect class="team" x="440" y="56" width="260" height="30" rx="8"/><text class="t" x="454" y="76">Ship</text>
+<rect class="team" x="440" y="94" width="260" height="30" rx="8"/><text class="t" x="454" y="114">Peek</text>
+<rect class="team" x="440" y="132" width="260" height="30" rx="8"/><text class="t" x="454" y="152">Steer · Leaf</text>
+<path class="arrow" d="M160,90 L216,90" marker-end="url(#ah)"/>
+<path class="arrow" d="M380,90 L436,70" marker-end="url(#ah)"/>
+<text class="ts" x="20" y="150">"list the Folders"</text>
+</svg>
+<figcaption><b>Today.</b> An app gets five Folders back and has to guess. Ours guess by name; an outside company's cannot.</figcaption>
+</figure>
+
+<h2>Why it reaches beyond this ticket</h2>
+<p>It is the rule every app and every outside company uses to find the company-wide home: where a project nobody filed goes, where the company's statuses are, and later anything else the whole company shares (labels, priorities, the Company team's #general in the navigation brainstorm). It also decides whether a workspace can be without one. The relay needs the answer too, not only apps: from this rewrite it refuses a change filed in another Folder than its file's, so it must know which Folder an unfiled project's changes belong to.</p>
+<div class="door"><b>Mostly two-way.</b> Files never move: a project filed in the Company Folder stays in that Folder whichever way this goes. What is hard to undo is a promise to outside apps. If they are told "there is always one" and we later allow none, each of them breaks on the workspace that has none.</div>
+
+<h2>Options</h2>
+
+<div class="opt rec">
+<h3>A · Every workspace has one, kept for good <span class="tag">recommended</span></h3>
+<p>The relay marks one Folder as the company's. A new workspace gets it when it is set up; Estiva's is Estiva HQ, marked once. It can be renamed, but nobody can delete it, archive it, make it private or take the mark off. Apps ask the relay for the Folder with the mark and always get exactly one.</p>
+<figure>
+<svg viewBox="0 0 720 170" role="img">
+<title>Option A: the relay creates and marks the Company Folder when the workspace is set up. Any app asks for the marked Folder and gets Estiva HQ. Delete, archive and make-private are refused for it.</title>
+<rect class="file" x="20" y="54" width="140" height="56" rx="8"/><text class="t b" x="34" y="78">Any app</text><text class="ts" x="34" y="96">"the company's?"</text>
+<rect class="gate" x="220" y="40" width="170" height="86" rx="10"/><text class="t b" x="236" y="64">The relay</text><text class="ts" x="236" y="84">made it at setup</text><text class="ts" x="236" y="100">refuses delete, archive,</text><text class="ts" x="236" y="116">private, unmark</text>
+<rect class="team" x="450" y="30" width="250" height="60" rx="10"/><text class="t b" x="466" y="54">Estiva HQ</text><text class="tok" x="466" y="74">marked: the company's</text>
+<rect class="file dash" x="450" y="104" width="250" height="52" rx="8"/><text class="ts" x="466" y="126">projects in no Folder</text><text class="ts" x="466" y="142">the company's statuses file</text>
+<path class="arrow" d="M160,82 L216,82" marker-end="url(#ah)"/>
+<path class="arrow" d="M390,72 L446,62" marker-end="url(#ah)"/>
+<path class="arrow" d="M575,90 L575,102" marker-end="url(#ah)"/>
+</svg>
+<figcaption><b>A.</b> One answer, always there, never moving.</figcaption>
+</figure>
+<ul>
+<li><b>Miky and Katerina:</b> nothing changes on screen. Estiva HQ's menu no longer offers Delete or Archive.</li>
+<li><b>Outside company:</b> one question to the relay, one answer, in every workspace. It never has to handle "none".</li>
+<li><b>Locks in:</b> the Company Folder is part of the protocol. If the navigation rework makes "Company" a team, this Folder is the obvious place it starts from.</li>
+<li><b>What could go wrong:</b> an admin who wants to reorganise cannot get rid of it, only rename it. A workspace that never wanted a company-wide space still has one (it can sit empty). In a Folder shared with a partner company, the mark of the partner's relay must not count as ours: an app trusts only the mark its own workspace's relay signed.</li>
+</ul>
+</div>
+
+<div class="opt">
+<h3>B · The owner picks it, and can move it</h3>
+<p>An owner or admin marks any Folder as the company's in settings, and can move the mark to another Folder later. The relay keeps at most one marked. Until somebody picks, there is none.</p>
+<figure>
+<svg viewBox="0 0 720 170" role="img">
+<title>Option B: an owner marks a Folder as the company's and later moves the mark. The statuses file and the unfiled projects stay in the old Folder.</title>
+<rect class="file" x="20" y="54" width="140" height="56" rx="8"/><text class="t b" x="34" y="78">Owner, in settings</text><text class="ts" x="34" y="96">"this one"</text>
+<rect class="gate" x="220" y="48" width="160" height="70" rx="10"/><text class="t b" x="236" y="72">The relay</text><text class="ts" x="236" y="92">at most one marked</text>
+<rect class="team" x="450" y="20" width="250" height="56" rx="10"/><text class="t b" x="466" y="44">Estiva HQ</text><text class="tw" x="466" y="64">was marked; still holds the files</text>
+<rect class="team" x="450" y="96" width="250" height="56" rx="10"/><text class="t b" x="466" y="120">Everyone</text><text class="tok" x="466" y="140">marked now; empty</text>
+<path class="arrow" d="M160,82 L216,82" marker-end="url(#ah)"/>
+<path class="arrow" d="M380,90 L446,120" marker-end="url(#ah)"/>
+<path class="arrowx" d="M575,76 L575,94" marker-end="url(#ahx)"/>
+</svg>
+<figcaption><b>B.</b> The mark moves; the files it pointed to do not.</figcaption>
+</figure>
+<ul>
+<li><b>Miky and Katerina:</b> a "Company Folder" choice in settings. If Miky moves it, projects nobody filed still sit in Estiva HQ, and the company's statuses go back to Ship's defaults until an admin saves them again in the new Folder.</li>
+<li><b>Outside company:</b> must handle "none picked" (where does a new unfiled project go?) and the mark moving under it.</li>
+<li><b>Locks in:</b> flexibility nobody has asked for, paid for by every app's "none" and "moved" cases.</li>
+<li><b>What could go wrong:</b> statuses silently revert after a move; a stale tab files a project into the old Company Folder.</li>
+</ul>
+</div>
+
+<div class="opt">
+<h3>C · Do less: no Company Folder</h3>
+<p>The protocol has no Company Folder. A file in no Folder is just that: it names no Folder, and every member of the workspace reads it. The company's statuses file is such a file. There is nothing to find.</p>
+<figure>
+<svg viewBox="0 0 720 150" role="img">
+<title>Option C: a file in no Folder is readable by every member of the workspace. No Folder is involved.</title>
+<rect class="file" x="20" y="44" width="140" height="56" rx="8"/><text class="t b" x="34" y="68">Any app</text><text class="ts" x="34" y="86">"files in no Folder"</text>
+<rect class="gate" x="220" y="36" width="160" height="72" rx="10"/><text class="t b" x="236" y="60">The relay</text><text class="ts" x="236" y="80">every member reads</text><text class="ts" x="236" y="96">a file in no Folder</text>
+<rect class="file dash" x="450" y="30" width="250" height="84" rx="10"/><text class="t b" x="466" y="54">The workspace itself</text><text class="ts" x="466" y="74">projects in no Folder</text><text class="ts" x="466" y="92">the company's statuses file</text>
+<path class="arrow" d="M160,72 L216,72" marker-end="url(#ah)"/>
+<path class="arrow" d="M380,72 L446,72" marker-end="url(#ah)"/>
+</svg>
+<figcaption><b>C.</b> No Folder, no mark, nothing to look up.</figcaption>
+</figure>
+<ul>
+<li><b>Miky and Katerina:</b> Estiva HQ stays an ordinary Folder. Projects filed there stay there; a new project with no Folder shows outside every Folder.</li>
+<li><b>Outside company:</b> nothing to look up, but a second kind of home to handle: files with no Folder have no Folder conversation, no Folder listing, and no Folder admins to archive them.</li>
+<li><b>Locks in:</b> reverses three Accepted records' "in the Company Folder", and the SPEC's rule that every file names its Folder.</li>
+<li><b>What could go wrong:</b> every rule written per Folder (who archives, what a list shows, what a shared Folder carries) needs a "no Folder" case, in every app.</li>
+</ul>
+</div>
+
+<h2>Trade-offs</h2>
+<div class="tablewrap">
+<table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td>A · always one</td><td>One relay-signed mark; one Folder per workspace that cannot go away</td><td>Nothing new; HQ cannot be deleted</td><td>One lookup, always one answer</td><td>Low: drop the protection later; files stay</td><td>Relay: the mark, setup, four refusals</td></tr>
+<tr><td>B · owner picks</td><td>Same mark, movable, may be absent</td><td>A setting; statuses revert after a move</td><td>Must handle none and moved</td><td>Low</td><td>Relay mark + a settings screen</td></tr>
+<tr><td>C · none</td><td>Files with no Folder are a second kind of home</td><td>Unfiled projects outside every Folder</td><td>Every per-Folder rule gets a no-Folder case</td><td>Medium: three records reversed</td><td>Least relay work, most app work</td></tr>
+</table>
+</div>
+
+<h2>How others do it</h2>
+<ul>
+<li><b>Slack:</b> every workspace has #general; everyone is in it; it can be renamed, not archived or left. That is A.</li>
+<li><b>Microsoft Teams:</b> every team has a General channel that cannot be deleted. A again, per team.</li>
+<li><b>Discord:</b> the owner picks a "system channel" and can unset it. That is B; apps that post there must handle "none".</li>
+<li><b>NIP-29 (Nostr groups):</b> nothing; every group is equal. Whatever we pick is ours to propose.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<div class="pick"><p><b>A: every workspace has exactly one Company Folder, marked by the relay, kept for good.</b> The things the whole company shares, its statuses today and its unfiled projects, need a home that cannot disappear or move under them, and an outside company's app should get one answer it never has to second-guess. Only the relay signs what a Folder is, so a member cannot make a look-alike. It is what Slack and Teams settled on, and it matches "there is always a Company team" from your navigation brainstorm without deciding that rework.</p></div>
+
+<h2>Checked</h2>
+<ul class="small">
+<li>Nothing marks a Company Folder: the relay's Folder metadata carries id, name, about, public/private, unlisted, restricted, hidden, closed, labels and creator only (buzz <code>nfb-demo-kinds</code>, <code>crates/buzz-db/src/store/channel.rs</code> <code>group_metadata_tags</code>).</li>
+<li>Only the relay signs Folder metadata (<code>side_effects.rs</code>: discovery events 39000–39002 "signed by the relay keypair"); only an owner or admin may change a Folder's labels (<code>group_state_postgres_tests.rs</code>).</li>
+<li>The relay makes no Folder at setup (no default channel in buzz-relay or buzz-db).</li>
+<li>No app knows a Company Folder: Ship, Peek, Leaf and the agent on <code>origin/main</code> mention Estiva HQ only in stories and comments.</li>
+<li>Three Accepted records say "Company Folder": a-companys-statuses-are-its-own-layer-of-a-types-properties, a-file-can-say-only-admins-write-it-and-the-relay-keeps-to-it, and (from 29 Oct, via SPEC §6.13) a project in no Folder lives there.</li>
+<li>That every member reads a file with no Folder (option C) is what SPEC §5.2 says; not checked on production today.</li>
+<li>Slack, Teams and Discord behaviour is from their published help, not re-checked today.</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="small muted">Ticket f4bc7ee7 (ALO project, milestone 2) replaces SPEC §6.13, whose "how an app finds a workspace's Company Folder is specified with the move" this answers. Folder metadata: NIP-29 <code>kind:39000</code>, relay-signed; labels are its <code>t</code> tags, changed by <code>kind:9002</code> from an owner or admin. Under A the mark would be a relay-only label or tag on the 39000, advertised in NIP-11, with <code>9008</code> delete, archive, private and unmark refused for it. EAC-1 part 2 (the company's statuses file) waits on this. Navigation rework: no records yet.</p>
+</body>
+</html>
