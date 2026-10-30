@@ -173,6 +173,10 @@ over a `REQ` and `/query`:
 | `1851` | `value`, only for a `title` change aimed at an object or a `ref` change aimed at a `30851` |
 | `5`, `7`, `9007`, `9030`, `9031`, `30078`, the author-only or ciphertext kinds `30179`, `30300`, `30350`, `30622` (and a `1851` aimed at one), any other `1851` | not searchable |
 
+These are the base's word fields, built into the relay. A field an added app
+marks as words in its listing (SPEC §7.10) is read too, once the relay knows
+which apps a workspace added; until then nothing is added to this table.
+
 ---
 
 ## 5. Per-app signing ceilings

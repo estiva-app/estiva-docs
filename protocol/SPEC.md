@@ -424,6 +424,15 @@ The object row is a rule rather than a list, so a new object kind is searchable
 by title on the day it is registered (§8), with no change to the relay. A kind
 that is private to its author is the exception, and a relay names it.
 
+**Which fields are words** (*added 2026-10-30*, record
+[search-looks-in-the-base-and-every-field-an-added-app-marks-as-words](https://github.com/estiva-app/estiva-docs/blob/main/decisions/search-looks-in-the-base-and-every-field-an-added-app-marks-as-words.md)).
+The fields this table names are a base type's word fields, built into the
+relay. Search reads them together with every field an app the workspace added
+marks as words in its listing (§7.10). A mark steers search and ranking only,
+and a listing from an app the workspace has not added counts for nothing.
+Until the relay knows which apps a workspace added, it reads the base's fields
+alone.
+
 **A hit is a candidate, not the current state.** The index holds every title an
 object ever had: a renamed object is found by its old title through the old
 `kind:1851`, and a deleted root's changes still match. A reader therefore
@@ -571,7 +580,7 @@ CON-33*).
 
 | Kind | Tag order |
 | --- | --- |
-| `1851` | `a`, [`O`], `field`, `value`, `h`, [`content-format`], `ts`, then any `A`, `o`, `imeta` and `p` |
+| `1851` | `a`, [`O`], `field`, `value`, `h`, [`content-format`], `ts`, then any `A`, `o`, `imeta` and `p`, then [`stage`] |
 
 The bracketed tags and those after `ts` appear only where a rule asks for them:
 
@@ -590,6 +599,8 @@ The bracketed tags and those after `ts` appear only where a rule asks for them:
 - **`content-format`** `estiva-blocks-1`, on a change whose value is a §13.3
   block document, with one `imeta` per attachment (§13.4).
 - **`p`**, the person a change names, where the relay indexes them (§11.8).
+- **`stage`**, on a change to a staged choice field such as a status: what the
+  chosen option means (below).
 
 That is the order Ship's `buildChange` and `@estiva-app/interop` write.
 
@@ -648,6 +659,53 @@ events carrying `ts` (`kind:9` 192, `1111` 1,680, `1851` 1,485, `40003` 113),
 and all of them agree exactly (2026-09-29), so the strict reading changes no
 fold that exists.
 
+**The `stage` tag: a status change says what it means.** *Added 2026-10-30*
+(records
+[a-companys-statuses-are-its-own-layer-of-a-types-properties](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-companys-statuses-are-its-own-layer-of-a-types-properties.md)
+and
+[each-company-defines-its-own-statuses](https://github.com/estiva-app/estiva-docs/blob/main/decisions/each-company-defines-its-own-statuses.md)).
+A choice field is **staged** when its options carry a stage (§7.4), as every
+status does. A change that sets a staged field keeps the option's fixed id as
+its `value` and carries the option's stage beside it, last:
+
+```json
+["field", "status"], ["value", "in_progress"], …, ["stage", "status", "started"]
+```
+
+- **The tag names its field**: `["stage", <field>, <stage>]`, where `<stage>` is
+  `open`, `started`, `done` or `dropped`. The same form serves a change that
+  sets several fields, one `stage` per staged field it sets. The tag's name is
+  the protocol's, not declared in `records` (§7.1), so an app with its own
+  change kind writes the same tag.
+- **A writer writes the stage of the option it offered**, from the layer it
+  offered it from (§7.4), on every change to a staged field, the owner's own
+  included. A field cleared to `''` carries no stage.
+- **The change's stage is what counts.** A reader counting progress uses the
+  stage on the change that set the field's current value, even where the
+  company's statuses give that option another stage today, so every app counts
+  a file the same way whether or not it can read the company's statuses.
+  Changing what an option means changes only the changes written after it.
+- **A reader honours a `stage` only when its field is a field the change sets
+  and that field is staged**, and ignores it otherwise: on a title change, on a
+  choice field whose options carry no stage, or naming another field.
+- **A change with no stage**, written before this rule or by an app that does
+  not write it, or one whose stage is outside the four (which counts as absent,
+  not as a fifth stage), is counted by the stage the tracker's listing gives
+  that option (§7.4), and failing that by the reader's own reading of the
+  label, as before this rule. A reader never takes it from the company's
+  statuses, for the reason above. "The tracker's listing" is the listing of
+  the tracker the workspace added first.
+- **A reader shows an option it cannot look up by its id**, because it cannot
+  read the company's statuses, no layer lists it, or it was removed. It counts
+  it by the change's stage; the label and colour come only from a layer that
+  lists it. This is §6.3's rule that a value outside the vocabulary is shown,
+  not swallowed, applied to a staged field.
+
+A file kept as an artifact (§6.13) carries its status as a tag on its save,
+with no stage, until that section is replaced; a reader counts it by the
+fallback above. Apps that read only `field` and `value` read a status change
+with a stage as they did before.
+
 ### 6.3 The fold
 
 Current state is the change stream replayed in order, **last write wins per
@@ -662,7 +720,12 @@ addressable *record* are NIP-01's, where the later `created_at` and then the
 **lower** `id` is the one that stands.
 
 - An object with no change events has its **default** state. Defaults are
-  declared in the manifest (§7), not assumed.
+  declared in the manifest (§7), not assumed. For a staged field (§6.2) the
+  default is the tracker's listing's and is read, never the company's: a
+  company's own default status is applied when a file is created, by the app
+  that creates it, as a change with its stage (§7.3). A reader that took the
+  company's default at read time would count the same file differently for a
+  member and for a guest who cannot read the company's statuses.
 - A value outside the declared vocabulary MUST be displayed rather than
   swallowed. Another app may have written it, and the manifest's schema is an
   honour system, not an enforcement point.
@@ -2379,6 +2442,16 @@ property's `enum`) names a vocabulary (§7.4) the value MUST come from — the
 owner cannot enforce it, so the consumer checks. An empty property is omitted,
 not written as an empty tag.
 
+**A staged vocabulary brings its stage** (*added 2026-10-30*). When the
+vocabulary an `enum` names is staged (§7.4), the consumer writes the chosen
+option's stage with it, as §6.2's `stage` tag, after every other tag. No
+declaration key asks for it: the vocabulary's stages are the request. The
+options a consumer offers, and so the stage it writes, come from the layers
+of §7.4, the company's own over the listing's. A creation action that sets a
+staged property writes its stage too, and one that sets none writes the
+default of the layer that names it as a §6.2 change with its stage, published
+after the root (below), so a new file starts with a stage on the relay.
+
 **`type: "pubkey"` names a person** (SHA-28, decided 2026-10-05), on a scalar
 input or on a property. Its value is a person's key as 64 lowercase hex, or `''`
 to clear the field. Every writer — the owner's own included — adds exactly one
@@ -2524,6 +2597,30 @@ An app publishing objects with enumerated fields MUST publish the vocabulary
 verbatim in the manifest, as `{value, label, colour, stage}` where `colour` is a
 semantic name (`neutral`, `blue`, `green`, `muted`) and never a hex code. The
 consumer picks the actual colour, so the object looks native in each app.
+
+**A vocabulary is a choice property of the type** (*added 2026-10-30*, records
+[a-companys-statuses-are-its-own-layer-of-a-types-properties](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-companys-statuses-are-its-own-layer-of-a-types-properties.md)
+and
+[an-apps-listing-or-a-persons-database-defines-a-type](https://github.com/estiva-app/estiva-docs/blob/main/decisions/an-apps-listing-or-a-persons-database-defines-a-type.md)).
+Status is a choice property, and each option has a fixed id (`value`), a
+label, a colour and a stage, in the one schema shape every layer writes. The
+options come in layers, each over the one before:
+
+1. the public type says the file has the property (TYPES.md: a project and an
+   issue have a Status);
+2. the tracker's listing gives the default options, as this vocabulary (Ship's
+   project statuses: Planned, In Progress, Completed, Cancelled);
+3. the company's own options, starting from the defaults of the tracker the
+   workspace added, which its owners and admins edit; where they are kept is
+   specified with that file, and until a company saves its own, apps use the
+   listing's;
+4. later, a person's database, writing the same property shape.
+
+A reader looks an id up from the top layer it can read down. **Renaming an
+option keeps its id**, so a rename changes no file. A vocabulary is **staged**
+when its options carry a stage, and a change to a field it maps writes the
+option's stage (§6.2). A vocabulary that is not a status may carry none (Ship's
+`archived` does not), and its fields are not staged.
 
 **`stage` says what a status *means*** — `open`, `started`, `done` or `dropped`
 — as distinct from what it is called or how it is drawn. Without it a consumer
@@ -2916,6 +3013,32 @@ word, never infer one from the app's `name` or the kind. The bare file (§6.7)
 declares none: a consumer says its own word for a file nobody owns.
 `@estiva-app/interop` 0.39.0 resolves it onto the object as `noun`.
 
+### 7.10 `words` — the fields search reads
+
+*Added 2026-10-30, record
+[search-looks-in-the-base-and-every-field-an-added-app-marks-as-words](https://github.com/estiva-app/estiva-docs/blob/main/decisions/search-looks-in-the-base-and-every-field-an-added-app-marks-as-words.md).
+Numbered after the existing subsections for the reason §7.5 gives.*
+
+A manifest MAY mark fields as words, per kind, for search (§5.2) to read:
+
+```jsonc
+"words": { "<kind>": ["<field>", …] }
+```
+
+- **It counts only from an app the workspace added**, and only for the fields
+  of its own kinds and the fields it adds to a base type (TYPES.md). A base
+  type's own word fields are built into the relay and no listing changes
+  them, so a project's core is searched alike on every relay with the same
+  base.
+- **Search reads the union**: the base's word fields and every field any added
+  app marks. A listing from an app the workspace has not added counts for
+  nothing.
+- **A mark only steers search and its ranking.** It never hides or refuses
+  anything, and a consumer draws a file the same with or without it.
+
+`words` is OPTIONAL. Until a relay knows which apps a workspace has added, it
+reads only the base's word fields, and a manifest's `words` changes nothing.
+
 ---
 
 ## 8. Registering a kind
@@ -2989,6 +3112,15 @@ throwaway relay or a fake query.
 C11 and C12 both have a failure that is invisible from the app that has it.
 A merged mention looks like somebody said it here. A forged edit looks like an
 edit, which is the reason the target rule in §6.8 is a MUST.
+
+**Stages** (added 2026-10-30, §6.2, §7.4). An app that shows or counts a
+staged field, or writes one, also conforms to these.
+
+| # | Check |
+| --- | --- |
+| C32 | **A status change carries its stage.** Setting a status, from any control or a creation, writes one `1851` with `field` `status`, `value` the option's id and, last, `["stage", "status", <the option's stage>]`. Clearing it writes no `stage`. A change to a field whose vocabulary has no stages, such as `archived`, carries none |
+| C33 | **The change's stage counts.** A file whose current status change has value `in_progress` and stage `done` counts as done, even though the listing gives `in_progress` the stage `started`. A change whose stage is `paused` counts by the listing's stage. A change with no stage counts as before this rule. A `["stage","title","done"]` on a title change, or a `["stage","priority","done"]` on a status change, is ignored |
+| C34 | **An unknown option is shown.** A file whose current status is `triage` with stage `started`, an id no layer the reader can read lists, shows `triage` as its status and counts as underway; it is not dropped from a list, a board or a count |
 
 ### 9.1 Reference checks
 
