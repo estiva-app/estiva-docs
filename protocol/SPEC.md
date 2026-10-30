@@ -950,7 +950,12 @@ D3) is archived, deleted and restored by saves, not by the events below:
   `restore`, by anyone who may write in the file's home — not only its author.
   The signer of the delete is who deleted it, shown with it. A deleted file
   leaves current-state reads and lists, keeps its id and its saves, and comes
-  back whole with a restore.
+  back whole with a restore. A delete save carries only `ar`, `d`, `h`,
+  `type`, `op` and `prev`, no `title` and an empty `content` (NIP-AR refuses
+  any other). A restore is a whole save, like an update: an app reads the save
+  before the delete (`/query` `{"artifact": "history", "#d": [<d>]}`) and
+  saves its fields and text again, naming the delete in `prev`, never the
+  delete save's empty ones.
 - **A `kind:5` naming a save is refused** by the relay (NIP-AR), so the author
   rule below never applies to an artifact. For an artifact this replaces "nobody
   may delete another person's work".
@@ -961,7 +966,11 @@ D3) is archived, deleted and restored by saves, not by the events below:
   `only an admin removes a file's save for good; to hide the file, save it as
   deleted`, and the relay's removal record (`45011`) cannot itself be deleted.
   This is the relay's rule; no Estiva app offers the action yet, and Estiva ID
-  grants no app or agent `9005` (KINDS.md §5).
+  grants no app or agent `9005` (KINDS.md §5). Every save is whole, so a
+  password pasted into one is in each save after it until it is taken out:
+  the admin removes every save that carries it, after a save without it. Removing
+  the current save retires the file (NIP-AR), and a retired file cannot be
+  restored.
 
 **Delete** is a NIP-09 `kind:5`, and three properties are normative:
 
@@ -1787,7 +1796,7 @@ it is written.
 | --- | --- |
 | `ar` | `1`, the envelope version |
 | `d` | the file's id, a lowercase UUID, never changed |
-| `h` | the file's home: the Folder or team whose members read and write it |
+| `h` | the file's home: the Folder whose members read and write it (the record also names a team as a home, which is not specified yet) |
 | `type` | what the file is, `osnova.project` ([TYPES.md](TYPES.md)); never changed |
 | `title` | its title; absent on a delete |
 | `op` | `create`, `update`, `delete` or `restore` (NIP-AR's `move` is refused, below) |
@@ -1828,8 +1837,9 @@ instead of moving it`, and NIP-11 says so (`"moves": false`). Listing it in
 another Folder works, by `o` (§3.3), and does not change who reads it. Who reads
 a moved file waits for the navigation rework's access call. When a project
 moves to an artifact, its home is the Folder that lists it; one listed in none
-lives in the Company Folder, Estiva HQ, as does a new project made with no
-Folder (Miky, 2026-10-29).
+lives in the workspace's Company Folder, the one every member reads, as does a
+new project made with no Folder (Miky, 2026-10-29). Estiva's is Estiva HQ; how
+an app finds a workspace's Company Folder is specified with the move.
 
 **Archive, delete, restore and removal for good** are saves and one admin
 action (§6.5).
@@ -2821,7 +2831,7 @@ throwaway relay or a fake query.
 | C14 | **Deletion left to the relay.** After the author's `kind:5`, the next read no longer holds the message, and the app shows nothing for it from local state. A non-author's `kind:5` is refused and the refusal is shown in the relay's words. Edit and Delete are offered only on the viewer's own message — not on another person's or an agent's (§6.5, 2026-10-06) |
 | C15 | **Attachment fold.** An edit carrying `imeta` replaces the message's set. A later edit with none leaves the message with no files. An edit carrying one file on a message with two leaves one (§6.8) |
 | C16 | **Reply shape.** A reply to a comment is a `kind:1111` with the comment's `A`/`K`/`P`, `e`/`k`/`p` naming the top-level comment, the comment's `h`, and no lowercase `a` for the object. A reply to a comment carrying a `block` copies its `block` and `quote` verbatim, before the `h` (§13.6). A reply read back threads under that comment in every conforming app (§6.4) |
-| C17 | **Membership fold.** The file's author is a member from the earliest root version (for a file kept as an artifact, the signer of its first save, §11.8; its membership changes are targeted by `o`). Writing in the stream, a body mention, an assignee change carrying `["p", P]`, and `member:<P>`=`true` by anyone each make the person a member. A comment's `p` tag alone does not, nor an assignee change without a `p`, nor an unassign, nor a `kind:9` with an `a`. An edit of the root after the author left does not re-join them. A `member:<P>`=`false` signed by someone else is ignored. One signed by `P` ends membership until a later trigger, and member-since is then that trigger's second. Two changes inside one second order by `ts` (§11.8) |
+| C17 | **Membership fold.** The file's author is a member from the earliest root version (for a file kept as an artifact, the signer of its first save, §11.8; its membership changes are targeted by `o`, and one whose `h` is not the file's home is ignored). Writing in the stream, a body mention, an assignee change carrying `["p", P]`, and `member:<P>`=`true` by anyone each make the person a member. A comment's `p` tag alone does not, nor an assignee change without a `p`, nor an unassign, nor a `kind:9` with an `a`. An edit of the root after the author left does not re-join them. A `member:<P>`=`false` signed by someone else is ignored. One signed by `P` ends membership until a later trigger, and member-since is then that trigger's second. Two changes inside one second order by `ts` (§11.8) |
 | C18 | **Unread for a member.** Someone mentioned for the first time on a year-old file has one unread message, the mention. The person's own messages are never unread. A reply is read once its thread's marker or the reply floor passes it, or the file's marker passes it and it is at or before T0; the channel's marker never reads a file. A muted file shows only the messages that mention the person (§11.3, §11.8) |
 | C19 | **Urgent mention.** A message urgent for `P` carries `["urgent", P]` and `["p", P]` and names `P` in its body as published as an ordinary reference. It is urgent for `P` and for nobody else it names. An `urgent` tag for a person the body does not name is not urgent. An app that does not draw urgency renders it as an ordinary mention (§13.1) |
 | C20 | **Card fold.** A message with `["embed", V, "compact"]` whose body names `V` draws `V`'s row under it, and one with `detailed` its card. An edit with `["embed", V, "none"]` removes it and, with a byte-identical body, does not mark the message edited. A later edit with no `embed` leaves it removed. An `embed` for a value the folded body does not name draws nothing, and one for a value first named in an edit draws, with no `a` on the edit. With a `part` and an `embed` on the same address, the part wins. An unknown layout draws as `compact`. A reader that does not know `embed` draws the reference (§6.8, §13.6.2) |
@@ -3337,7 +3347,9 @@ D2), who is on the file stays beside it, not in its saves: the same
 its `h`. Adding a person never edits the file, and a leave is never a save by
 the leaver. **Created it** is the signer of the file's first save (`op`
 `create`), joining at that save's `created_at`, which no later save moves. A
-reader finds the membership changes by `#o`.
+reader finds the membership changes by `#o`, and ignores one whose first `h`
+is not the file's home, as §6.2 has a reader ignore a change filed in another
+Folder.
 
 #### A mention in a file's text
 
@@ -3651,7 +3663,8 @@ for a card under the message through an `embed` tag (§13.6.2).
 [a-file-is-named-by-its-id-in-a-capital-and-small-tag](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-file-is-named-by-its-id-in-a-capital-and-small-tag.md)).
 It has no address, so no `naddr`. A chip a person picks from `[` or Cmd+K
 inserts the app link form that carries only the file's id, never its title
-(Ship's `/#/project/<d>`), with `["o", <d>]` beside it (§6.4): someone who
+(for a project, Ship's `/#/project/<d>` once projects move; its route takes a
+`30850` address until then), with `["o", <d>]` beside it (§6.4): someone who
 cannot open the file learns nothing from the message, and a rename leaves
 nothing stale. A pasted link stays as the person pasted it (C25). A type whose
 app publishes no link form has no chip in text.

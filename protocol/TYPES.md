@@ -22,8 +22,8 @@ Record:
 ## `osnova.project`
 
 A project: what a team is working toward, the issues under it, and who leads
-it. Kept as an artifact since ALO-2 (2026-10-30); until Ship moves its
-projects, a project is still the `30850` of [SPEC §6.1](SPEC.md).
+it. Defined 2026-10-30; until Ship moves its projects, a project is still the
+`30850` of [SPEC §6.1](SPEC.md).
 
 | field | tag | value |
 | --- | --- | --- |
@@ -36,7 +36,8 @@ projects, a project is still the `30850` of [SPEC §6.1](SPEC.md).
 | text | `content` | the project's description |
 
 Its home (`h`) is the Folder that lists it; a project listed in none lives in
-the Company Folder, Estiva HQ, as does a new one made with no Folder.
+the workspace's Company Folder (Estiva's is Estiva HQ), as does a new one made
+with no Folder.
 
 How a project's text is encoded in `content`, and which apps open it, are
 settled when Ship moves its projects (the next milestone of the project "A load
