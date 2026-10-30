@@ -28,12 +28,27 @@ it. Defined 2026-10-30; until Ship moves its projects, a project is still the
 | field | tag | value |
 | --- | --- | --- |
 | title | `title` | the project's name; absent on a delete save |
-| status | `status` | `planned`, `in_progress`, `completed` or `cancelled`, as Ship writes a project's status today |
+| status | `status` | the company's own status; Ship's defaults are `planned`, `in_progress`, `completed` and `cancelled`, below |
 | lead | `p` | the lead's pubkey, 64 lowercase hex; absent when there is none |
 | key | `key` | 3–6 letters `A`–`Z`, the prefix of its issues' refs ([SPEC §6.1](SPEC.md)) |
 | summary | `summary` | one or two sentences of plain text, about 240 characters ([SPEC §6.12](SPEC.md)) |
 | archived | `archived` | `true` while it is archived; absent otherwise ([SPEC §6.5](SPEC.md)) |
 | text | `content` | the project's description |
+
+**Its statuses are each company's own**, starting from its tracker's defaults
+([each-company-defines-its-own-statuses](https://github.com/estiva-app/estiva-docs/blob/main/decisions/each-company-defines-its-own-statuses.md),
+Miky, 2026-10-30). What every app shares is what a status means: one of the
+four stages of [SPEC §7.4](SPEC.md). Ship's defaults:
+
+| status | label | stage |
+| --- | --- | --- |
+| `planned` | Planned | `open` |
+| `in_progress` | In Progress | `started` |
+| `completed` | Completed | `done` |
+| `cancelled` | Cancelled | `dropped` |
+
+Where a company keeps its list, and how a list read without the text counts a
+status by its stage, are settled when Ship moves its projects.
 
 Its home (`h`) is the Folder that lists it; a project listed in none lives in
 the workspace's Company Folder (Estiva's is Estiva HQ), as does a new one made
