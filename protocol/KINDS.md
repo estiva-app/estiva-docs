@@ -52,7 +52,7 @@ nobody held the whole list.
 
 | Kind | Name | Notes |
 | --- | --- | --- |
-| `30852` | Named first record | **Reserved 2026-10-30; no relay accepts it yet.** The first record of every type that is not one of Osnova's four base types (`30840`, `30842`, `30850`, `30851`): `d`, exactly one `k` naming the type ([TYPES.md](TYPES.md)), `h` always (never `buzz-channel`), one `["set", <field>, <value>]` per first value, empty `content`. Addressable, written once. The relay refuses no `k`, two, or one naming a base type. Changes are `1851`s naming it by `a` and `O`, each with `prev` from the start (SPEC §6.2). Ask with `"kinds": [30852]` and `#k` |
+| `30852` | Named first record | **Reserved 2026-10-30; no relay accepts it yet.** The first record of every type that is not one of Osnova's four base types (`30840`, `30842`, `30850`, `30851`): `d`, exactly one `k` naming the type ([TYPES.md](TYPES.md)), `h` always (never `buzz-channel`), one `["set", <field>, <value>]` per first value, empty `content`. Addressable, written once. The relay refuses no `k`, two, or one naming a base type. Changes are `1851`s naming it by `a` and `O`, each but a `member:<P>` with `prev` from the start (SPEC §6.2). Ask with `"kinds": [30852]` and `#k` |
 
 ### Buzz's artifacts — upstream NIP-AR, not files
 

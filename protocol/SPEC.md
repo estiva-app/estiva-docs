@@ -537,7 +537,8 @@ and the newest change of each field but the text (§6.13).
 
 A root event carries **immutable facts only**. It MUST NOT carry any field that
 somebody other than its author may need to set. It is the file's **first
-record**, and from the switch (§6.13) it is written once.
+record**, and from **the switch** — the moment a relay advertises `files` in
+its NIP-11 (§6.13) — it is written once.
 
 NIP-33 addresses are `(pubkey, kind, d)`, so only an author can replace their own
 event. Putting a mutable field on the root makes it editable by its creator
@@ -578,8 +579,8 @@ four are only ever written on their own kinds. Its address is
 id, as for the four (§6.2). **A request for files of a named type names the
 kind too**: `{"kinds": [30852], "#k": ["acme.invoice"], "#h": [<folder>]}`;
 a `#k` alone also matches unrelated kinds that carry a `k` (a comment's, §6.4).
-Every change to a `30852` names the change it follows from the start (§6.2):
-the kind has no older events.
+Every change to a `30852` but a `member:<P>` names the change it follows from
+the start (§6.2): the kind has no older events.
 
 A type joins the base when the relay builds it in and the public directory
 lists it; no file moves and nothing is re-signed. Until §7 can name a type, a
@@ -592,8 +593,9 @@ types to the relay.
 [a-files-id-is-unique-across-every-kind](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-files-id-is-unique-across-every-kind.md)).
 The relay refuses a first record whose `d` another file already holds, by any
 author and under any of the five kinds, deleted ones included, and one whose
-`d` a channel holds (a Folder, a DM or a conversation space). An app that is
-refused makes a new id and tries again without telling the person.
+`d` a channel holds (a Folder, a DM or a conversation space); and it refuses a
+new channel whose id a file already holds, deleted ones included. An app that
+is refused makes a new id and tries again without telling the person.
 
 **Written once.** From the switch (§6.13) the relay refuses a second, different
 event at a first record's address: the first record of a `30840`, `30842`,
@@ -703,14 +705,15 @@ and
 - **One field**: `["field", <name>]`, `["value", <value>]` and
   `["prev", <event id>]`, the id of the change it follows for that field.
 - **Several fields of one file**: one `["set", <name>, <value>, <prev>]` per
-  field, and no `field` or `value`. A change carries one form, never both,
-  and names no field twice. On a change that sets `description`, its
+  field, and no `field` or `value`. A `set` leaves out its `<prev>` only
+  where a one-field change may leave out its `prev` (below). A change carries
+  one form, never both, and names no field twice. On a change that sets `description`, its
   `content-format` and `imeta` belong to that field (§6.10, §13.4).
 - **A field's first change follows the first record**: its `prev` is the first
   record's event id (§6.1), not its `d`.
 - **Every writer SHOULD write `prev` on every change, on every type.** The relay
   refuses a change with no `prev` on the types its NIP-11 lists (§6.13) and on
-  every `30852`, and takes one without it on any other type, which then races
+  every `30852`, a `member:<P>` change excepted (below), and takes one without it on any other type, which then races
   as before this rule. A change whose `prev` is present is checked on every
   type.
 - **`member:<P>` is never in a `set` and needs no `prev`** (§11.8): who is on a
@@ -738,8 +741,7 @@ it was setting, and then:
   conflict to show: the later stands, and no one is asked (Miky, 2026-10-30);
 - **the text** (`description`): it merges its words onto the current text and
   sends the result. Different blocks merge without asking; only a block both
-  people changed asks the person, as a design made from a prototype will
-  show (record
+  people changed asks the person (record
   [every-file-is-an-artifact-the-relay-keeps-in-order](https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-file-is-an-artifact-the-relay-keeps-in-order.md),
   D4). An app MUST NOT answer the refusal by overwriting the current text;
 - **several fields**: it does both, field by field, and sends them again as one
@@ -868,7 +870,8 @@ addressable *record* are NIP-01's, where the later `created_at` and then the
 version (§6.1); a reader that holds two written before it takes NIP-01's.
 
 - **A field's first value is the first record's**: a base type's root tag
-  (§6.1's table, such as `title`, or `content` for `description`), or a
+  (§6.1's table, such as `title`; for `description`, a project's
+  `description` tag, then the root's `content`, §7.2), or a
   `30852`'s `set` for that field.
 - **A change that sets several fields** applies each `set` at the change's
   time, as if it were that many one-field changes at one moment. A reader that
@@ -1837,8 +1840,9 @@ through any app that signs `1851`, and a reader folds every such change.
 Anyone who may write in the file's Folder changes it with a `kind:1851` whose
 tags are, in order: `a` (the file), `["field", "description"]`, `value` (the
 whole §13.3 document), `h` (the file's own Folder, §6.2 — never the Folder an
-app opened it from), `["content-format", "estiva-blocks-1"]`, `ts`, then one
-`imeta` per attachment block (§13.4). A value written before block documents
+app opened it from), `["content-format", "estiva-blocks-1"]`, `ts`, `prev`
+(the text change it follows, §6.2), then one `imeta` per attachment block
+(§13.4); `O` goes after `a` as §6.2 orders it. A value written before block documents
 carries no `content-format` and is read by §13.4's rule.
 
 - **The author saves this way too, never by republishing the root.** A
@@ -2090,7 +2094,8 @@ From the moment it does — **the switch** — it writes no first record twice
 (§6.1), refuses a change filed in another Folder than its file's, one whose
 `a` and `O` disagree, and one whose `prev` is present and not its field's
 current change (§6.2). A type in `requires_prev`, and every `30852` type, is
-**kept in order**: a change with no `prev` is refused, and so is a `kind:5`
+**kept in order**: a change with no `prev` is refused (a `member:<P>` change
+excepted, §11.8), and so is a `kind:5`
 naming its first record or a change (§6.5). An app reads the list and never
 assumes it.
 
@@ -2100,9 +2105,8 @@ relay's NIP-AR support (`kind:45010`) stays for Buzz's own uses, agent and team
 settings, and is not how a file is kept.
 
 **Where it stands (2026-10-30).** No relay advertises `files` yet, and no app
-writes `prev` or `set`. Projects are the first type kept in order, in the
-project "A load stays the same size as edits pile up: projects"; Ship, Peek,
-Leaf and the agent follow this section then.
+writes `prev` or `set`. Projects are the first type kept in order; Ship, Peek,
+Leaf and the agent follow this section when they are.
 
 ### 6.14 A file's list of other files
 
@@ -3227,11 +3231,11 @@ throwaway relay or a fake query.
 | C29 | **A host-swapped address.** With kept shapes `https://a.example/issue/<slug>-<d>` (30851) and `https://a.example/#/issue/<d>` from a manifest on `a.example`, and only `https://b.example/document/<slug>-<d>` from one on `b.example`: a message written with `https://b.example/issue/<any>-<d of V>` keeps that URL in its body, carries `["a", V]`, draws as C21 places it, opens that URL, and `V` lists it as a mention. `https://c.example/issue/<any>-<d of V>`, with no kept shape on `c.example`; `http://b.example/issue/…` and `https://b.example:8443/issue/…`; and `https://b.example/#/issue/<d of V>` carry no tag and stay links. A manifest whose `web` is on `c.example` and that declares `urls` on `a.example` adds no shape and no origin. A manifest on `c.example` that declares `https://c.example/issue/<slug>-<d>` for kind `K`: on `b.example`, a `d` held under both `30851` and `K` names nothing and carries no tag; on `a.example`, the link is `V` (§7.7, §13.1) |
 | C30 | *Retired 2026-10-30*, with the artifact shape it tested: a list now returns signed events (§6.13), so there is no row to build a change from |
 | C31 | **A topic's list** (*added 2026-10-30*, §6.14). An entry the app writes carries `a`, `O` (the topic's `d`), `field` `lists:<d>`, `value`, `h` (the topic root's), `ts`, `["o", <d>]`, in that order, and no `p`. Of two entries for one topic and file inside one second, the later by `ts` counts; a file is listed only by `true`, and `"1"` or an empty value lists nothing. Ignored, without hiding an older good entry: one whose `o` is not the field's `<d>` (with `o` naming it second, it counts); one whose `O` is not its `a`'s `d`; one listing the topic's own `d`; one whose `h` is not the topic root's. Which topics list a file names the topic for `#o`; a file's own changes by `#O` hold no entry listing it. A listed id held by two files, or only by a Folder's `39000`, is not drawn and not counted |
-| C32 | **A change names the one it follows** (*added 2026-10-30*, §6.2). On a relay advertising `files`, a project's `status` change with `prev` its current `status` change is accepted; the same change with no `prev` is refused; a `title` change on an issue (not in `requires_prev`) with no `prev` is accepted. A `30852` change with no `prev` is refused |
-| C33 | **A field's first change** (§6.2). The first `status` change on a new project names the first record's event id as `prev` and is accepted; one naming the project's `d` instead is refused. A second first record at the same address, by its author, is refused; the identical event sent again is a `duplicate:` (§6.1) |
-| C34 | **A several-field change** (§6.2, §6.3). A change with `["set", "title", T, p1]` and `["set", "status", "done", p2]`, `O`, `a`, `h` and `["stage", "status", "done"]`, where `p1` and `p2` are current, is accepted, and every conforming reader folds both fields at its time and counts it `done`. One also carrying `field`, or naming `title` twice, is refused. A reader that does not know `set` shows the older title and status, never a mix |
-| C35 | **A stale `prev`** (§6.2). Two apps read a project's `status` at change S; the first sets `started` naming S and is accepted, the second sets `done` naming S and is refused with `conflict:`; it sends `done` again naming the first's id and is accepted, and nobody is asked. A several-field change whose `status` names S and whose `title` is current is refused whole: its title is not changed. Two `description` saves naming the same change: the second is refused, and its app merges and sends again, never overwriting |
-| C36 | **A change that sorts before its `prev`** (§6.2, §6.3). A change whose `created_at` is a second before its `prev`'s is refused; stamped 1 ms after its `prev`, with `ts` and `created_at` agreeing to the second, it is accepted and folds after it. A change whose `h` is not its file's Folder, or whose `a` is not the address of the file its `O` names, is refused (§6.2) |
+| C35 | **A change names the one it follows** (*added 2026-10-30*, §6.2). On a relay advertising `files`, a project's `status` change with `prev` its current `status` change is accepted; the same change with no `prev` is refused; a `title` change on an issue (not in `requires_prev`) with no `prev` is accepted. A `30852` change with no `prev` is refused, and a `member:<P>` change with none, on a project or a `30852`, is accepted |
+| C36 | **A field's first change** (§6.2). The first `status` change on a new project names the first record's event id as `prev` and is accepted; one naming the project's `d` instead is refused. A second first record at the same address, by its author, is refused; the identical event sent again is a `duplicate:` (§6.1) |
+| C37 | **A several-field change** (§6.2, §6.3). A change with `["set", "title", T, p1]` and `["set", "status", "done", p2]`, `O`, `a`, `h` and `["stage", "status", "done"]`, where `p1` and `p2` are current, is accepted, and every conforming reader folds both fields at its time and counts it `done`. One also carrying `field`, or naming `title` twice, is refused. A reader that does not know `set` shows the older title and status, never a mix |
+| C38 | **A stale `prev`** (§6.2). Two apps read a project's `status` at change S; the first sets `started` naming S and is accepted, the second sets `done` naming S and is refused with `conflict:`; it sends `done` again naming the first's id and is accepted, and nobody is asked. A several-field change whose `status` names S and whose `title` is current is refused whole: its title is not changed. Two `description` saves naming the same change: the second is refused, and its app merges and sends again, never overwriting |
+| C39 | **A change that sorts before its `prev`** (§6.2, §6.3). A change whose `created_at` is a second before its `prev`'s is refused; stamped 1 ms after its `prev`, with `ts` and `created_at` agreeing to the second, it is accepted and folds after it. A change whose `h` is not its file's Folder, or whose `a` is not the address of the file its `O` names, is refused (§6.2) |
 
 C11 and C12 both have a failure that is invisible from the app that has it.
 A merged mention looks like somebody said it here. A forged edit looks like an

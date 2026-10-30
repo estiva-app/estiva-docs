@@ -53,7 +53,7 @@ it. Its first record is a `kind:30850` ([SPEC §6.1](SPEC.md)).
 | `summary` | `summary` | one or two sentences of plain text, about 240 characters ([SPEC §6.12](SPEC.md)) |
 | `archived` | — | `true` while it is archived; empty otherwise ([SPEC §6.5](SPEC.md)) |
 | `deleted` | — | `true` while it is deleted; empty otherwise ([SPEC §6.5](SPEC.md)) |
-| `description` | `content` | the project's text ([SPEC §6.10](SPEC.md)) |
+| `description` | `description`, else `content` | the project's text ([SPEC §6.10](SPEC.md)) |
 
 **Its statuses are each company's own**, starting from its tracker's defaults
 ([each-company-defines-its-own-statuses](https://github.com/estiva-app/estiva-docs/blob/main/decisions/each-company-defines-its-own-statuses.md),
@@ -90,8 +90,8 @@ rejected alternatives):
 - **A NIP-MP project is replaced whole, by its author.** A `kind:30621` is
   addressable, so only the person who wrote it can change it, and every change
   carries the whole project. That is the shape [SPEC §6.1](SPEC.md) rules out
-  for anything several people change, and the whole-file shape turned down on
-  30 Oct.
+  for anything several people change, and the whole-file shape the record
+  above turned down.
 
 Git itself, as the store for a file, splits the file across a second store with
 its own access, beside the relay's. A project or an issue is its fields on the
