@@ -181,6 +181,7 @@ properties and its history.
 - [One change may set several fields of a file, and the relay takes it whole or refuses it whole](one-change-may-set-several-fields-taken-whole-or-refused-whole.md) — Accepted, 2026-10-30
 - [A change names the file it changes the way a comment names the file it is on, and every other file it points at the way a mention does](a-change-is-about-its-file-as-a-comment-is.md) — Accepted, 2026-10-30
 - [A topic keeps its own list of files, one entry per file by its id; a file stays in its Folder's tree and can be in many topics](a-topic-keeps-its-own-list-of-files.md) — Accepted, 2026-10-30
+- [A file can say that only the workspace's owners and admins write it, and the relay keeps to that, for any type](a-file-can-say-only-admins-write-it-and-the-relay-keeps-to-it.md) — Accepted, 2026-10-30
 
 ## Documents
 

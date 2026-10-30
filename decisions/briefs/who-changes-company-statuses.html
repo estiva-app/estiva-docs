@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who changes company statuses</title>
+<style>
+:root {
+  --bg: #fbfaf7; --ink: #1d1d1f; --muted: #5d5d66; --line: #8e8e98; --rule: #dcdad3;
+  --box: #efeee9; --card: #ffffff; --fold: #f3f1ea; --gate: #e6edfb; --team: #eaf4ec;
+  --accent: #2457c5; --warn: #b3401f; --ok: #2a7a46; --chip: #dfe6f6; --pick: #f2f6ff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17171a; --ink: #ececef; --muted: #a8a8b2; --line: #74747f; --rule: #34343b;
+    --box: #26262b; --card: #1f1f23; --fold: #222226; --gate: #1d2a45; --team: #1d3324;
+    --accent: #93b2ff; --warn: #ff9e80; --ok: #82d69e; --chip: #2b3553; --pick: #1c2338;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17171a; --ink: #ececef; --muted: #a8a8b2; --line: #74747f; --rule: #34343b;
+  --box: #26262b; --card: #1f1f23; --fold: #222226; --gate: #1d2a45; --team: #1d3324;
+  --accent: #93b2ff; --warn: #ff9e80; --ok: #82d69e; --chip: #2b3553; --pick: #1c2338;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0 auto; max-width: 760px; padding: 24px 16px 64px;
+  background: var(--bg); color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+h1 { font-size: 28px; line-height: 1.2; margin: 4px 0 4px; }
+h2 { font-size: 20px; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--rule); }
+h3 { font-size: 17px; margin: 22px 0 6px; }
+p, li { max-width: 70ch; }
+ul { padding-left: 20px; }
+li { margin: 3px 0; }
+.kicker { color: var(--muted); font-size: 14px; margin: 0; }
+.question { font-size: 19px; line-height: 1.45; font-weight: 600; }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+.door { background: var(--box); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.note { background: var(--box); border-left: 4px solid var(--line); padding: 10px 14px; border-radius: 6px; }
+.pick { background: var(--pick); border-left: 4px solid var(--accent); padding: 10px 14px; border-radius: 6px; }
+.opt { border: 1px solid var(--rule); border-radius: 10px; padding: 4px 16px 10px; margin: 14px 0; background: var(--card); }
+.opt h3 { margin-top: 12px; }
+.opt.rec { border-color: var(--accent); }
+.tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); vertical-align: 2px; margin-left: 6px; }
+.tablewrap { overflow-x: auto; margin: 10px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.4; min-width: 560px; }
+th, td { text-align: left; vertical-align: top; padding: 7px 8px; border-bottom: 1px solid var(--rule); }
+th { font-size: 13px; color: var(--muted); font-weight: 600; }
+td:first-child { font-weight: 600; min-width: 7.5em; }
+figure { margin: 18px 0 24px; overflow-x: auto; }
+figure svg { width: 100%; min-width: 600px; height: auto; display: block; }
+figcaption { font-size: 14px; color: var(--muted); margin-top: 6px; }
+figcaption b { color: var(--ink); }
+code { font-size: 13px; background: var(--box); padding: 0 4px; border-radius: 4px; }
+.gate { fill: var(--gate); stroke: var(--accent); stroke-width: 1.5; }
+.team { fill: var(--team); stroke: var(--ok); stroke-width: 1.3; }
+.fold { fill: var(--fold); stroke: var(--line); stroke-width: 1.2; }
+.file { fill: var(--card); stroke: var(--line); stroke-width: 1.2; }
+.bad { fill: var(--card); stroke: var(--warn); stroke-width: 1.4; }
+.dash { stroke-dasharray: 6 4; }
+.t { fill: var(--ink); font-size: 13px; }
+.b { font-weight: 700; }
+.ts { fill: var(--muted); font-size: 12px; }
+.ta { fill: var(--accent); font-size: 12px; font-weight: 600; }
+.tw { fill: var(--warn); font-size: 12px; font-weight: 600; }
+.tok { fill: var(--ok); font-size: 12px; font-weight: 600; }
+.arrow { fill: none; stroke: var(--ink); stroke-width: 1.3; }
+.arrowx { fill: none; stroke: var(--warn); stroke-width: 1.3; stroke-dasharray: 4 3; }
+.head { fill: var(--ink); }
+.headx { fill: var(--warn); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="ahx" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="headx" d="M0,0 L10,5 L0,10 z"/></marker>
+  </defs>
+</svg>
+
+<p class="kicker">Decision brief · project "Each company sets its own statuses" · 30 Oct 2026 · for Miky</p>
+<h1>Who changes a company's statuses</h1>
+<p class="question">You decided that only the workspace's owners and admins change a company's statuses. What stops anyone else, and who checks it: every app, or the relay?</p>
+
+<h2>Today</h2>
+<p>Statuses are written in Ship's code. Nobody can change them. On 30 Oct you decided that each company keeps its own statuses in one file per type (one for projects, one for issues) in its Company Folder. Only the workspace's owners and admins change that file. A change from anyone else, including an app's key, should change nothing anyone sees. The record left one thing to this project: what enforces that.</p>
+<p>Two facts shape the answer:</p>
+<ul>
+<li><b>Every member may write in the Company Folder.</b> That is its rule today, so this file would be the first thing in it that only some people may change.</li>
+<li><b>Every member can already see who is an admin.</b> The relay publishes its member list with each person's role, and every app reads that list for its <code>@</code> menu.</li>
+</ul>
+
+<figure>
+<svg viewBox="0 0 720 200" role="img">
+<title>Today: any member writes in the Company Folder, and the relay stores it. Apps read the Folder. The relay's member list, with each person's role, is readable by every member.</title>
+<rect class="file" x="20" y="30" width="130" height="50" rx="8"/><text class="t b" x="34" y="52">An admin</text><text class="ts" x="34" y="70">Miky</text>
+<rect class="file" x="20" y="110" width="130" height="50" rx="8"/><text class="t b" x="34" y="132">A member</text><text class="ts" x="34" y="150">Katerina, QA-1</text>
+<rect class="gate" x="220" y="40" width="170" height="110" rx="10"/><text class="t b" x="236" y="64">The relay</text><text class="ts" x="236" y="84">checks: a member?</text><text class="ts" x="236" y="102">stores it in the</text><text class="ts" x="236" y="118">Company Folder</text>
+<rect class="team" x="460" y="30" width="240" height="70" rx="10"/><text class="t b" x="476" y="54">Company Folder</text><text class="ts" x="476" y="74">any member writes here</text>
+<rect class="fold" x="460" y="120" width="240" height="56" rx="10"/><text class="t b" x="476" y="144">Member list, with roles</text><text class="ts" x="476" y="162">every member can read it</text>
+<path class="arrow" d="M150,55 L216,75" marker-end="url(#ah)"/>
+<path class="arrow" d="M150,135 L216,115" marker-end="url(#ah)"/>
+<path class="arrow" d="M390,80 L456,68" marker-end="url(#ah)"/>
+</svg>
+<figcaption><b>Today.</b> The relay checks only that you are a member. Nothing here knows about a statuses file yet.</figcaption>
+</figure>
+
+<h2>Why it reaches beyond this project</h2>
+<p>This is the first company setting that only admins may change, so the answer is the rule for every setting that follows: labels, priorities, a company's own columns, and settings an outside company's apps keep. It decides whether "only admins" is something every app has to get right, or something the relay guarantees once, for every app.</p>
+<div class="door"><b>Mostly one-way.</b> Whatever the files carry about who may write them stays on the relay, and every app learns to read it. Changing the rule later means re-checking every settings file already written. A rule that only lives in apps (option A) is cheaper to change, but the changes it ignored stay on the relay for good.</div>
+
+<h2>Options</h2>
+
+<div class="opt">
+<h3>A · Do less: every app ignores changes from non-admins</h3>
+<p>The relay stores anyone's change, as it does today. Each app checks the member list and draws only what owners and admins wrote.</p>
+<figure>
+<svg viewBox="0 0 720 170" role="img">
+<title>Option A: the relay stores both the admin's and the member's change. Every app reads both and drops the member's, using the member list.</title>
+<rect class="file" x="20" y="20" width="120" height="44" rx="8"/><text class="t b" x="34" y="47">An admin</text>
+<rect class="file" x="20" y="96" width="120" height="44" rx="8"/><text class="t b" x="34" y="123">A member</text>
+<rect class="gate" x="200" y="30" width="150" height="100" rx="10"/><text class="t b" x="216" y="54">The relay</text><text class="ts" x="216" y="74">stores both</text>
+<rect class="file" x="410" y="30" width="130" height="100" rx="8"/><text class="t b" x="424" y="54">Statuses file</text><text class="ts" x="424" y="74">admin's change</text><text class="tw" x="424" y="94">member's change</text><text class="ts" x="424" y="112">both kept, in order</text>
+<rect class="fold" x="580" y="30" width="120" height="100" rx="10"/><text class="t b" x="594" y="54">Every app</text><text class="ts" x="594" y="74">checks roles,</text><text class="ts" x="594" y="92">drops the</text><text class="ts" x="594" y="110">member's</text>
+<path class="arrow" d="M140,42 L196,62" marker-end="url(#ah)"/>
+<path class="arrow" d="M140,118 L196,98" marker-end="url(#ah)"/>
+<path class="arrow" d="M350,80 L406,80" marker-end="url(#ah)"/>
+<path class="arrow" d="M540,80 L576,80" marker-end="url(#ah)"/>
+</svg>
+</figure>
+<ul>
+<li><b>What you and Katerina see.</b> If Katerina changes the statuses through some other app, nothing changes in Ship, Peek or Leaf. An app that forgot the check would show her change.</li>
+<li><b>An outside company</b> builds the check into each of its apps and gets it right in each one.</li>
+<li><b>What could go wrong.</b>
+  <ul>
+  <li>The relay keeps the changes in order, and each change names the one before it. An admin's next change then follows a change every app ignores, so every app needs the same rule for skipping over it.</li>
+  <li>The member list holds only today's roles. When an admin is demoted, apps either drop everything they ever wrote, so the statuses go back, or need the old roles, which nobody keeps.</li>
+  <li>Finding the file by an id made from its type does not work: any member can create a file with that id first, and the relay then refuses the admins' one. Apps would have to search for it instead, and skip files that members made.</li>
+  </ul></li>
+</ul>
+</div>
+
+<div class="opt">
+<h3>B · The relay refuses non-admins' changes to a statuses file</h3>
+<p>The relay knows the statuses type and takes a change to it only from an owner or an admin.</p>
+<figure>
+<svg viewBox="0 0 720 150" role="img">
+<title>Option B: the relay has a rule for the statuses type. It takes the admin's change and refuses the member's, because of the file's type.</title>
+<rect class="file" x="20" y="20" width="120" height="44" rx="8"/><text class="t b" x="34" y="47">An admin</text>
+<rect class="file" x="20" y="90" width="120" height="44" rx="8"/><text class="t b" x="34" y="117">A member</text>
+<rect class="gate" x="200" y="24" width="210" height="104" rx="10"/><text class="t b" x="216" y="48">The relay</text><text class="ts" x="216" y="68">a rule for this one type:</text><text class="ts" x="216" y="86">statuses → admins only</text><text class="tw" x="216" y="110">refuses because of the type</text>
+<rect class="file" x="470" y="40" width="230" height="64" rx="8"/><text class="t b" x="484" y="64">Statuses file</text><text class="ts" x="484" y="84">only admins' changes</text>
+<path class="arrow" d="M140,42 L196,56" marker-end="url(#ah)"/>
+<path class="arrowx" d="M140,112 L196,100" marker-end="url(#ahx)"/>
+<path class="arrow" d="M410,72 L466,72" marker-end="url(#ah)"/>
+</svg>
+</figure>
+<ul>
+<li><b>What you and Katerina see.</b> If Katerina tries to change the statuses, the relay says no and her app tells her why. Every app shows the same thing.</li>
+<li><b>An outside company</b> gets the guarantee for our statuses, but each setting of its own needs a relay release.</li>
+<li><b>What could go wrong.</b> This goes against <i>a type's declaration changes how files are found, never what is accepted</i> (Accepted 30 Oct), which says the relay never refuses a save because of its type. So it means superseding that record, and every new settings type waits for relay code.</li>
+</ul>
+</div>
+
+<div class="opt rec">
+<h3>C · A file can say "only admins write here", and the relay keeps to it <span class="tag">Recommended</span></h3>
+<p>Any file, of any type, can be created with a mark saying only the workspace's owners and admins write it. The relay creates a marked file only for an owner or an admin, then takes changes to it only from them. The company's statuses file is created with the mark. Apps find it by its type and the mark, in the Company Folder, and skip any copy without the mark.</p>
+<figure>
+<svg viewBox="0 0 720 170" role="img">
+<title>Option C: the statuses file carries an admins-only mark on its first record. The relay checks the mark, which is the same rule for any type, and refuses the member's change. Apps find the file by its type and the mark.</title>
+<rect class="file" x="20" y="20" width="120" height="44" rx="8"/><text class="t b" x="34" y="47">An admin</text>
+<rect class="file" x="20" y="96" width="120" height="44" rx="8"/><text class="t b" x="34" y="123">A member</text>
+<rect class="gate" x="200" y="24" width="210" height="116" rx="10"/><text class="t b" x="216" y="48">The relay</text><text class="ts" x="216" y="68">the right to write there,</text><text class="ts" x="216" y="86">same rule for every type:</text><text class="ts" x="216" y="104">marked → owners, admins</text><text class="tw" x="216" y="126">refuses: not an admin</text>
+<rect class="file" x="470" y="24" width="230" height="80" rx="8"/><text class="t b" x="484" y="48">Statuses file</text><text class="ta" x="484" y="68">marked: only admins write</text><text class="ts" x="484" y="88">only admins' changes</text>
+<rect class="fold" x="470" y="116" width="230" height="40" rx="10"/><text class="ts" x="484" y="141">apps find it by type + mark</text>
+<path class="arrow" d="M140,42 L196,56" marker-end="url(#ah)"/>
+<path class="arrowx" d="M140,118 L196,112" marker-end="url(#ahx)"/>
+<path class="arrow" d="M410,64 L466,64" marker-end="url(#ah)"/>
+</svg>
+</figure>
+<ul>
+<li><b>What you and Katerina see.</b> The same as B: if Katerina tries to change the statuses, the relay says no, and every app shows the same statuses.</li>
+<li><b>An outside company</b> gets "only admins write here" for any settings file of its own, with no relay release and no per-app checks. Upstream Buzz has no such mark unless we propose it.</li>
+<li><b>What it locks in.</b> A new right that every Estiva relay enforces, written on the file's first record for good. Later it can grow into other groups, such as "only this team", without changing the shape.</li>
+<li><b>What could go wrong.</b>
+  <ul>
+  <li>A member can still create an unmarked file of the same type. Apps skip it because it has no mark, so it changes nothing anyone sees.</li>
+  <li>Two admins could each create a marked file; the SPEC says the oldest one counts.</li>
+  <li>A demoted admin's earlier changes stand, because the relay checked them when they were written.</li>
+  <li>The relay rule is new work, and our apps read the file only once it exists, which is after the admin editor's project.</li>
+  </ul></li>
+</ul>
+</div>
+
+<h2>Trade-offs</h2>
+<div class="tablewrap">
+<table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td>A · apps ignore</td><td>A rule every app must repeat; ignored changes still in the file's order</td><td>The same, if every app gets it right; a demoted admin's statuses revert</td><td>Builds the check into every app</td><td>Low for the rule; ignored changes stay on the relay</td><td>Low: one shared check in the packages</td></tr>
+<tr><td>B · relay, by type</td><td>The relay judges by type; supersedes an Accepted record</td><td>Refused at once, the same everywhere</td><td>Our statuses only; each setting of its own waits for a relay release</td><td>Medium: rules per type</td><td>Medium: relay rule per type</td></tr>
+<tr><td>C · admins-only mark</td><td>One right on the file, the same for every type; fits "the right to write there"</td><td>Refused at once, the same everywhere</td><td>Gets it for any settings file, free</td><td>High: the mark stays on files for good</td><td>Medium: one relay rule, a create check, and the SPEC</td></tr>
+</table>
+</div>
+
+<h2>How others do it</h2>
+<ul>
+<li><b>Matrix</b>: each room says which power level may send each kind of room setting, and every server enforces it. This is C's shape, kept per room. <span class="muted">(From memory, not checked today.)</span></li>
+<li><b>Notion</b>: changing a database's properties, such as a select's options, takes edit rights on that database. That is a right carried by the object itself, as in C. <span class="muted">(From memory, not checked today.)</span></li>
+<li><b>Jira</b>: in a team-managed space, the space's admins edit its statuses. <b>Linear</b> sets project statuses for the whole workspace; we have not confirmed who may edit them. Both enforce it on their own server, so only one app ever has to get it right.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<div class="pick"><b>C: a file can say "only admins write here", and the relay keeps to it.</b> "Only admins change the company's statuses" is a promise about the company's data, so it should hold whichever app someone uses, including one we did not build. The relay can keep that promise once, with one rule that is the same for every type, which is exactly the kind of refusal the Accepted record allows. A spreads the promise across every app and leaves changes in the file that every app has to agree to skip. B keeps it, but only for our type, and against a record you accepted today. C also gives an outside company the same guarantee for any setting of its own.</div>
+
+<h2>Checked</h2>
+<ul class="small">
+<li><b>Every member can read who is an admin.</b> The relay's member list carries each member's role, in our relay and in upstream Buzz (<code>crates/buzz-db/src/store/relay_members.rs</code>, <code>["member", key, role]</code>). Read as a member on production on 30 Oct. The shared people list reads the same list (<code>packages/conversation/src/people.ts</code>). The relay's separate HTTP member read is admins-only (<code>crates/buzz-relay/src/api/members.rs</code>), but no option needs it. The pre-review said "the list names members only", and that is wrong.</li>
+<li><b>Taking a file's id first.</b> SPEC "One id, one file": the relay refuses a new file whose id is already held, by any author (<code>protocol/SPEC.md</code> ~1829, checked on production 30 Oct). So any file found by an id made from its type can be taken first by any member. C avoids this by finding the file by its mark, not by such an id.</li>
+<li><b>The relay never refuses by type.</b> Record <i>a-types-declaration-changes-how-files-are-found-never-what-is-accepted</i>, Decision: "The relay never refuses a save because of its type", while "the right to write there" still refuses (estiva-docs <code>origin/main</code>).</li>
+<li><b>Any member writes in the Company Folder</b>, and "admins" means the relay roster's owners and admins: record <i>a-companys-statuses-are-its-own-layer-of-a-types-properties</i> (estiva-docs#358, waiting on your merge).</li><li><b>Not checked:</b> Matrix's exact rule, and who may edit Linear's statuses.</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="small muted">Member list: NIP-43 <code>kind:13534</code>, relay-signed, <code>member</code> tags with a role. C, as a sketch: a <code>["writers","admins"]</code> tag on the file's first record (its create), checked by the relay against <code>relay_members</code> on create and on every change. Readers find the file by <code>#t</code>/type plus the mark in the Company Folder (SPEC §6.13, being replaced by the ALO project), and the oldest marked file wins. Records: a-types-declaration-changes-how-files-are-found-never-what-is-accepted, a-files-id-is-unique-across-every-kind, a-companys-statuses-are-its-own-layer-of-a-types-properties. Project: "Each company sets its own statuses", milestone 1 (SPEC). Pre-review: prereview-protocol D2, 30 Oct.</p>
+</body>
+</html>
