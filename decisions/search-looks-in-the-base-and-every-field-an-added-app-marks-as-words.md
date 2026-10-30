@@ -2,7 +2,7 @@
 
 - Date: 2026-10-30
 - Status: Accepted
-- Decided by: Miky, in the shaping session for "Apps declare their types to the relay" (2026-10-30), on the brief "Statuses and Declarations", call 2: A, every added app's listing together; then, asked again because the brief had left out the base-types record merged the same afternoon, "A, inside the base", as recommended
+- Decided by: Miky, in the shaping session for "Each company sets its own statuses" (then titled "Apps declare their types to the relay", 2026-10-30), on the brief "Statuses and Declarations", call 2: A, every added app's listing together; then, asked again because the brief had left out the base-types record merged the same afternoon, "A, inside the base", as recommended
 - Area: Search
 
 ## Who it affects
@@ -54,8 +54,8 @@ Estiva.
   added app marks. A listing from an app the workspace has not added counts for
   nothing.
 - A mark only steers search and ranking; it never hides or refuses anything.
-- SPEC §7 and TYPES.md say so in the project "Apps declare their types to the
-  relay".
+- SPEC §7 and TYPES.md say so in the project "Each company sets its own
+  statuses".
 
 ## Rejected alternatives
 

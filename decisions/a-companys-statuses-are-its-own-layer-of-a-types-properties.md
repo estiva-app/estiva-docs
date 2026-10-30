@@ -2,7 +2,7 @@
 
 - Date: 2026-10-30
 - Status: Accepted
-- Decided by: Miky, in the shaping session for "Apps declare their types to the relay" (2026-10-30), on the brief "Statuses and Declarations", call 1: A, the company's own list, sharpened: "this is exactly why we need Notion-like dbs on Osnova Protocol level that every app can use: define a column type, e.g. select box, then add the list of values — exactly Ship's statuses"; who edits it, "Company admins", then, asked which list names them, the workspace's owners and admins on the relay's roster, as recommended
+- Decided by: Miky, in the shaping session for "Each company sets its own statuses" (then titled "Apps declare their types to the relay", 2026-10-30), on the brief "Statuses and Declarations", call 1: A, the company's own list, sharpened: "this is exactly why we need Notion-like dbs on Osnova Protocol level that every app can use: define a column type, e.g. select box, then add the list of values — exactly Ship's statuses"; who edits it, "Company admins", then, asked which list names them, the workspace's owners and admins on the relay's roster, as recommended; and, asked later in that session how a change carries the stage, B: attached to the status change, not a field of its own
 - Area: Files
 
 ## Who it affects
@@ -37,8 +37,9 @@ labels, priorities and its own columns go in the same place.
   signed with Ship's key.
 - A project in no Folder lives in the workspace's Company Folder, the one every
   member reads (SPEC §6.13).
-- [one-change-may-set-several-fields-taken-whole-or-refused-whole](one-change-may-set-several-fields-taken-whole-or-refused-whole.md)
-  (Accepted 30 Oct) lets one change set a status and a stage together.
+- A field's changes are folded one field at a time, last change wins (SPEC
+  §6.3), and an app that reads changes today drops a change that names no
+  field (Ship `src/nostr/fold.ts:214`, checked 30 Oct).
 - Linear sets project statuses for the whole workspace, each under one of five
   fixed categories; in a Jira team-managed space, its admins edit statuses
   (the brief's Checked; who may edit Linear's was not confirmed).
@@ -62,14 +63,15 @@ labels, priorities and its own columns go in the same place.
   anyone else, an app's key included, changes nothing anyone sees. Until an
   admin first saves it, apps use the defaults in the tracker's listing.
 - **Renaming an option keeps its id**, so a rename changes no project.
-- **Every status change carries the option's id and its stage**: one change
-  that sets both fields. A list of projects counts progress without reading the
-  company's file.
+- **Every status change carries the option's id and its stage**: the stage is
+  attached to the status change, beside the value, not a field of its own, and
+  so is a status set inside a change that sets several fields. A list of
+  projects counts progress without reading the company's file.
 - **A reader that cannot look a status up**, because it cannot read the
   company's file or the option has been removed, draws the option's id and
   counts it by its stage; the label and colour come only from the file.
-- SPEC §6.13, §7.4 and TYPES.md say so in the project "Apps declare their types
-  to the relay", before Ship moves its projects ("Ship reads and writes
+- SPEC §6.13, §7.4 and TYPES.md say so in the project "Each company sets its
+  own statuses", before Ship moves its projects ("Ship reads and writes
   projects field by field", in "A load stays the same size as edits pile up:
   projects").
 
@@ -89,6 +91,12 @@ labels, priorities and its own columns go in the same place.
   every project that has it, a typo becomes a status, and with no single place
   saying which statuses exist, filters and pickers drift apart between apps.
   An outside company gets nothing to share. Undo cost low; build cost low.
+- **The stage as a field of its own**, set beside the status in one change
+  that sets both. Turned down: fields fold one at a time, so a later change
+  that sets only the status leaves the old stage standing, and the two
+  disagree; and an app that reads changes today drops a change that names no
+  field, so a status change that needs the several-field shape to carry its
+  stage is lost to it.
 
 ## Consequences
 
