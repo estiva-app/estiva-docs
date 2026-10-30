@@ -2,7 +2,7 @@
 
 - Date: 2026-10-30
 - Status: Accepted
-- Decided by: Miky, in the shaping session for "Each company sets its own statuses" (then titled "Apps declare their types to the relay", 2026-10-30), on the brief "Statuses and Declarations", call 1: A, the company's own list, sharpened: "this is exactly why we need Notion-like dbs on Osnova Protocol level that every app can use: define a column type, e.g. select box, then add the list of values — exactly Ship's statuses"; who edits it, "Company admins", then, asked which list names them, the workspace's owners and admins on the relay's roster, as recommended; and, asked later in that session, in a question of its own, how a change carries the stage: attached to the status change, not a field of its own
+- Decided by: Miky, in the shaping session for "Each company sets its own statuses" (then titled "Apps declare their types to the relay", 2026-10-30), on the brief "Statuses and Declarations", call 1: A, the company's own list, sharpened: "this is exactly why we need Notion-like dbs on Osnova Protocol level that every app can use: define a column type, e.g. select box, then add the list of values — exactly Ship's statuses"; who edits it, "Company admins", then, asked which list names them, the workspace's owners and admins on the relay's roster, as recommended; and, asked later in that session, in a question of its own, how a change carries the stage: attached to the status change, not a field of its own; and, asked after review, which stage counts when the change's and the file's disagree: the change's, as recommended
 - Area: Files
 
 ## Who it affects
@@ -68,6 +68,10 @@ labels, priorities and its own columns go in the same place.
   so is a status set inside a change that sets several fields
   ([one-change-may-set-several-fields-taken-whole-or-refused-whole](one-change-may-set-several-fields-taken-whole-or-refused-whole.md)). A list of
   projects counts progress without reading the company's file.
+- **The stage on the change is what counts**, in every app, even where the
+  company's file gives that option another stage, so every app counts a
+  project the same way whether or not it can read the file. An app that offers
+  the file's options writes the option's own stage.
 - **A reader that cannot look a status up**, because it cannot read the
   company's file or the option has been removed, draws the option's id and
   counts it by its stage; the label and colour come only from the file.
