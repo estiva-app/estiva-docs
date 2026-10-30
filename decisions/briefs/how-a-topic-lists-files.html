@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How a topic lists files</title>
+<style>
+:root {
+  --bg: #fbfaf7; --ink: #1d1d1f; --muted: #5d5d66; --line: #8e8e98; --rule: #dcdad3;
+  --box: #efeee9; --card: #ffffff; --fold: #f3f1ea; --gate: #e6edfb; --team: #eaf4ec;
+  --accent: #2457c5; --warn: #b3401f; --ok: #2a7a46; --chip: #dfe6f6; --pick: #f2f6ff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17171a; --ink: #ececef; --muted: #a8a8b2; --line: #74747f; --rule: #34343b;
+    --box: #26262b; --card: #1f1f23; --fold: #222226; --gate: #1d2a45; --team: #1d3324;
+    --accent: #93b2ff; --warn: #ff9e80; --ok: #82d69e; --chip: #2b3553; --pick: #1c2338;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17171a; --ink: #ececef; --muted: #a8a8b2; --line: #74747f; --rule: #34343b;
+  --box: #26262b; --card: #1f1f23; --fold: #222226; --gate: #1d2a45; --team: #1d3324;
+  --accent: #93b2ff; --warn: #ff9e80; --ok: #82d69e; --chip: #2b3553; --pick: #1c2338;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0 auto; max-width: 760px; padding: 24px 16px 64px;
+  background: var(--bg); color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+h1 { font-size: 28px; line-height: 1.2; margin: 4px 0 4px; }
+h2 { font-size: 20px; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--rule); }
+h3 { font-size: 17px; margin: 22px 0 6px; }
+p, li { max-width: 70ch; }
+ul { padding-left: 20px; }
+li { margin: 3px 0; }
+.kicker { color: var(--muted); font-size: 14px; margin: 0; }
+.question { font-size: 19px; line-height: 1.45; font-weight: 600; }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+.door { background: var(--box); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.note { background: var(--box); border-left: 4px solid var(--line); padding: 10px 14px; border-radius: 6px; }
+.pick { background: var(--pick); border-left: 4px solid var(--accent); padding: 10px 14px; border-radius: 6px; }
+.opt { border: 1px solid var(--rule); border-radius: 10px; padding: 4px 16px 10px; margin: 14px 0; background: var(--card); }
+.opt h3 { margin-top: 12px; }
+.opt.rec { border-color: var(--accent); }
+.tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); vertical-align: 2px; margin-left: 6px; }
+dl.moments { margin: 6px 0; }
+dl.moments dt { font-weight: 600; float: left; clear: left; width: 8.5em; }
+dl.moments dd { margin: 0 0 6px 8.5em; }
+@media (max-width: 520px) {
+  dl.moments dt { float: none; width: auto; }
+  dl.moments dd { margin-left: 0; }
+}
+.tablewrap { overflow-x: auto; margin: 10px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.4; min-width: 560px; }
+th, td { text-align: left; vertical-align: top; padding: 7px 8px; border-bottom: 1px solid var(--rule); }
+th { font-size: 13px; color: var(--muted); font-weight: 600; }
+td:first-child { font-weight: 600; min-width: 7.5em; }
+figure { margin: 18px 0 24px; overflow-x: auto; }
+figure svg { width: 100%; min-width: 600px; height: auto; display: block; }
+figcaption { font-size: 14px; color: var(--muted); margin-top: 6px; }
+figcaption b { color: var(--ink); }
+code { font-size: 13px; background: var(--box); padding: 0 4px; border-radius: 4px; }
+.gate { fill: var(--gate); stroke: var(--accent); stroke-width: 1.5; }
+.team { fill: var(--team); stroke: var(--ok); stroke-width: 1.3; }
+.fold { fill: var(--fold); stroke: var(--line); stroke-width: 1.2; }
+.file { fill: var(--card); stroke: var(--line); stroke-width: 1.2; }
+.dash { stroke-dasharray: 6 4; }
+.t { fill: var(--ink); font-size: 13px; }
+.b { font-weight: 700; }
+.ts { fill: var(--muted); font-size: 12px; }
+.ta { fill: var(--accent); font-size: 12px; font-weight: 600; }
+.tw { fill: var(--warn); font-size: 12px; font-weight: 600; }
+.arrow { fill: none; stroke: var(--ink); stroke-width: 1.3; }
+.link { fill: none; stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 4 4; }
+.head { fill: var(--ink); }
+</style>
+</head>
+<body>
+
+<p class="kicker">Decision brief · Topics that group files (first navigation stage) · 30 Oct 2026</p>
+<h1>How a topic lists its files</h1>
+<p class="kicker">For Miky. This stage writes the answer to the relay, so on your answer it becomes a decision record in estiva-docs, and your merge accepts it. The rest of the navigation rework still has no records, as you said on 28 Oct.</p>
+
+<div class="pick"><b>Decided, 30 Oct (Miky, in the shaping session): A, the topic keeps its list.</b> In his words: "Topics is just lens. The file still lives in Folder (in future we will rename to Team). Topic is group of files across different teams" — such as a design plan, an engineering plan and a marketing plan around Widgets, from Design, Engineering and Marketing. "Also one file can be in multiple Topics": a Company Strategy / Roadmap document gives the context for Widgets and is listed in many more topics.</div>
+
+<p class="question">When someone puts a Ship project or a Leaf document into a topic, whose list is that: the topic's, or the file's? Or is there no list at all, and a topic's files are just the ones its conversation links to?</p>
+
+<p>Settled already: a topic is a file, not a group (29 Oct). It lists files from any team, and listing grants nobody anything (concept page, 28 Oct). A listed file opens in its own app, and a file doesn't filter the topic (meeting, 30 Oct). A file is named by its id everywhere, and that includes a listing (record, 29 Oct). This brief is about who writes the list and where it is kept.</p>
+
+<h2>Today</h2>
+<p>A topic has a title, a summary, a parent, its members and its conversation, and nothing else. It cannot list files. The only thing that lists files is a <b>Folder</b>: the relay keeps its listing and refuses a listing command anywhere else. Peek's Topics column therefore draws every file you have joined as its own row, so a topic, a Ship project and each of its issues all sit on one level (Katerina and Miky, 7 Oct: "get rid of the tree structure"). Nothing anywhere says "this file is in topic X".</p>
+
+<figure>
+<svg viewBox="0 0 720 190" role="img" aria-labelledby="t0">
+<title id="t0">Today: a Folder's listing is kept by the relay; a topic has no list; Peek's Topics column is flat.</title>
+<rect class="gate" x="10" y="20" width="220" height="110" rx="10"/>
+<text class="t b" x="24" y="44">Folder · Estiva HQ</text>
+<text class="ts" x="24" y="64">the relay keeps its listing</text>
+<text class="ts" x="24" y="80">and signs it; a listing command</text>
+<text class="ts" x="24" y="96">anywhere else is refused</text>
+<rect class="file" x="250" y="20" width="200" height="110" rx="10"/>
+<text class="t b" x="264" y="44">Topic · Widgets</text>
+<text class="ts" x="264" y="64">title, summary, parent,</text>
+<text class="ts" x="264" y="80">members, its conversation</text>
+<text class="tw" x="264" y="106">no list of files</text>
+<rect class="fold" x="470" y="20" width="240" height="110" rx="10"/>
+<text class="t b" x="484" y="44">Peek · Topics column</text>
+<text class="ts" x="484" y="64">Widgets</text>
+<text class="ts" x="484" y="80">Widgets 2 (project)</text>
+<text class="ts" x="484" y="96">Live across apps (issue)</text>
+<text class="ts" x="484" y="112">…every issue you joined, flat</text>
+<text class="ts" x="10" y="166">Each option below adds the missing piece: a topic's list of files, and "which topics list me" on each file.</text>
+</svg>
+<figcaption><b>Today.</b> Only a Folder lists files. A topic is a file with a conversation.</figcaption>
+</figure>
+
+<h2>Why it reaches beyond this stage</h2>
+<ul>
+  <li><b>It is the first thing besides a Folder that holds other files.</b> Ship's Topics page, Leaf's Topics section, the Desk and Main/All later all read this list. So does any outside company that wants its own files in a topic.</li>
+  <li><b>It decides who curates a topic.</b> Either the people running the topic choose what is in it, or the people who own each file do.</li>
+  <li><b>It sets the pattern for future "collections"</b>, such as a release or Grants, which list files across teams.</li>
+</ul>
+<div class="door"><b>Mostly a two-way door at today's size.</b> We have 25 topics and nothing private. Switching shapes later means rewriting each topic's entries once: tens of small events, signed by the agent or by their original authors. It gets harder once outside companies write entries we can't re-sign, or once private teams make some entries unreadable to whoever migrates them.</div>
+
+<h2>Options</h2>
+<p class="small muted">The examples use the real Widgets topic and its files, as scenario 7 of the concept page tells it: two Ship projects and Katerina's Leaf document "Testing Widgets".</p>
+
+<div class="opt rec">
+<h3>A · The topic keeps its list <span class="tag">recommended</span></h3>
+<p>Each listed file is one entry on the topic: added or removed by anyone in the topic's team, and signed by whoever did it. This works the way "who is on this file" already does. Each entry names the file by its id, so any app can ask the relay "which topics list this file?" and get an answer.</p>
+<figure>
+<svg viewBox="0 0 720 200" role="img" aria-labelledby="tA">
+<title id="tA">Option A: the topic holds one entry per file, signed by who added it; files are named by id; any app asks which topics name a file.</title>
+<rect class="team" x="10" y="20" width="300" height="130" rx="10"/>
+<text class="t b" x="24" y="44">Topic · Widgets</text>
+<text class="ts" x="24" y="66">✓ Widgets 2: build 1 · added by Miky</text>
+<text class="ts" x="24" y="84">✓ Widgets 2: build 2 · added by Miky</text>
+<text class="ts" x="24" y="102">✓ Testing Widgets · added by Katerina</text>
+<text class="ts" x="24" y="128">anyone in the topic's team adds or removes</text>
+<rect class="file" x="420" y="20" width="290" height="50" rx="10"/>
+<text class="t b" x="434" y="44">Ship · Widgets 2: build 1</text>
+<text class="ts" x="434" y="60">unchanged; shows "Topics: Widgets"</text>
+<rect class="file" x="420" y="90" width="290" height="50" rx="10"/>
+<text class="t b" x="434" y="114">Leaf · Testing Widgets</text>
+<text class="ts" x="434" y="130">unchanged; shows "Topics: Widgets"</text>
+<path class="link" d="M310,66 L420,45"/>
+<path class="link" d="M310,102 L420,115"/>
+<text class="ta" x="365" y="82" text-anchor="middle">by its id</text>
+<text class="ts" x="10" y="180">The file's own app writes nothing. It reads "which topics name me" from the relay.</text>
+</svg>
+</figure>
+<dl class="moments">
+  <dt>Miky sees</dt><dd>On Widgets he picks Add file and chooses Testing Widgets, even though it is Katerina's. It shows under Widgets in Peek's Topics column, and her document says "Topics: Widgets" in Leaf.</dd>
+  <dt>Katerina sees</dt><dd>Her document is in a topic she didn't put it in. She can remove it from there, but only if she is in the topic's team, and today everyone is.</dd>
+  <dt>Outside company</dt><dd>Lists its own files in our topics without changing its types. To show "Topics: …" on its own files, it asks the relay one question.</dd>
+  <dt>Could go wrong</dt><dd>A file can be listed somewhere its owners never chose. Today it is only a locked row, never its title, for someone who can't open it. A deleted file leaves an entry that points at nothing, which apps must skip. Two people adding and removing the same file at once: the later change wins, as with members.</dd>
+</dl>
+</div>
+
+<div class="opt">
+<h3>C · The file says which topics it is in</h3>
+<p>Each file gets a "topics" field, set by whoever may edit the file, the same as its title or status. A topic's files are whatever files name it.</p>
+<figure>
+<svg viewBox="0 0 720 180" role="img" aria-labelledby="tC">
+<title id="tC">Option C: each file carries the topics it is in, set by the file's editors; the topic asks which files name it.</title>
+<rect class="file" x="10" y="20" width="250" height="110" rx="10"/>
+<text class="t b" x="24" y="44">Topic · Widgets</text>
+<text class="ts" x="24" y="66">holds nothing; asks the relay</text>
+<text class="ts" x="24" y="82">"which files name me?"</text>
+<rect class="team" x="400" y="20" width="310" height="50" rx="10"/>
+<text class="t b" x="414" y="44">Ship · Widgets 2: build 1</text>
+<text class="ts" x="414" y="60">topics: Widgets · set by Ship's editors</text>
+<rect class="team" x="400" y="90" width="310" height="50" rx="10"/>
+<text class="t b" x="414" y="114">Leaf · Testing Widgets</text>
+<text class="ts" x="414" y="130">topics: Widgets · set by Katerina</text>
+<path class="arrow" d="M400,45 L268,60"/><path class="head" d="M260,61 l9,-6 v10 z"/>
+<path class="arrow" d="M400,115 L268,90"/><path class="head" d="M260,89 l9,-3 l-1,10 z"/>
+<text class="ts" x="10" y="166">Every app writes a new field on its own types; a file whose app lacks it can't be in a topic.</text>
+</svg>
+</figure>
+<dl class="moments">
+  <dt>Miky sees</dt><dd>To put Katerina's document in Widgets he needs to be able to edit it. If he can only read it, he has to ask her.</dd>
+  <dt>Katerina sees</dt><dd>Nothing lands in a topic without one of the file's editors choosing it.</dd>
+  <dt>Outside company</dt><dd>Must add the field to each of its own types, or its files can't be in any topic.</dd>
+  <dt>Could go wrong</dt><dd>Once teams are private, a topic led by one team can't gather another team's files without that team's help, which is exactly what a release or Grants needs. Ship, Leaf and every future app each build the same field. Every listing change also counts as a change to the file, so it shows in the file's history and activity.</dd>
+</dl>
+</div>
+
+<div class="opt">
+<h3>D · No list: a topic's files are the ones its conversation links to <span class="tag">do less</span></h3>
+<p>Nothing new is stored. Link a file in a topic's message and it shows as one of the topic's files. Messages already record the files they mention.</p>
+<figure>
+<svg viewBox="0 0 720 160" role="img" aria-labelledby="tD">
+<title id="tD">Option D: the topic's files are worked out from the links in its messages.</title>
+<rect class="fold" x="10" y="20" width="330" height="100" rx="10"/>
+<text class="t b" x="24" y="44">Topic · Widgets · conversation</text>
+<text class="ts" x="24" y="66">Miky: "Picking up [Widgets 2: build 1]"</text>
+<text class="ts" x="24" y="84">Katerina: "Notes in [Testing Widgets]"</text>
+<text class="ts" x="24" y="102">Miky: "Unrelated, see [Weekly Plans]"</text>
+<rect class="file" x="430" y="20" width="280" height="100" rx="10"/>
+<text class="t b" x="444" y="44">Files, worked out</text>
+<text class="ts" x="444" y="66">build 1, Testing Widgets,</text>
+<text class="tw" x="444" y="84">and Weekly Plans, mentioned once</text>
+<path class="arrow" d="M340,70 L422,70"/><path class="head" d="M430,70 l-9,-5 v10 z"/>
+<text class="ts" x="10" y="146">Adding a file means posting about it; removing one means editing old messages.</text>
+</svg>
+</figure>
+<dl class="moments">
+  <dt>Miky sees</dt><dd>Widgets gathers whatever anyone linked, including Weekly Plans, mentioned once in passing. He can't take it off the list without editing an old message.</dd>
+  <dt>Katerina sees</dt><dd>A document she links in the topic's conversation joins its files, whether she meant it to or not.</dd>
+  <dt>Outside company</dt><dd>Nothing new to build or agree on.</dd>
+  <dt>Could go wrong</dt><dd>The list mixes curated files with passing mentions, and it grows forever. A file linked in an old message stays in the topic's files with no way to drop it. Mentions inside a file's own threads don't count, so the list depends on where people happened to talk.</dd>
+</dl>
+</div>
+
+<p class="small muted">Not offered: the relay keeping a topic's list the way it keeps a Folder's. That would make a topic a group, which reverses your 29 Oct call (a topic is a file, not a group) and the Accepted record that only a Folder gets a relay-kept listing.</p>
+
+<h2>Trade-offs</h2>
+<div class="tablewrap">
+<table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td>A · topic keeps it</td><td>One entry per file on the topic, the same shape as members and as the 30 Oct "a file is its fields". It moves with the topic unchanged.</td><td>The topic's people curate it. A file shows which topics list it.</td><td>Its files can be listed with no change to its types</td><td>Rewrite tens of entries</td><td>Peek's add and remove, one read for "topics of a file" in a shared package</td></tr>
+<tr><td>C · file says</td><td>A new field on every type, so every app writes it</td><td>The file's editors decide. A topic can't gather files its people can't edit.</td><td>Must add the field to each of its types</td><td>Rewrite each file's field</td><td>A field in Ship, Leaf and Peek, each</td></tr>
+<tr><td>D · no list</td><td>Nothing new. It reads the links that messages already record.</td><td>A list that grows by talking and can't be pruned</td><td>Nothing</td><td>Nothing on the relay</td><td>Least</td></tr>
+</table>
+</div>
+
+<h2>How others do it</h2>
+<ul>
+  <li><b>Linear Initiatives</b>: the initiative holds its list of projects, and anyone who can edit the initiative adds one. A project shows its initiatives. This is A.</li>
+  <li><b>Notion relations</b>: a property on each page, set by whoever can edit that page. This is C, and it is two-sided only because Notion syncs both sides in one database, which we don't have across apps.</li>
+  <li><b>Slack channels</b>: "files in this channel" is worked out from messages. This is D, and it is why a channel's Files tab is rarely useful.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<div class="pick"><b>A, the topic keeps its list.</b> A topic is "what the company is focused on now", and the people running it are the ones who know what belongs in it. Because listing grants nothing, a file's owners have nothing to protect by being asked first. It is also the shape you already chose for every file on 30 Oct: a file is its fields, each change signed by whoever made it. That means the list moves untouched when topics move to the new file shape, which is what made "topics now, the record later" safe. C asks every app and every outside type to carry a field so that a topic can work. D gives a list nobody can tidy.</div>
+
+<h2>Checked</h2>
+<ul class="small">
+  <li>Only a Folder has a listing. The relay refuses a listing command unless it is in a Folder (buzz <code>nfb-demo-kinds</code>, <code>crates/buzz-relay/src/handlers/side_effects.rs</code>: "a {t} channel is not a Folder"). A topic is a <code>kind:30840</code> with no listing (SPEC §6.7).</li>
+  <li>A topic's changes are per field, signed by whoever acts, in the topic's own Folder, and <code>member:&lt;p&gt;</code> is already a field per person (SPEC §6.7 "Changes", §11.8).</li>
+  <li>A file is its fields, each change signed by whoever made it, and nothing that names a file is re-signed when it moves (record <code>a-file-is-its-fields-each-kept-in-order-by-the-relay</code>, Accepted 30 Oct).</li>
+  <li>Anything that lists a file names it by its id in the small tag (record <code>a-file-is-named-by-its-id-in-a-capital-and-small-tag</code>, Accepted 29 Oct). No app reads or writes that tag yet; the relay writes it in a Folder's listing (buzz#38) and filters <code>#o</code> on any event. Whether it stores a <code>1851</code> carrying <code>o</code> is probed first in the build.</li>
+  <li>Peek's Topics column draws every joined file flat (peek-app <code>src/components/views/FileTreeView.tsx</code>, <code>JoinedFileRows</code>). Nothing shows "which topics list me" in Ship or Leaf (survey of origin/main, 30 Oct).</li>
+  <li>25 topics on production today (<code>peek topics</code>, 30 Oct; 32 on the relay, 8 of them QA's, recounted later that day). Nothing is private, so access cases are latent.</li>
+  <li>Not verified: the relay's answer time for "which topics name this id" at Miky's scale. It is a one-letter tag filter, which the relay supports, but it hasn't been measured.</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="small">A, as recommended: a <code>kind:1851</code> change on the topic (targeted by <code>a</code> with <code>O</code> beside it, record <code>a-change-is-about-its-file-as-a-comment-is</code>, decided after this brief), field <code>lists:&lt;d&gt;</code> = <code>true</code>/<code>false</code>, carrying <code>["o", &lt;d&gt;]</code> for the listed file, and <code>h</code> the topic's Folder. "Topics of a file" is <code>{kinds:[1851], "#o":[d]}</code>, folded per topic. SPEC §6.7 gains the field, and §6.4's "lists a file" covers it. C would be a <code>topics</code> field on <code>30850</code>/<code>30851</code>/<code>30842</code> and each outside type. D reads the <code>a</code>/<code>o</code> mentions in a topic's <code>kind:1111</code> comments. Project: Navigation &amp; structure (Ship <code>0527cd72</code>), first build stage. Initiative: Re-architecting Osnova protocol.</p>
+
+</body>
+</html>
