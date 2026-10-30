@@ -5,6 +5,13 @@
 - Decided by: Miky, in the shaping session of "A load stays the same size as edits pile up: projects" (2026-10-29), on the brief "Pointing at a file" ([page](briefs/pointing-at-a-file.html)): option 1, as recommended; and, in the same session at the review of estiva-docs#349, that a picked link carries only the file's id
 - Area: Files
 
+> Superseded in part, 2026-10-30: "who is on the file (kind 1851
+> `member:<P>` targeted by `o`, SPEC §11.8)" under "anything that mentions or
+> lists a file" is replaced by
+> [a-change-is-about-its-file-as-a-comment-is](a-change-is-about-its-file-as-a-comment-is.md):
+> a change, membership included, names the file it changes with `O`, and `o`
+> only for other files it points at. The rest of this record stands.
+
 > Supersedes in part
 > [every-file-is-an-artifact-the-relay-keeps-in-order](every-file-is-an-artifact-the-relay-keeps-in-order.md)
 > ("in one single-letter tag that every comment, mention, listing, unread

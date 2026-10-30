@@ -1,8 +1,14 @@
 # A change names the file it changes the way a comment names the file it is on, and every other file it points at the way a mention does
 
 - Date: 2026-10-30
-- Status: Proposed
+- Status: Accepted
+- Decided by: Miky, in the session finishing the topics stage of "Navigation & structure in Nostr for Business" (2026-10-30), on the brief "What a change is about" ([page](briefs/what-a-change-is-about.html)): A, as recommended
 - Area: Files
+
+> Supersedes in part
+> [a-file-is-named-by-its-id-in-a-capital-and-small-tag](a-file-is-named-by-its-id-in-a-capital-and-small-tag.md):
+> "who is on the file (kind 1851 `member:<P>` targeted by `o`, SPEC §11.8)"
+> under "anything that mentions or lists a file". The rest of it stands.
 
 ## Who it affects
 
@@ -44,12 +50,10 @@ project change for the project itself.
   plan, `#o` for build 1 would return Widgets' entry as one of build 1's
   changes, and the relay would refuse that entry.
 
-The brief: "What a change is about" (`decision-briefs/what-a-change-is-about.html`,
-copied to `briefs/` on the answer).
+The brief Miky decided on:
+[briefs/what-a-change-is-about.html](briefs/what-a-change-is-about.html).
 
 ## Decision
-
-Proposed (option A of the brief, recommended):
 
 - A change names the file it changes with `["O", <d>]`, as a comment names
   the file it is on, and keeps `a` beside it while readers that need it
@@ -64,8 +68,6 @@ Proposed (option A of the brief, recommended):
 
 ## Rejected alternatives
 
-Open until Miky answers:
-
 - **B · A change keeps `o` for its own file, and a topic's list names files in
   a third tag.** Keeps the projects plan. "Lists" would then be two tags (a
   Folder's listing and a topic's), "about" two cases (capital for a comment,
@@ -77,8 +79,10 @@ Open until Miky answers:
 
 ## Consequences
 
-- Supersedes in part, once Accepted, the membership clause of
+- Supersedes in part the membership clause of
   a-file-is-named-by-its-id-in-a-capital-and-small-tag.
+- The projects stage's plan changes by one tag before its SPEC issue is
+  written: a project change carries `a` and `O`, never `o` for itself.
 - Two-way until the projects switch: none of the 6,658 changes on production
   carries either tag (30 Oct). After it, readers read `O` on every project
   change for good.
