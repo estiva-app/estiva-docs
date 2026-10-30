@@ -12,6 +12,12 @@
 > whole in each save by the relay. A type as a shared meaning any app extends
 > stands.
 
+> Superseded in part, 2026-10-30: a shared type's statuses ("an issue's
+> status, and what each status means" as fixed options) are replaced by
+> [each-company-defines-its-own-statuses](each-company-defines-its-own-statuses.md):
+> each company defines its own from its tracker's defaults, and what each one
+> means is a shared stage. The rest of this record stands.
+
 > Supersedes in part three Accepted records; the rest of each stands:
 > - [a-files-text-is-a-readable-snapshot](a-files-text-is-a-readable-snapshot.md):
 >   only "written as a change to the file's `description` field (`kind:1851`)".
