@@ -171,13 +171,14 @@ properties and its history.
 - [Estiva curates the shared types in public, in a directory of types any builder starts from, and the optional App Store's review helps builders agree but forces no one](estiva-curates-shared-types-in-a-public-directory.md) — Accepted, 2026-10-26
 - [A type of file and its properties are defined by an app's listing or by a person's database, in one schema shape; app types come first, and people's databases come with the Notion-like app](an-apps-listing-or-a-persons-database-defines-a-type.md) — Accepted, 2026-10-26
 - [A file keeps every change and every text save for good, and has a History panel that shows them](a-file-keeps-every-change-for-good.md) — Accepted, 2026-10-26
-- [A file is named by its id in a new pair of tags, a capital one for "about it" and a small one for "mentions it", and a chip picked from a menu is saved as the file's link](a-file-is-named-by-its-id-in-a-capital-and-small-tag.md) — Accepted, 2026-10-29
+- [A file is named by its id in a new pair of tags, a capital one for "about it" and a small one for "mentions it", and a chip picked from a menu is saved as the file's link](a-file-is-named-by-its-id-in-a-capital-and-small-tag.md) — Accepted, 2026-10-29; its part "who is on the file … targeted by `o`" superseded by a-change-is-about-its-file-as-a-comment-is, 2026-10-30
 - [Each company defines its own statuses for a shared type, starting from the defaults its tracker provides; the shared part is what each status means](each-company-defines-its-own-statuses.md) — Accepted, 2026-10-30
 - [A file's own state is an upstream Buzz artifact the relay keeps in order; everything else names the file by one reference](every-file-is-an-artifact-the-relay-keeps-in-order.md) — Accepted, 2026-10-29; its part "in one single-letter tag that every … card and chip uses" superseded by the one above, 2026-10-29; its part "a file's own state is a NIP-AR artifact, whole in each save" superseded by the one below, 2026-10-30
 - [A file is its fields, and the relay keeps each field's changes in order; the text is one field, saved whole](a-file-is-its-fields-each-kept-in-order-by-the-relay.md) — Accepted, 2026-10-30
 - [What the relay knows about a type changes how files are found and ranked, never whether a save is accepted](a-types-declaration-changes-how-files-are-found-never-what-is-accepted.md) — Accepted, 2026-10-30
 - [Today's four types are Osnova's base and keep their own records; every new type starts with one named record, and joining the base moves no file](osnovas-base-types-keep-their-records-and-every-new-type-starts-named.md) — Accepted, 2026-10-30
 - [One change may set several fields of a file, and the relay takes it whole or refuses it whole](one-change-may-set-several-fields-taken-whole-or-refused-whole.md) — Accepted, 2026-10-30
+- [A change names the file it changes the way a comment names the file it is on, and every other file it points at the way a mention does](a-change-is-about-its-file-as-a-comment-is.md) — Accepted, 2026-10-30
 
 ## Documents
 
