@@ -1893,23 +1893,24 @@ project's `key`; status, lead and archived are not words) and the words of its
 text (§13.3 *Search text*), and never an older save, a deleted file or a save
 removed for good. Access is the list's: only files whose home the reader may
 read, so a file in a Folder the reader cannot read is not found, `#h` naming it
-included. Rows come best first: **a match in the title, then in the summary and
-key, then in the text**; among those, more typed words matched whole, then
-closeness. Each row carries the relay's word on why it is there, beside
-`omitted`:
+included. Rows come best first, by the best field that holds a typed word:
+**the title, then the summary and key together, then the text**; among those,
+more typed words matched whole, then closeness. Each row carries the relay's
+word on why it is there, beside `omitted`:
 
 ```json
-"match": {"field": "text", "words": "the launch plan mentions the rollout in the middle of"}
+"match": {"fields": ["title", "text"], "words": "the launch plan mentions the rollout in the middle of"}
 ```
 
-`field` is the first of `title`, `summary`, `key` and `text` that holds every
-typed word alone, or `several` when they are spread over more than one, which
-ranks above `text`. `words` are the words around the match in the text, plain
-text with no markers, present when the field is `text` or `several`; how a row
-draws them is the app's design. Like `omitted`, `match` is the relay's
-statement, never part of what was signed. The ordinary search (§5.2) finds the
-same current saves by the same words, without `match`. A relay MAY index only
-the first 256 KiB of a save's text words.
+`fields` lists every one of `title`, `summary`, `key` and `text` that holds a
+typed word, in that order, so typing spread over a title and a text names
+both. `words` are the words around a typed word in the text, plain text with no
+markers, present only when `fields` includes `text`; how a row draws them is
+the app's design. Like `omitted`, `match` is the relay's statement, never part
+of what was signed. The ordinary search (§5.2) finds the same current saves by
+the same words, without `match`. A page with `search` is at most 20 rows, and
+20 when `limit` is left out, since each row's words cost the relay a read of
+its text. A relay MAY index only the first 256 KiB of a save's text words.
 
 **Which apps may sign one.** Estiva ID signs a `45010` only of a type the
 app's credential lists (`allowed_types`, KINDS.md §5); an empty list signs
@@ -1930,9 +1931,10 @@ whether it is on (`"refuses_old_projects"`). It is **off** on production
 **NIP-11.** The relay advertises NIP-AR in an `artifacts` object (upstream's:
 `version`, `revision_kind` `45010`, `removal_kind` `45011`, `query`, `count`,
 `modes`, and its limits). The Estiva relay adds four keys to it: `omit`,
-`moves`, `refuses_old_projects`, and `search`, `{"formats": ["estiva-blocks-1"]}`:
-the list query takes `search`, and these are the text formats whose words it
-reads. `refuses_old_projects` is Estiva's alone and
+`moves`, `refuses_old_projects`, and `search`,
+`{"formats": ["estiva-blocks-1"], "max_page_size": 20}`: the list query takes
+`search`, these are the text formats whose words it reads, and its page is at
+most that many rows. `refuses_old_projects` is Estiva's alone and
 lasts only while the old shape exists: when the fence retires it leaves the
 object, so a reader treats it as absent-means-off.
 
@@ -2924,9 +2926,11 @@ which is why it is a hand-run check rather than a CI job.
 
 **Search over files kept as artifacts (§6.13)** is checked with a project whose
 text, a block document labelled `estiva-blocks-1`, holds a word nobody has
-written: the start of that word finds it by the list query, with `match.field`
-`text` and the word in `match.words`, and by the ordinary search; the middle of
-the word, and the word `paragraph`, do not. Saved again without the word, it is
+written: the start of that word finds it by the list query, with `match.fields`
+`["text"]` and the word in `match.words`, and by the ordinary search; the middle
+of the word, and the word `paragraph`, do not. Typing a word of its title with
+that word lists `["title", "text"]`; a word of its title with one of its summary
+lists `["title", "summary"]` and no `words`. Saved again without the word, it is
 not found by it; a project with the word in its title comes above it; deleted,
 it is not found, and restored it is; its current save removed for good, it is
 not found. In a Folder the reader is not a member of, the reader finds nothing,

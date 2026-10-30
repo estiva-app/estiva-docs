@@ -2,7 +2,7 @@
 
 - Date: 2026-10-30
 - Status: Accepted
-- Decided by: Miky, in the ALO-3 kickoff session, 2026-10-30, answering the six questions on the issue "Search finds a file by the words in its current version" (its `## Decided` lines)
+- Decided by: Miky, in the ALO-3 kickoff session, 2026-10-30, answering the six questions on the issue "Search finds a file by the words in its current version" (its `## Decided` lines), and in its review session the same day, on what a hit says when the typed words are spread over several fields
 - Area: Search
 
 ## Who it affects
@@ -50,10 +50,13 @@ word in its text.
 - **A picker may search the list query**: the artifact query takes `search`
   with `#type`, `#h` and `omit`, so it gets small rows of one type without
   their text. The ordinary NIP-50 search keeps finding current saves too.
-- **Title matches come first**, then summary and key, then text.
-- **Each hit says why it is there**: the relay names the field that matched
-  and returns the words around a match found in the text. How a row draws it is
-  Katerina's, in the milestone-3 story.
+- **Title matches come first**, then summary and key, then text: a hit ranks
+  by the best field holding a typed word.
+- **Each hit says why it is there**: the relay lists every field that holds a
+  typed word, best first (`"fields": ["title", "text"]` when one word is in the
+  title and another only in the text), and returns the words around a typed
+  word found in the text. How a row draws it is Katerina's, in the milestone-3
+  story.
 - **"Apps declare their types to the relay" is shaped on its own**, alongside,
   not before this search was built.
 
@@ -71,6 +74,11 @@ estiva-app/buzz#39.
   twice.
 - **Search the ordinary NIP-50 path only**: a picker would get whole saves,
   text included, and could not ask for one type in one Folder without text.
+- **A hit names one field, the first that holds every typed word, or
+  `several` when they are spread**: `several` tells a row nothing it can draw,
+  and a picker would still have to guess where each word is.
+- **A hit names only its best field**: a title hit whose other word is only in
+  the text would hide the words that explain it.
 - **Shape "apps declare their types to the relay" first**: it would hold this
   search back for a call that is wider than it; the built-in table moves into
   the listing when that call is made.
@@ -83,7 +91,7 @@ estiva-app/buzz#39.
 - The relay keeps the words of each current save beside it (a column per
   head), so search never reads an old save and the index does not grow with a
   file's history.
-- `match` (a field name, and the words around a text match) is new wire on a
+- `match` (the fields that matched, and the words around a text match) is new wire on a
   query row; changing its shape once apps draw it is a protocol change.
 - Moving the per-type field table into the app's listing later changes where
   the relay reads it, not what a person finds.
