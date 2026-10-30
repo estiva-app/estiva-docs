@@ -53,7 +53,7 @@ nobody held the whole list.
 | Kind | Name | Notes |
 | --- | --- | --- |
 | `45010` | Artifact save | **A file's whole state in one save — SPEC §6.13, decided 2026-10-29 (Miky).** Upstream Buzz NIP-AR. Regular; the relay keeps the saves of one `d` in order and refuses one whose `prev` is not the current save (`conflict: artifact head changed`). `type` names what the file is (`osnova.project`, [TYPES.md](TYPES.md)); every field a list shows is a tag, the text is `content`. Written in its home's `h`; a `move` is refused on this relay. Granted per type by Estiva ID (§5). Projects first; no app writes one yet (2026-10-30) |
-| `45011` | Artifact removal | **Relay-signed**, never an app's. Written by the relay when a save is removed for good (a `9005` from the home's owners or admins); it cannot itself be deleted |
+| `45011` | Artifact removal | **Relay-signed**, never an app's. Written by the relay when a save is removed for good (a `9005` from the home's owners or admins, or the workspace's, SPEC §6.5); it cannot itself be deleted |
 
 ### Folders — written by every app, owned by none ([SPEC §3](SPEC.md))
 

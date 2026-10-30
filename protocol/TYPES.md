@@ -22,8 +22,8 @@ Record:
 ## `osnova.project`
 
 A project: what a team is working toward, the issues under it, and who leads
-it. Kept as an artifact since ALO-2 (2026-10-30); until Ship moves its
-projects, a project is still the `30850` of [SPEC §6.1](SPEC.md).
+it. Defined 2026-10-30; until Ship moves its projects, a project is still the
+`30850` of [SPEC §6.1](SPEC.md).
 
 | field | tag | value |
 | --- | --- | --- |
