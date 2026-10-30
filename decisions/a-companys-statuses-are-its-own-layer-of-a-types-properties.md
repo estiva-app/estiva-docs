@@ -7,16 +7,15 @@
 
 ## Who it affects
 
-Miky adds "Blocked" (meaning started) once, in Ship's settings. Peek's project
-card shows "Blocked" at once and still counts the project as underway, and so
-does any other app that reads projects. Renaming "In Progress" to "Doing"
-changes no project.
+There is no real moment yet of Miky or Katerina wanting a status Ship lacks.
+The brief's example: if a company adds "Blocked" (meaning started) in Ship's
+settings, Peek's project card shows "Blocked" at once and still counts the
+project as underway, and so does any other app that reads projects. Renaming
+"In Progress" to "Doing" changes no project.
 
 An outside company's tracker reads and writes the same list as Ship, so one
 company has one set of statuses whichever tracker its people use. Later its
 labels, priorities and its own columns go in the same place.
-
-There is no real moment yet of Miky or Katerina wanting a status Ship lacks.
 
 ## Context
 
@@ -27,13 +26,15 @@ There is no real moment yet of Miky or Katerina wanting a status Ship lacks.
   and who changes it; whether a save carries the stage; what a reader shows for
   a status it cannot look up.
 - [an-apps-listing-or-a-persons-database-defines-a-type](an-apps-listing-or-a-persons-database-defines-a-type.md)
-  (Accepted 26 Oct) gave a type's properties one schema shape, whether an app's
-  listing or a person's database writes it: each property has a fixed id, a
+  (Accepted 26 Oct) gave a type's properties one schema shape, in two places,
+  an app's listing and a person's database: each property has a fixed id, a
   label and a kind of value, and each option of a choice a fixed id and a label.
+  This record extends it with a third place and two more parts of an option.
 - Ship's four project statuses, each with a label, a colour and a stage, are in
   Ship's code and published in its listing (Ship `src/nostr/kinds.ts:173`,
   `src/nostr/manifest.ts:197`, checked 30 Oct). Nobody can change them.
-- A listing is signed by its app's key (SPEC §7), so a person cannot sign one.
+- A listing is signed by its app's key (SPEC §7), so a person's edit cannot be
+  signed with Ship's key.
 - A project in no Folder lives in the workspace's Company Folder, the one every
   member reads (SPEC §6.13).
 - [one-change-may-set-several-fields-taken-whole-or-refused-whole](one-change-may-set-several-fields-taken-whole-or-refused-whole.md)
@@ -57,14 +58,16 @@ There is no real moment yet of Miky or Katerina wanting a status Ship lacks.
   app reads it. Labels, priorities and new columns later are more properties in
   the same file.
 - **The workspace's owners and admins on the relay's roster edit it**, in
-  Ship's settings or any tracker's.
-- **Renaming an option keeps its id**, so a rename changes no file.
-- **Every status change also carries its stage**: one change that sets both
-  fields. A list of projects counts progress without reading the company's
-  file.
+  Ship's settings. There is one such file per type, and a change to it from
+  anyone else, an app's key included, changes nothing anyone sees. Until an
+  admin first saves it, apps use the defaults in the tracker's listing.
+- **Renaming an option keeps its id**, so a rename changes no project.
+- **Every status change carries the option's id and its stage**: one change
+  that sets both fields. A list of projects counts progress without reading the
+  company's file.
 - **A reader that cannot look a status up**, because it cannot read the
-  company's file or the option has been removed, draws what the change carries
-  and counts it by its stage; the colour comes only from the file.
+  company's file or the option has been removed, draws the option's id and
+  counts it by its stage; the label and colour come only from the file.
 - SPEC §6.13, §7.4 and TYPES.md say so in the project "Apps declare their types
   to the relay", before Ship moves its projects ("Ship reads and writes
   projects field by field", in "A load stays the same size as edits pile up:
@@ -93,11 +96,16 @@ There is no real moment yet of Miky or Katerina wanting a status Ship lacks.
   The file is small, so moving it later is cheap.
 - Status changes carry their stage on the relay for good. A later reader can
   ignore it, but cannot take it out.
-- Two trackers can disagree on what to offer by default; the first one the
-  workspace adds writes the defaults.
-- A status removed from the list still sits on old projects, and apps draw what
-  they find. A person who cannot read the Company Folder, such as a guest from
-  another company in a shared Folder, sees a status without its colour.
-- The schema shape grows a colour and a stage on a choice option, and a third
-  place that writes it: a company's file beside an app's listing and a person's
-  database.
+- Two trackers can disagree on what to offer by default; the defaults come from
+  the first one the workspace adds.
+- A status removed from the list still sits on old projects, and apps draw its
+  id. A reader that cannot read the company's file sees the id, not the label:
+  after "In Progress" is renamed "Doing", it still shows `in_progress`.
+- The schema shape of
+  [an-apps-listing-or-a-persons-database-defines-a-type](an-apps-listing-or-a-persons-database-defines-a-type.md)
+  grows a colour and a stage on a choice option, and a third place that writes
+  it: a company's file beside an app's listing and a person's database.
+- Any member may write in the Company Folder, so this file is an exception to
+  that Folder's rule. Whether the relay refuses anyone else's change to it, or
+  every reader ignores one, the SPEC settles in the project that carries this
+  out; either way it changes nothing anyone sees.

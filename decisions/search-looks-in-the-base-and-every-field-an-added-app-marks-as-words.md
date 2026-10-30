@@ -8,13 +8,15 @@
 ## Who it affects
 
 Miky and Katerina see nothing change: a project is found by its title,
-summary, key and text, as today. When an app adds a field of its own, such as a
-customer on a project, that field becomes searchable once the app's listing
-marks it as words.
+summary, key and text, as today. There is no real moment yet of either needing
+a field searched that search misses. For example, when an app adds a field of
+its own to projects, that field becomes searchable once the app's listing marks
+it as words.
 
-An outside company's tracker, or its own type such as an HR app's candidate,
+An outside company's tracker, or its own type (for example an HR app's
+candidate),
 counts on its own relay as soon as the workspace adds the app, without asking
-Estiva. A project's own fields are searched the same way on every relay.
+Estiva.
 
 ## Context
 
@@ -44,7 +46,8 @@ Estiva. A project's own fields are searched the same way on every relay.
 ## Decision
 
 - **A base type's word fields are built into the relay**, from the public
-  directory, like the rest of its core. No app's listing changes them.
+  directory, like the rest of its core. No app's listing changes them, so a
+  project's core is searched alike on every relay with the same base.
 - **Every app the workspace added may mark fields as words in its listing**:
   the fields of its own types, and the fields it adds to a base type.
 - **Search looks in the union**: the base's word fields and every field any
@@ -60,7 +63,8 @@ Estiva. A project's own fields are searched the same way on every relay.
   base type's core included, and the relay combines them.** Every added app
   would count for everything. Turned down when asked again: it supersedes the
   base-types record, and two relays in a shared Folder could search a
-  project's core differently, depending on which apps each has added.
+  project's core differently, depending on which apps each has added. Undo
+  cost low; build cost medium.
 - **B · Estiva's directory entry is the one the relay reads.** Turned down: an
   outside company depends on a file Estiva signs and waits on us to change a
   shared type, and the directory becomes an authority, which the 26 Oct record
@@ -70,7 +74,8 @@ Estiva. A project's own fields are searched the same way on every relay.
 - **C · Do less: the base types stay built into the relay; listings count only
   for an app's own new types.** Turned down: a field an app adds to a project
   waits for a relay release, the reason "the relay as the workspace's database"
-  was turned down on 26 Oct. Undo cost low; build cost low.
+  was turned down on 26 Oct
+  ([a-files-type-is-a-shared-meaning-any-app-extends](a-files-type-is-a-shared-meaning-any-app-extends.md)). Undo cost low; build cost low.
 
 ## Consequences
 
