@@ -254,7 +254,10 @@ produce the same events in the same order.
   workspace is set up. Estiva's is Estiva HQ.
 - **It is kept for good.** Its owners and admins can rename it. The relay
   refuses to delete it (`kind:9008`), archive it (§3.3), make it private, or
-  take the mark off it.
+  take the mark off it. Every member of the workspace reads it (Miky,
+  2026-10-29).
+- **Only the relay sets the mark.** A client event carrying a `company` tag
+  (a `kind:9007` or `kind:9002`) is refused, so no second Folder can be marked.
 - **An app finds it by the mark**, never by its name or id, and trusts only the
   mark its own workspace's relay signed (§3.2: the signer is the relay's key
   from NIP-11). A Folder shared from a partner company's relay never counts as
@@ -572,8 +575,9 @@ it is a type that will join the base or an app's own:
 
 `content` is empty: a text given at creation is the `description` field's first
 value, in a `set`, with `content-format` and `imeta` beside it (§6.2). The relay
-refuses a `30852` with no `k`, with two, or with a `k` naming a base type
-(`osnova.project`, `osnova.issue`, `osnova.document`, `osnova.topic`), so the
+refuses a `30852` with no `k`, with two, or with a `k` naming one of the four
+base types that keep their own kinds (`osnova.project`, `osnova.issue`,
+`osnova.document`, `osnova.topic`), so the
 four are only ever written on their own kinds. Its address is
 `30852:<pubkey>:<d>`, and every later change names it by that address and its
 id, as for the four (§6.2). **A request for files of a named type names the
@@ -720,8 +724,10 @@ and
   file is kept beside it, and two people joining never clash.
 
 **What the relay refuses.** It keeps, per file and per field, the change that
-is current (the newest by §6.3's order), and refuses, with an `OK` false whose
-message starts `conflict:`:
+is current: the newest by §6.3's order of the changes a reader folds, so never
+one filed in another Folder than its file's, one whose `a` and `O` disagree, or
+a `member:<P>`=`false` not signed by `P` (§11.8). It refuses, with an `OK`
+false whose message starts `conflict:`:
 
 - a change whose `prev` for a field is not that field's current change;
 - a change that does not sort after its `prev` (§6.3: by `ts` where trusted,
@@ -733,8 +739,14 @@ message starts `conflict:`:
 So readers fold by time (§6.3), and on a type the relay keeps in order that is
 also the order each change named.
 
-**What an app does when refused.** It reads the current change of every field
-it was setting, and then:
+Every other refusal of a change starts `invalid:`: a missing `prev` where one is
+required, both forms or a field named twice, a wrong `h`, an `a` and `O` that
+disagree, and, on a type kept in order, a change to a file whose first record
+the relay does not hold. Such a change is malformed, and an app does not send
+it again as it is.
+
+**What an app does when refused with `conflict:`.** It reads the current change
+of every field it was setting, and then:
 
 - **a field other than the text**: it sends its value again, naming the
   current change as `prev`. Two people setting the same field is not a
@@ -778,7 +790,8 @@ that holds several versions of a root checks against the newest.
 **The relay refuses a change filed in another Folder than its file's** from the
 switch (§6.13): its `h` must be the Folder the first record names (its `h`, or
 for a project its `buzz-channel`, which names the Company Folder when the
-project is in no other, §3.4). A reader ignores one either way.
+project is in no other, §3.4, and the `h` of a project written before §7.3's
+`placement`, §6.1). A reader ignores one either way.
 
 **The `ts` tag.** Epoch **milliseconds**. A reader MUST honour `ts` only when it
 agrees with `created_at` to the second, and MUST ignore it otherwise. That
@@ -1218,8 +1231,10 @@ D3, which stands):
   change's own author included. The text is saved whole, so a password is in
   each `description` change after it until it is taken out: the admin first
   saves the text without it, then removes every earlier change that carries
-  it. The current change of a field is never removed, so each field's line
-  stays whole. No Estiva app offers the action yet, and Estiva ID grants no
+  it. The current change of a field is never removed (the relay refuses that
+  `9005`), so each field's line stays whole: a change that set several fields
+  and is still current for one of them is removed only after that field is
+  set again. No Estiva app offers the action yet, and Estiva ID grants no
   app or agent `9005` (KINDS.md §5).
 
 **Delete** is a NIP-09 `kind:5`, and three properties are normative:
@@ -2051,9 +2066,12 @@ newest value of a field other than the text averages 601 bytes, the newest text
 ```
 
 The relay answers each first record the filter picks, and with it, for each
-field of that file, the newest change that set it (§6.3's order), **except the
-text**:
+field of that file, the current change (§6.2: the newest a reader folds),
+**except the text**:
 
+- **It reads as a `REQ` would.** Every event returned passes the read rules a
+  `REQ` for it would pass (§3.1); a first record or a change the reader may not
+  read is left out, as if it were not there.
 - **Every event is whole and signed**, as it was published. Nothing is a row
   the relay wrote, so an app checks each signature and may build its next
   change on what it read: each change's id is that field's next `prev`.

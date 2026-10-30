@@ -192,7 +192,7 @@ Gate 1 of three. Estiva ID's `/sign` refuses any kind not in the calling app's
 **A named type's first record is checked by its type too** (*added
 2026-10-30*, estiva-id#90; *re-pointed 2026-10-30* from `45010`'s `type` to
 `30852`'s `k`). Beside `allowed_kinds` each credential holds `allowed_types`,
-and `/sign` refuses a `30852` whose `k` tag is not in it, or that has none,
+and `/sign` refuses a `30852` whose `k` tag is not in it, or that has none or two,
 with `422 type_not_allowed`: a file's type may be made only by an app whose
 credential lists it. An empty list refuses every `30852`, so granting the kind
 alone signs nothing. The token says which types the app may make
