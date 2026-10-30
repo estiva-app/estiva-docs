@@ -2,7 +2,7 @@
 
 - Date: 2026-10-30
 - Status: Accepted
-- Decided by: Miky, in the shaping session for "Each company sets its own statuses" (then titled "Apps declare their types to the relay", 2026-10-30), on the brief "Statuses and Declarations", call 1: A, the company's own list, sharpened: "this is exactly why we need Notion-like dbs on Osnova Protocol level that every app can use: define a column type, e.g. select box, then add the list of values — exactly Ship's statuses"; who edits it, "Company admins", then, asked which list names them, the workspace's owners and admins on the relay's roster, as recommended; and, asked later in that session how a change carries the stage, B: attached to the status change, not a field of its own
+- Decided by: Miky, in the shaping session for "Each company sets its own statuses" (then titled "Apps declare their types to the relay", 2026-10-30), on the brief "Statuses and Declarations", call 1: A, the company's own list, sharpened: "this is exactly why we need Notion-like dbs on Osnova Protocol level that every app can use: define a column type, e.g. select box, then add the list of values — exactly Ship's statuses"; who edits it, "Company admins", then, asked which list names them, the workspace's owners and admins on the relay's roster, as recommended; and, asked later in that session, in a question of its own, how a change carries the stage: attached to the status change, not a field of its own
 - Area: Files
 
 ## Who it affects
@@ -59,13 +59,14 @@ labels, priorities and its own columns go in the same place.
   app reads it. Labels, priorities and new columns later are more properties in
   the same file.
 - **The workspace's owners and admins on the relay's roster edit it**, in
-  Ship's settings. There is one such file per type, and a change to it from
+  Ship's settings once that editor is built. There is one such file per type, and a change to it from
   anyone else, an app's key included, changes nothing anyone sees. Until an
   admin first saves it, apps use the defaults in the tracker's listing.
 - **Renaming an option keeps its id**, so a rename changes no project.
 - **Every status change carries the option's id and its stage**: the stage is
   attached to the status change, beside the value, not a field of its own, and
-  so is a status set inside a change that sets several fields. A list of
+  so is a status set inside a change that sets several fields
+  ([one-change-may-set-several-fields-taken-whole-or-refused-whole](one-change-may-set-several-fields-taken-whole-or-refused-whole.md)). A list of
   projects counts progress without reading the company's file.
 - **A reader that cannot look a status up**, because it cannot read the
   company's file or the option has been removed, draws the option's id and
@@ -94,14 +95,17 @@ labels, priorities and its own columns go in the same place.
 - **The stage as a field of its own**, set beside the status in one change
   that sets both. Turned down: fields fold one at a time, so a later change
   that sets only the status leaves the old stage standing, and the two
-  disagree; and an app that reads changes today drops a change that names no
-  field, so a status change that needs the several-field shape to carry its
-  stage is lost to it.
+  disagree; and a change that sets two fields names no single field, so an
+  app that reads changes today drops it, and with it the status.
 
 ## Consequences
 
 - A company's settings for a type are a file the company owns, not an app's.
   The file is small, so moving it later is cheap.
+- "A status with its stage", one of the cases
+  [one-change-may-set-several-fields-taken-whole-or-refused-whole](one-change-may-set-several-fields-taken-whole-or-refused-whole.md)
+  names, is now one field: setting a status needs no several-field change.
+  That record's other cases stand.
 - Status changes carry their stage on the relay for good. A later reader can
   ignore it, but cannot take it out.
 - Two trackers can disagree on what to offer by default; the defaults come from
@@ -114,6 +118,6 @@ labels, priorities and its own columns go in the same place.
   grows a colour and a stage on a choice option, and a third place that writes
   it: a company's file beside an app's listing and a person's database.
 - Any member may write in the Company Folder, so this file is an exception to
-  that Folder's rule. Whether the relay refuses anyone else's change to it, or
-  every reader ignores one, the SPEC settles in the project that carries this
-  out; either way it changes nothing anyone sees.
+  that Folder's rule. How that is enforced is a decision of its own, taken in
+  the project that carries this out; whatever it is, anyone else's change
+  changes nothing anyone sees.
