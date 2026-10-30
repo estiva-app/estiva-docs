@@ -580,8 +580,8 @@ The bracketed tags and those after `ts` appear only where a rule asks for them:
   A change MAY carry `["O", <d>]` naming by its id the file its `a` names, as a
   comment names its file (§6.4); a list entry (`lists:<d>`, §6.14) MUST. It is
   the same target, not a second one, and carries no `K`: the `a` says the
-  kind. A reader of a list entry ignores one whose `O` is not its `a`'s `d`
-  (§6.14).
+  kind. A reader ignores a change whose `O` is not its `a`'s `d`, whether it
+  asked by `#a` or by `#O`.
 - **`A`**, on a move — a change to a `movedBy` field (§7.2) — naming the new
   parent. It is an index, not a second target: `a` (with `O`, the same file) is
   the only file a change targets.
@@ -1978,7 +1978,16 @@ A reader skips a change, and folds nothing from it, when:
 - its `O` is not its `a`'s `d` (§6.2);
 - `<d>` is the list's own `d`: a file is not on its own list;
 - it fails §6.2's `h` rule against the list's root, or that root is deleted
-  (§6.5, a `kind:5` today) or not one the reader can read.
+  (§6.5, a `kind:5` today) or not one the reader can read. A list whose root
+  names no Folder takes no entry: §6.2's exception for such roots does not
+  apply.
+
+The Folder check comes before the fold: an entry filed in another Folder is
+never the newest, so it cannot hide the entry before it.
+
+An entry is read by everyone who reads the topic's Folder, as a Folder's own
+listing is (§3.2): it tells them the listed id, who listed it and when,
+whether or not they can read the file.
 
 **Reading it.**
 
