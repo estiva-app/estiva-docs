@@ -16,6 +16,11 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [Topics group files](topics-group-files.html) — Shaped, 2026-10-30. A topic
+  keeps its own list of files from any Folder, Peek gets a Topics screen of your
+  topics with their files and moves today's Topics to Folders, and Ship and Leaf
+  show a file's topics. Read at
+  `https://docs.estiva.app/architecture/topics-group-files.html`.
 - [One conversation in every app](one-conversation-in-every-app.html) —
   Shaped, 2026-10-28. A conversation becomes one shared piece that Peek, Ship
   and Leaf each place and colour, and Ship joins the apps that resolve a
