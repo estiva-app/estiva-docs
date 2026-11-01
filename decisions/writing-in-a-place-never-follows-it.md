@@ -2,7 +2,7 @@
 
 - Date: 2026-10-30
 - Status: Accepted
-- Decided by: Miky, in the Claude session working through his Leaf page "Read / Unread notifications + Activity" (2026-11-01), where he asked for these rules to be put up for his accept; they are what the page's section "Following, walked through the scenarios" worked out from his answers to the brief "Following a topic" ([page](briefs/following-a-topic.html)), and his merge of this record is the accept
+- Decided by: Miky, in the Claude session working through his Leaf page "Read / Unread notifications + Activity" (2026-11-01), where he said yes when asked whether to put these rules up for his accept; they are what the page's section "Following, walked through the scenarios" worked out from his answers to the brief "Following a topic" ([page](briefs/following-a-topic.html)), and his merge of this record is the accept
 - Area: Read state
 
 > Supersedes in part
@@ -43,9 +43,9 @@ relay, the same way every Estiva app does.
   every later report, which 5.2 says must not happen.
 - The page's section "Following, walked through the scenarios" walks the model
   through scenarios 1.2, 1.7, 1.8, 2.2, 2.5, 4.1, 4.2, 5.1, 5.2, 6.1, 7.1,
-  11.2, 12.4, 12.6 and 15.1. This record is what it found, and Miky accepted
-  it on 1 Nov, after the Important dot, the Desk and @company had been decided
-  the same way.
+  11.2, 12.4, 12.6 and 15.1. This record is what it found. Miky was asked
+  on 1 Nov to accept it, by merging it, once the Important dot, the Desk and
+  @company had each been decided through the same scenarios.
 
 ## Decision
 
@@ -68,10 +68,6 @@ relay, the same way every Estiva app does.
   stop lighting.
 - **Following starts when you chose it** (12.6): the history before that is not
   unread.
-
-It supersedes in part
-[membership-replaces-following](membership-replaces-following.md): "writing in
-its conversation" stops making you a member of a topic or space.
 
 ## Rejected alternatives
 
@@ -97,7 +93,8 @@ its conversation" stops making you a member of a topic or space.
   that list it.
 - Being in a conversation is smaller than a file's membership: you wrote in it
   or were mentioned in it. How an app keeps it is an engineering choice.
-- "Mentioned" here means mentioned by name. Whether a mention of everyone at
+- "Mentioned" here means mentioned by name; this line was added when the
+  record was put up for accept, and it decides nothing. Whether a mention of everyone at
   once, such as @company (which anyone in the company may write, Miky, 31
   Oct), also puts the whole company in that conversation, so that every reply
   lights for everyone, is not decided here. It goes with the team mention
