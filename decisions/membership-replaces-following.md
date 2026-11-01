@@ -10,6 +10,12 @@
 > [a-team-has-members-and-followers-and-a-place-is-followed-at-a-level](a-team-has-members-and-followers-and-a-place-is-followed-at-a-level.md).
 > The old private list Peek kept per file stays retired, and the rest of this
 > record stands.
+>
+> Superseded in part: writing in a topic's or a space's
+> conversation, or being mentioned in it, no longer makes you its member; it
+> puts you in that conversation, in
+> [writing-in-a-place-never-follows-it](writing-in-a-place-never-follows-it.md).
+> On any other file both still make you its member.
 
 ## Who it affects
 
