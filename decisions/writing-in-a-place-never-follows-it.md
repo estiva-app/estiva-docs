@@ -1,8 +1,15 @@
 # Writing in a topic or space puts you in that conversation, never in the place; you follow a place only by your choice or by a team's default, which is worked out and never written; and All never makes you a member of the files a topic lists
 
 - Date: 2026-10-30
-- Status: Proposed
+- Status: Accepted
+- Decided by: Miky, in the Claude session working through his Leaf page "Read / Unread notifications + Activity" (2026-11-01), where he asked for these rules to be put up for his accept; they are what the page's section "Following, walked through the scenarios" worked out from his answers to the brief "Following a topic" ([page](briefs/following-a-topic.html)), and his merge of this record is the accept
 - Area: Read state
+
+> Supersedes in part
+> [membership-replaces-following](membership-replaces-following.md):
+> "writing in its conversation" no longer makes you a member of a topic or a
+> space. Writing on any other file still does, and the rest of that record
+> stands.
 
 ## Who it affects
 
@@ -36,12 +43,11 @@ relay, the same way every Estiva app does.
   every later report, which 5.2 says must not happen.
 - The page's section "Following, walked through the scenarios" walks the model
   through scenarios 1.2, 1.7, 1.8, 2.2, 2.5, 4.1, 4.2, 5.1, 5.2, 6.1, 7.1,
-  11.2, 12.4, 12.6 and 15.1. This record is what it found. Miky has not
-  confirmed it yet.
+  11.2, 12.4, 12.6 and 15.1. This record is what it found, and Miky accepted
+  it on 1 Nov, after the Important dot, the Desk and @company had been decided
+  the same way.
 
 ## Decision
-
-Proposed:
 
 - **Writing in a topic or space, or being mentioned there, puts you in that
   conversation**, so its replies are for you (5.1, 2.2). It never makes you
@@ -63,13 +69,11 @@ Proposed:
 - **Following starts when you chose it** (12.6): the history before that is not
   unread.
 
-On acceptance it supersedes in part
+It supersedes in part
 [membership-replaces-following](membership-replaces-following.md): "writing in
 its conversation" stops making you a member of a topic or space.
 
 ## Rejected alternatives
-
-As they stand:
 
 - **Writing in a place follows it**, as for any file (option A of the brief
   "Following a topic"). One bug report in #bug would light every later report,
@@ -92,5 +96,9 @@ As they stand:
 - An issue's members stay the people involved in it, whoever follows the topics
   that list it.
 - Being in a conversation is smaller than a file's membership: you wrote in it
-  or were mentioned in it. How an app keeps it is an engineering choice once
-  this is accepted.
+  or were mentioned in it. How an app keeps it is an engineering choice.
+- "Mentioned" here means mentioned by name. Whether a mention of everyone at
+  once, such as @company (which anyone in the company may write, Miky, 31
+  Oct), also puts the whole company in that conversation, so that every reply
+  lights for everyone, is not decided here. It goes with the team mention
+  (@engineering, scenario 6.2).
