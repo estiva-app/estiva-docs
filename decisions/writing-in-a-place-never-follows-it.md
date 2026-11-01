@@ -93,9 +93,7 @@ relay, the same way every Estiva app does.
   that list it.
 - Being in a conversation is smaller than a file's membership: you wrote in it
   or were mentioned in it. How an app keeps it is an engineering choice.
-- "Mentioned" here means mentioned by name; this line was added when the
-  record was put up for accept, and it decides nothing. Whether a mention of everyone at
-  once, such as @company (which anyone in the company may write, Miky, 31
-  Oct), also puts the whole company in that conversation, so that every reply
-  lights for everyone, is not decided here. It goes with the team mention
-  (@engineering, scenario 6.2).
+- This record covers a mention by name. Whether a mention of a whole team or
+  of the company, such as @engineering or @company (which anyone in the
+  company may write, Miky, 31 Oct), also puts everyone it reached in that
+  conversation, so that every reply lights for them, is open.

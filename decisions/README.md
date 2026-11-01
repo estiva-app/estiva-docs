@@ -120,7 +120,7 @@ heading here.
 
 ## Read state
 
-- [You are told about the files you are a member of, the same in every app, and following is retired](membership-replaces-following.md) — Accepted, 2026-09-30; its part "following is retired" superseded, for teams and places, by the record on following below, 2026-10-30; and its part "writing or being mentioned in its conversation makes you a member", for topics and spaces, by the record on writing below, 2026-10-30
+- [You are told about the files you are a member of, the same in every app, and following is retired](membership-replaces-following.md) — Accepted, 2026-09-30; its part "following is retired" superseded, for teams and places, by the record on following below, 2026-10-30; and its part "writing or being mentioned in its conversation makes you a member", for topics and spaces, by the record on writing below
 - [A Folder has no read state of its own: its chat is unread for you only when a message names you](a-folders-own-chat-is-unread-only-for-a-mention.md) — Accepted, 2026-10-01
 - [A reply is read only when you open its thread, not when you read the conversation it sits in](a-reply-is-read-only-when-its-thread-is-opened.md) — Accepted, 2026-10-03
 - [Anyone may add a person to a file, including someone who left it](anyone-may-add-a-person-to-a-file.md) — Accepted, 2026-10-06

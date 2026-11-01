@@ -11,7 +11,7 @@
 > The old private list Peek kept per file stays retired, and the rest of this
 > record stands.
 >
-> Superseded in part, 2026-10-30: writing in a topic's or a space's
+> Superseded in part: writing in a topic's or a space's
 > conversation, or being mentioned in it, no longer makes you its member; it
 > puts you in that conversation, in
 > [writing-in-a-place-never-follows-it](writing-in-a-place-never-follows-it.md).
