@@ -12,10 +12,10 @@
 > record stands.
 >
 > Superseded in part, 2026-10-30: writing in a topic's or a space's
-> conversation no longer makes you its member; it puts you in that
-> conversation, in
+> conversation, or being mentioned in it, no longer makes you its member; it
+> puts you in that conversation, in
 > [writing-in-a-place-never-follows-it](writing-in-a-place-never-follows-it.md).
-> Writing on any other file still makes you its member.
+> On any other file both still make you its member.
 
 ## Who it affects
 

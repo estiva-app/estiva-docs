@@ -7,9 +7,9 @@
 
 > Supersedes in part
 > [membership-replaces-following](membership-replaces-following.md):
-> "writing in its conversation" no longer makes you a member of a topic or a
-> space. Writing on any other file still does, and the rest of that record
-> stands.
+> writing in its conversation, or being mentioned in it, no longer makes you a
+> member of a topic or a space. On any other file they still do, and the rest
+> of that record stands.
 
 ## Who it affects
 
