@@ -53,7 +53,15 @@ it. Its first record is a `kind:30850` ([SPEC §6.1](SPEC.md)).
 | `summary` | `summary` | one or two sentences of plain text, about 240 characters ([SPEC §6.12](SPEC.md)) |
 | `archived` | — | `true` while it is archived; empty otherwise ([SPEC §6.5](SPEC.md)) |
 | `deleted` | — | `true` while it is deleted; empty otherwise ([SPEC §6.5](SPEC.md)) |
-| `description` | `description`, else `content` | the project's text ([SPEC §6.10](SPEC.md)) |
+| `description` | `description`, else `content` | the project's text ([SPEC §6.10](SPEC.md)): a block document labelled `estiva-blocks-1`, or unlabelled marker text ([SPEC §13.4](SPEC.md)) |
+
+**Search** finds a project by the words of its current title, summary, key
+and text, title first, through the list read
+([SPEC §6.13](SPEC.md); record
+[search-finds-a-file-by-the-words-of-its-current-fields](https://github.com/estiva-app/estiva-docs/blob/main/decisions/search-finds-a-file-by-the-words-of-its-current-fields.md)).
+Its status, lead and archived state are not words. A type is found this way
+only once the relay lists it in NIP-11 `file_search` (SPEC §6.13); until then
+an app searches it by title (SPEC §5.2).
 
 **Its statuses are each company's own**, starting from its tracker's defaults
 ([each-company-defines-its-own-statuses](https://github.com/estiva-app/estiva-docs/blob/main/decisions/each-company-defines-its-own-statuses.md),

@@ -176,6 +176,7 @@ over a `REQ` and `/query`:
 | `30850`, `30840`, `30842`, any object kind `30000`–`39999` except `39000`–`39009` and the private kinds below | root `title` |
 | `30851` | root `title` and root `ref` |
 | `1851` | `value`, only for a `title` change aimed at an object or a `ref` change aimed at a `30851` |
+| `30850` through the list read's `search` (SPEC §6.13), not the plain search of this table | its current title, summary, key and text, under its home's read access |
 | `5`, `7`, `9007`, `9030`, `9031`, `30078`, the author-only or ciphertext kinds `30179`, `30300`, `30350`, `30622` (and a `1851` aimed at one), any other `1851` | not searchable |
 
 These are the base's word fields, built into the relay. A field an added app
