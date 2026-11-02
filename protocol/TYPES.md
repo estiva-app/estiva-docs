@@ -59,8 +59,9 @@ it. Its first record is a `kind:30850` ([SPEC §6.1](SPEC.md)).
 and text, title first, through the list read
 ([SPEC §6.13](SPEC.md); record
 [search-finds-a-file-by-the-words-of-its-current-fields](https://github.com/estiva-app/estiva-docs/blob/main/decisions/search-finds-a-file-by-the-words-of-its-current-fields.md)).
-Its status, lead and archived state are not words. A type with no entry here is
-searched by its title and summary.
+Its status, lead and archived state are not words. A type is found this way
+only once the relay lists it in NIP-11 `file_search` (SPEC §6.13); until then
+an app searches it by title (SPEC §5.2).
 
 **Its statuses are each company's own**, starting from its tracker's defaults
 ([each-company-defines-its-own-statuses](https://github.com/estiva-app/estiva-docs/blob/main/decisions/each-company-defines-its-own-statuses.md),

@@ -495,8 +495,8 @@ events per filter.
 **A file's current fields are searched through the list read** (*decided
 2026-10-30 and 2026-11-02*, record
 [search-finds-a-file-by-the-words-of-its-current-fields](https://github.com/estiva-app/estiva-docs/blob/main/decisions/search-finds-a-file-by-the-words-of-its-current-fields.md)).
-The search above stays as it is: it finds a file by its title, and never by its
-summary, key or text. A `search` on §6.13's list read finds a file by the words
+The search above stays as it is: it finds a file by its title (an issue also by
+its ref), and never by its summary, key or text. A `search` on §6.13's list read finds a file by the words
 of its current title, summary, key and text. Its hits are current values, not
 candidates, so a reader shows them as they are.
 
@@ -2151,12 +2151,17 @@ the same, at the old cost.
   words of its current text (§13.3 *Search text*). Status, lead and archived
   are not words. A word that is only in an older change, a deleted file, and a
   removed change are never found. Removing a pasted password follows §6.5:
-  once the text is saved without it, nothing finds it.
+  once the text is saved without it, nothing finds it. A value is "current"
+  only as §6.2's fold takes it: from a change whose `h` is the file's home, so
+  a change filed in another Folder adds no words.
 - **Only for readers of the file's home**: its first record's `h`, else its
   `buzz-channel`. That is narrower than "a plain read would return it", since a
   project stored workspace-wide is readable by everyone while its text is not.
   A file whose home the reader cannot read is not found, and nothing in the
-  answer says it exists.
+  answer says it exists. A match is answered only for a file whose first
+  record is in the same answer's `events`, so it passes §3.1's read rules as
+  well. A relay never searches the author-only or ciphertext kinds KINDS.md
+  lists as not searchable.
 - **Best first**, by the best field that holds a typed word: **the title, then
   the summary and key together, then the text**. Among those, more typed words
   matched whole come first, then closeness.
@@ -2173,21 +2178,28 @@ the same, at the old cost.
   `title`, `summary`, `key` and `text` that holds a typed word, best first, so
   typing spread over a title and a text names both. `around` holds the words
   around a typed word in the text, as plain text with no markers, and is there
-  only when `fields` includes `text`. How a row draws them is the app's design.
+  only when `fields` includes `text`. How a row draws them is the app's design,
+  but `around` is an author's words: a reader draws it as text, never as
+  markup or a link.
   `matches` is the relay's statement and is never part of what was signed: no
   key is ever added to a signed event.
-- **A page holds at most 20 files**, and holds 20 when `limit` is left out.
-  With `search`, `limit` counts files, not events. A relay MAY read only the
-  first 256 KiB of a text's words.
+- **One answer holds the best files, at most 20**, and 20 when `limit` is left
+  out. With `search`, `limit` counts files, not events. There is no next page:
+  a person narrows the typing instead. A relay MAY read only the first 256 KiB
+  of a text's words.
 - **A type the relay does not search** is refused (`400`, `search: <type> is
   not indexed`), never answered `[]`: a person would read `[]` as "no such
   file".
-- **A word is found once its change is accepted.** The relay answers a
-  change's `OK` after the words are indexed. Indexing never refuses or delays
-  a change: a text it cannot read adds no words.
+- **A word is found once its change is accepted.** The words are indexed in
+  the same write that accepts the change, so a search sent after its `OK`
+  finds them. A `kind:5` or `9005` that removes a file's first record or one of
+  its changes, and a republished first record, re-read that file's words in
+  the same write. Indexing never refuses a change: a text it cannot read adds
+  no words.
 
-`#h` keeps its meaning above. To search one Folder's projects, a reader asks
-for them by `#d`, as the read does.
+`#h` keeps its meaning above, and `#d` narrows the search to the files named.
+A search cannot be narrowed to the projects whose `buzz-channel` names a
+Folder, since no filter asks for `buzz-channel`.
 
 **NIP-11.** A relay that keeps files in order advertises
 
@@ -3412,8 +3424,8 @@ has written. The start of that word finds the project, with `match.fields`
 it, and neither does `paragraph`. A word of its title typed with the text word
 names `["title", "text"]`. A word of its title with one of its summary names
 `["title", "summary"]`, with no `around`. A project with unlabelled marker
-text (§13.4) is found by a word of that text, and not by a marker such as
-`**`. Once the text is saved without the word, the word does not find it. A
+text (§13.4) is found by a word of that text, and not by a word only in a
+link's URL. Once the text is saved without the word, the word does not find it. A
 project with the word in its title comes above one with it only in its text. A
 deleted project is not found, and a restored one is. After a password's
 earlier changes are removed (§6.5), they still do not find it. A reader who
