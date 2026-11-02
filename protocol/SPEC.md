@@ -844,6 +844,11 @@ false whose message starts `conflict:`:
 - a change setting several fields when any one of them fails either check:
   **it is taken whole or refused whole**, and none of its fields changes.
 
+The message names the field and its current change, `conflict: <field> follows
+<event id>` for a stale `prev`, so an app reads that change by its id rather
+than the whole file again. An app reads the message only for that id, and
+treats any other text after `conflict:` as "read the field again".
+
 So readers fold by time (§6.3), and on a type the relay keeps in order that is
 also the order each change named.
 
@@ -863,7 +868,7 @@ of every field it was setting, and then:
   sends the result. Different blocks merge without asking; only a block both
   people changed asks the person (record
   [every-file-is-an-artifact-the-relay-keeps-in-order](https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-file-is-an-artifact-the-relay-keeps-in-order.md),
-  D4). An app MUST NOT answer the refusal by overwriting the current text;
+  D4), by §13.3's rule *Merging two changes to one text*. An app MUST NOT answer the refusal by overwriting the current text;
 - **several fields**: it does both, field by field, and sends them again as one
   change.
 
@@ -1996,9 +2001,10 @@ carries no `content-format` and is read by §13.4's rule.
 **The text is one field, saved whole, and kept in order** (*rewritten
 2026-10-30*, §6.2). A `description` change names the change it follows, like
 any field, so two people saving at once no longer lose one save: the second is
-refused, and its app merges its words onto the current text (§6.2). A list
-leaves the text out (§6.13), so the cost above is paid only when a file is
-opened.
+refused, and its app merges its words onto the current text (§6.2, §13.3). A list
+leaves the text out (§6.13), and opening a file reads only its current text
+(§6.13, `"text": true`), so the cost above is paid only where a relay lacks
+that read.
 
 ### 6.11 The document
 
@@ -2201,13 +2207,34 @@ for, so a Folder's projects are the ones its `kind:30890` lists, asked for by
 `{"fields": "newest", "kinds": [30850]}`; a project in no other Folder names
 the Company Folder (§3.4).
 
-**Opening a file** reads its first record and every change, by `#a` with `#O`
-beside it, and folds them (§6.3). **Live updates** are a `REQ` for
+**Opening a file reads its current text too** (*added 2026-11-02*, record
+[opening-a-file-reads-its-current-text-not-its-history](https://github.com/estiva-app/estiva-docs/blob/main/decisions/opening-a-file-reads-its-current-text-not-its-history.md)).
+The read takes `"text": true` beside `#d`, and then answers, for each file `#d`
+names, its current `description` change as well, whole and as signed:
+
+```json
+{"fields": "newest", "kinds": [30850], "#d": ["<d>"], "text": true}
+```
+
+- **Only with `#d`.** A filter with `"text": true` and no `#d` is refused
+  (`400`): a list never carries text.
+- **The current change of the text** is the newest a reader folds (§6.2), a
+  change that set several fields included, under the same read rules as the
+  rest of the answer. A file whose text was never changed has none, and its
+  text is its first record's seed (§6.10).
+- **Opening a file is this read**: its first record, one current change per
+  field and one text, however many changes it has had. Each change's id is
+  that field's next `prev`, the text's included. An older change is read by
+  its id when something needs it, such as a History panel or a merge's base
+  (§13.3).
+
+A relay without `text` reads a file as before: its first record and every
+change, by `#a` with `#O` beside it, folded by the app (§6.3). **Live updates** are a `REQ` for
 `{"kinds": [1851], "#h": [<folder>]}` or by `#a`/`#O`; a new change keeps its
 `a` (§6.2).
 
 **A relay without the read** answers `/query` without `fields`, or has no
-`/query`. An app checks NIP-11 for it first and otherwise sends a plain `REQ`
+`/query`. An app checks NIP-11's `file_list` for it first (below) and otherwise sends a plain `REQ`
 for the first records and every change, and folds them itself: the result is
 the same, at the old cost.
 
@@ -2274,13 +2301,28 @@ the same, at the old cost.
 A search cannot be narrowed to the projects whose `buzz-channel` names a
 Folder, since no filter asks for `buzz-channel`.
 
-**NIP-11.** A relay that keeps files in order advertises
+**NIP-11.** A relay whose `/query` answers `"fields": "newest"` advertises it
+on its own key, whether or not it keeps any type in order (*added 2026-11-02*,
+record
+[a-relay-advertises-the-list-read-apart-from-the-switch](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-relay-advertises-the-list-read-apart-from-the-switch.md)):
+
+```json
+"file_list": {"newest": true, "text": true}
+```
+
+`text` is there when the read takes `"text": true`. **An app reads with the
+list as soon as `file_list` is advertised**, and an app that finds no
+`file_list` reads every change and folds them itself. A relay advertising
+`files` advertises `file_list` too.
+
+A relay that keeps files in order advertises
 
 ```json
 "files": {"newest": true, "requires_prev": ["osnova.project"]}
 ```
 
-From the moment it does — **the switch** — it writes no first record twice
+`files` is the switch and only the switch: it says what the relay refuses,
+never whether the list read exists. From the moment it does — **the switch** — it writes no first record twice
 (§6.1), refuses a change filed in another Folder than its file's, one whose
 `a` and `O` disagree, and one whose `prev` is present and not its field's
 current change (§6.2). A type in `requires_prev`, and every `30852` type, is
@@ -2305,9 +2347,11 @@ not its type, falls back to §5.2's search by title.
 relay's NIP-AR support (`kind:45010`) stays for Buzz's own uses, agent and team
 settings, and is not how a file is kept.
 
-**Where it stands (2026-10-30).** No relay advertises `files` yet, and no app
-writes `prev` or `set`. Projects are the first type kept in order; Ship, Peek,
-Leaf and the agent follow this section when they are.
+**Where it stands (2026-11-02).** The Estiva relay answers the list read and
+its search, and advertises `file_search`; it does not advertise `files` yet,
+and `file_list` and `text` are being added (ALO-7). No app writes `prev` or
+`set` yet. Projects are the first type kept in order; the agent follows this
+section first, then Ship, Peek and Leaf.
 
 ### 6.14 A file's list of other files
 
@@ -3438,6 +3482,9 @@ throwaway relay or a fake query.
 | C37 | **A several-field change** (§6.2, §6.3). A change with `["set", "title", T, p1]` and `["set", "status", "done", p2]`, `O`, `a`, `h` and `["stage", "status", "done"]`, where `p1` and `p2` are current, is accepted, and every conforming reader folds both fields at its time and counts it `done`. One also carrying `field`, or naming `title` twice, is refused. A reader that does not know `set` shows the older title and status, never a mix |
 | C38 | **A stale `prev`** (§6.2). Two apps read a project's `status` at change S; the first sets `started` naming S and is accepted, the second sets `done` naming S and is refused with `conflict:`; it sends `done` again naming the first's id and is accepted, and nobody is asked. A several-field change whose `status` names S and whose `title` is current is refused whole: its title is not changed. Two `description` saves naming the same change: the second is refused, and its app merges and sends again, never overwriting |
 | C39 | **A change that sorts before its `prev`** (§6.2, §6.3). A change whose `created_at` is a second before its `prev`'s is refused; stamped 1 ms after its `prev`, with `ts` and `created_at` agreeing to the second, it is accepted and folds after it. A change whose `h` is not its file's Folder, or whose `a` is not the address of the file its `O` names, is refused (§6.2) |
+| C40 | **Opening a file reads one text** (*added 2026-11-02*, §6.13). A project with 40 text saves, read with `{"fields": "newest", "kinds": [30850], "#d": [d], "text": true}`, returns its first record, one change per field and exactly one `description` change, the current one, whose id names it as the next save's `prev`. The same filter without `#d` is refused. A project whose text was never changed returns no `description` change, and its text is the first record's seed. NIP-11 lists `file_list` whether or not it lists `files` |
+| C41 | **A merge that asks nothing** (§13.3). Base is b1, b2, b3, b4; theirs is b1, b2′, b3, n1, b4; mine is b2, b3, m1, b1, b4′ (b1 moved, m1 added, b4 rewritten). The merge is b2′, b3, n1, m1, b1, b4′ in that order, nothing asks, and the save names theirs as `prev` |
+| C42 | **A merge that asks** (§13.3). Base has b1–b3; theirs deletes b2 and rewrites b3; mine rewrites b2 and b3 differently, and sets `status` in the same change. b2 asks (edited against deleted) and b3 asks (changed by both); nothing of mine is saved, the status included. A marker text changed by both asks as one block |
 
 C11 and C12 both have a failure that is invisible from the app that has it.
 A merged mention looks like somebody said it here. A forged edit looks like an
@@ -5022,6 +5069,47 @@ adds no words, and is never searched as it is. A text with no
 `content-format` is marker text (§13.2, §13.4). Its words are that text with
 the dialect's markers taken out, and a link keeps only its words. Nothing is
 refused for a missing label.
+
+#### Merging two changes to one text
+
+*Added 2026-11-02 (ALO-7), record
+[merging-two-changes-to-one-text-never-loses-words](https://github.com/estiva-app/estiva-docs/blob/main/decisions/merging-two-changes-to-one-text-never-loses-words.md).*
+When the relay refuses a `description` change with `conflict:` (§6.2), its app
+merges three texts: the **base**, the text its change named as `prev`;
+**theirs**, the text now current; and **mine**, the refused one. Every app
+merges by this rule, so two crossing saves give the same text whichever app
+was refused.
+
+- **A block** is any node with an `id`, at any depth (a list item is one); a
+  node with none, such as a table row, belongs to the nearest one around it.
+  A block's **own content** is its type, its `attrs` and every node inside it
+  that is not itself a block, compared as JSON. A block's **place** is its
+  parent and the block before it there.
+- **One side changed a block's own content and the other did not**: the
+  change is taken. **Both changed it the same way**: it is kept once. **Both
+  changed it differently: it asks.**
+- **One side deleted a block** (and every block inside it) **and the other did
+  not touch it**: it is deleted. **One deleted it and the other changed its own
+  content: it asks.** Neither a quiet delete nor a quiet return.
+- **One side moved a block** (changed its place) and the other changed its
+  content: the change is taken, at the new place. Both moved it to different
+  places: theirs stands.
+- **A block one side added** goes after the block it follows on that side,
+  under the same parent, or first there when it follows none. **Both added at
+  one place**: both are kept, theirs first.
+- **The order** is theirs, with each of these applied. A block whose parent
+  the merge deletes asks, as an edit against a delete.
+- **A text that is not a block document** (§13.4) is one block, so any change
+  by both asks unless the two are equal.
+- **When anything asks, nothing of mine is saved**, whatever else merged, and
+  neither is any other field the same change sets (§6.2). The person, or an
+  agent's person, resolves each block that asks, and the app merges again from
+  the text then current. How the question is drawn is the app's.
+
+The merged text is a new save of the whole document (§6.10): it names theirs
+as its `prev`, keeps every block id the merge kept, and writes one `imeta` per
+attachment block it holds. Refused again, the app merges again, with the text
+it last sent as mine and the text it merged onto as the base.
 
 ### 13.4 Reading what is already published
 
