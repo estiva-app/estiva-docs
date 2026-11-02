@@ -84,7 +84,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <main>
 
 <h1>Teams and following</h1>
-<p class="sub"><span class="state">Shaped, 2 Nov 2026</span> · project draft, not yet in Ship · Goal: you see what is said in the teams you are in and the places you follow, at the level you chose, and nothing else.</p>
+<p class="sub"><span class="state">Shaped, 2 Nov 2026</span> · Ship project "Teams and following" · Goal: you see what is said in the teams you are in and the places you follow, at the level you chose, and nothing else.</p>
 <p class="sub">"Today" is cut from <a href="https://docs.estiva.app/architecture/estiva.html">Estiva architecture</a> (as built, 23 Oct 2026).</p>
 
 <p>Every Folder becomes a team: the same group, now with members and followers, and three kinds of place: its chat, which Peek draws for the first time; its spaces, the topics it marks as lasting; and the other topics it leads. Every topic or space has one switch per person: Not following, Important or All. Joining a topic is choosing a level, and someone can add you to one, at Important; you can always leave. One shared rule, in the code every app already uses, works out what is "in what you follow", and the relay makes sure only you set your own level. Start with the Map, then Objects for what a team is.</p>
@@ -96,7 +96,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <li><b>M4</b> The Company team, with everyone in it; Ship, Leaf and Claude say Team.</li>
 </ul>
 
-<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lq">waits on a decision</span><span class="lf">untouched, for orientation</span></div>
+<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lf">untouched, for orientation</span></div>
 
 <h2 id="map">Map</h2>
 
@@ -338,22 +338,22 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 </tbody>
 </table>
 </div>
-<p class="sub">Green rows are new in this project; a dashed cell waits on a decision. "Who is told" is not access: it decides only whose dot lights, never who can read.</p>
+<p class="sub">Green rows are new in this project; every decision on the page is answered. "Who is told" is not access: it decides only whose dot lights, never who can read.</p>
 
 <h2 id="checked">Checked</h2>
-<p class="sub">Checked on 1 Nov 2026, from <code>origin/main</code> of each repository and <code>origin/nfb-demo-kinds</code> for the relay, plus production facts recorded in the draft that day.</p>
+<p class="sub">Checked on 1 Nov 2026, from <code>origin/main</code> of each repository and <code>origin/nfb-demo-kinds</code> for the relay, plus production facts recorded in the project's description in Ship that day.</p>
 <ul class="checked">
 <li><b>Boxes, names and positions.</b> Cut from <code>estiva-docs:architecture/estiva.html</code> (as built, 23 Oct): the app row, the relay, the shared package "Comments and unread" (<code>conversation</code>), the Folder and its files, and the Access rows for a Folder's admins and members and for read state. Estiva ID, the live socket, the relay's stores and the other shared packages are left out because nothing here changes them.</li>
-<li><b>Nine Folders, all open, each roster listing only Miky.</b> The joincheck probe on production, 1 Nov, as recorded in the draft's Technical notes; not re-run for this page.</li>
-<li><b>Anyone in the workspace reads and writes an open Folder.</b> <code>buzz:crates/buzz-relay/src/handlers/ingest.rs:1034</code> (<code>check_channel_membership</code>) and <code>crates/buzz-db/src/store/channel_members.rs:1457</code> (<code>get_accessible_channel_ids</code>), both re-read. Every Folder is open by design: SPEC §3.1.</li>
-<li><b>Peek writes no Join, Leave, add or remove.</b> No NIP-29 <code>kind:9000/9001/9021/9022</code> from Peek, per the draft (1 Nov); not re-checked here.</li>
+<li><b>Nine Folders, all open, each roster listing only Miky.</b> The joincheck probe on production, 1 Nov, as recorded in the project's Technical notes in Ship; not re-run for this page.</li>
+<li><b>Anyone in the workspace reads and writes an open Folder.</b> <code>buzz:crates/buzz-relay/src/handlers/ingest.rs</code> (<code>check_channel_membership</code>) and <code>crates/buzz-db/src/store/channel_members.rs</code> (<code>get_accessible_channel_ids</code>), both re-read. Every Folder is open by design: SPEC §3.1.</li>
+<li><b>Peek writes no Join, Leave, add or remove.</b> No NIP-29 <code>kind:9000/9001/9021/9022</code> from Peek, per the project's description in Ship (1 Nov); not re-checked here.</li>
 <li><b>Peek draws no Folder chat.</b> <code>peek-app:src/api/teamUnread.ts:46-51</code>, re-read: "Peek has no screen for its own messages (2026-10-05)". A Folder's own chat being in the protocol: the base page's Objects table.</li>
 <li><b>Shared conversation code.</b> <code>estiva-foundation:packages/conversation/src/membership.ts</code> (mutes as <code>estiva:muted:v1</code> at :256, encrypted to self at :284-290) and <code>unread.ts:38</code> (a muted stream still counts a mention), re-read.</li>
-<li><b>Company Folder.</b> <code>estiva-docs:protocol/SPEC.md</code> §3.4 (line 246) and the Accepted record <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-workspace-has-one-company-folder-the-relay-marks-and-keeps.md">every-workspace-has-one-company-folder-the-relay-marks-and-keeps</a>. Not built: per the draft (issue 84e39a13, todo); not re-checked in the relay.</li>
+<li><b>Company Folder.</b> <code>estiva-docs:protocol/SPEC.md</code> §3.4 and the Accepted record <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-workspace-has-one-company-folder-the-relay-marks-and-keeps.md">every-workspace-has-one-company-folder-the-relay-marks-and-keeps</a>. Not built: per its Ship issue (84e39a13, todo); not re-checked in the relay.</li>
 <li><b>The after pictures.</b> Rest on the Accepted records <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-team-has-members-and-followers-and-a-place-is-followed-at-a-level.md">a-team-has-members-and-followers-and-a-place-is-followed-at-a-level</a> (who can see members, levels and the teams you follow) and <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/writing-in-a-place-never-follows-it.md">writing-in-a-place-never-follows-it</a>; this project supersedes <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-folder-is-called-a-folder-never-a-team.md">a-folder-is-called-a-folder-never-a-team</a> and, for team chats, <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-folders-own-chat-is-unread-only-for-a-mention.md">a-folders-own-chat-is-unread-only-for-a-mention</a> (both Accepted today).</li>
 <li><b>Add, Join and Leave write one member field</b> (re-checked 2 Nov). <code>estiva-foundation:packages/conversation/src/membership.ts:228</code> (<code>buildMembershipChange</code>: "Join" when the person signs it, "Add" when someone else does, "Leave" for <code>false</code>); a mention in a file's text writes the same through <code>textMentions.ts:122</code>. SPEC §11.8: anyone may set it to true, only the person's own false counts.</li>
 <li><b>A topic has no text today.</b> SPEC §6.7 (bare file, <code>kind:30840</code>): its fields are title, parent, summary, archived, the member field and its list of files; "a reader ignores a <code>description</code> change aimed at a <code>30840</code>". So "a name in a topic's text puts nobody in it" changes nothing written today. A <code>space</code> field is new there.</li>
-<li><b>Three kinds of place, Add, and where a led topic shows.</b> Miky's answers of 2 Nov in the shaping session, in the draft's top section; records to be written as Accepted for his merge.</li>
+<li><b>Three kinds of place, Add, and where a led topic shows.</b> Miky's answers of 2 Nov in the shaping session, in the project's description in Ship; their records are in estiva-docs pull requests #372 and #374 and count once he merges them.</li>
 <li><b>Not verified.</b> What the running images do, apart from the joincheck probe; whether the rosters still list only Miky when you read this; the relay's present rules for a join request, which are not drawn. How the relay will refuse a level set for someone else, and how the teams you follow are stored, are proposed shapes for M2, not built.</li>
 </ul>
 
