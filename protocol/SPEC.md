@@ -250,6 +250,14 @@ produce the same events in the same order.
   2026-10-30: a `1852` `add` by `o` listed a project in the QA Folder and in a
   second Folder, the listing was found by `#o`, and a `remove` by `o` took it
   off.
+- **One entry per file, in either form** (*added 2026-11-02*, ALO-4). A file's
+  address and its id are one entry: an `add` naming a file already listed in
+  the other form keeps the entry in the form and place it was listed in, and a
+  `remove` or a `set` by either form acts on it. A command names each file
+  once, in one form. A reader reads `a` and `o` entries alike, and draws a file
+  named twice once, at its first entry. While an app reading only `a` entries
+  remains, an app lists a file by its address; it lists by `o` once every app
+  reading the Folder reads both (the projects switch, for projects).
 - **Move adds before it removes.** State is per Folder, so there is no atomic
   move; a failure between the two leaves the file listed in both — visible,
   obviously wrong, fixed by moving again — where the other order would leave it
@@ -1091,6 +1099,19 @@ write it, a comment on a `30850`, `30851`, `30840` or `30842` roots at its `A`
 alone, and a reader reads both forms. A comment on a `30852` carries the pair
 from the start.
 
+**A comment in both forms** (*added 2026-11-02*, ALO-4). Once a type's apps
+write the pair, a top-level comment carries `A`, `K` (the address's kind),
+`P`, `O`, `K` (the type), then `a`, `k` (the kind), `o`, `k` (the type), in
+that order, so a reader that takes the first `K` or `k` reads the kind its `A`
+names. A reader takes the kind from `A` and the type from the `K` whose value
+is not a number, never from position alone. A reply copies `A`, `K`, `P`, `O`
+and the type's `K` from its comment, and its lowercase tags stay `e`,
+`["k", "1111"]` and `p` (the Replies table below). **A comment whose `A` and
+`O` name different files is ignored**, as a change is (§6.2): otherwise it
+would show under one file for a reader asking `#A` and under another for one
+asking `#O`. A mention or a listing carries `o` only, never a `k`: `k` goes
+with a top-level comment's `o` as NIP-22's parent kind, and nowhere else.
+
 The pair is offered to Block as a client convention, a fourth thing a comment
 can be about. What Block or NIP-22 refuses, Estiva carries as its own rule.
 
@@ -1210,6 +1231,7 @@ not a subtle bug.
 | tag | value |
 | --- | --- |
 | `A`, `K`, `P` | the object the thread is about: the top-level comment's `A`; `K` and `P` from that address |
+| `O`, `K` | the top-level comment's `O` and its type's `K`, when it carries them (§6.4, "A comment in both forms") |
 | `e` | the id of the thread's **top-level comment**, never of another reply |
 | `k` | that comment's kind, `1111` |
 | `p` | that comment's author |
@@ -1852,11 +1874,11 @@ folded body, not against an `a` or `q` (amended 2026-10-13, OPT-16).
 
 **An edit says what the message links now** (amended 2026-10-27, PEEKM-7;
 record [an-edit-says-what-the-message-links-now](../decisions/an-edit-says-what-the-message-links-now.md)).
-An edit carries the **whole set of `a` and `q` its new words earn**, by the
-rule a send uses (§13.1): an `a` per address and a `q` per message the body
-names, by a `nostr:` reference or an app link that resolves (§7.7), none for
-text in code, minus the comment's own file (its `A`) and the message it replies
-to (its `e`). A words-only edit that keeps every link still carries them all.
+An edit carries the **whole set of `a`, `o` and `q` its new words earn**, by
+the rule a send uses (§13.1): an `a` per address, an `o` per file named by its
+id and a `q` per message the body names, by a `nostr:` reference or an app link
+that resolves (§7.7), none for text in code, minus the comment's own file (its
+`A` and its `O`) and the message it replies to (its `e`). A words-only edit that keeps every link still carries them all.
 The candidates for a file's Mentioned in are read by these, and confirmed
 against the folded body (§6.4).
 
@@ -1864,7 +1886,7 @@ The people a body earns — `p` and `urgent` (§13.1) — and its `part` pointer
 (§13.6.1) stay as first published (CON-25, 2026-10-02). An edit carries none of
 them and never notifies anyone: a person named only in an edit has no tag, and
 one an edit removed keeps it. A `part` is drawn only while the folded body still
-names its address. *Until 2026-10-27* an edit carried no `a` or `q` either, and
+names its file, by its address or by its id. *Until 2026-10-27* an edit carried no `a` or `q` either, and
 edits written before then carry none: a link an old edit added is not listed.
 
 **Attachments fold separately from the body** (amended 2026-09-23). CON-5 found
@@ -3497,6 +3519,11 @@ throwaway relay or a fake query.
 | C40 | **Opening a file reads one text** (*added 2026-11-02*, §6.13). A project with 40 text saves, read with `{"fields": "newest", "kinds": [30850], "#d": [d], "text": true}`, returns its first record, one change per field and exactly one `description` change, the current one, whose id names it as the next save's `prev`. The same filter without `#d` is refused. A member who cannot read the project's home Folder, sending the same filter, gets no `description` change. A project whose text was never changed returns no `description` change, and its text is the first record's seed. NIP-11 lists `file_list` whether or not it lists `files` |
 | C41 | **A merge that asks nothing** (§13.3). Base is b1, b2, b3, b4; theirs is b1, b2′, b3, n1, b4; mine is b2, b3, m1, b1, b4′ (b1 moved, m1 added, b4 rewritten). The merge is b2′, b3, n1, m1, b1, b4′ in that order, nothing asks, and the save names theirs as `prev` |
 | C42 | **A merge that asks** (§13.3). Base has b1–b3; theirs deletes b2 and rewrites b3; mine rewrites b2 and b3 differently, and sets `status` in the same change. b2 asks (edited against deleted) and b3 asks (changed by both); nothing of mine is saved, the status included. A marker text changed by both asks as one block |
+| C43 | **One listing entry per file** (*added 2026-11-02*, §3.3). A Folder lists project P as `["a", addr]`; an `add` naming `["o", d]` leaves one entry, `a`, in its place; a `remove` by `["o", d]` takes it off. A reader given a `30890` with `["a", addr]` and `["o", d]` for one file draws it once, at the first |
+| C44 | **A comment in both forms** (§6.4). A top-level comment on P carries `A`, `K` `30850`, `P`, `O` d, `K` `osnova.project`, `a`, `k` `30850`, `o` d, `k` `osnova.project`, in that order; it is found by `#A` and by `#O`, and a reader takes kind 30850 and type `osnova.project`. Its reply carries `A`, `K`, `P`, `O`, `K` `osnova.project`, `e`, `["k","1111"]`, `p`. A comment whose `O` is not its `A`'s `d` is not drawn under either file |
+| C45 | **A file's marker in two keys** (§11.3, §11.8). Read state with `30850:pk:d` at T1 and `file:d` at T2 > T1 marks P's comments at or before T2 read; with only the address key, P has a marker. A read written by an app writes `file:d` |
+| C46 | **One card per file** (§13.6.1, §13.6.2). A message with `["embed", addr, "detailed"]` whose edit carries `["embed", d, "detailed"]` draws one card; an edit with `["embed", d, "none"]` removes the card the address drew. Two `part` tags, one by the address and one by the id, draw the first |
+| C47 | **A picked project chip** (§13.1). A pick of P from `[` inserts `https://<ship host>/project/<d>` with `["o", d]` and no title; a reader on any app's host resolves it to P (§7.7) |
 
 C11 and C12 both have a failure that is invisible from the app that has it.
 A merged mention looks like somebody said it here. A forged edit looks like an
@@ -3768,7 +3795,8 @@ their activity up as titles, advances none of them.
 stream reads its top-level messages. A reply stays unread until its own thread
 is opened, however old the thread is and however far past it the stream has
 been read. With `<stream>` the channel uuid for a root in the general
-stream and the file's address for a root about that file:
+stream and the file's marker for a root about that file (the later of its
+address key and its `file:<d>` key, §11.8):
 
 ```
 effective(thread:<root>) = max( merged[thread:<root>],
@@ -3913,8 +3941,12 @@ the question — that is a read it did not make.
 
 **A file whose comments move to its id keeps what was read** (*added
 2026-10-30*, §6.4). Its marker is the later of its address key (§11.1's bare
-address) and its `file:<d>` key. An app MAY copy the old value under the new key: that records a
+address) and its `file:<d>` key, wherever this section reads a file's marker,
+the absent-marker rule above included: a file with either key has a marker. An app MAY copy the old value under the new key: that records a
 read the person did make, so it is not the marker the paragraph above forbids.
+A new read is written under `file:<d>`. While an app that reads only the
+address key remains, an app also writes it under the address; both count
+against the blob's 65,535 bytes (below). *Added 2026-11-02, ALO-4.*
 
 **When a blob is full, the oldest markers go, and the reply floor pays for the
 threads among them** (CON-34, Miky 2026-10-05). `/nip44/encrypt` refuses a
@@ -4554,8 +4586,10 @@ for a card under the message through an `embed` tag (§13.6.2).
 [a-file-is-named-by-its-id-in-a-capital-and-small-tag](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-file-is-named-by-its-id-in-a-capital-and-small-tag.md)).
 Once a type's apps name it by its id (§6.4, projects first), a chip a person
 picks from `[` or Cmd+K inserts the app link form that carries only the file's
-id, never its title (for a project, Ship's `/#/project/<d>`; its route takes a
-`30850` address until projects move), with `["o", <d>]` beside it: someone
+id, never its title (for a project, `https://<ship host>/project/<d>`: Ship's
+path route with no title, which every app's host answers, §7.7; *amended
+2026-11-02*, ALO-4, from `/#/project/<d>`, which matches only on Ship's own
+origin), with `["o", <d>]` beside it: someone
 who cannot open the file learns nothing from the message, and a rename leaves
 nothing stale. A pasted link stays as the person pasted it (C25). A type whose
 app publishes no link form has no chip in text.
@@ -5374,7 +5408,8 @@ tags:    ["h", <folder>], ["a", "30851:<pubkey>:<d>"],
   is now, and MUST NOT write the resolved content into the message, a draft, a
   notification or any store that outlives the view. A copy goes stale and keeps
   showing text to someone who has since lost access to the object's Folder.
-- One `part` per address. A reader takes the first and ignores the rest. Its
+- One `part` per file: its address and its id are one file (*added
+  2026-11-02*, ALO-4). A reader takes the first and ignores the rest. Its
   ids from index 2 are a run (§13.3, "A run of blocks"): one id is one block,
   several are the span from the first to the last, live as the object changes.
   A block id outside `[A-Za-z0-9_-]{1,64}` is ignored, because it ends up in a
@@ -5528,8 +5563,11 @@ rule changed.*
   reference first named in an edit can carry a card. This is §13.6.1's rule for
   `part`. Text in a code span names nothing (§13.1).
 - **First per value.** A reader takes the first `embed` for a value and ignores
-  the rest. When a `part` and an `embed` name the same address, the part wins,
-  and a writer MUST NOT write both.
+  the rest. When a `part` and an `embed` name the same file, the part wins,
+  and a writer MUST NOT write both. A file's address and its id are one value
+  (*added 2026-11-02*, ALO-4): an `embed` by `<d>` and one by the address of
+  the same file draw one card, the first, and `["embed", <either>, "none"]`
+  removes it.
 - **Unknown layout.** A reader draws a layout value it does not know as
   `compact`: the author asked for a card, and the smallest is the safe reading.
   `none` is defined from the start, so no reader ever draws it. A document's
