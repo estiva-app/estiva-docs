@@ -209,6 +209,7 @@ properties and its history.
 - [An agent says it is an agent in its own profile (NIP-24 `bot`), and Estiva ID publishes it](an-agent-says-it-is-a-bot-in-its-profile.md) — Accepted, 2026-09-24
 - [Removing an agent from a Folder keeps it out, even while the person it works for is in](removing-an-agent-from-a-folder-keeps-it-out.md) — Accepted, 2026-10-27
 - [The person an agent works for can end that at once, and the relay cuts the agent off](an-agents-owner-ends-its-access-at-once.md) — Accepted, 2026-10-27
+- [An app declares the kinds it writes, and an owner or admin installing it grants them](an-app-declares-the-kinds-it-writes-and-installing-it-grants-them.md) — Accepted, 2026-11-02
 
 ## Devices & sessions
 
