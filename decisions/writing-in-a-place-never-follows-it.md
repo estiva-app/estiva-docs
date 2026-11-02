@@ -11,6 +11,13 @@
 > member of a topic or a space. On any other file they still do, and the rest
 > of that record stands.
 
+> Superseded in part, 2026-11-02: "you follow a place only by your choice or
+> by a team's default" gains a third way in: someone adds you, which puts you
+> in the place at Important, in
+> [a-team-holds-three-kinds-of-place-and-add-puts-you-in-one](a-team-holds-three-kinds-of-place-and-add-puts-you-in-one.md).
+> Writing in a place still puts you only in that conversation, and the rest
+> of this record stands.
+
 ## Who it affects
 
 Miky's own scenarios, in his Leaf page "Read / Unread notifications +

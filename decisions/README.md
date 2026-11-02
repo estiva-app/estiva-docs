@@ -118,19 +118,27 @@ heading here.
 - [A Folder two companies share is kept on both companies' relays, and the company that started it runs it; each company decides about its own people and their words](a-shared-folder-lives-on-both-relays-and-its-host-runs-it.md) — Accepted, 2026-10-26
 - [Only a group's owners and admins make it a Folder; DMs and workflow channels never become one](only-a-groups-owners-and-admins-make-it-a-folder.md) — Accepted, 2026-10-27
 - [Every workspace has exactly one Company Folder, which the relay marks and keeps for good](every-workspace-has-one-company-folder-the-relay-marks-and-keeps.md) — Accepted, 2026-10-30
+- [A topic lives in exactly one team, and only a move changes which](a-topic-lives-in-exactly-one-team.md) — Accepted, 2026-11-02
+- [A space is a team's own mark on a topic it lists, so a move hands the choice to the team it moves to](a-space-is-the-teams-own-mark-on-a-topic-it-lists.md) — Accepted, 2026-11-02
+- [Anyone in the company may join an open team; only its members add someone to it or mark one of its spaces, and the relay checks it](anyone-may-join-an-open-team-and-only-its-members-add-or-mark.md) — Accepted, 2026-11-02
 
 ## Read state
 
 - [You are told about the files you are a member of, the same in every app, and following is retired](membership-replaces-following.md) — Accepted, 2026-09-30; its part "following is retired" superseded, for teams and places, by the record on following below, 2026-10-30; and its part "writing or being mentioned in its conversation makes you a member", for topics and spaces, by the record on writing below
-- [A Folder has no read state of its own: its chat is unread for you only when a message names you](a-folders-own-chat-is-unread-only-for-a-mention.md) — Accepted, 2026-10-01
+- [A Folder has no read state of its own: its chat is unread for you only when a message names you](a-folders-own-chat-is-unread-only-for-a-mention.md) — Accepted, 2026-10-01; superseded in part, for a team's members, by "A team's chat is followed like a space" below, 2026-11-02
 - [A reply is read only when you open its thread, not when you read the conversation it sits in](a-reply-is-read-only-when-its-thread-is-opened.md) — Accepted, 2026-10-03
 - [Anyone may add a person to a file, including someone who left it](anyone-may-add-a-person-to-a-file.md) — Accepted, 2026-10-06
-- [A mention in a file's text adds the person, as the Add button does, and being added shows no unread until a document has its own read state](a-mention-in-a-files-text-adds-the-person-with-no-unread.md) — Accepted, 2026-10-20
+- [A mention in a file's text adds the person, as the Add button does, and being added shows no unread until a document has its own read state](a-mention-in-a-files-text-adds-the-person-with-no-unread.md) — Accepted, 2026-10-20; superseded in part, for a topic's summary, by "A team holds three kinds of place" below, 2026-11-02
 - [A mention in a file's text adds the person, as the Add button does, and being added shows one unread](a-mention-in-a-files-text-adds-the-person.md) — Superseded by the one above, 2026-10-20
 - [A person mentioned in a file's text is told once and becomes a member, and a later save that still names them changes nothing](a-person-mentioned-in-a-files-text-is-told-once.md) — Superseded by the one above, 2026-10-20
 - [A file's unread state is kept under "file:" and its id, so reading a file can never mark a Folder's chat read](a-files-unread-state-is-keyed-file-and-its-id.md) — Accepted, 2026-10-29
 - [A team has members and followers, and you follow a topic or space at All, at Important, or not at all; a team's members and a place's followers at each level are visible, and the rest of what you follow is yours](a-team-has-members-and-followers-and-a-place-is-followed-at-a-level.md) — Accepted, 2026-10-30
-- [Writing in a topic or space puts you in that conversation, never in the place; you follow a place only by your choice or by a team's default, which is worked out and never written; and All never makes you a member of the files a topic lists](writing-in-a-place-never-follows-it.md) — Accepted, 2026-10-30
+- [Writing in a topic or space puts you in that conversation, never in the place; you follow a place only by your choice or by a team's default, which is worked out and never written; and All never makes you a member of the files a topic lists](writing-in-a-place-never-follows-it.md) — Accepted, 2026-10-30; its part "only by your choice or by a team's default" superseded, by a third way in (someone adds you), by the one below, 2026-11-02
+- [A team holds three kinds of place, its chat, its spaces and the topics it leads; joining one is following it, and someone adding you puts you in it](a-team-holds-three-kinds-of-place-and-add-puts-you-in-one.md) — Accepted, 2026-11-02
+- [Your level on a topic or space is a fact kept on the place, and only you can set it: the relay refuses anyone else's, and every app ignores one you did not sign](a-persons-level-on-a-place-is-theirs-alone.md) — Accepted, 2026-11-02
+- [A topic or space lists everyone who chose a level, everyone added to it, and its team's members at their default; someone who follows it only through a team they follow shows once they choose](a-place-lists-who-chose-a-level-and-its-teams-members.md) — Accepted, 2026-11-02
+- [A team's chat is followed like a space: its members follow it at Important, so a new conversation lights for them and a reply only for those in that conversation, unless they set the chat to All](a-teams-chat-is-followed-like-a-space.md) — Accepted, 2026-11-02
+- [A team's default starts when it reached you: the later of your joining or following the team and the place coming into it, so nothing older is unread](a-teams-default-starts-when-it-reached-you.md) — Accepted, 2026-11-02
 
 ## Messages
 

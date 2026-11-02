@@ -5,6 +5,12 @@
 - Decided by: Miky, on CON-19 (2026-10-01; the ruling PEE-45's Decided lines cite)
 - Area: Read state
 
+> Superseded in part, 2026-11-02: for a team's members, its chat now has read
+> state, as a space does, in
+> [a-teams-chat-is-followed-like-a-space](a-teams-chat-is-followed-like-a-space.md).
+> For anyone else it stays as this record says: unread only when a message
+> names them.
+
 ## Who it affects
 
 Miky and Katerina are told about a Folder's own chat (the messages about no
