@@ -1,7 +1,8 @@
 # A topic always has a team: a move changes both teams' lists in one action, and a topic on no list can go back only to the team it was created in
 
 - Date: 2026-11-02
-- Status: Proposed
+- Status: Accepted
+- Decided by: Miky, in the TEA-3 session (2026-11-02), on the brief "Who can claim a topic"
 - Area: Folders
 
 ## Who it affects
@@ -40,7 +41,17 @@ team in one update.
 
 ## Rejected alternatives
 
-None yet: the options are listed under Context until Miky answers.
+- **Keep two steps, and send a topic on no list home.** While a topic is on
+  no list, only the person who just took it off may list it, for about a
+  minute, and after that only the team it was created in. It keeps the two
+  events apps already send, but the relay must remember who removed what and
+  when, a rule on a clock that is hard to explain to an outside company; and
+  a topic whose move was left halfway waits on no list until its home team,
+  which may not be where it was, picks it up.
+- **Leave it to whichever team lists it first.** The simplest rule, and
+  nothing to undo, but "exactly one team" then holds only after a move
+  succeeds, and a topic on no list goes to whoever lists it first, leaving
+  the rule to good manners.
 
 ## Consequences
 
