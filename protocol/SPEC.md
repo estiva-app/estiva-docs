@@ -218,13 +218,13 @@ produce the same events in the same order.
 | **archive** / **restore** | `kind:1851` on the Folder's address, `field` `archived`, `value` `true` (or empty to restore), `h` the Folder itself; `content` MAY carry what the person said about it | by the consumer, to anybody but the Folder's owners and admins; a reader ignores one from anybody else (§3.2). By the relay, an archive of the Company Folder, for good (§3.4) |
 | **delete** | `kind:9008` with the Folder's `h` | by the relay, while the Folder holds a file — a first record (`30840`, `30842`, `30850`, `30851` or `30852`) under its `h`, deleted ones included (§6.5), or anything its listing names — and for good on the Company Folder (§3.4), and to anybody but the channel's owner, the person who owns an owner-role agent in the channel, or an owner or admin of the workspace on the relay's roster |
 | **place** a new file | the file's root, with this Folder's `h` (or the tag its owner's `placement` names, §7.3) — under a parent, the parent's own Folder instead (§6.7); then `kind:1852` `add` naming its address | — |
-| **unlist** a deleted file | the `kind:5`; then `kind:1852` `remove` naming its address, in each Folder whose state names it (§7.3) | — |
-| **move** a file to another Folder | `kind:1852` `add` in the target; then `kind:1852` `remove` in the source — one pair for the file and one for each file nested beneath it (§6.7 Nesting), so a subtree moves whole; never the files a topic lists (§6.14). The file's `h` does not change. A topic's `space` role does not travel: the target's `add` carries it only when the person ticks "Keep it a space in <team>", which a consumer offers ticked when the topic was a space and the person may mark the target's spaces | by the consumer, when the target is private and the file's `h` names any other channel (§3.1: the move would look private and not be). By the relay, an `add` carrying `space` from somebody who is not a member of the target |
+| **unlist** a deleted file | the `kind:5`; then `kind:1852` `remove` naming its address, in each Folder whose state names it (§7.3) | by the relay, the `remove` of a team's space from somebody who is not a member of that team: the entry stays listed until a member removes it, and a reader skips it as deleted |
+| **move** a file to another Folder | `kind:1852` `add` in the target; then `kind:1852` `remove` in the source — one pair for the file and one for each file nested beneath it (§6.7 Nesting), so a subtree moves whole; never the files a topic lists (§6.14). The file's `h` does not change. A topic's `space` role does not travel: the target's `add` carries it only when the person ticks "Keep it a space in <team>", which a consumer offers ticked when the topic was a space and the person may mark the target's spaces. Moving a space out of a team takes its mark off, so a consumer offers it only to a member of the source team, and checks that before the `add` | by the consumer, when the target is private and the file's `h` names any other channel (§3.1: the move would look private and not be), and a space's move by somebody who is not a member of its team. By the relay, an `add` carrying `space` from somebody who is not a member of the target, and the source's `remove` of a space from somebody who is not a member of the source |
 | **start a conversation** | `kind:9` with the Folder's `h` (§6.4) | — |
 | **join** a team | `kind:9021` with the team's `h`, signed by the person joining | by the relay, on a team that is not open (private teams are a later stage) |
 | **leave** a team | `kind:9022` with the team's `h`, signed by the person leaving | by the relay, on the Company team (§3.4); and NIP-29's own rule for a sole owner |
 | **add** someone to a team | `kind:9000` with the team's `h` and `["p", <pubkey>]` | by the relay, to anybody who is not a member of the team; and a `kind:9000` granting or changing a role (owner, admin) to anybody but the team's owners and admins |
-| **remove** someone from a team | `kind:9001` with the team's `h` and `["p", <pubkey>]` | by the relay, to anybody but the team's owners and admins (`kind:39001`) and, for an agent, the person who owns it; and on the Company team, for anyone still in the company (§3.4) |
+| **remove** someone from a team | `kind:9001` with the team's `h` and `["p", <pubkey>]` | by the relay, to anybody but the team's owners and admins (`kind:39001`) and, for an agent, the person who owns it when they are a member of the team; and on the Company team, for anyone still in the company (§3.4) |
 | **mark** a space, or **unmark** it | `kind:1852` `add` naming the topic with the `space` role (below), or naming it without the role | by the relay, to anybody who is not a member of the team: any `kind:1852` — `add`, `remove` or `set`, a move's included — that gives an entry a role, or changes or removes an entry carrying one |
 | **follow** a team, or stop | no public event: the person's own `estiva:teams:v1` list (§11.8) | — |
 
@@ -277,8 +277,15 @@ produce the same events in the same order.
   `kind:30890`. An `add` naming an entry already listed replaces its role, so an
   `add` without `space` unmarks it, and so does an entry without it in a `set`.
   `space` is the only role. A reader ignores a role it does not know and still
-  lists the entry. The topic itself carries no mark: a space is the team's
-  choice about its own list, so a move drops it (above).
+  lists the entry, but the relay refuses a command naming one, or a role after
+  a non-empty third element, rather than drop it. A file is one entry whichever
+  form names it: an `o` of `<d>` and an `a` ending `:<d>` are the same entry, so
+  a command in either form re-marks, unmarks or removes it. The topic itself
+  carries no mark: a space is the team's choice about its own list, so a move
+  drops it (above). Who may change a mark is any member of the team, as for
+  adding someone: the relay refuses a `kind:1852` that names an entry with a
+  role, or that gives an entry a role or changes or removes one carrying one,
+  from anybody who is not on the team's roster with a role that may post.
 - **A topic is listed by exactly one team** (*added 2026-11-02*; record
   [a-topic-lives-in-exactly-one-team](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-topic-lives-in-exactly-one-team.md)).
   A consumer never offers to list a topic in a second team; a move is the only
@@ -3550,9 +3557,9 @@ staged field, or writes one, also conforms to these.
 | C32 | **A status change carries its stage.** Setting a status from any control writes one `1851` with `field` `status`, `value` the option's id and, last, `["stage", "status", <the option's stage>]`; a creation that sets a status carries the same `stage` last on its root. Clearing it writes no `stage`. A change to a field whose vocabulary has no stages, such as `archived`, carries none |
 | C33 | **The change's stage counts.** A file whose current status change has value `in_progress` and stage `done` counts as done, even though the listing gives `in_progress` the stage `started`. A change whose stage is `paused` counts by the listing's stage. A change with no stage counts as before this rule. A `["stage","title","done"]` on a title change, or a `["stage","priority","done"]` on a status change, is ignored |
 | C34 | **An unknown option is shown.** A file whose current status is `triage` with stage `started`, an id no layer the reader can read lists, shows `triage` as its status and counts as `started`; it is not dropped from a list, a board or a count |
-| C35 | **A level on a place is its person's own** (*added 2026-11-02*, §11.8). A `follow:<P>` with `all` or `important` signed by `P` sets `P`'s level; one signed by anybody else is refused by the relay and ignored by a reader; any other value than `all`, `important` or empty sets nothing. `P`'s own `member:<P>`=`false` ends every level and join before it, from any app; a level, join or Add after it puts `P` back in. An Add puts `P` in at Important and never sets a level. A `follow:<P>`'s `p` places `P` on nothing |
-| C36 | **A team's default** (*added 2026-11-02*, §11.8). A member of a team is in its chat and spaces at Important, a follower (by `estiva:teams:v1`) in its spaces, nobody in the topics it leads, and nobody in any place of an archived team by any way, a chosen level included; a place in `off` is not reached. Nothing before the later of the person's join (the `kind:9000`/`9021`, or the `kind:9007` for its maker) or follow `since` and the space's marking `add` is unread. Important lights a new conversation, a reply in a conversation the person wrote in or is mentioned in, and a mention; All also every reply and the conversations on the files the place lists; a list entry lights nothing |
-| C37 | **A space and a topic's one team** (*added 2026-11-02*, §3.3). A `kind:1852` `add` carrying `["a", <addr>, "", "space"]` (or the `o` form) marks the entry a space, and an `add` without the role unmarks it; a role a reader does not know leaves the entry listed. A topic found on two teams' lists is drawn in the one whose `add` naming it is newest. A move's `add` keeps the role only when it carries it |
+| C40 | **A level on a place is its person's own** (*added 2026-11-02*, §11.8; was C35). A `follow:<P>` with `all` or `important` signed by `P` sets `P`'s level; one signed by anybody else, or with `P` not the signer's lowercase hex, is refused by the relay and ignored by a reader; any other value than `all`, `important` or empty is refused by the relay and sets nothing. `P`'s own `member:<P>`=`false` ends every level and join before it, from any app; a level, join or Add after it puts `P` back in. An Add puts `P` in at Important and never sets a level. A `follow:<P>`'s `p` places `P` on nothing |
+| C41 | **A team's default** (*added 2026-11-02*, §11.8; was C36). A member of a team is in its chat and spaces at Important, a follower (by `estiva:teams:v1`) in its spaces, nobody in the topics it leads, and nobody in any place of an archived team by any way, a chosen level included; a place in `off` is not reached. Nothing before the later of the person's join (the earliest `kind:9000`/`9021` since their last leave, or the `kind:9007` for its maker) or follow `since` and the space's marking `add` (the earliest since it was last unmarked) is unread. Important lights a new conversation, a reply in a conversation the person wrote in or is mentioned in, and a mention; All also every reply and the conversations on the files the place lists; a list entry lights nothing |
+| C42 | **A space and a topic's one team** (*added 2026-11-02*, §3.3; was C37). A `kind:1852` `add` carrying `["a", <addr>, "", "space"]` (or the `o` form) marks the entry a space, and an `add` without the role unmarks it; a role a reader does not know leaves the entry listed. A topic found on two teams' lists is drawn in the one whose `add` naming it is newest. A move's `add` keeps the role only when it carries it |
 
 ### 9.1 Reference checks
 
@@ -4285,12 +4292,17 @@ tags: ["a", X] ["O", <d>] ["field", "follow:<P>"] ["value", "all" | "important" 
 
 - **Only `P` sets it.** The relay refuses a `follow:<P>` change not signed by
   `P`, and every reader ignores one not signed by `P`, so it holds on any
-  company's relay.
-- An empty `value` means "no choice of mine". The field takes no other value:
-  **not following is never public**. Turning off a team's default goes in
-  `P`'s private list, so nobody sees that `P` switched a place off.
+  company's relay. `P` is the signer's key in lowercase hex, exactly: an
+  uppercase or `npub` form is refused, so a relay and a reader never disagree
+  about whose level it is. The relay checks every `kind:1851`, whatever its
+  `a` names, a team's chat included.
+- An empty `value` means "no choice of mine". The field takes no other value,
+  and the relay refuses one that has: **not following is never public**.
+  Turning off a team's default goes in `P`'s private list, so nobody sees that
+  `P` switched a place off.
 - It is a membership field: its `p` places `P` on nothing (above), and a fold
-  of a file's members skips it. It needs no `prev` and is never in a `set`.
+  of a file's members skips it. It needs no `prev` and is never in a `set`;
+  the relay refuses a `set` naming it or `member:<P>`.
 - On a team's chat, `X` is the team's own address (`39000:…`), `O` its uuid,
   and `h` the team itself: a level or a member change on a team's address is
   about its chat, always: a team as a file (§11.5) has no file membership, so a
@@ -4306,14 +4318,18 @@ for `P`. `P` is in since the earliest start among the ways that hold now:
   changes; a join or an Add: as the fold above gives *since*; the author: the
   first record's `created_at`;
 - a team's default: the later of the moment it reached `P` from the team and
-  the moment the place came into the team. From the team: `P`'s join, the
-  `created_at` of the stored `kind:9000` or `kind:9021` naming `P` on the
-  team's `h` (a `kind:39002` keeps no time per person), or the `kind:9007`
-  for the person who made the team; for a follower, the time kept for the team
-  in their private list. The place coming in: for a space, the `created_at` of
-  the newest `kind:1852` `add` naming it with the `space` role that the current
-  `kind:30890` still reflects (a `kind:30890` keeps no time per entry); for a
-  team's chat, the team's own start.
+  the moment the place came into the team. From the team, for a person the
+  current `kind:39002` lists: `P`'s join, the `created_at` of the earliest
+  stored `kind:9000` or `kind:9021` naming `P` on the team's `h` since `P`'s
+  last `kind:9001` or `kind:9022` there (a `kind:39002` keeps no time per
+  person, and a later `kind:9000` that changes `P`'s role is not a join), or
+  the `kind:9007` for the person who made the team; for a follower, the time
+  kept for the team in their private list. The place coming in: for a space,
+  the `created_at` of the earliest `kind:1852` `add` naming it with the `space`
+  role since the last one that unmarked or removed it, while the current
+  `kind:30890` still marks it (a `kind:30890` keeps no time per entry, and a
+  member marking it again moves nothing); for a team's chat, the team's own
+  start.
 
 **What is unread on a place.** A message on place `X` is unread for `P` when
 `P` is in `X`, `P` did not write it, its `created_at` is at or after `P`'s
