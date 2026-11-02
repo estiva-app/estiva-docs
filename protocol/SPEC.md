@@ -4179,7 +4179,8 @@ tags: ["a", X] ["O", <d>] ["field", "follow:<P>"] ["value", "all" | "important" 
   of a file's members skips it. It needs no `prev` and is never in a `set`.
 - On a team's chat, `X` is the team's own address (`39000:…`), `O` its uuid,
   and `h` the team itself: a level or a member change on a team's address is
-  about its chat. A team's own membership is never a `kind:1851`; it is its
+  about its chat, always: a team as a file (§11.5) has no file membership, so a
+  reader never folds these into one. A team's own membership is never a `kind:1851`; it is its
   roster (§3.3).
 - A change's history is append-only, so the levels `P` chose before stay
   readable.
@@ -4203,7 +4204,9 @@ for `P`. `P` is in since the earliest start among the ways that hold now:
 **What is unread on a place.** A message on place `X` is unread for `P` when
 `P` is in `X`, `P` did not write it, its `created_at` is at or after `P`'s
 start, it is newer than `P`'s effective marker for it (§11.3), and `P`'s level
-lights it (the table above). On a place this replaces conditions 1 and 3 of
+lights it (the table above), and `P` has not muted `X` (an older mute, *Muting
+is private*, which then lights only mentions). On a place this replaces
+conditions 1 and 3 of
 *What membership changes about unread*; a mention of `P` lights as it does
 everywhere. At All, a message on a file the place lists answers to that file's
 own marker (§11.1), so reading it once in any app reads it everywhere, and All
@@ -4222,8 +4225,10 @@ wins (§12.3), holding
 {"v": 1, "updatedAt": <epoch ms>, "teams": {"<team uuid>": <since, epoch ms>}, "off": ["<place id>", …]}
 ```
 
-A team in `teams` is one `P` follows, from `since`; it is never a team `P` is
-a member of, which is the roster's. `off` names the places whose team default
+A team in `teams` is one `P` follows, from `since`. A writer removes nothing
+when `P` joins: while `P` is on the roster, a reader takes `P` as a member and
+ignores the entry, and when `P` leaves the team, the entry, if still there,
+makes `P` a follower again from its `since`. `off` names the places whose team default
 `P` turned off: a topic or space by its `d`, a team's chat by the team's bare
 uuid. Which teams a person follows is seen only by them; who is a member of a
 team is public (§3.2).
