@@ -1,7 +1,8 @@
 # Who can read a file is decided on the file, and Folders are labels
 
 - Date: 2026-10-14
-- Status: Proposed
+- Status: Rejected
+- Decided by: Miky, on the brief "Who leads a space, and who reads it" (2026-10-29: "the team decides who can see what"), recorded with [a-team-is-the-folder-and-is-called-a-team](a-team-is-the-folder-and-is-called-a-team.md) on the brief "What a team is" (2026-11-02)
 - Area: Folders
 
 ## Who it affects

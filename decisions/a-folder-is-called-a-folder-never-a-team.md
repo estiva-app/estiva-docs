@@ -1,7 +1,7 @@
 # It is called a Folder; "team" is not a second name for it
 
 - Date: 2026-09-25
-- Status: Accepted
+- Status: Superseded by a-team-is-the-folder-and-is-called-a-team.md
 - Decided by: Miky, in a working session
 - Area: Folders
 
