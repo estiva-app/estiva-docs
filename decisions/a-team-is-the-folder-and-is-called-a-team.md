@@ -1,18 +1,20 @@
 # A team is today's Folder, with members, followers and its own chat, and it is called a team
 
 - Date: 2026-11-02
-- Status: Proposed
+- Status: Accepted
+- Decided by: Miky, in the session shaping "Teams and following" (2026-11-02), on the brief "What a team is" ([page](briefs/what-a-team-is.html)): A, as recommended
+- Supersedes: a-folder-is-called-a-folder-never-a-team.md
 - Area: Folders
 
 ## Who it affects
 
-Miky and Katerina would see Peek's rail, Ship's Move control, Leaf's page
-header, Claude and the CLI call the place a file lives a team, on the same day.
-Each of the nine Folders would become a team with the same name, and Estiva HQ
-would become the Company team. Katerina joins Peek's team, and from then on a
+Miky and Katerina see Peek's rail, Ship's Move control, Leaf's page header,
+Claude and the CLI call the place a file lives a team, from the same day. Each
+of the nine Folders becomes a team with the same name, and Estiva HQ becomes
+the Company team. Katerina joins Peek's team, and from then on a
 new conversation in its chat lights for her.
 
-An outside company would learn one object. A team is where a file lives, who
+An outside company learns one object. A team is where a file lives, who
 can read it, and who is told about it, as in Notion's teamspaces or Linear's
 teams.
 
@@ -48,7 +50,7 @@ it as given that "a team is a Folder with people", and no record says so.
 
 ## Decision
 
-Proposed, as the brief "What a team is" recommends (option A):
+Option A of the brief "What a team is":
 
 - A team is today's Folder: the same group, with the same id and the same
   listing. It now also has members (its roster, which a person joins and
@@ -61,8 +63,6 @@ Proposed, as the brief "What a team is" recommends (option A):
 - How a team's private part attaches to it is left to the private stage.
 
 ## Rejected alternatives
-
-None rejected yet. These are the other options on the brief, as they stand:
 
 - **B · A Folder gains people and stays a Folder.** This is the same object as
   A, but the 25 Sep record stands, and people "join a Folder" and "follow a
@@ -80,11 +80,14 @@ None rejected yet. These are the other options on the brief, as they stand:
 
 ## Consequences
 
-- Would supersede
-  [a-folder-is-called-a-folder-never-a-team](a-folder-is-called-a-folder-never-a-team.md)
-  and amend the Company Folder record's naming. It would close
-  [folders-are-labels](folders-are-labels.md) as Rejected, citing Miky's 29 Oct
-  "the team decides". The team stays what a read is checked against.
+- Supersedes
+  [a-folder-is-called-a-folder-never-a-team](a-folder-is-called-a-folder-never-a-team.md).
+  The Company Folder of
+  [every-workspace-has-one-company-folder-the-relay-marks-and-keeps](every-workspace-has-one-company-folder-the-relay-marks-and-keeps.md)
+  is the Company team, with the same mark; the rest of that record stands.
+  It closes [folders-are-labels](folders-are-labels.md) as Rejected, citing
+  Miky's 29 Oct "the team decides": the team stays what a read is checked
+  against.
 - SPEC §3 and §3.2 change their noun, and so does the interop label. Every app
   renames on the same day.
 - Two-way on the relay. A team object, as in C, could still be added later

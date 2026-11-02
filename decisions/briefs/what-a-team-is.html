@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What a team is</title>
+<style>
+:root {
+  --bg: #fbfaf7; --ink: #1d1d1f; --muted: #5d5d66; --line: #8e8e98; --rule: #dcdad3;
+  --box: #efeee9; --card: #ffffff; --fold: #f3f1ea; --gate: #e6edfb; --team: #eaf4ec;
+  --accent: #2457c5; --warn: #b3401f; --ok: #2a7a46; --chip: #dfe6f6; --pick: #f2f6ff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17171a; --ink: #ececef; --muted: #a8a8b2; --line: #74747f; --rule: #34343b;
+    --box: #26262b; --card: #1f1f23; --fold: #222226; --gate: #1d2a45; --team: #1d3324;
+    --accent: #93b2ff; --warn: #ff9e80; --ok: #82d69e; --chip: #2b3553; --pick: #1c2338;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17171a; --ink: #ececef; --muted: #a8a8b2; --line: #74747f; --rule: #34343b;
+  --box: #26262b; --card: #1f1f23; --fold: #222226; --gate: #1d2a45; --team: #1d3324;
+  --accent: #93b2ff; --warn: #ff9e80; --ok: #82d69e; --chip: #2b3553; --pick: #1c2338;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0 auto; max-width: 760px; padding: 24px 16px 64px;
+  background: var(--bg); color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+h1 { font-size: 28px; line-height: 1.2; margin: 4px 0 4px; }
+h2 { font-size: 20px; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--rule); }
+h3 { font-size: 17px; margin: 22px 0 6px; }
+p, li { max-width: 70ch; }
+ul { padding-left: 20px; }
+li { margin: 3px 0; }
+.kicker { color: var(--muted); font-size: 14px; margin: 0; }
+.question { font-size: 19px; line-height: 1.45; font-weight: 600; }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+.door { background: var(--box); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.pick { background: var(--pick); border-left: 4px solid var(--accent); padding: 10px 14px; border-radius: 6px; }
+.opt { border: 1px solid var(--rule); border-radius: 10px; padding: 4px 16px 10px; margin: 14px 0; background: var(--card); }
+.opt h3 { margin-top: 12px; }
+.opt.rec { border-color: var(--accent); }
+.tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); vertical-align: 2px; margin-left: 6px; }
+.tablewrap { overflow-x: auto; margin: 10px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.4; min-width: 560px; }
+th, td { text-align: left; vertical-align: top; padding: 7px 8px; border-bottom: 1px solid var(--rule); }
+th { font-size: 13px; color: var(--muted); font-weight: 600; }
+td:first-child { font-weight: 600; min-width: 7.5em; }
+figure { margin: 18px 0 24px; overflow-x: auto; }
+figure svg { width: 100%; min-width: 600px; height: auto; display: block; }
+figcaption { font-size: 14px; color: var(--muted); margin-top: 6px; }
+figcaption b { color: var(--ink); }
+code { font-size: 13px; background: var(--box); padding: 0 4px; border-radius: 4px; }
+.team { fill: var(--team); stroke: var(--ok); stroke-width: 1.3; }
+.fold { fill: var(--fold); stroke: var(--line); stroke-width: 1.2; }
+.file { fill: var(--card); stroke: var(--line); stroke-width: 1.2; }
+.bad { fill: var(--card); stroke: var(--warn); stroke-width: 1.4; }
+.gate { fill: var(--gate); stroke: var(--accent); stroke-width: 1.5; }
+.dash { stroke-dasharray: 6 4; }
+.arrow { stroke: var(--line); stroke-width: 1.4; fill: none; }
+.t { fill: var(--ink); font-size: 13px; }
+.b { font-weight: 700; }
+.ts { fill: var(--muted); font-size: 12px; }
+.ta { fill: var(--accent); font-size: 12px; font-weight: 600; }
+.tw { fill: var(--warn); font-size: 12px; font-weight: 600; }
+.tok { fill: var(--ok); font-size: 12px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<p class="kicker">Decision brief · Teams stage of "Re-architecting Osnova protocol" · 2 Nov 2026 · for Miky</p>
+<h1>What a team is</h1>
+<p class="question">When a team gets members, followers and its own chat, is it today's Folder (the same place that holds the files and decides who can read them), or a new thing above it? And is it called Team or Folder?</p>
+<p class="muted small">This replaces the brief "Team or Folder", which asked only for the word and took it as given that a team is today's Folder. Nothing written down decides that, and the answer decides the shape.</p>
+
+<h2>Today</h2>
+<p>A Folder is where a file lives. It lists its files, and the relay lets you read a file only if you can read its Folder. Production has 9 Folders: Estiva HQ, Peek, Ship, Leaf, Steer, QA, Backlog, Folders and Test folder Katerina. All 9 are open to everyone in the company, and each lists one person as a member. Each Folder has its own chat on the relay, but no app shows it.</p>
+<p>Since 28 Oct you have talked about teams:</p>
+<ul>
+  <li>"Teams represent how the company is structured… Teams is where the file lives. There is default team – whole company" (Leaf "Navigation", 28 Oct).</li>
+  <li>"The team decides who can see what": a secret team shows nothing outside it, and a private team chooses which of its things are public. "A team holds a private group and a public group… People see one team, never the groups" (29 Oct).</li>
+  <li>"The file still lives in Folder (in future we will rename to Team). Topic is group of files across different teams" (30 Oct).</li>
+</ul>
+<p>Those are Decided lines on the Navigation project, which you called "too soon for estiva-docs". The records say something different. The Accepted record of 25 Sep says "It is called a Folder; team is not a second name for it". The Company Folder record of 30 Oct leaves "there is always a Company team" to "that rework decides it". The record "Folders are labels" (access is decided on the file) is still Proposed, although your 29 Oct answer went the other way.</p>
+
+<figure>
+<svg viewBox="0 0 700 220" role="img">
+  <title>Today: a Folder holds files and has a one-person roster and an unseen chat; the relay checks reads against it</title>
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill: var(--line)"/></marker></defs>
+  <rect class="gate" x="16" y="78" width="132" height="72" rx="8"/>
+  <text class="t b" x="28" y="102">Relay</text>
+  <text class="ts" x="28" y="120">lets you read a file if</text>
+  <text class="ts" x="28" y="136">you can read its Folder</text>
+  <line class="arrow" x1="148" y1="114" x2="178" y2="114" marker-end="url(#ah)"/>
+  <rect class="fold" x="180" y="14" width="504" height="192" rx="10"/>
+  <text class="t b" x="196" y="38">Folder "Peek"</text>
+  <text class="ts" x="300" y="38">one of 9 · open to everyone in the company</text>
+  <rect class="file" x="196" y="54" width="150" height="40" rx="6"/><text class="t" x="208" y="79">topics</text>
+  <rect class="file" x="358" y="54" width="150" height="40" rx="6"/><text class="t" x="370" y="79">projects, issues</text>
+  <rect class="file" x="520" y="54" width="150" height="40" rx="6"/><text class="t" x="532" y="79">documents</text>
+  <rect class="file" x="196" y="112" width="230" height="78" rx="6"/>
+  <text class="t b" x="208" y="136">Roster</text>
+  <text class="ts" x="208" y="156">one person in each of the 9</text>
+  <text class="ts" x="208" y="174">nobody joins; anyone can write</text>
+  <rect class="file dash" x="440" y="112" width="230" height="78" rx="6"/>
+  <text class="t b" x="452" y="136">Its own chat</text>
+  <text class="ts" x="452" y="156">on the relay;</text>
+  <text class="ts" x="452" y="174">no app shows it</text>
+</svg>
+<figcaption><b>Today.</b> A box of files with an empty roster and a chat nobody sees. Every option below keeps the files where they are.</figcaption>
+</figure>
+
+<h2>Why it reaches beyond this stage</h2>
+<p>This is the first thing any app, or a builder at an outside company, has to understand: where a file lives, who can read it, and who is told about it. If these are the same object, a builder learns one thing. If they are two objects, they learn two, and they have to keep the two in step.</p>
+<p>It also decides how the private stage is built. You want a team to have a private part and a public part. Option C puts a place for both on the relay now. A and B leave that for the private stage.</p>
+<div class="door"><b>A and B can be undone. C cannot.</b> Every file records its Folder's id, and that id never changes. Under A or B, a separate team object could still be added later and pointed at the existing Folder as its public part, with no file moving. C adds a new kind of object to the relay that every app reads, and writes one for each of the 9 Folders, and those stay on the relay. The word itself is not on the relay. The one exception is the label every app reads for a Folder ("folder"), which changes in a single package release.</div>
+
+<h2>Options</h2>
+
+<div class="opt rec">
+<h3>A · A team is today's Folder, and it is called Team <span class="tag">recommended</span></h3>
+<figure>
+<svg viewBox="0 0 700 262" role="img">
+  <title>Option A: the Folder becomes the team, with members, chat, spaces and files; followers keep a private list; the private part is dashed for the next stage</title>
+  <defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill: var(--line)"/></marker></defs>
+  <rect class="team" x="14" y="14" width="508" height="236" rx="10"/>
+  <text class="t b" x="30" y="38">Team "Peek"</text>
+  <text class="tok" x="136" y="38">the same object and id as the Folder: no file moves</text>
+  <rect class="file" x="30" y="54" width="154" height="58" rx="6"/>
+  <text class="t b" x="42" y="76">Members</text><text class="ts" x="42" y="96">join, leave, are told</text>
+  <rect class="file" x="192" y="54" width="154" height="58" rx="6"/>
+  <text class="t b" x="204" y="76">Its chat</text><text class="ts" x="204" y="96">lights for members</text>
+  <rect class="file" x="354" y="54" width="154" height="58" rx="6"/>
+  <text class="t b" x="366" y="76">Spaces</text><text class="ts" x="366" y="96">the topics it lists</text>
+  <rect class="file" x="30" y="124" width="478" height="44" rx="6"/>
+  <text class="t" x="42" y="151">projects, issues, documents: they live here, as today</text>
+  <rect class="file dash" x="30" y="180" width="478" height="54" rx="6"/>
+  <text class="t b" x="42" y="202">Its private part, the next stage</text>
+  <text class="ts" x="42" y="222">how it attaches to this team is decided then</text>
+  <rect class="file" x="546" y="54" width="140" height="74" rx="6"/>
+  <text class="t b" x="558" y="76">Followers</text>
+  <text class="ts" x="558" y="96">each keeps a private</text>
+  <text class="ts" x="558" y="112">list of teams</text>
+  <path class="arrow" d="M546,90 L512,86" marker-end="url(#ah2)"/>
+  <text class="ts" x="546" y="146">follow its public</text>
+  <text class="ts" x="546" y="162">spaces at Important</text>
+  <rect class="gate" x="546" y="182" width="140" height="58" rx="8"/>
+  <text class="t b" x="558" y="204">Relay</text>
+  <text class="ts" x="558" y="224">checks the team</text>
+  <path class="arrow" d="M546,212 L524,212" marker-end="url(#ah2)"/>
+</svg>
+<figcaption><b>A.</b> One object. The 9 Folders become 9 teams with the same names and ids, and Estiva HQ becomes the Company team.</figcaption>
+</figure>
+<ul>
+  <li><b>What you and Katerina see.</b> Peek's rail says Teams. Katerina presses Join on Peek, and from then on a new conversation in Peek's chat lights for her. Ship's Move control, Leaf's page header, Claude and the CLI all say Team on the same day.</li>
+  <li><b>What an outside company gets.</b> One object. A team is where a file lives, who can read it, and who is told. Notion's teamspaces and Linear's teams work the same way.</li>
+  <li><b>What it locks in.</b> Very little. A file lives in one team, as it lives in one Folder today. A file two teams care about goes in a topic, which can hold files from any team ("Topic is group of files across different teams").</li>
+  <li><b>What could go wrong.</b>
+    <ul>
+      <li>Some of the 9 are not groups of people: "Folders", "Test folder Katerina", "Backlog" and "QA" become teams with those names until you rename or archive them. Who is in each team on day one comes in the product questions.</li>
+      <li>The 25 Sep record's lesson works in reverse: old text says Folder, and sessions will repeat it for a while.</li>
+      <li>When the private stage gives a team a second, private part, it might find this shape awkward and want C. C can still be added then, because nothing moves.</li>
+    </ul>
+  </li>
+</ul>
+</div>
+
+<div class="opt">
+<h3>B · A Folder gains people and stays a Folder <span class="tag">do less</span></h3>
+<p>This is the same object as A, and the word Folder stays. The 25 Sep record stands unchanged, and nothing is renamed in any app, in the SPEC or in Claude.</p>
+<div class="tablewrap"><table>
+  <tr><th>Where</th><th>A</th><th>B</th></tr>
+  <tr><td>Peek's rail</td><td>Teams</td><td>Folders</td></tr>
+  <tr><td>The buttons</td><td>Join team · Follow team</td><td>Join Folder · Follow Folder</td></tr>
+  <tr><td>The chat</td><td>Peek team's chat</td><td>Peek Folder's chat</td></tr>
+  <tr><td>The company</td><td>Company team</td><td>Company Folder</td></tr>
+  <tr><td>SPEC, docs, Claude</td><td>Team</td><td>Folder</td></tr>
+</table></div>
+<ul>
+  <li><b>What you and Katerina see.</b> The same screens as A, labelled Folder. You "join a Folder" and "follow a Folder".</li>
+  <li><b>What an outside company gets.</b> One object. But it is called by a word that suggests storage, not people, so a builder reading "join a Folder" has to learn that a Folder has members.</li>
+  <li><b>What could go wrong.</b> It contradicts the prototype you chose on 29 Oct (Teams in every app's sidebar) and your 30 Oct "in future we will rename to Team". The rename would then come later, as a second round of renaming, unless a later stage changes the word.</li>
+</ul>
+</div>
+
+<div class="opt">
+<h3>C · A team is a new thing, and today's Folder becomes its public group</h3>
+<figure>
+<svg viewBox="0 0 700 262" role="img">
+  <title>Option C: a new team object names a public group, which is today's Folder, and a private group for the next stage; members are kept on the team and again on each group's roster</title>
+  <defs><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill: var(--line)"/></marker></defs>
+  <rect class="team" x="190" y="12" width="320" height="66" rx="10"/>
+  <text class="t b" x="206" y="36">Team "Peek"</text>
+  <text class="tw" x="312" y="36">new on the relay</text>
+  <text class="ts" x="206" y="58">a name, members, which groups are its own</text>
+  <path class="arrow" d="M290,78 L190,118" marker-end="url(#ah3)"/>
+  <path class="arrow" d="M410,78 L510,118" marker-end="url(#ah3)"/>
+  <text class="ts" x="196" y="104">names</text><text class="ts" x="470" y="104">names</text>
+  <rect class="fold" x="20" y="120" width="320" height="104" rx="10"/>
+  <text class="t b" x="36" y="144">Public group = today's Folder</text>
+  <text class="ts" x="36" y="166">spaces, files, its chat</text>
+  <text class="ts" x="36" y="186">roster: who the relay checks</text>
+  <text class="ts" x="36" y="206">same id: no file moves</text>
+  <rect class="fold dash" x="360" y="120" width="320" height="104" rx="10"/>
+  <text class="t b" x="376" y="144">Private group, the next stage</text>
+  <text class="ts" x="376" y="166">the team's own space</text>
+  <text class="ts" x="376" y="186">roster: who the relay checks</text>
+  <text class="tw" x="20" y="250">Members are kept twice: on the team, and on each group's roster, which is what the relay checks.</text>
+</svg>
+<figcaption><b>C.</b> The shape of your 29 Oct "a team holds a private group and a public group", built now.</figcaption>
+</figure>
+<ul>
+  <li><b>What you and Katerina see.</b> The same screens as A. The groups are never shown.</li>
+  <li><b>What an outside company gets.</b> Two objects, a team and its groups, and a rule for keeping them in step. A secret team and a private team have the same shape from the first day.</li>
+  <li><b>What it locks in.</b> A new kind of object on the relay, read by every app before it can draw a team. One is written for each of the 9 Folders, and the Company Folder's mark moves to a team or is kept twice.</li>
+  <li><b>What could go wrong.</b> The relay checks reads, writes and who is told against groups, not against the team. The team object therefore adds a name and a pointer, plus a second copy of the members, which can disagree with the roster the relay actually enforces. And it settles the two groups now, which the private stage was meant to decide with private teams in front of it.</li>
+</ul>
+</div>
+
+<p class="small muted">Not offered: <b>teams beside the Folders</b>, with a Teams list of people and a Folders list of files on screen side by side. Your 28 Oct "Teams is where the file lives" and your 29 Oct "people see one team" both rule it out.</p>
+
+<h2>Trade-offs</h2>
+<div class="tablewrap"><table>
+  <tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+  <tr><td>A · the Folder, called Team</td><td>One group: its people, its chat, its list of files; reads checked against it</td><td>Teams, in every app and in Claude</td><td>One object, as Notion and Linear have it</td><td>Low: C can still wrap it later, and no file moves</td><td>The draft as it stands, plus the rename</td></tr>
+  <tr><td>B · the Folder, still Folder</td><td>Same as A</td><td>"Join a Folder", "Folder's chat"</td><td>One object with a misleading name</td><td>Low on the relay; a second rename later</td><td>Less than A by the rename</td></tr>
+  <tr><td>C · a team above its groups</td><td>A new object naming its groups; members kept on it and on each roster</td><td>Teams, the same as A</td><td>Two objects to keep in step</td><td>High: the new objects stay on the relay</td><td>A new kind, written for all 9, and every app reads it first</td></tr>
+</table></div>
+
+<h2>How others do it</h2>
+<ul>
+  <li><b>Notion teamspaces</b>: pages live in a teamspace, which has members and is open, closed or private, and you join or leave it. This is A. What is different for us is that our followers see a team's public spaces without joining it.</li>
+  <li><b>Linear teams</b>: an issue belongs to one team, a team can be private, and you join it. This is A. Linear has no followers of a team.</li>
+  <li><b>Slack</b>: a channel is both the place and the access. User groups (@eng) are a separate list of people with no files, and admins keep the two in step by hand. That is the "beside" shape, and keeping it in step is the cost.</li>
+  <li><b>Upstream NIP-29</b>: a group is its people, its chat and who may write. We already add a list of files to it. A keeps one group as one team; C adds an object NIP-29 does not have.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<div class="pick">
+<p><b>A: a team is today's Folder, and it is called Team everywhere.</b> One object answers where a file lives, who can read it and who is told, as you described on 28 Oct ("Teams is where the file lives"). An outside company learns one thing, and it works the way Notion's and Linear's teams do. A does not decide the two groups. It leaves that to the private stage, where private teams will be in front of us, and C can still be added then without moving a file. B gives the same object a word you have already moved away from. C builds the private stage's answer now, with a second copy of the members that can disagree with what the relay enforces.</p>
+<p>If you choose A, two Accepted records change: "It is called a Folder" is superseded by one that says Team is the only word, and the Company Folder becomes the Company team, with the same mark. The Proposed record "Folders are labels" closes as Rejected, citing your 29 Oct "the team decides". CLI flags, tool names and links keep "folder" for now.</p>
+</div>
+
+<h2>Checked</h2>
+<ul class="small">
+  <li>The 9 Folders: each open, each with one person on its roster. Read from the production relay on 2 Nov, as the agent: Backlog, Folders, Test folder Katerina, QA, Steer, Leaf, Ship, Peek, Estiva HQ. That the one person is you comes from the 1 Nov check; today's read counted the rosters but did not name anyone.</li>
+  <li>The records and their status: estiva-docs <code>origin/main</code> b0da3de, <code>decisions/README.md</code>: "It is called a Folder" Accepted 25 Sep; "Every workspace has exactly one Company Folder" Accepted 30 Oct ("that rework decides it"); "Folders are labels" Proposed 14 Oct; "A team has members and followers…" Accepted 30 Oct; "A topic keeps its own list of files" Accepted 30 Oct, which quotes your "in future we will rename to Team".</li>
+  <li>Your 29 Oct lines (the team decides who can see what; a team holds two groups; people see one team) are on the Navigation project's Decided list, read from Ship on 1 Nov. They are not in any record.</li>
+  <li>The word on the wire: every app gets the label "folder" for a Folder from the shared interop package (estiva-foundation <code>packages/interop/src/projection.ts:1735</code>, <code>origin/main</code>).</li>
+  <li>That the relay checks a file's read against its Folder comes from the protocol pre-review of 1 Nov (buzz <code>nfb-demo-kinds</code> 6547f50dd, <code>check_channel_membership</code>, <code>get_accessible_channel_ids</code>). I did not re-read it today.</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="small">A: team = the NIP-29 group (<code>kind:39000</code>) with its relay-signed listing (<code>kind:30890</code>); members = its <code>kind:39002</code> roster, written with <code>9021</code>/<code>9022</code> by the person and <code>9000</code>/<code>9001</code> by another; spaces = the topics its listing names (protocol pre-review F8); chat = <code>kind:9</code> with its <code>h</code>. SPEC §3 and §3.2 (<code>noun</code> "folder" → "team"), §3.4; interop release. Supersedes <code>a-folder-is-called-a-folder-never-a-team</code>; amends <code>every-workspace-has-one-company-folder-the-relay-marks-and-keeps</code>; closes <code>folders-are-labels</code>. C: a new kind for the team object, through KINDS §7's three gates. Project "Teams and following" (draft ~/teams-scratch/draft.md); protocol pre-review D1.</p>
+
+</body>
+</html>
