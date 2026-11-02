@@ -85,9 +85,10 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <main>
 
 <h1>Topics group files</h1>
-<p class="sub"><span class="state">Shaped, 2026-10-30</span> · Ship project: Topics group files · Goal: a topic groups the files it is about, from any Folder, so Peek's Topics screen reads as a few topics with their files under them, and every file you joined, by Folder, moves to a Folders screen beside it.</p>
+<p class="sub"><span class="state">As built, 2026-11-02</span> · shaped 2026-10-30 · Ship project: Topics group files · Goal: a topic groups the files it is about, from any Folder, so Peek's Topics screen reads as a few topics with their files under them, and every file you joined, by Folder, moves to a Folders screen beside it.</p>
 
-<p>Today only a Folder keeps a list of files, so Peek's Topics screen draws every file you joined, flat, under its Folder. After this project Peek has a new Topics screen of your topics, each with its files, and today's screen moves beside it as Folders; a topic keeps its own list: one entry per file, named by the file's id and signed by whoever added it. The file stays in its own Folder, where it keeps its place in the tree, and can be in many topics; through a topic the list is flat. Every app can ask the relay which topics list a file. The relay's rules do not change. Start with the Map.</p>
+<p>Today only a Folder keeps a list of files, so Peek's Topics screen draws every file you joined, flat, under its Folder. After this project Peek has a new Topics screen of your topics, each with its files, and today's screen moves beside it as Folders; a topic keeps its own list: one entry per file, named by the file's id and signed by whoever added it. The file stays in its own Folder, where it keeps its place in the tree, and can be in many topics; through a topic the list is flat. Every app can ask the relay which topics list a file. The relay's rules do not change; its search now also finds a Ship project by its name, so Add file can offer one. Start with the Map.</p>
+<p>As built on 2026-11-02: every part below is on production. Two things went differently from the shaped page. The build did not wait for Katerina's drawing: it started on 1 Nov from the Per app prototype, and the agent took the lean on the details she was to draw (Miky, 1 Nov), so her drawing polishes the first version. And Peek's Topics screen shows only what is active: archived topics and a topic's archived files wait behind an "Archived" line (Miky, 2 Nov).</p>
 
 <div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lgone">goes away</span><span class="lq">waits on a decision</span><span class="lf">untouched, for orientation</span></div>
 
@@ -145,20 +146,20 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 
 <h3>After</h3>
 <figure>
-<svg viewBox="0 0 720 590" role="img">
-<title>After: Katerina draws the stage in her Storybook prototype first (milestone 1), and Miky judges it on the preview link. In milestone 2 a topic's changes gain one field, "lists this file", the shared package gains a topic's list and "the topics of a file", and Peek's topic page shows its files with Add file and Remove. In milestone 3 Peek gets a new Topics screen that draws each topic you joined with its listed files under it, one level deep and with no Folder headings; an issue does not fold under its project, and a file no topic of yours lists is not on it. Today's Topics screen moves, as it is, to a new rail entry beside it called Folders, which becomes Teams with the Teams stage. In milestone 4 Ship and Leaf show a "Topics:" line on a file with Add to topic and Remove; where that sits is in Katerina's drawing. A Folder's list, each file's Folder and tree, and the relay's rules are unchanged.</title>
-<rect class="ok" x="20" y="14" width="680" height="50" rx="8"/>
-<text x="36" y="35" class="h">Prototype in Storybook</text><text x="684" y="35" class="tag" text-anchor="end">M1</text>
-<text x="36" y="54" class="m">Katerina draws it in the prototype she is working on · Miky judges the preview link</text>
+<svg viewBox="0 0 720 614" role="img">
+<title>As built: Katerina's drawing of the stage (milestone 1) is still to come; the build started from the Per app prototype, and her drawing polishes it. In milestone 2 a topic's changes gained one field, "lists this file", the shared package gained a topic's list and "the topics of a file", and Peek's topic page shows its files as cards with Add file and Remove. In milestone 3 Peek got a new Topics screen that draws each topic you are a member of with its active listed files under it, one level deep and with no Folder headings; an issue does not fold under its project, and a file no topic of yours lists is not on it. Other topics, to open and join, and archived topics are closed sections below; a topic's archived files are behind one Archived line that opens them in a dialog; its header has New topic. Today's Topics screen moved, as it is, to a new rail entry beside it called Folders. In milestone 4 Ship shows a "Topics:" row in a project's or issue's rail and Leaf one under a document's title, each with Add to topic and Remove. The relay's search also finds a Ship project by its name, so Add file offers projects. A Folder's list, each file's Folder and tree, and the relay's rules are unchanged.</title>
+<rect class="q" x="20" y="14" width="680" height="50" rx="8"/>
+<text x="36" y="35" class="h">Prototype in Storybook: still to come</text><text x="684" y="35" class="tag" text-anchor="end">M1</text>
+<text x="36" y="54" class="m">built first from the Per app prototype · Katerina's drawing of this stage polishes it</text>
 
 <rect class="ok" x="20" y="86" width="210" height="190" rx="8"/>
 <text x="36" y="110" class="h">Peek</text>
 <text x="36" y="134">a topic lists its files</text><text x="220" y="134" class="tag" text-anchor="end">M2</text>
 <text x="36" y="151" class="m">as cards · Add file, Remove</text>
 <text x="36" y="176">a new Topics screen</text><text x="220" y="176" class="tag" text-anchor="end">M3</text>
-<text x="36" y="193" class="m">your topics, their files under</text>
-<text x="36" y="209" class="m">them · one level · no Folder</text>
-<text x="36" y="225" class="m">headings · unlisted: not here</text>
+<text x="36" y="193" class="m">your topics, files one level</text>
+<text x="36" y="209" class="m">Other topics · Archived: closed</text>
+<text x="36" y="225" class="m">New topic · unlisted: not here</text>
 <text x="36" y="250">Folders, beside it</text><text x="220" y="250" class="tag" text-anchor="end">M3</text>
 <text x="36" y="266" class="m">today's Topics screen, moved</text>
 
@@ -168,9 +169,8 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <text x="271" y="151">issue or a project</text>
 <text x="271" y="172" class="m">Add to topic, Remove</text>
 <text x="271" y="188" class="m">each opens the topic in Peek</text>
-<rect class="q" x="265" y="200" width="190" height="44" rx="6"/>
-<text x="275" y="218">where Add to topic sits</text>
-<text x="275" y="235" class="m">Katerina's drawing (M1)</text>
+<text x="271" y="212">in the page's rail</text>
+<text x="271" y="229" class="m">placed by the agent for now</text>
 <text x="271" y="264" class="m">Related: unchanged</text>
 
 <rect class="ok" x="490" y="86" width="210" height="190" rx="8"/>
@@ -179,9 +179,8 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <text x="506" y="151">document</text>
 <text x="506" y="172" class="m">Add to topic, Remove</text>
 <text x="506" y="188" class="m">each opens the topic in Peek</text>
-<rect class="q" x="500" y="200" width="190" height="44" rx="6"/>
-<text x="510" y="218">where Add to topic sits</text>
-<text x="510" y="235" class="m">Katerina's drawing (M1)</text>
+<text x="506" y="212">under the title</text>
+<text x="506" y="229" class="m">placed by the agent for now</text>
 <text x="506" y="264" class="m">its tree: unchanged</text>
 
 <path class="ln" d="M125,276 L125,300 M360,276 L360,300 M595,276 L595,300 M125,300 L640,300"/>
@@ -199,7 +198,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <text x="36" y="416" class="m">beside placing a file in a Folder</text>
 <path class="an" d="M170,424 L170,446"/>
 
-<rect class="w" x="20" y="450" width="680" height="128" rx="10"/>
+<rect class="w" x="20" y="450" width="680" height="152" rx="10"/>
 <text x="36" y="472" class="h">The relay</text><text x="110" y="472" class="m">checks the signer may write in the topic's Folder, as for any change</text>
 <rect class="b" x="36" y="486" width="200" height="80" rx="8"/>
 <text x="50" y="508" class="h">A Folder's list</text>
@@ -214,14 +213,15 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <text x="500" y="508" class="h">Each file</text>
 <text x="500" y="526" class="m">unchanged: one Folder, its tree</text>
 <text x="500" y="542" class="m">kept · in any number of topics</text>
+<text x="36" y="590">+ search finds a Ship project by its name, so Add file, [ and Cmd+K offer projects</text><text x="684" y="590" class="tag" text-anchor="end">new</text>
 </svg>
-<figcaption>M1 settles the look before any build: Katerina draws it, Miky judges it. M2 is the riskiest: one new field on a topic's changes, the shared piece every app reads and writes it with, and Peek's topic page. M3 gives Peek a new Topics screen of the topics you joined, each with its files one level deep and no Folder headings, and moves today's Topics screen, as it is, to Folders beside it in the rail: called Folders until the Teams stage renames the word everywhere at once (Miky, 30 Oct). M4 gives Ship and Leaf the "Topics:" line. A topic's list is changes on the topic, like a rename, never a second Folder list, so the relay's rules stay as they are; the change names the topic as the file it changes and the listed file as one it points at (record a-change-is-about-its-file-as-a-comment-is).</figcaption>
+<figcaption>M1 was to settle the look before any build; instead the build started on 1 Nov from the Per app prototype, and Katerina's drawing of this stage, still to come, polishes the first version (Miky, 1 Nov). M2: one new field on a topic's changes, the shared piece every app reads and writes it with (interop <code>topics.ts</code>), and Peek's topic page. M3 gave Peek a new Topics screen of the topics you are a member of, each with its active files one level deep and no Folder headings, then Other topics and Archived, closed; and moved today's Topics screen, as it is, to Folders beside it in the rail. It is still called Folders: the record that a Folder is called a Team (a-team-is-the-folder-and-is-called-a-team, Accepted 2 Nov) is built with the Teams stage. M4 gave Ship and Leaf the "Topics:" row. Add file needed one relay change outside the list: search now reads a project's name, so a project can be found by it (SPEC §5.2). A topic's list is changes on the topic, like a rename, never a second Folder list, so the relay's rules stay as they are; the change names the topic as the file it changes and the listed file as one it points at (record a-change-is-about-its-file-as-a-comment-is).</figcaption>
 </figure>
 
 <h2 id="objects">Objects</h2>
 <figure>
 <svg viewBox="0 0 720 400" role="img">
-<title>A Folder holds two topics, and each topic's list is kept in that Folder too: Widgets lists the Ship project "Widgets 2: build 1" and the Leaf document "Testing Widgets", each entry a change on the topic that names the topic as the file it changes and the listed file by its id as one it points at, signed by whoever added it; another topic also lists "Testing Widgets". The project and the document stay in their own Folders and their trees: the project's issues stay under it and are not on Widgets unless listed, and a file under Widgets in the tree is on Widgets only if listed. What a deleted file's entry leaves behind is in Katerina's drawing.</title>
+<title>A Folder holds two topics, and each topic's list is kept in that Folder too: Widgets lists the Ship project "Widgets 2: build 1" and the Leaf document "Testing Widgets", each entry a change on the topic that names the topic as the file it changes and the listed file by its id as one it points at, signed by whoever added it; another topic also lists "Testing Widgets". The project and the document stay in their own Folders and their trees: the project's issues stay under it and are not on Widgets unless listed, and a file under Widgets in the tree is on Widgets only if listed. A deleted or unreadable file's entry stays on the relay, and no app draws or counts it.</title>
 <rect class="w" x="20" y="20" width="440" height="364" rx="10"/>
 <text x="36" y="44" class="h">A Folder</text>
 <text x="36" y="62" class="m">where both topics were filed; their lists are kept here too</text>
@@ -245,9 +245,9 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <rect class="ok" x="236" y="146" width="208" height="50" rx="8"/>
 <text x="248" y="166">lists "Testing Widgets"</text>
 <text x="248" y="184" class="m">added by Miky · o = its id</text>
-<rect class="q" x="236" y="208" width="208" height="42" rx="8"/>
+<rect class="b" x="236" y="208" width="208" height="42" rx="8"/>
 <text x="248" y="225">a deleted file's entry:</text>
-<text x="248" y="242" class="m">what it leaves → Katerina</text>
+<text x="248" y="242" class="m">stays · not drawn, not counted</text>
 <rect class="ok" x="236" y="272" width="208" height="50" rx="8"/>
 <text x="248" y="292">lists "Testing Widgets"</text>
 <text x="248" y="310" class="m">signed by whoever added it</text>
@@ -285,7 +285,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <path class="an" d="M444,171 L466,171 L466,300 L490,300"/>
 <path class="an" d="M444,297 L456,297 L456,340 L490,340"/>
 </svg>
-<figcaption>A topic's list is changes on the topic itself, one per file, kept in the topic's Folder: anyone who may write there adds or removes an entry, and the newest change per topic and file counts. Each entry names the topic as the file it changes (<code>O</code>) and the listed file by its id as a file it points at (<code>o</code>), the way a comment and a mention do (record a-change-is-about-its-file-as-a-comment-is), which is how any app can ask which topics list a file. Through a topic the list is flat: a file is listed wherever it sits and however deep in its Folder's tree, and its tree stays as it is (Miky, 30 Oct). The list is not a Folder's list and does not make the topic a group. Any type of file may keep such a list; this stage reads only topics'.</figcaption>
+<figcaption>A topic's list is changes on the topic itself, one per file, kept in the topic's Folder: anyone who may write there adds or removes an entry, and the newest change per topic and file counts. Each entry names the topic as the file it changes (<code>O</code>) and the listed file by its id as a file it points at (<code>o</code>), the way a comment and a mention do (record a-change-is-about-its-file-as-a-comment-is), which is how any app can ask which topics list a file. Through a topic the list is flat: a file is listed wherever it sits and however deep in its Folder's tree, and its tree stays as it is (Miky, 30 Oct). The list is not a Folder's list and does not make the topic a group. Any type of file may keep such a list; this stage reads only topics' (SPEC §6.14). Archiving a file removes no entry: Peek's Topics screen puts an archived listed file behind its topic's Archived line, and a listed file that is deleted or that the reader cannot read is not drawn and not counted (§3.2).</figcaption>
 </figure>
 
 <h2 id="flow">Flow: Miky adds a Leaf document to Widgets in Peek, Katerina sees it in Leaf</h2>
@@ -326,10 +326,10 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <path class="an" d="M630,420 L454,420"/>
 <text x="620" y="436" text-anchor="end" class="m">by its id, across Folders</text>
 <path class="a" d="M450,466 L626,466"/><text x="464" y="458">9  each change naming it</text>
-<text x="706" y="490" text-anchor="end">10  "Topics: Widgets" on the document · <tspan class="tag">M4</tspan></text>
+<text x="706" y="490" text-anchor="end">10  "Topics: Widgets" under its title · <tspan class="tag">M4</tspan></text>
 <text x="706" y="506" text-anchor="end" class="m">the newest change per topic counts</text>
 </svg>
-<figcaption>Today this flow cannot start: a topic has no list, so no app can ask which topics a file is in. Nothing new is signed or checked: Peek, Ship and Leaf already sign changes, and the relay checks this one as it checks a rename. Steps 6 and 9 rest on the relay taking a file's id on a topic's change and answering by that id across Folders, which has not been tried yet: M2 tries it first. Katerina sees the line on her next read; the project promises it after a reload, not live.</figcaption>
+<figcaption>Today this flow cannot start: a topic has no list, so no app can ask which topics a file is in. Nothing new is signed or checked: Peek, Ship and Leaf already sign changes, and the relay checks this one as it checks a rename. Steps 6 and 9 rest on the relay taking a file's id on a topic's change and answering by that id across Folders: M2 tried it on production first, with no relay change, and on Miky's workspace the question takes about 0.2 s. Katerina sees the line on her next read; the project promises it after a reload, not live. In the same Peek tab, the Topics screen reads Widgets' list again at once.</figcaption>
 </figure>
 
 <h2 id="access">Access</h2>
@@ -337,6 +337,14 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 
 <h2 id="checked">Checked</h2>
 <ul class="checked">
+<li><b>As built, read on 2026-11-02</b> from <code>origin/main</code> of estiva-docs (4ba067e), estiva-foundation (52e642f), peek-app (b3db3bc7), estiva-ship (d77ce44) and leaf (7b3cd6b), from estiva-ui <code>concept/cross-app-navigation</code> (9097cff), and from <code>origin/nfb-demo-kinds</code> for the relay (buzz bf3a5d313).</li>
+<li><b>The list.</b> SPEC §6.14 "A file's list of other files" (estiva-docs#363). The shared piece is estiva-foundation <code>packages/interop/src/topics.ts</code>: <code>planListInTopic</code>, <code>planRemoveFromTopic</code>, <code>topicListFilter</code> (<code>#O</code>), <code>topicsOfFileFilter</code> (<code>#o</code>), <code>listEntries</code>, <code>topicsOfFile</code>, <code>topicList</code>; listed kinds 30840, 30842, 30850, 30851, though Add file offers no topic (Miky, 1 Nov).</li>
+<li><b>Peek.</b> The rail has Desk, Topics (<code>/app/topics</code>), Folders (<code>/app/folders</code>) and People (<code>src/components/NavRail.tsx:32-59</code>). <code>src/components/views/TopicsColumn.tsx</code> draws your topics, each with its active files, then Other topics and Archived, closed, an Archived line per topic that opens a dialog, and New topic in the header; <code>src/api/useTopicsColumn.ts</code> reads every topic, then all your topics' lists at once (<code>topicLists</code>). A topic's files are <code>src/components/TopicFiles.tsx</code>, with Add file on the same file search as <code>[</code>.</li>
+<li><b>Ship and Leaf.</b> Ship's "Topics:" row is <code>src/components/FileTopics.tsx</code>, in the rail of <code>src/pages/IssuePage.tsx:374</code> and <code>src/pages/ProjectPage.tsx:893</code>. Leaf's is <code>src/pages/FileTopics.tsx</code>, under the title in <code>src/pages/FilePage.tsx:338</code>.</li>
+<li><b>Search finds a project by its name.</b> buzz#41 indexes a project root's name, SPEC §5.2 (estiva-docs#371); buzz#44 then made it read a project's current fields.</li>
+<li><b>On production, 2026-11-02.</b> As Miky and as QA-2, Widgets' Files lists 4: "Testing Widgets", "Widgets 2: build 1", "Widgets 2: build 2" and an issue. As Miky, the Topics screen shows "Testing Widgets" under Widgets and the three archived files behind "Archived 3", and a Ship issue that is on Folders but not on Topics says "None" in its Topics row. As QA-1, one Leaf document listed in two topics shows under both.</li>
+<li><b>Names.</b> Record a-folder-is-called-a-folder-never-a-team is Superseded by a-team-is-the-folder-and-is-called-a-team (Accepted 2026-11-02); the rename is built with the Teams stage, so the rail still says Folders.</li>
+<li><b>Not verified.</b> The running images' ids (only their behaviour, above). The rows below were read at shaping, on 2026-10-30, and describe the code before this project.</li>
 <li>Read on 2026-10-30 from <code>origin/main</code> of estiva-docs (d05f52e; the change-target record at 4c24588), estiva-foundation (8dd26c9), peek-app (f3bfd9b), estiva-ship (7090208), leaf (39040c4), estiva-id (7820870) and estiva-ui (1e98053), and from <code>origin/nfb-demo-kinds</code> for the relay (buzz 6547f50dd). Nothing probed on production.</li>
 <li><b>A topic is a file in one Folder.</b> SPEC §6.7: <code>kind:30840</code> with its Folder in <code>h</code>; changes are <code>kind:1851</code> targeted by <code>a</code>, in the file's own Folder (§6.2's <code>h</code> rule), with fields <code>title</code>, <code>parent</code>, <code>summary</code>, <code>archived</code> and <code>member:&lt;p&gt;</code> (§11.8). A file beneath a topic must be in the topic's own Folder (§6.7, "Same Folder").</li>
 <li><b>What a change names.</b> Record <code>a-change-is-about-its-file-as-a-comment-is</code> (Accepted, estiva-docs#359, merged 2026-10-30): a change names the file it changes with <code>O</code> beside <code>a</code>, and every other file it points at with <code>o</code>, a topic's <code>lists:&lt;d&gt;</code> entry included; "a file's changes" is <code>#O</code> and "what points at it" is <code>#o</code>. The projects stage (Ship project "A load stays the same size as edits pile up: projects") carries the same line, and adds a <code>prev</code> per field that the relay will check.</li>
@@ -349,7 +357,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <li><b>No new signing.</b> Peek, Ship and Leaf may each sign <code>1851</code> (estiva-id <code>src/db/seed.ts:241</code>, <code>:342</code>, <code>:391</code>). The relay checks the signer against the Folder an event names (buzz <code>handlers/ingest.rs:1034</code>, <code>check_channel_membership</code>).</li>
 <li><b>Asking by a file's id.</b> The relay answers every one-letter tag filter (buzz <code>crates/buzz-db/src/store/event.rs:101-106</code>); SPEC §6.4 says anything that lists a file carries <code>["o", &lt;d&gt;]</code>, and records a <code>#o</code> read on production on 2026-10-30 for a comment, a message and a Folder's list.</li>
 <li><b>Prototype.</b> estiva-ui <code>concept/cross-app-navigation</code> (7c5282d) holds <code>stories/cross-app-navigation/Lens.tsx</code>.</li>
-<li><b>Not verified.</b> That the relay accepts a <code>1851</code> carrying an <code>o</code> on a <code>30840</code> and finds it by <code>#o</code> across Folders, and how fast "the topics of a file" is on Miky's workspace: both are M2's first step. What the running images are. The draft's 124 open issues and 35 projects were not recounted.</li>
+<li><b>Not verified at shaping</b>, since settled by M2 on production: that the relay accepts a <code>1851</code> carrying an <code>o</code> on a <code>30840</code> and finds it by <code>#o</code> across Folders, and how fast "the topics of a file" is on Miky's workspace (about 0.2 s).</li>
 </ul>
 
 </main>
