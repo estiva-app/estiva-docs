@@ -39,7 +39,7 @@ nobody held the whole list.
 | --- | --- | --- |
 | `30850` | Project | Addressable. Root event carries immutable facts only. Its `key` (3–6 letters, root seed + `1851` override) prefixes its issues' refs — SPEC §6.1 |
 | `30851` | Issue | Addressable. **Status and assignee are not on it** — see §4 |
-| `1851` | Change | Regular, append-only. Authored by whoever acts, not by the object's author. `field` `summary` is a file's one-line summary, plain text, on every file kind — SPEC §6.12. `field` `lists:<d>` lists file `<d>` in the file it changes (a topic's list), with `O` = that file's `d` and `o` = `<d>` — SPEC §6.14 |
+| `1851` | Change | Regular, append-only. Authored by whoever acts, not by the object's author. `field` `summary` is a file's one-line summary, plain text, on every file kind — SPEC §6.12. `field` `lists:<d>` lists file `<d>` in the file it changes (a topic's list), with `O` = that file's `d` and `o` = `<d>` — SPEC §6.14. `field` `member:<P>` (`true`/`false`) is who is on a file, and on a place (a team's chat, a space or a topic) who is in it; `field` `follow:<P>` (`all`, `important` or empty) is `P`'s own level on a place, refused by the relay and ignored by readers unless signed by `P`. Both carry `["p", P]`, place nobody, take no `prev` and are never in a `set` — SPEC §11.8 |
 | `31989` / `31990` | Handler recommendation / information | NIP-89 manifest. Global, not channel-scoped — discovery must work before you are a member of anything |
 
 ### Documents — owned through a manifest; Leaf the first owner
@@ -61,17 +61,18 @@ nobody held the whole list.
 | `45010` | Artifact save | **Buzz's own uses (agent and team settings), not files** (2026-10-30, record [a-file-is-its-fields-each-kept-in-order-by-the-relay](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-file-is-its-fields-each-kept-in-order-by-the-relay.md)). Upstream Buzz NIP-AR; the relay keeps the saves of one `d` in order. No Estiva app writes one, and a file is never kept as one (SPEC §6.13) |
 | `45011` | Artifact removal | **Relay-signed**, never an app's. Buzz's own, with `45010` |
 
-### Folders — written by every app, owned by none ([SPEC §3](SPEC.md))
+### Teams (Folders) — written by every app, owned by none ([SPEC §3](SPEC.md))
 
 | Kind | Name | Notes |
 | --- | --- | --- |
 | `9007` | Folder create (NIP-29 create group) | The container. Followed by a `1852` so the Folder has state from birth. See §3 |
 | `9002` | Folder rename (NIP-29 edit metadata) | The only rename: owners and admins only (relay). The Folder's title is the `39000` name; a `1852` never carries one. Refused by the relay when it carries a `company` tag, and on the Company Folder when it archives it, makes it private or sets a `ttl` (SPEC §3.4) |
 | `9008` | Folder delete (NIP-29 delete group) | **Refused by the relay while the Folder holds a file** (a `30840`/`30842`/`30850`/`30851`/`30852` first record under its `h` — deleted ones included, a file deleted as a field counting — or anything its listing names), and always for the Company Folder (SPEC §3.4); channel owner, the owner of its owner-role agent, or a workspace owner/admin. An accepted one hides every event under the `h` |
-| `1852` | Folder command | `add` / `remove` / `set` addresses, or a file by its id in an `o` tag (SPEC §3.3); any member may send one, so it carries no name. Never names a `39000:` address — Folders do not nest |
-| `30890` | Folder state | **Relay-signed**, never an app's. What a Folder lists: addresses in `a` tags, files by id in `o` tags. A NIP-29 group without one is a conversation space, not a Folder |
+| `1852` | Folder command | `add` / `remove` / `set` addresses, or a file by its id in an `o` tag (SPEC §3.3); any member may send one, so it carries no name. Never names a `39000:` address — Folders do not nest. An entry's fourth element is its role, after an empty third: `["a", <addr>, "", "space"]` marks a team's space, and an `add` without it unmarks; only the team's members may send the role (relay) — SPEC §3.3 |
+| `30890` | Folder state | **Relay-signed**, never an app's. What a Folder lists: addresses in `a` tags, files by id in `o` tags. A NIP-29 group without one is a conversation space, not a Folder. An entry carries the role its `1852` gave it as the fourth element (`space`: one of the team's spaces) — SPEC §3.2, §3.3 |
 | `39000` | Group metadata | Relay-signed, NIP-29. The Folder's address; no `kind:31990` may claim it. A bare `["company"]` marks the workspace's Company Folder, on one Folder only (SPEC §3.4) |
-| `9000` / `9001` | Add / remove member | NIP-29, unchanged |
+| `9000` / `9001` | Add / remove member | NIP-29's events with the suite's rules: **any member** of a team may add someone (upstream: admins only); removing someone else stays with owners and admins, or an agent's owner. On the Company team the relay adds everyone in the company and refuses a removal — SPEC §3.3, §3.4 |
+| `9021` / `9022` | Join / leave a team | NIP-29, signed by the person: anyone in the company may join an open team. The relay refuses a leave from the Company team. A `39002` keeps no time per person, so a team default's start is read from the stored join or add — SPEC §3.3, §11.8 |
 
 ### Messages and comments — written by every app, owned by none ([SPEC §7.8](SPEC.md))
 
