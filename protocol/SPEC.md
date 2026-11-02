@@ -251,13 +251,17 @@ produce the same events in the same order.
 - **Every workspace has exactly one Company Folder.** The relay marks it as the
   company's in the `kind:39000` metadata it signs, with a bare `["company"]`
   tag beside NIP-29's `["private"]` and `["closed"]`, and makes it when the
-  workspace is set up: an open Folder named Company, owned by the workspace's
-  owner, born with its state (`kind:30890`) like any Folder (§3.3). Estiva's
-  is Estiva HQ.
-- **A workspace that predates the mark** has none until its operator names
-  one, once: an open Folder with its state, neither archived nor deleted. The
-  mark never moves, so naming another later changes nothing. (On the reference
-  relay, `BUZZ_COMPANY_FOLDER`.)
+  workspace is set up: an open Folder owned by the workspace's owner, born
+  with its state (`kind:30890`) like any Folder (§3.3). Its name is the
+  relay's to choose and its owners' to change (the reference relay names it
+  Company). Estiva's is Estiva HQ.
+- **A workspace set up before its relay had the mark** gets one when the relay
+  is upgraded: its operator names an existing open Folder with its state,
+  once, and the mark never moves after that. A relay serving such a workspace
+  unmarked does not conform to this section, and an app is never asked to
+  handle a workspace without one. (On the reference relay,
+  `BUZZ_COMPANY_FOLDER`, read at startup; it logs a warning while the
+  workspace has none.)
 - **It is kept for good.** Its owners and admins can rename it. The relay
   refuses to delete it (`kind:9008`), archive it (§3.3: a `kind:1851` setting
   `archived` to anything but empty on its address, as `field`/`value` or as a
