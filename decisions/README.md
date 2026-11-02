@@ -118,6 +118,7 @@ heading here.
 - [A Folder two companies share is kept on both companies' relays, and the company that started it runs it; each company decides about its own people and their words](a-shared-folder-lives-on-both-relays-and-its-host-runs-it.md) — Accepted, 2026-10-26
 - [Only a group's owners and admins make it a Folder; DMs and workflow channels never become one](only-a-groups-owners-and-admins-make-it-a-folder.md) — Accepted, 2026-10-27
 - [Every workspace has exactly one Company Folder, which the relay marks and keeps for good](every-workspace-has-one-company-folder-the-relay-marks-and-keeps.md) — Accepted, 2026-10-30
+- [Everyone in the company is on the Company team's member list, and the relay keeps them there](everyone-in-the-company-is-on-the-company-teams-list-and-the-relay-keeps-it.md) — Accepted, 2026-11-02
 - [A topic lives in exactly one team, and only a move changes which](a-topic-lives-in-exactly-one-team.md) — Accepted, 2026-11-02
 - [A space is a team's own mark on a topic it lists, so a move hands the choice to the team it moves to](a-space-is-the-teams-own-mark-on-a-topic-it-lists.md) — Accepted, 2026-11-02
 - [Anyone in the company may join an open team; only its members add someone to it or mark one of its spaces, and the relay checks it](anyone-may-join-an-open-team-and-only-its-members-add-or-mark.md) — Accepted, 2026-11-02
