@@ -16,6 +16,12 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [Ship's Topics navigation](ship-topics-navigation.html) — Shaped,
+  2026-11-02. Ship gains a new sidebar (Home, Topics, Projects, Issues, then
+  each Folder's own Topics, Projects and Issues), a Topics page with your topics first and a page per
+  topic, all drawn from one read of every topic and what it lists in the
+  shared package; nothing new is written to the relay. Read at
+  `https://docs.estiva.app/architecture/ship-topics-navigation.html`.
 - [Teams and following](teams-and-following.html) — Shaped, 2026-11-02. A
   Folder becomes a team with members and followers and three kinds of place
   (its chat, its spaces, the topics it leads); each person sets one level on a

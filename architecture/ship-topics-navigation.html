@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ship Topics navigation</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
+.legend .lgone::before { background: var(--warn-bg); border-color: var(--warn); }
+.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
+.legend .lf::before { opacity: .45; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+/* Below 560px a diagram scrolls inside its figure instead of shrinking its text. */
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); stroke-width: 1.5; }
+svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .f { opacity: .45; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
+svg .aq { stroke: var(--accent); fill: none; stroke-width: 1.6; stroke-dasharray: 5 4; marker-end: url(#arr-q); }
+svg .life { stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 3 4; }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+</style>
+</head>
+<body>
+<!-- Arrowheads, shared by every diagram on the page. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+    <marker id="arr-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<main>
+
+<h1>Ship's Topics navigation</h1>
+<p class="sub"><span class="state">Shaped, 2026-11-02</span> · <a href="https://ship.estiva.app/#/project/e27f6e92-963b-4e40-8789-923eae85afbd">Ship project</a> · Goal: in Ship you find work by topic, from a new sidebar and a Topics page where your topics come first.</p>
+
+<p>Ship learns to browse by topic. It gains a Topics page, a page for each topic, a Home and a new sidebar, and all of them draw from <strong>one read</strong> of every topic and what it lists, kept in the shared package. Nothing new is written to the relay: topics and their lists are the ones "Topics group files" built. Look first at the Map's "after": the green read in the middle is the riskiest part, and everything Ship draws hangs off it.</p>
+
+<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lf">untouched, for orientation</span></div>
+
+<h2>Map</h2>
+
+<h3>Today</h3>
+<figure>
+<svg viewBox="0 0 720 300" role="img">
+<title>Today: Ship's sidebar is Issues, Projects and Folders; a project or issue shows its topics and Add to topic, which reads every topic itself; a topic opens only in Peek; Leaf keeps its own copy of the same read</title>
+<rect class="b" x="20" y="20" width="250" height="96" rx="8"/><text x="36" y="44" class="h">Ship</text><text x="36" y="62" class="m">sidebar: Issues · Projects ·</text><text x="36" y="78" class="m">Folders, each over its projects</text><text x="36" y="98" class="m">no Topics, no topic page</text>
+<rect class="b" x="20" y="140" width="250" height="54" rx="8"/><text x="36" y="164" class="h">"Topics: …" + Add to topic</text><text x="36" y="182" class="m">on a project or issue · own read</text>
+<g class="f"><rect class="b" x="300" y="20" width="180" height="54" rx="8"/><text x="316" y="44" class="h">Peek</text><text x="316" y="62" class="m">Topics screen · a topic</text></g>
+<rect class="b" x="510" y="140" width="190" height="54" rx="8"/><text x="526" y="164" class="h">Leaf</text><text x="526" y="182" class="m">its own copy of the read</text>
+<rect class="b" x="300" y="140" width="180" height="54" rx="8"/><text x="316" y="164" class="h">Shared package</text><text x="316" y="182" class="m">topics of one file</text>
+<rect class="b" x="160" y="236" width="400" height="50" rx="8"/><text x="176" y="258" class="h">Relay</text><text x="176" y="276" class="m">topics and what each lists</text>
+<path class="a" d="M145,116 L145,136"/>
+<path class="a" d="M145,194 L145,214 L230,214 L230,232"/><text x="60" y="226" class="m">every topic, each open</text>
+<path class="a" d="M270,167 L296,167"/>
+<path class="a" d="M390,194 L390,232"/>
+<path class="a" d="M605,194 L605,214 L500,214 L500,232"/>
+<path class="a" d="M220,140 L220,128 L390,128 L390,78"/><text x="236" y="122" class="m">a topic opens in Peek</text>
+</svg>
+<figcaption>Ship can show which topics a file is in, but not browse them. Add to topic reads every topic again each time it opens, in Ship and in Leaf, and offers topics archived with their project and topics in Folders you are not in.</figcaption>
+</figure>
+
+<h3>After</h3>
+<figure>
+<svg viewBox="0 0 720 440" role="img">
+<title>After: Ship has a new sidebar (M4), a Topics page and a topic page that every topic link in Ship opens (M3), Home (M5); all read one cached list of every topic from the shared package (M2), which Add to topic in Ship and Leaf uses too; a topic page links to the conversation in Peek; the prototype comes first (M1)</title>
+<rect class="ok" x="20" y="20" width="200" height="86" rx="8"/><text x="36" y="42" class="h">Sidebar</text><text x="36" y="60" class="m">Home · Topics · Projects ·</text><text x="36" y="76" class="m">Issues, then each Folder's</text><text x="36" y="92" class="m">own; no "Not in a Folder"</text><text x="176" y="42" class="tag">M4</text>
+<rect class="ok" x="240" y="20" width="200" height="86" rx="8"/><text x="256" y="42" class="h">Topics page</text><text x="256" y="60" class="m">Your topics · Other topics</text><text x="256" y="76" class="m">· Archived</text><text x="256" y="92" class="m">no work listed: not shown</text><text x="396" y="42" class="tag">M3</text>
+<rect class="ok" x="460" y="20" width="240" height="86" rx="8"/><text x="476" y="42" class="h">A topic's page in Ship</text><text x="476" y="60" class="m">projects, issues, Leaf links,</text><text x="476" y="76" class="m">archived work behind a link;</text><text x="476" y="92" class="m">every topic link in Ship opens it</text><text x="656" y="42" class="tag">M3</text>
+<rect class="ok" x="20" y="140" width="200" height="80" rx="8"/><text x="36" y="162" class="h">Home</text><text x="36" y="180" class="m">your topics, projects, and</text><text x="36" y="196" class="m">issues assigned to you</text><text x="176" y="162" class="tag">M5</text>
+<rect class="ok" x="240" y="140" width="200" height="80" rx="8"/><text x="256" y="162" class="h">Add to topic</text><text x="256" y="180" class="m">only your Folders' topics,</text><text x="256" y="196" class="m">none archived; "Topics: …"</text><text x="256" y="212" class="m">says (archived); shown once</text><text x="396" y="162" class="tag">M2</text>
+<g class="f"><rect class="b" x="560" y="140" width="140" height="80" rx="8"/><text x="576" y="164" class="h">Peek</text><text x="576" y="182" class="m">the conversation</text></g>
+<rect class="ok" x="160" y="256" width="400" height="62" rx="8"/><text x="176" y="278" class="h">One read of every topic</text><text x="176" y="296" class="m">kept while Ship is open · what each lists · archived · yours</text><text x="176" y="310" class="m">shared package (interop)</text><text x="516" y="278" class="tag">M2</text>
+<rect class="ok" x="580" y="256" width="120" height="62" rx="8"/><text x="594" y="280" class="h">Leaf</text><text x="594" y="298" class="m">Add to topic</text><text x="594" y="312" class="m">uses it too</text>
+<rect class="b" x="160" y="376" width="400" height="50" rx="8"/><text x="176" y="398" class="h">Relay</text><text x="176" y="416" class="m">unchanged: nothing new is written</text>
+<g class="f"><rect class="b" x="20" y="376" width="120" height="50" rx="8"/><text x="32" y="398" class="h">Prototype</text><text x="32" y="416" class="m">estiva-ui · M1</text></g>
+<path class="an" d="M430,106 L430,124 L452,124 L452,252"/>
+<path class="an" d="M120,220 L120,238 L250,238 L250,252"/>
+<path class="an" d="M340,220 L340,252"/>
+<path class="an" d="M520,106 L520,252"/>
+<path class="an" d="M580,287 L564,287"/>
+<path class="a" d="M360,318 L360,372"/>
+<path class="an" d="M630,106 L630,136"/><text x="642" y="119" class="m">Conversation</text><text x="642" y="131" class="m">in Peek</text>
+<g class="f"><path class="a" d="M90,320 L90,300 L156,300"/><text x="20" y="340" class="m">"yours" becomes what you follow</text><text x="20" y="354" class="m">once "Teams and following" lands</text></g>
+</svg>
+<figcaption>Every Ship surface reads the same cached list, so a topic is read once, not on every open of Add to topic. Every topic link in Ship, on the "Topics: …" line or in a description or comment, opens the topic's page in Ship; Leaf's still open Peek. A topic shows on Topics only while it lists a project or issue that is not archived (done ones count), and moves under Archived when all of it is; a Folder's Topics shows only the topics filed in that Folder. Ship now opens on Home. Spaces never show in Ship. "Yours" switches from membership to following when "Teams and following" lands its rule, in this one read; that is a dependency, not a decision here, so it is drawn faded. Peek and the relay do not change.</figcaption>
+</figure>
+
+<h2>Flow</h2>
+<figure>
+<svg viewBox="0 0 720 330" role="img">
+<title>Miky opens Topics in Ship; Ship asks the shared read, which reads topics and lists from the relay once; Ship draws his topics first; he opens Widgets from the kept copy; he clicks Conversation in Peek and Peek opens the topic</title>
+<rect class="b" x="20" y="14" width="150" height="40" rx="8"/><text x="34" y="39" class="h">Miky · Ship</text>
+<rect class="ok" x="215" y="14" width="150" height="40" rx="8"/><text x="229" y="39" class="h">Shared read</text>
+<rect class="b" x="410" y="14" width="130" height="40" rx="8"/><text x="450" y="39" class="h">Relay</text>
+<g class="f"><rect class="b" x="580" y="14" width="120" height="40" rx="8"/><text x="604" y="39" class="h">Peek</text></g>
+<line class="life" x1="95" y1="54" x2="95" y2="320"/><line class="life" x1="290" y1="54" x2="290" y2="320"/><line class="life" x1="475" y1="54" x2="475" y2="320"/><line class="life" x1="640" y1="54" x2="640" y2="320"/>
+<text x="104" y="80">1  opens Topics</text>
+<path class="an" d="M95,96 L286,96"/>
+<path class="a" d="M290,118 L471,118"/><text x="300" y="112" class="m">2  every topic and its list, once</text>
+<path class="a" d="M475,140 L294,140"/>
+<rect class="ok" x="300" y="150" width="170" height="40" rx="6"/><text x="310" y="168">3  works out yours,</text><text x="310" y="184" class="m">archived, Folders; keeps it</text>
+<path class="an" d="M290,208 L99,208"/><text x="104" y="226">4  Your topics, Other topics,</text><text x="104" y="242" class="m">each with its projects and issues</text>
+<text x="104" y="270">5  opens a topic, Widgets:</text><text x="104" y="286" class="m">drawn from the kept copy</text>
+<path class="a" d="M95,306 L636,306"/><text x="300" y="300" class="m">6  Conversation in Peek opens the topic there</text>
+</svg>
+<figcaption>Miky's 29 Oct moment, after this project: in Ship, the topics he is in come first, each with the few projects and issues it lists. Add to topic later in the session reads from the same kept copy.</figcaption>
+</figure>
+
+<p>No Objects or Access view: no object changes what it is, and who can read or change a topic or its list stays as "Topics group files" left it (whoever may write in the topic's Folder adds or removes an entry; the relay checks it).</p>
+
+<h2>Checked</h2>
+<ul>
+<li>Ship's sidebar today is Issues, Projects, then a Folders heading with a fold per Folder over its projects and "Not in a Folder": <code>src/components/ShipSidebar.tsx</code> on estiva-ship <code>origin/main</code> (d77ce44).</li>
+<li>Ship has no topic route; any other app's word on Ship's host is handed off (<code>elsewhere</code>, <code>src/router.ts</code>). The "Topics: …" line and Add to topic are ship#359 (TOP-5), merged.</li>
+<li>Add to topic's read: <code>readTopicChoices</code>, <code>src/api/foreign.ts:355</code>, reads every <code>kind:30840</code> root, resolves each and folds membership over all history on each call; no cache.</li>
+<li>The shared package has <code>topicsOfFile</code> and <code>topicLists</code>: estiva-foundation <code>packages/interop/src/topics.ts</code>, <code>origin/main</code>.</li>
+<li>The decided sidebar and the cuts: project "Navigation &amp; structure", Decided 29 Oct; Miky in the shaping session, 2 Nov.</li>
+<li>Not verified here: the read's time and size on Miky's workspace (measured at milestone 2's kickoff), and Leaf's copy of the read, named from "Topics group files"' Later list.</li>
+</ul>
+
+</main>
+</body>
+</html>
