@@ -18,7 +18,7 @@ Project pages, newest first:
 
 - [Ship's Topics navigation](ship-topics-navigation.html) — Shaped,
   2026-11-02. Ship gains a new sidebar (Home, Topics, Projects, Issues, then
-  each Folder's own), a Topics page with your topics first and a page per
+  each Folder's own Topics, Projects and Issues), a Topics page with your topics first and a page per
   topic, all drawn from one read of every topic and what it lists in the
   shared package; nothing new is written to the relay. Read at
   `https://docs.estiva.app/architecture/ship-topics-navigation.html`.
