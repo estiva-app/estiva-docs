@@ -210,6 +210,7 @@ properties and its history.
 - [An agent says it is an agent in its own profile (NIP-24 `bot`), and Estiva ID publishes it](an-agent-says-it-is-a-bot-in-its-profile.md) — Accepted, 2026-09-24
 - [Removing an agent from a Folder keeps it out, even while the person it works for is in](removing-an-agent-from-a-folder-keeps-it-out.md) — Accepted, 2026-10-27
 - [The person an agent works for can end that at once, and the relay cuts the agent off](an-agents-owner-ends-its-access-at-once.md) — Accepted, 2026-10-27
+- [An app defines the files it needs, and the workspace's owner or admin decides which apps are installed, so every Estiva app may start a file of a named type](an-app-defines-the-files-it-needs-and-the-owner-installs-it.md) — Accepted, 2026-11-02
 
 ## Devices & sessions
 
