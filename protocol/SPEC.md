@@ -187,12 +187,12 @@ consulted. **A consumer MUST NOT let a `kind:31990` claim `39000`.**
 | `title` | the `name` of its `kind:39000`, and only that. The relay lets only the channel's owners and admins change it (`kind:9002`), while any member may send a `kind:1852`; so a `name` in the state is never shown (Miky, 2026-10-03) |
 | `subtitle` | the `about` of its `kind:39000` (NIP-29), changed as the name is, by owners and admins with `kind:9002`. It is the Folder's one-liner, a file's summary (§6.12) is not: a reader ignores a `summary` change aimed at a `39000`. A consumer cuts it at 120 characters, as `@estiva-app/interop` does. *Added 2026-10-15* |
 | `noun` | `folder` (§7.9), the protocol's own word as a comment's is (§7.8), so a consumer labels one "Folder" and never by the app that opens it. *Added 2026-10-16*. It becomes `team` with the rename (§3), on the same day in every app; until then a consumer keeps `folder` |
-| members | the people its `kind:39002` roster names, with the roles its `kind:39001` gives the owners and admins among them. Anyone who can read the team can read who is in it. Agents are members like anyone; a consumer draws them under their own heading, marked as agents. *Added 2026-11-02* |
+| members | the people its `kind:39002` roster names, with the roles its `kind:39001` gives the owners and admins among them. Anyone who can read the team can read who is in it. Agents are members like anyone. *Added 2026-11-02* |
 | followers | not on the relay as a list: each person keeps the teams they follow in their own private list (§11.8), so a consumer never shows who follows a team. *Added 2026-11-02* |
 | spaces | the list's entries carrying the `space` role (§3.3), in the list's order. Every other topic the list names is one the team leads. Until private teams exist, every space is public. *Added 2026-11-02* |
 | list | the addresses its `kind:30890` names, and the files it names by id in `o` tags (§3.3), in the order it names them, folded with each file's own projection; an address the reader cannot resolve is not drawn, because the count is the disclosure. Never `kind:9` messages: they are the conversation, below. With no `kind:30890` the group has no list, not an empty one. A Folder referenced in a sentence draws its name only, with no list, and its consumer does not read the list for it: reading it costs a Folder page's read (Miky, 2026-10-16) |
 | conversation | `kind:9` messages carrying the Folder's `h` — the Folder's own conversation, the **team's chat**, §6.4's chat, §11.1's general stream. An `a` on one is a mention (§6.4) and does not take it out of the Folder's conversation. Threads and replies follow §6.4. A team's members follow its chat at Important by default; everyone else is told only of a message that names them (§11.8). Until private teams exist, anyone in the company may read and write it, as every Folder's conversation now; only members are told about it |
-| `archived` | the `archived` field of `kind:1851` changes on its address (§6.2), counting only a change carrying the Folder's own `h` whose author the relay lists as the Folder's owner or admin (`kind:39001`) — the same people who may rename it (Miky, 2026-10-03). An archived team gives nobody a default on its places (§11.8); a level someone chose on one stays |
+| `archived` | the `archived` field of `kind:1851` changes on its address (§6.2), counting only a change carrying the Folder's own `h` whose author the relay lists as the Folder's owner or admin (`kind:39001`) — the same people who may rename it (Miky, 2026-10-03). While a team is archived, nobody is in any of its places by any way, a level someone chose included (§11.8; Miky, 2026-11-02) |
 | open in | the `naddr` `web` template of the generic app declaring the `conversation` aspect (§7.8), as for a bare file; with no such app the Folder still draws, with nowhere to open |
 | actions | built in, declared by this section and by no manifest: `create-file` — §3.3's **place** for a bare file: a `kind:30840` with a `title`, an optional `summary` (§6.12) and this Folder's `h` (§6.7, never `buzz-channel`), then the `kind:1852` `add` (`emits.listed`, §7.3). Its `declaredBy` is `spec:3.2`; another app's manifest declaring a `30840` creation on a Folder is not offered beside it (and no manifest may claim `39000` to offer one as its owner). A consumer offers it only on a `39000` whose relay-signed `kind:30890` it has read — one without state is a conversation space, not a Folder (§7.3) — and only if it may sign `30840` and `1852`, and calls it by the opener's `fileNoun` (§7.8) — Peek's "Create topic" (INT-12, 2026-10-12). It makes a bare file and never a document: an app owning documents (§6.11) leaves it out of its own interface and offers its own creation instead (Miky, 2026-10-14). `start-a-conversation` — §3.3's **start a conversation**: a `kind:9` whose `content` is the message, carrying this Folder's `h` and no `a` naming the `39000` (an `a` is a mention, §6.4). Same `declaredBy`, same gate — a relay-signed `kind:30890` read, and only if the consumer may sign `kind:9` — and a manifest's own creation of a `kind:9` on a Folder is not offered beside it. A Folder holds a conversation; a DM or another conversation space is written to by its app's own composer, not through this action. *Added 2026-10-16; until then Peek's manifest declared it* |
 
@@ -223,9 +223,9 @@ produce the same events in the same order.
 | **start a conversation** | `kind:9` with the Folder's `h` (§6.4) | — |
 | **join** a team | `kind:9021` with the team's `h`, signed by the person joining | by the relay, on a team that is not open (private teams are a later stage) |
 | **leave** a team | `kind:9022` with the team's `h`, signed by the person leaving | by the relay, on the Company team (§3.4); and NIP-29's own rule for a sole owner |
-| **add** someone to a team | `kind:9000` with the team's `h` and `["p", <pubkey>]` | by the relay, to anybody who is not a member of the team |
+| **add** someone to a team | `kind:9000` with the team's `h` and `["p", <pubkey>]` | by the relay, to anybody who is not a member of the team; and a `kind:9000` granting or changing a role (owner, admin) to anybody but the team's owners and admins |
 | **remove** someone from a team | `kind:9001` with the team's `h` and `["p", <pubkey>]` | by the relay, to anybody but the team's owners and admins (`kind:39001`) and, for an agent, the person who owns it; and on the Company team, for anyone still in the company (§3.4) |
-| **mark** a space, or **unmark** it | `kind:1852` `add` naming the topic with the `space` role (below), or naming it without the role | by the relay, to anybody who is not a member of the team |
+| **mark** a space, or **unmark** it | `kind:1852` `add` naming the topic with the `space` role (below), or naming it without the role | by the relay, to anybody who is not a member of the team: any `kind:1852` — `add`, `remove` or `set`, a move's included — that gives an entry a role, or changes or removes an entry carrying one |
 | **follow** a team, or stop | no public event: the person's own `estiva:teams:v1` list (§11.8) | — |
 
 - **Delete is for an empty Folder.** The relay refuses a `kind:9008` while the
@@ -284,7 +284,8 @@ produce the same events in the same order.
   nothing else makes one (§11.8). A membership change on a file (§11.8) is
   never a team's membership. Which apps offer which is each app's call.
 - **Where the relay stands (2026-11-02).** The member-only checks on `add` and
-  on the `space` role and the copying of the role onto the `kind:30890` are
+  on the `space` role, the copying of the role onto the `kind:30890`, and the
+  refusal of a `follow:<P>` change not signed by `P` (§11.8) are
   built in the relay issue of the project *Teams and following*, and the
   Company team's roster (§3.4) in its Company team issue; a relay that
   predates them does not keep the role.
@@ -347,7 +348,7 @@ produce the same events in the same order.
   refuses a `kind:9022` leave and a `kind:9001` removal there for anyone still
   in the company. A member is still only a person on the roster (§11.8): no
   app counts someone as a member of the Company team any other way. Its chat
-  is the company's general conversation (Estiva's #general); someone who wants
+  is the company's general conversation; someone who wants
   it quieter sets it to Not following, as any place (§11.8).
 
 *Built 2026-11-02* (estiva-app/buzz, ticket 84e39a13): the mark, its
@@ -3451,7 +3452,7 @@ staged field, or writes one, also conforms to these.
 | C33 | **The change's stage counts.** A file whose current status change has value `in_progress` and stage `done` counts as done, even though the listing gives `in_progress` the stage `started`. A change whose stage is `paused` counts by the listing's stage. A change with no stage counts as before this rule. A `["stage","title","done"]` on a title change, or a `["stage","priority","done"]` on a status change, is ignored |
 | C34 | **An unknown option is shown.** A file whose current status is `triage` with stage `started`, an id no layer the reader can read lists, shows `triage` as its status and counts as `started`; it is not dropped from a list, a board or a count |
 | C35 | **A level on a place is its person's own** (*added 2026-11-02*, §11.8). A `follow:<P>` with `all` or `important` signed by `P` sets `P`'s level; one signed by anybody else is refused by the relay and ignored by a reader; any other value than `all`, `important` or empty sets nothing. `P`'s own `member:<P>`=`false` ends every level and join before it, from any app; a level, join or Add after it puts `P` back in. An Add puts `P` in at Important and never sets a level. A `follow:<P>`'s `p` places `P` on nothing |
-| C36 | **A team's default** (*added 2026-11-02*, §11.8). A member of a team is in its chat and spaces at Important, a follower (by `estiva:teams:v1`) in its spaces, nobody in the topics it leads, and nobody in any place of an archived team; a place in `off` is not reached. Nothing before the later of the person's join (the `kind:9000`/`9021`, or the `kind:9007` for its maker) or follow `since` and the space's marking `add` is unread. Important lights a new conversation, a reply in a conversation the person wrote in or is mentioned in, and a mention; All also every reply and the conversations on the files the place lists; a list entry lights nothing |
+| C36 | **A team's default** (*added 2026-11-02*, §11.8). A member of a team is in its chat and spaces at Important, a follower (by `estiva:teams:v1`) in its spaces, nobody in the topics it leads, and nobody in any place of an archived team by any way, a chosen level included; a place in `off` is not reached. Nothing before the later of the person's join (the `kind:9000`/`9021`, or the `kind:9007` for its maker) or follow `since` and the space's marking `add` is unread. Important lights a new conversation, a reply in a conversation the person wrote in or is mentioned in, and a mention; All also every reply and the conversations on the files the place lists; a list entry lights nothing |
 | C37 | **A space and a topic's one team** (*added 2026-11-02*, §3.3). A `kind:1852` `add` carrying `["a", <addr>, "", "space"]` (or the `o` form) marks the entry a space, and an `add` without the role unmarks it; a role a reader does not know leaves the entry listed. A topic found on two teams' lists is drawn in the one whose `add` naming it is newest. A move's `add` keeps the role only when it carries it |
 
 ### 9.1 Reference checks
@@ -4145,9 +4146,13 @@ latest leave (below):
    An Add never chooses `P`'s level;
 3. **`P` made it**: `P` is the author of the topic's or space's first record;
 4. **a team's default reaches `P`**: `X` is a space of a team `P` is a member
-   or follower of, or the chat of a team `P` is a member of; the team is not
-   archived (§3.2); and `X` is not in `P`'s private `off` list (below). A topic
-   a team leads reaches nobody by default.
+   or follower of, or the chat of a team `P` is a member of, and `X` is not in
+   `P`'s private `off` list (below). A topic a team leads reaches nobody by
+   default.
+
+**An archived team's places hold nobody.** While the team is archived (§3.2),
+no way in counts on its chat, spaces or topics, a level `P` chose included
+(Miky, 2026-11-02). Restoring the team reads the events as they stand.
 
 `P`'s level is the value of `P`'s latest `follow:<P>` on `X` after that leave,
 when it is `all` or `important`; otherwise Important. Every default is
@@ -4158,8 +4163,10 @@ Important.
 chose before it, from whichever app wrote either. A level chosen, or a join or
 an Add, after it puts `P` back in; an Add after a leave names it with `prev`
 (above). A leave does not end a team's default, which only the private `off`
-list turns off, so an app that offers leave on a place a default reaches
-writes both. Going back to the default is an empty `follow:<P>`.
+list turns off. So when `P` turns a place off, an app writes the leave only if
+one of ways 1 to 3 holds for `P`, and the `off` entry if a default reaches
+`P`; a place `P` is in only by a default gets the `off` entry alone, and
+nothing public. Going back to the default is an empty `follow:<P>`.
 
 **The level change** is a `kind:1851` beside the place, placed as the
 membership change is:
