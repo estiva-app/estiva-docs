@@ -844,10 +844,12 @@ false whose message starts `conflict:`:
 - a change setting several fields when any one of them fails either check:
   **it is taken whole or refused whole**, and none of its fields changes.
 
-The message names the field and its current change, `conflict: <field> follows
-<event id>` for a stale `prev`, so an app reads that change by its id rather
-than the whole file again. An app reads the message only for that id, and
-treats any other text after `conflict:` as "read the field again".
+For a stale `prev` the message names the field and its current change,
+`conflict: <field> follows <event id>`, so an app can read that change by its
+id rather than the whole file again. The relay names the id only to a signer
+who can read the file's home (§6.13); anyone else gets `conflict: <field>`. Any other `conflict:` message, such as a
+change that does not sort after its `prev`, names no current change: the app
+reads the field again.
 
 So readers fold by time (§6.3), and on a type the relay keeps in order that is
 also the order each change named.
@@ -2218,10 +2220,17 @@ names, its current `description` change as well, whole and as signed:
 
 - **Only with `#d`.** A filter with `"text": true` and no `#d` is refused
   (`400`): a list never carries text.
+- **Only where advertised.** An app sends `"text"` only to a relay whose
+  NIP-11 `file_list` says `"text": true` (below): a relay without it may
+  ignore the key, and its answer would then look like a file whose text was
+  never changed.
 - **The current change of the text** is the newest a reader folds (§6.2), a
-  change that set several fields included, under the same read rules as the
-  rest of the answer. A file whose text was never changed has none, and its
-  text is its first record's seed (§6.10).
+  change that set several fields included. **It goes only to a reader of the
+  file's home**, its first record's `h`, else its `buzz-channel`, as search
+  does: a project stored workspace-wide is readable by everyone while its text
+  is not. To anyone else the answer looks like a file whose text was never
+  changed. A file whose text was never changed has none, and its text is its
+  first record's seed (§6.10).
 - **Opening a file is this read**: its first record, one current change per
   field and one text, however many changes it has had. Each change's id is
   that field's next `prev`, the text's included. An older change is read by
@@ -3482,7 +3491,7 @@ throwaway relay or a fake query.
 | C37 | **A several-field change** (§6.2, §6.3). A change with `["set", "title", T, p1]` and `["set", "status", "done", p2]`, `O`, `a`, `h` and `["stage", "status", "done"]`, where `p1` and `p2` are current, is accepted, and every conforming reader folds both fields at its time and counts it `done`. One also carrying `field`, or naming `title` twice, is refused. A reader that does not know `set` shows the older title and status, never a mix |
 | C38 | **A stale `prev`** (§6.2). Two apps read a project's `status` at change S; the first sets `started` naming S and is accepted, the second sets `done` naming S and is refused with `conflict:`; it sends `done` again naming the first's id and is accepted, and nobody is asked. A several-field change whose `status` names S and whose `title` is current is refused whole: its title is not changed. Two `description` saves naming the same change: the second is refused, and its app merges and sends again, never overwriting |
 | C39 | **A change that sorts before its `prev`** (§6.2, §6.3). A change whose `created_at` is a second before its `prev`'s is refused; stamped 1 ms after its `prev`, with `ts` and `created_at` agreeing to the second, it is accepted and folds after it. A change whose `h` is not its file's Folder, or whose `a` is not the address of the file its `O` names, is refused (§6.2) |
-| C40 | **Opening a file reads one text** (*added 2026-11-02*, §6.13). A project with 40 text saves, read with `{"fields": "newest", "kinds": [30850], "#d": [d], "text": true}`, returns its first record, one change per field and exactly one `description` change, the current one, whose id names it as the next save's `prev`. The same filter without `#d` is refused. A project whose text was never changed returns no `description` change, and its text is the first record's seed. NIP-11 lists `file_list` whether or not it lists `files` |
+| C40 | **Opening a file reads one text** (*added 2026-11-02*, §6.13). A project with 40 text saves, read with `{"fields": "newest", "kinds": [30850], "#d": [d], "text": true}`, returns its first record, one change per field and exactly one `description` change, the current one, whose id names it as the next save's `prev`. The same filter without `#d` is refused. A member who cannot read the project's home Folder, sending the same filter, gets no `description` change. A project whose text was never changed returns no `description` change, and its text is the first record's seed. NIP-11 lists `file_list` whether or not it lists `files` |
 | C41 | **A merge that asks nothing** (§13.3). Base is b1, b2, b3, b4; theirs is b1, b2′, b3, n1, b4; mine is b2, b3, m1, b1, b4′ (b1 moved, m1 added, b4 rewritten). The merge is b2′, b3, n1, m1, b1, b4′ in that order, nothing asks, and the save names theirs as `prev` |
 | C42 | **A merge that asks** (§13.3). Base has b1–b3; theirs deletes b2 and rewrites b3; mine rewrites b2 and b3 differently, and sets `status` in the same change. b2 asks (edited against deleted) and b3 asks (changed by both); nothing of mine is saved, the status included. A marker text changed by both asks as one block |
 
@@ -5083,22 +5092,31 @@ was refused.
 - **A block** is any node with an `id`, at any depth (a list item is one); a
   node with none, such as a table row, belongs to the nearest one around it.
   A block's **own content** is its type, its `attrs` and every node inside it
-  that is not itself a block, compared as JSON. A block's **place** is its
-  parent and the block before it there.
+  that is not itself a block, compared as JSON. A block is **moved** on one
+  side when its parent changed, or when, among the blocks under that parent
+  that both the base and that side hold, it is outside the longest run still
+  in the base's order (on a tie, the run whose first difference comes earlier
+  in the base). So a neighbour added or deleted moves nothing, and moving one
+  block moves only that one.
 - **One side changed a block's own content and the other did not**: the
   change is taken. **Both changed it the same way**: it is kept once. **Both
   changed it differently: it asks.**
 - **One side deleted a block** (and every block inside it) **and the other did
   not touch it**: it is deleted. **One deleted it and the other changed its own
-  content: it asks.** Neither a quiet delete nor a quiet return.
+  content: it asks.** Neither a quiet delete nor a quiet return. One deleted
+  it and the other only moved it: it is deleted, since a move changes no words.
 - **One side moved a block** (changed its place) and the other changed its
   content: the change is taken, at the new place. Both moved it to different
   places: theirs stands.
-- **A block one side added** goes after the block it follows on that side,
-  under the same parent, or first there when it follows none. **Both added at
-  one place**: both are kept, theirs first.
-- **The order** is theirs, with each of these applied. A block whose parent
-  the merge deletes asks, as an edit against a delete.
+- **A block one side added** is kept. **Both added at one place**: both are
+  kept, theirs first.
+- **The order** is theirs. Then each block mine moved or added, in mine's
+  order, is taken out and placed after the nearest block before it in mine
+  that the merge keeps, and after any blocks theirs added right behind that
+  one; or first under its parent, after theirs' additions there, when there is
+  none. A block the other side added, moved or changed under a parent the
+  merge deletes asks, as an edit against a delete; one nobody touched goes
+  with its parent.
 - **A text that is not a block document** (§13.4) is one block, so any change
   by both asks unless the two are equal.
 - **When anything asks, nothing of mine is saved**, whatever else merged, and

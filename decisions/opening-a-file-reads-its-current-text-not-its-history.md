@@ -35,7 +35,7 @@ outside company's app gets the same read from the relay for its own types.
 - **The list read, asked for named files, may also return their text.** With
   `#d` naming the files and `"text": true`, the relay answers what the list
   read answers, plus each named file's current `description` change, whole and
-  as signed, under the same read rules (§3.1). `"text"` is refused without
+  as signed, and only to a reader of the file's home, as search does. `"text"` is refused without
   `#d`: a list never carries text.
 - **Opening a file is that read**: one first record, one current change per
   field and one text. An app builds its next change on the ids it read.
@@ -62,5 +62,6 @@ estiva-app/buzz.
 - History is still all there: an Activity panel or a merge that needs an older
   text reads it by id.
 - `text` is new wire on the list read; it is two-way, as a read option that
-  changes nothing stored. A relay that does not know it refuses the filter,
-  which an app reads as "not offered".
+  changes nothing stored. A relay that does not know it may ignore the key,
+  so an app asks for it only where NIP-11 advertises it
+  ([a-relay-advertises-the-list-read-apart-from-the-switch](a-relay-advertises-the-list-read-apart-from-the-switch.md)).

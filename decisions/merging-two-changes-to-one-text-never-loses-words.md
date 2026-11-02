@@ -2,7 +2,7 @@
 
 - Date: 2026-11-02
 - Status: Accepted
-- Decided by: Miky, in the ALO-7 kickoff session of 2026-11-02, answering "when is a block 'changed by both', so the app asks instead of merging quietly?" (the issue "The agent reads and writes projects field by field", its `## Decided` lines)
+- Decided by: Miky, in the ALO-7 kickoff session of 2026-11-02, answering "when is a block 'changed by both', so the app asks instead of merging quietly?"; and in the review of estiva-app/estiva-docs#380 the same day, on a block both moved, a block one moved and the other deleted, and what waits while a block asks (the issue "The agent reads and writes projects field by field", its `## Decided` lines)
 - Area: Files
 
 ## Who it affects
@@ -41,14 +41,16 @@ around it.
 - **A block both changed differently asks.**
 - **A block one side deleted and the other edited asks.** Neither a quiet
   delete nor a quiet return.
-- **A block one side deleted and the other left alone** is deleted.
+- **A block one side deleted and the other left alone, or only moved,** is
+  deleted: a move changes no words.
 - **A block one side moved and the other edited** is merged at its new place.
   Both moved it to different places: theirs stands, since no words are lost.
 - **Both inserted at one place**: both are kept, theirs first.
 - **A text that is not a block document** is one block.
 
-When anything asks, the app saves nothing of the refused text, whatever else
-merged, and the person resolves the blocks that ask before it saves again.
+When anything asks, the app saves nothing of the refused change, whatever else
+merged, and no other field the same save sets (a status), in every app; the
+person resolves the blocks that ask before it saves again.
 
 SPEC §13.3 carries it out, and §6.2 points to it.
 
@@ -58,6 +60,13 @@ SPEC §13.3 carries it out, and §6.2 points to it.
   and no note, and the person who deleted it may never notice.
 - **A delete beats an edit**: the rewrite vanishes, and the answer says only
   "merged".
+- **A block both moved to different places asks**: nothing is lost either
+  way, so one more question for a rare case buys nothing.
+- **A block one deleted and the other moved asks**: a move changes no words.
+- **Each app decides what waits while a block asks**, so Ship could save the
+  clean parts and a status at once: less is lost when a tab closes mid-question,
+  but apps would differ, and it breaks "a change is taken whole or refused
+  whole".
 
 ## Consequences
 
