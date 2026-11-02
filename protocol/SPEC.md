@@ -219,7 +219,7 @@ produce the same events in the same order.
 | **delete** | `kind:9008` with the Folder's `h` | by the relay, while the Folder holds a file — a first record (`30840`, `30842`, `30850`, `30851` or `30852`) under its `h`, deleted ones included (§6.5), or anything its listing names — and for good on the Company Folder (§3.4), and to anybody but the channel's owner, the person who owns an owner-role agent in the channel, or an owner or admin of the workspace on the relay's roster |
 | **place** a new file | the file's root, with this Folder's `h` (or the tag its owner's `placement` names, §7.3) — under a parent, the parent's own Folder instead (§6.7); then `kind:1852` `add` naming its address | — |
 | **unlist** a deleted file | the `kind:5`; then `kind:1852` `remove` naming its address, in each Folder whose state names it (§7.3) | by the relay, the `remove` of a team's space from somebody who is not a member of that team: the entry stays listed until a member removes it, and a reader skips it as deleted |
-| **move** a file to another Folder | `kind:1852` `add` in the target; then `kind:1852` `remove` in the source — one pair for the file and one for each file nested beneath it (§6.7 Nesting), so a subtree moves whole; never the files a topic lists (§6.14). The file's `h` does not change. A topic's `space` role does not travel: the target's `add` carries it only when the person ticks "Keep it a space in <team>", which a consumer offers ticked when the topic was a space and the person may mark the target's spaces. Moving a space out of a team takes its mark off, so a consumer offers it only to a member of the source team, and checks that before the `add` | by the consumer, when the target is private and the file's `h` names any other channel (§3.1: the move would look private and not be), and a space's move by somebody who is not a member of its team. By the relay, an `add` carrying `space` from somebody who is not a member of the target, and the source's `remove` of a space from somebody who is not a member of the source |
+| **move** a file to another Folder | `kind:1852` `add` in the target; then `kind:1852` `remove` in the source — one pair for the file and one for each file nested beneath it (§6.7 Nesting), so a subtree moves whole; never the files a topic lists (§6.14). A topic is the exception: the `remove` in the source comes first, then the `add` in the target (below). The file's `h` does not change. A topic's `space` role does not travel: the target's `add` carries it only when the person ticks "Keep it a space in <team>", which a consumer offers ticked when the topic was a space and the person may mark the target's spaces. Moving a space out of a team takes its mark off, so a consumer offers it only to a member of the source team, and checks that before the `add` | by the consumer, when the target is private and the file's `h` names any other channel (§3.1: the move would look private and not be), and a space's move by somebody who is not a member of its team. By the relay, an `add` carrying `space` from somebody who is not a member of the target, the source's `remove` of a space from somebody who is not a member of the source, and an `add` of a topic into a team while another team's `kind:30890` lists it |
 | **start a conversation** | `kind:9` with the Folder's `h` (§6.4) | — |
 | **join** a team | `kind:9021` with the team's `h`, signed by the person joining | by the relay, on a team that is not open (private teams are a later stage) |
 | **leave** a team | `kind:9022` with the team's `h`, signed by the person leaving | by the relay, on the Company team (§3.4); and NIP-29's own rule for a sole owner |
@@ -266,7 +266,9 @@ produce the same events in the same order.
 - **Move adds before it removes.** State is per Folder, so there is no atomic
   move; a failure between the two leaves the file listed in both — visible,
   obviously wrong, fixed by moving again — where the other order would leave it
-  in neither.
+  in neither. A topic moves the other way round, because the relay refuses it on
+  a second team's list (below): a failure between the two leaves it on no
+  team's list, still stored where it was and fixed by adding it again.
 - **A list entry may carry a role** (*added 2026-11-02*; record
   [a-space-is-the-teams-own-mark-on-a-topic-it-lists](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-space-is-the-teams-own-mark-on-a-topic-it-lists.md)).
   It is the entry tag's **fourth** element, after an empty third:
@@ -289,7 +291,13 @@ produce the same events in the same order.
 - **A topic is listed by exactly one team** (*added 2026-11-02*; record
   [a-topic-lives-in-exactly-one-team](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-topic-lives-in-exactly-one-team.md)).
   A consumer never offers to list a topic in a second team; a move is the only
-  way it changes team. A reader that finds a topic on two teams' lists draws it
+  way it changes team. The relay refuses a `kind:1852` `add` or `set` that puts
+  a topic (`kind:30840`, by address or by id) on a team's list while another
+  team's `kind:30890` lists it, so a move takes it off the old team's list
+  first; for a space, that takes a member of the old team (above). An entry the
+  team already lists is not refused, so it re-marks and unmarks its own topics
+  as before. A reader that finds a topic on two teams' lists, as one listed
+  before the relay refused it can be, draws it
   in the one whose `kind:1852` `add` naming it (read by `#a` and `#o`) is the
   newest that a current `kind:30890` still reflects. Other files are unaffected:
   a project or an issue may still be listed in more than one Folder.
@@ -3559,7 +3567,7 @@ staged field, or writes one, also conforms to these.
 | C34 | **An unknown option is shown.** A file whose current status is `triage` with stage `started`, an id no layer the reader can read lists, shows `triage` as its status and counts as `started`; it is not dropped from a list, a board or a count |
 | C40 | **A level on a place is its person's own** (*added 2026-11-02*, §11.8; was C35). A `follow:<P>` with `all` or `important` signed by `P` sets `P`'s level; one signed by anybody else, or with `P` not the signer's lowercase hex, is refused by the relay and ignored by a reader; any other value than `all`, `important` or empty is refused by the relay and sets nothing. `P`'s own `member:<P>`=`false` ends every level and join before it, from any app; a level, join or Add after it puts `P` back in. An Add puts `P` in at Important and never sets a level. A `follow:<P>`'s `p` places `P` on nothing |
 | C41 | **A team's default** (*added 2026-11-02*, §11.8; was C36). A member of a team is in its chat and spaces at Important, a follower (by `estiva:teams:v1`) in its spaces, nobody in the topics it leads, and nobody in any place of an archived team by any way, a chosen level included; a place in `off` is not reached. Nothing before the later of the person's join (the earliest `kind:9000`/`9021` since their last leave, or the `kind:9007` for its maker) or follow `since` and the space's marking `add` (the earliest since it was last unmarked) is unread. Important lights a new conversation, a reply in a conversation the person wrote in or is mentioned in, and a mention; All also every reply and the conversations on the files the place lists; a list entry lights nothing |
-| C42 | **A space and a topic's one team** (*added 2026-11-02*, §3.3; was C37). A `kind:1852` `add` carrying `["a", <addr>, "", "space"]` (or the `o` form) marks the entry a space, and an `add` without the role unmarks it; a role a reader does not know leaves the entry listed. A topic found on two teams' lists is drawn in the one whose `add` naming it is newest. A move's `add` keeps the role only when it carries it |
+| C42 | **A space and a topic's one team** (*added 2026-11-02*, §3.3; was C37). A `kind:1852` `add` carrying `["a", <addr>, "", "space"]` (or the `o` form) marks the entry a space, and an `add` without the role unmarks it; a role a reader does not know leaves the entry listed. The relay refuses an `add` or `set` that lists a topic another team's `kind:30890` lists, so a topic's move removes before it adds; a topic found on two teams' lists is drawn in the one whose `add` naming it is newest. A move's `add` keeps the role only when it carries it |
 
 ### 9.1 Reference checks
 
