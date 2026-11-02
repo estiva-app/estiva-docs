@@ -113,6 +113,7 @@ heading here.
 - [Only a Folder's owners and admins can rename or archive it, and its name is the relay's channel name](only-owners-and-admins-rename-or-archive-a-folder.md) — Accepted, 2026-10-03
 - [It is called a Folder; "team" is not a second name for it](a-folder-is-called-a-folder-never-a-team.md) — Accepted, 2026-09-25
 - [Who can read a file is decided on the file, and Folders are labels](folders-are-labels.md) — Proposed, 2026-10-14; parked until the navigation rework
+- [A team is today's Folder, with members, followers and its own chat, and it is called a team](a-team-is-the-folder-and-is-called-a-team.md) — Proposed, 2026-11-02
 - [A comment, or a file created under another file, is stored with it, so only that file's readers can read it](what-belongs-to-a-file-is-stored-with-it.md) — Accepted, 2026-10-19
 - [A Folder two companies share is kept on both companies' relays, and the company that started it runs it; each company decides about its own people and their words](a-shared-folder-lives-on-both-relays-and-its-host-runs-it.md) — Accepted, 2026-10-26
 - [Only a group's owners and admins make it a Folder; DMs and workflow channels never become one](only-a-groups-owners-and-admins-make-it-a-folder.md) — Accepted, 2026-10-27
