@@ -16,6 +16,12 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [Teams and following](teams-and-following.html) — Shaped, 2026-11-02. A
+  Folder becomes a team with members and followers and three kinds of place
+  (its chat, its spaces, the topics it leads); each person sets one level on a
+  place (Not following, Important or All), only they set it, and one shared
+  rule in every app works out what is in what you follow. Read at
+  `https://docs.estiva.app/architecture/teams-and-following.html`.
 - [Each company sets its own statuses](each-company-sets-its-own-statuses.html)
   — Shaped, 2026-10-30. Every status change carries its stage beside the
   value, read and written through the shared packages by every app, Ship
