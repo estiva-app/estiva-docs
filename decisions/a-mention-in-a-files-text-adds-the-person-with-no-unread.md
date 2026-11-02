@@ -6,6 +6,11 @@
 - Supersedes: a-mention-in-a-files-text-adds-the-person.md
 - Area: Read state
 
+> Superseded in part, 2026-11-02, for topics: naming someone in a topic's
+> summary puts them in nothing; it stays a link, in
+> [a-team-holds-three-kinds-of-place-and-add-puts-you-in-one](a-team-holds-three-kinds-of-place-and-add-puts-you-in-one.md).
+> On every other file the rest of this record stands.
+
 ## Who it affects
 
 When Miky writes `@Katerina` in a Leaf page or a Ship description and saves,

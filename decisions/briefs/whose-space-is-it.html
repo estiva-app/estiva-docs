@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Whose space is it</title>
+<style>
+:root {
+  --bg: #fbfaf7; --ink: #1d1d1f; --muted: #5d5d66; --line: #8e8e98; --rule: #dcdad3;
+  --box: #efeee9; --card: #ffffff; --fold: #f3f1ea; --gate: #e6edfb; --team: #eaf4ec;
+  --accent: #2457c5; --warn: #b3401f; --ok: #2a7a46; --chip: #dfe6f6; --pick: #f2f6ff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17171a; --ink: #ececef; --muted: #a8a8b2; --line: #74747f; --rule: #34343b;
+    --box: #26262b; --card: #1f1f23; --fold: #222226; --gate: #1d2a45; --team: #1d3324;
+    --accent: #93b2ff; --warn: #ff9e80; --ok: #82d69e; --chip: #2b3553; --pick: #1c2338;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17171a; --ink: #ececef; --muted: #a8a8b2; --line: #74747f; --rule: #34343b;
+  --box: #26262b; --card: #1f1f23; --fold: #222226; --gate: #1d2a45; --team: #1d3324;
+  --accent: #93b2ff; --warn: #ff9e80; --ok: #82d69e; --chip: #2b3553; --pick: #1c2338;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0 auto; max-width: 760px; padding: 24px 16px 64px;
+  background: var(--bg); color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+h1 { font-size: 28px; line-height: 1.2; margin: 4px 0 4px; }
+h2 { font-size: 20px; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--rule); }
+h3 { font-size: 17px; margin: 22px 0 6px; }
+p, li { max-width: 70ch; }
+ul { padding-left: 20px; }
+li { margin: 3px 0; }
+.kicker { color: var(--muted); font-size: 14px; margin: 0; }
+.question { font-size: 19px; line-height: 1.45; font-weight: 600; }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+.door { background: var(--box); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.pick { background: var(--pick); border-left: 4px solid var(--accent); padding: 10px 14px; border-radius: 6px; }
+.opt { border: 1px solid var(--rule); border-radius: 10px; padding: 4px 16px 10px; margin: 14px 0; background: var(--card); }
+.opt h3 { margin-top: 12px; }
+.opt.rec { border-color: var(--accent); }
+.tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); vertical-align: 2px; margin-left: 6px; }
+.tablewrap { overflow-x: auto; margin: 10px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.4; min-width: 560px; }
+th, td { text-align: left; vertical-align: top; padding: 7px 8px; border-bottom: 1px solid var(--rule); }
+th { font-size: 13px; color: var(--muted); font-weight: 600; }
+td:first-child { font-weight: 600; min-width: 7.5em; }
+figure { margin: 18px 0 24px; overflow-x: auto; }
+figure svg { width: 100%; min-width: 600px; height: auto; display: block; }
+figcaption { font-size: 14px; color: var(--muted); margin-top: 6px; }
+figcaption b { color: var(--ink); }
+code { font-size: 13px; background: var(--box); padding: 0 4px; border-radius: 4px; }
+.team { fill: var(--team); stroke: var(--ok); stroke-width: 1.3; }
+.fold { fill: var(--fold); stroke: var(--line); stroke-width: 1.2; }
+.file { fill: var(--card); stroke: var(--line); stroke-width: 1.2; }
+.bad { fill: var(--card); stroke: var(--warn); stroke-width: 1.4; }
+.gate { fill: var(--gate); stroke: var(--accent); stroke-width: 1.5; }
+.dash { stroke-dasharray: 6 4; }
+.arrow { stroke: var(--line); stroke-width: 1.4; fill: none; }
+.t { fill: var(--ink); font-size: 13px; }
+.b { font-weight: 700; }
+.ts { fill: var(--muted); font-size: 12px; }
+.ta { fill: var(--accent); font-size: 12px; font-weight: 600; }
+.tw { fill: var(--warn); font-size: 12px; font-weight: 600; }
+.tok { fill: var(--ok); font-size: 12px; font-weight: 600; }
+.mk { fill: var(--line); }
+</style>
+</head>
+<body>
+
+<p class="kicker">Decision brief · Teams stage of "Re-architecting Osnova protocol" · 2 Nov 2026 · for Miky · redrawn after your answer that a topic lives in one team</p>
+<h1>Whose space is it</h1>
+<p class="question">Is "space" something about the topic, so it stays a space when it moves to another team, or the team's own choice, so the team it moves to decides again?</p>
+<p class="muted small">You decided today that a team holds three kinds of place: its chat, its spaces ("topics the team marks"), and the topics it leads, and that a team's members and followers follow its spaces at Important. You also decided just now that a topic lives in exactly one team, and only a move changes which. The first version of this brief rested on a topic in two teams; that case is gone. What is left is where the mark is kept, which decides two things: what a move does, and who may mark.</p>
+
+<h2>Today</h2>
+<p>Nothing is a space yet. Every topic is <b>stored</b> in the team it was created in, for good: that is who may read it and write on it. Which team <b>shows</b> it is the team's list, and a move changes only that. So after a move, a topic is shown by one team and stored in another. Today both are open to everyone in the company, so nobody notices.</p>
+<p>Who may change a team's list today: anyone who may write in that team, which for all 9 teams is everyone in the company.</p>
+
+<figure>
+<svg viewBox="0 0 720 270" role="img" aria-labelledby="t0">
+<title id="t0">The setup: #bug is one of Engineering's spaces, so Miky, in Engineering, follows it at Important. Someone moves #bug to Design, where Katerina is.</title>
+<defs><marker id="m0" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="mk"/></marker></defs>
+<rect class="team" x="16" y="16" width="262" height="104" rx="10"/>
+<text class="t b" x="32" y="38">Engineering</text>
+<rect class="gate" x="32" y="50" width="230" height="26" rx="5"/><text class="t" x="44" y="68">#bug</text><text class="ta" x="252" y="68" text-anchor="end">★ space</text>
+<rect class="file" x="32" y="84" width="230" height="26" rx="5"/><text class="t" x="44" y="102">#release</text>
+<rect class="team" x="442" y="16" width="262" height="104" rx="10"/>
+<text class="t b" x="458" y="38">Design</text>
+<rect class="file dash" x="458" y="50" width="230" height="26" rx="5"/><text class="ts" x="470" y="68">#bug arrives here</text>
+<rect class="file" x="458" y="84" width="230" height="26" rx="5"/><text class="t" x="470" y="102">#mockups</text>
+<path class="arrow dash" d="M262,63 C 330,40 390,40 456,63" marker-end="url(#m0)"/>
+<text class="t b" x="360" y="30" text-anchor="middle">a move</text>
+<text class="ts" x="360" y="96" text-anchor="middle">#bug stays stored</text>
+<text class="ts" x="360" y="112" text-anchor="middle">in Engineering</text>
+<rect class="fold" x="16" y="150" width="262" height="58" rx="8"/>
+<text class="t b" x="30" y="172">Miky · in Engineering</text>
+<text class="tok" x="30" y="192">before: #bug at Important</text>
+<rect class="fold" x="442" y="150" width="262" height="58" rx="8"/>
+<text class="t b" x="456" y="172">Katerina · in Design</text>
+<text class="ts" x="456" y="192">before: #bug not followed</text>
+<text class="ts" x="360" y="240" text-anchor="middle">In both options, Miky stops following #bug by default after the move</text>
+<text class="ts" x="360" y="256" text-anchor="middle">(unless he chose a level himself). The options differ on Design's side.</text>
+</svg>
+<figcaption><b>The setup.</b> Engineering and Design are examples; which teams exist on day one is a separate question.</figcaption>
+</figure>
+
+<h2>Why it reaches beyond this stage</h2>
+<p>A space is how one act puts a place on many people's sidebars: every member and every follower of the team, at Important. This sets, for every app and every company that adopts the protocol, <b>who may do that to a team's people</b>: anyone who may write on the topic, or the team itself. Today the two are the same people. They part when private teams come, the next stage: a topic stored in an open team can be shown by a private one, as a private team's public front door, and the other way round after a move.</p>
+<p class="door"><b>Undo.</b> Both can be changed later by rewriting each mark into the other shape, since a topic is now in one team. A's marks, though, say nothing about which team made them, so after moves a rewrite has to guess; C's always name their team.</p>
+
+<h2>Options</h2>
+
+<div class="opt">
+<h3>A · A space is about the topic, and goes with it <span class="tag">do less</span></h3>
+<figure>
+<svg viewBox="0 0 720 230" role="img" aria-labelledby="ta">
+<title id="ta">Option A: the mark is on the topic. After the move, #bug is at once one of Design's spaces, and Katerina follows it at Important. Marking it is done where it is stored, in Engineering.</title>
+<rect class="gate" x="250" y="12" width="220" height="56" rx="8"/>
+<text class="t b" x="290" y="36">#bug</text><text class="ta" x="456" y="36" text-anchor="end">★ space</text>
+<text class="ts" x="360" y="56" text-anchor="middle">the mark is on the topic</text>
+<rect class="team" x="16" y="84" width="220" height="70" rx="10"/>
+<text class="t b" x="32" y="106">Engineering</text>
+<rect class="file" x="32" y="118" width="188" height="26" rx="5"/><text class="t" x="44" y="136">#release</text>
+<rect class="team" x="484" y="84" width="220" height="104" rx="10"/>
+<text class="t b" x="500" y="106">Design</text>
+<rect class="gate" x="500" y="118" width="188" height="26" rx="5"/><text class="t" x="512" y="136">#bug</text><text class="ta" x="678" y="136" text-anchor="end">★ space, at once</text>
+<rect class="file" x="500" y="152" width="188" height="26" rx="5"/><text class="t" x="512" y="170">#mockups</text>
+<text class="tw" x="360" y="110" text-anchor="middle">who may mark or unmark:</text>
+<text class="tw" x="360" y="126" text-anchor="middle">anyone who may write</text>
+<text class="tw" x="360" y="142" text-anchor="middle">where #bug is stored</text>
+<text class="tw" x="360" y="158" text-anchor="middle">(Engineering)</text>
+<rect class="fold" x="330" y="196" width="374" height="30" rx="8"/>
+<text class="t" x="344" y="216"><tspan class="b">Katerina</tspan> <tspan class="tok">· #bug at Important, at once</tspan></text>
+</svg>
+</figure>
+<p><b>What you see.</b> Katerina moves #bug to Design, and it shows in Design's section as a space at once: everyone in or following Design follows it at Important from that moment. A space is a permanent place wherever it is, which matches your 9 Oct split of permanent topics from project-like and short-term ones.</p>
+<p><b>Outside company.</b> Simplest to build and to explain: one more fact on the topic, beside its title.</p>
+<p><b>What could go wrong.</b> Moving a space quietly pushes it onto everyone in the new team, without anyone in that team choosing it. And who may mark it is whoever may write where it is stored, not the team that shows it: after a move, someone outside Design can mark or unmark one of Design's spaces, and once Design is private, someone in Design may be unable to. Each app also has to read every topic's history to know a team's spaces.</p>
+</div>
+
+<div class="opt rec">
+<h3>C · A space is the team's own mark on its list <span class="tag">recommended</span></h3>
+<figure>
+<svg viewBox="0 0 720 230" role="img" aria-labelledby="tc">
+<title id="tc">Option C: the mark is on Engineering's list. The move takes it off. Design decides, and the move dialog can offer to keep it a space in Design if the person moving may mark Design's spaces.</title>
+<rect class="file" x="250" y="12" width="220" height="56" rx="8"/>
+<text class="t b" x="360" y="36" text-anchor="middle">#bug</text>
+<text class="ts" x="360" y="56" text-anchor="middle">the topic carries no mark</text>
+<rect class="team" x="16" y="84" width="220" height="70" rx="10"/>
+<text class="t b" x="32" y="106">Engineering</text>
+<rect class="file" x="32" y="118" width="188" height="26" rx="5"/><text class="t" x="44" y="136">#release</text>
+<rect class="team" x="484" y="84" width="220" height="104" rx="10"/>
+<text class="t b" x="500" y="106">Design</text>
+<rect class="gate dash" x="500" y="118" width="188" height="26" rx="5"/><text class="t" x="512" y="136">#bug</text><text class="ta" x="678" y="136" text-anchor="end">★ if Design marks</text>
+<rect class="file" x="500" y="152" width="188" height="26" rx="5"/><text class="t" x="512" y="170">#mockups</text>
+<text class="ta" x="360" y="110" text-anchor="middle">who may mark or unmark:</text>
+<text class="ta" x="360" y="126" text-anchor="middle">whoever may change</text>
+<text class="ta" x="360" y="142" text-anchor="middle">Design's list</text>
+<text class="ts" x="360" y="166" text-anchor="middle">move dialog: "Keep it a</text>
+<text class="ts" x="360" y="182" text-anchor="middle">space in Design" ☑</text>
+<rect class="fold" x="330" y="196" width="374" height="30" rx="8"/>
+<text class="t" x="344" y="216"><tspan class="b">Katerina</tspan> <tspan class="tok">· at Important once Design marks it</tspan></text>
+</svg>
+</figure>
+<p><b>What you see.</b> The move takes Engineering's mark off with the topic. In the move dialog, "Keep it a space in Design" is ticked when #bug was a space, so in the usual case it looks just like A: one act, and it is a space in Design. The difference is that it is Design's mark, made by someone allowed to make it.</p>
+<p><b>Outside company.</b> One rule: a team's spaces are what that team says on its own list, which every app already reads to draw the team. Who may mark is checked against the team that shows it, and that holds when teams become private and when a team is shared with another company.</p>
+<p><b>What could go wrong.</b> A move by an app that does not offer the tick (an older app, the CLI) drops the mark, and #bug becomes a topic Design leads until someone marks it again. Who may mark is still open: today anyone who may write in a team may change its list, so for our open teams that is everyone in the company; C lets the relay narrow it to the team's members, which is part of the next batch of questions.</p>
+</div>
+
+<p class="small muted"><b>Dropped:</b> the mark on the topic counting only for the team it is stored in. After a move, the team storing #bug no longer shows it, so the mark would count for nobody and Design could never make it a space.</p>
+
+<h2>Trade-offs</h2>
+<div class="tablewrap">
+<table>
+<tr><th>Option</th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td>A · about the topic</td><td>A space is a property of the topic, like its title; checked against where it is stored</td><td>A moved space is the new team's space at once, unasked</td><td>Simplest; but who may mark is not the team, once teams are private</td><td>Two-way, but old marks name no team</td><td>Lowest: one new field; every app reads each topic's history</td></tr>
+<tr><td>C · the team's mark</td><td>A team's statement about its own places, kept on the list it already has; checked against that team</td><td>The same in the usual case, through the move dialog's tick; a move without it drops the mark</td><td>One rule that holds for private and shared teams</td><td>Two-way: every mark names its team</td><td>Higher: a relay change to the team's list; apps read it from the list they already load</td></tr>
+</table>
+</div>
+
+<h2>How others do it</h2>
+<ul>
+<li><b>Matrix:</b> a space lists its rooms in the space itself, with a "suggested" flag on that entry: the space's choice, not the room's. That is C.</li>
+<li><b>Slack:</b> default channels are a workspace setting, not a property of the channel. C-like.</li>
+<li><b>Discord:</b> each server's onboarding picks its default channels. C-like.</li>
+<li><b>Linear:</b> moving an issue to another team asks you to map its status and labels to the new team's: the receiving team's settings apply, as in C with its tick.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<div class="pick">
+<p><b>C: a space is the team's own mark on its list.</b> "Topics the team marks" is a team's statement, so the team should be the one allowed to make it, and that only stays true under C once teams can be private. With the tick in the move dialog, a person sees what A gives in the usual case, while a move never pushes a space onto a team that did not say yes. The cost is a relay change to the team's list; that is a build cost, and it does not change the shape.</p>
+</div>
+
+<h2>Checked</h2>
+<ul class="small">
+<li>A topic is stored in one team for good, and a move changes only which team shows it: SPEC §3 ("an event cannot change its own <code>h</code>"), §3.1, §3.3.</li>
+<li>A team's list is changed by anyone who may write in that team: buzz <code>nfb-demo-kinds</code> 2e0adb163, <code>ingest.rs:630</code> (a listing command needs only the write scope in that team); KINDS row <code>1852</code> "any member may send one". That all 9 teams are open to everyone in the company is from the 1 Nov and 2 Nov production reads.</li>
+<li>A change on a topic is stored where the topic is stored, so writing one needs that team, not the team showing it: SPEC §6.2 (a change carries its file's <code>h</code>).</li>
+<li>Your 9 Oct split of permanent, project-like and short-term topics: the Friday meeting topic in Peek, as quoted in the project draft.</li>
+<li>Matrix's "suggested" flag and Linear's move mapping: from memory, not re-read today.</li>
+<li><b>Not re-read today:</b> your 28 Oct wish for a private team's public front door comes from the protocol pre-review of 1 Nov (its F8), which quotes it; and the relay has no code today that reads anything beyond the address on a list entry (I read the listing command's operation check, not the whole handler).</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="small">A: <code>kind:1851</code> on the <code>30840</code>, <code>["field","space"]</code>, <code>["value","true"]</code>, with the topic's <code>h</code>; SPEC §6.7, KINDS <code>1851</code> row; the defaults fold reads each listed topic's <code>space</code> history by <code>#a</code>. C: <code>kind:1852</code> <code>add</code> naming the address with a role <code>space</code> (an <code>add</code> without it unmarks), copied by the relay onto that entry of the team's relay-signed <code>kind:30890</code>; a move's <code>add</code> in the target carries the role when the tick is on. The exact tag position is SPEC work, since NIP-01 reads an <code>a</code> tag's third element as a relay hint. The default starts from that <code>1852</code>'s time. SPEC §3.2, §3.3, §11.8; KINDS <code>1852</code>/<code>30890</code> rows; buzz <code>nfb-demo-kinds</code>. Answered first: a topic lives in exactly one team (Miky, 2 Nov, this session). Protocol pre-review 2 Nov (~/teams-scratch/prereview-protocol-2nov.md), its BIG decision; project "Teams and following" (draft ~/teams-scratch/draft.md). Record: a-space-is-the-teams-own-mark-on-a-topic-it-lists (Proposed).</p>
+
+</body>
+</html>
