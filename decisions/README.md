@@ -180,7 +180,7 @@ properties and its history.
 - [A company's statuses are its own layer of a type's properties, kept in a file the workspace's admins edit, and every status change also carries its stage](a-companys-statuses-are-its-own-layer-of-a-types-properties.md) — Accepted, 2026-10-30
 - [A file's own state is an upstream Buzz artifact the relay keeps in order; everything else names the file by one reference](every-file-is-an-artifact-the-relay-keeps-in-order.md) — Accepted, 2026-10-29; its part "in one single-letter tag that every … card and chip uses" superseded by the one above, 2026-10-29; its part "a file's own state is a NIP-AR artifact, whole in each save" superseded by the one below, 2026-10-30
 - [A file is its fields, and the relay keeps each field's changes in order; the text is one field, saved whole](a-file-is-its-fields-each-kept-in-order-by-the-relay.md) — Accepted, 2026-10-30
-- [What the relay knows about a type changes how files are found and ranked, never whether a save is accepted](a-types-declaration-changes-how-files-are-found-never-what-is-accepted.md) — Accepted, 2026-10-30
+- [What the relay knows about a type changes how files are found and ranked, never whether a save is accepted](a-types-declaration-changes-how-files-are-found-never-what-is-accepted.md) — Accepted, 2026-10-30; its refusal of text with no label superseded by search-finds-a-file-by-the-words-of-its-current-fields, 2026-11-02
 - [Today's four types are Osnova's base and keep their own records; every new type starts with one named record, and joining the base moves no file](osnovas-base-types-keep-their-records-and-every-new-type-starts-named.md) — Accepted, 2026-10-30
 - [One change may set several fields of a file, and the relay takes it whole or refuses it whole](one-change-may-set-several-fields-taken-whole-or-refused-whole.md) — Accepted, 2026-10-30
 - [A change names the file it changes the way a comment names the file it is on, and every other file it points at the way a mention does](a-change-is-about-its-file-as-a-comment-is.md) — Accepted, 2026-10-30
@@ -229,6 +229,7 @@ properties and its history.
 - [Search matches every typed word as the start of a word; quotes ask for an exact phrase and a minus leaves a word out](search-matches-every-word-as-a-word-start.md) — Accepted, 2026-10-19
 - [A minus before a quoted phrase leaves out anything with those words next to each other](a-minus-before-a-phrase-leaves-the-phrase-out.md) — Accepted, 2026-10-19
 - [Search looks in a base type's built-in word fields and in every field an added app marks as words in its listing](search-looks-in-the-base-and-every-field-an-added-app-marks-as-words.md) — Accepted, 2026-10-30
+- [Search finds a file by the words of its current fields: title first, then its summary and key, then its text; only for readers of its home; and the relay says beside the signed records why each one matched](search-finds-a-file-by-the-words-of-its-current-fields.md) — Accepted, 2026-11-02
 
 ## Protocol
 

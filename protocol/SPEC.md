@@ -492,6 +492,14 @@ folds it (§6.3), and shows it only if the object resolves and its *current*
 title or ref holds the words, by the rule below. A relay answers at most 500
 events per filter.
 
+**A file's current fields are searched through the list read** (*decided
+2026-10-30 and 2026-11-02*, record
+[search-finds-a-file-by-the-words-of-its-current-fields](https://github.com/estiva-app/estiva-docs/blob/main/decisions/search-finds-a-file-by-the-words-of-its-current-fields.md)).
+The search above stays as it is: it finds a file by its title, and never by its
+summary, key or text. A `search` on §6.13's list read finds a file by the words
+of its current title, summary, key and text. Its hits are current values, not
+candidates, so a reader shows them as they are.
+
 **What a search matches** (*decided 2026-10-19*, record
 [search-matches-every-word-as-a-word-start](https://github.com/estiva-app/estiva-docs/blob/main/decisions/search-matches-every-word-as-a-word-start.md)).
 The `search` string is a person's typing, read by one rule:
@@ -2069,7 +2077,8 @@ NIP-99's.
   the `subtitle` slot, by default and without its owner declaring it (§7.2).
   An app writes it through the summary change action (§7.3).
 
-Search (§5.2) does not match a summary.
+Search (§5.2) does not match a summary. The list read's `search` (§6.13)
+matches a file's current one.
 
 ### 6.13 A list of files: first records and newest changes
 
@@ -2129,6 +2138,57 @@ beside it, and folds them (§6.3). **Live updates** are a `REQ` for
 for the first records and every change, and folds them itself: the result is
 the same, at the old cost.
 
+**Search.** The read takes `search`, a person's typing read by §5.2's rule
+(*decided 2026-10-30 and 2026-11-02*, record
+[search-finds-a-file-by-the-words-of-its-current-fields](https://github.com/estiva-app/estiva-docs/blob/main/decisions/search-finds-a-file-by-the-words-of-its-current-fields.md)):
+
+```json
+{"fields": "newest", "kinds": [30850], "search": "launch pla"}
+```
+
+- **It matches a file's current values**: its title, its summary, the fields
+  its type names as words (a project's `key`; [TYPES.md](TYPES.md)), and the
+  words of its current text (§13.3 *Search text*). Status, lead and archived
+  are not words. A word that is only in an older change, a deleted file, and a
+  removed change are never found. Removing a pasted password follows §6.5:
+  once the text is saved without it, nothing finds it.
+- **Only for readers of the file's home**: its first record's `h`, else its
+  `buzz-channel`. That is narrower than "a plain read would return it", since a
+  project stored workspace-wide is readable by everyone while its text is not.
+  A file whose home the reader cannot read is not found, and nothing in the
+  answer says it exists.
+- **Best first**, by the best field that holds a typed word: **the title, then
+  the summary and key together, then the text**. Among those, more typed words
+  matched whole come first, then closeness.
+- **The answer keeps every event as signed.** With `search` it is an object:
+
+  ```json
+  {"events": [<first records and newest changes, as the read returns them>],
+   "matches": [{"a": "30850:<pubkey>:<d>",
+                "match": {"fields": ["title", "text"],
+                          "around": "the launch plan mentions the rollout in the middle of"}}]}
+  ```
+
+  `matches` lists the files in rank order. `fields` names every one of
+  `title`, `summary`, `key` and `text` that holds a typed word, best first, so
+  typing spread over a title and a text names both. `around` holds the words
+  around a typed word in the text, as plain text with no markers, and is there
+  only when `fields` includes `text`. How a row draws them is the app's design.
+  `matches` is the relay's statement and is never part of what was signed: no
+  key is ever added to a signed event.
+- **A page holds at most 20 files**, and holds 20 when `limit` is left out.
+  With `search`, `limit` counts files, not events. A relay MAY read only the
+  first 256 KiB of a text's words.
+- **A type the relay does not search** is refused (`400`, `search: <type> is
+  not indexed`), never answered `[]`: a person would read `[]` as "no such
+  file".
+- **A word is found once its change is accepted.** The relay answers a
+  change's `OK` after the words are indexed. Indexing never refuses or delays
+  a change: a text it cannot read adds no words.
+
+`#h` keeps its meaning above. To search one Folder's projects, a reader asks
+for them by `#d`, as the read does.
+
 **NIP-11.** A relay that keeps files in order advertises
 
 ```json
@@ -2143,6 +2203,17 @@ current change (§6.2). A type in `requires_prev`, and every `30852` type, is
 excepted, §11.8), and so is a `kind:5`
 naming its first record or a change (§6.5). An app reads the list and never
 assumes it.
+
+A relay whose read takes `search` advertises it apart from `files`, which is
+the switch, so search can come before the switch:
+
+```json
+"file_search": {"types": ["osnova.project"], "max_page_size": 20}
+```
+
+`types` are the types it finds by their words. It advertises a type only once
+every file of that type is indexed. An app that finds no `file_search`, or
+not its type, falls back to §5.2's search by title.
 
 **Upstream.** This section is Estiva's standard, on the Estiva relay. The
 `O`/`o` reference (§6.4) is offered to Block as a client convention. The
@@ -3333,6 +3404,23 @@ not yet find a word start after `.`, `@` or `/` inside a token (`pdf` in
 because its index keeps those whole. Nor does it find a word or phrase typed
 with a hyphen in a text that has the two words apart: `remov-short` answers
 `[]` for *Remove Short summary*, because it also asks for the hyphenated word.
+
+**Search over a file's current fields (§6.13)** is checked with a project whose
+text is a block document labelled `estiva-blocks-1` and holds a word nobody
+has written. The start of that word finds the project, with `match.fields`
+`["text"]` and the word in `match.around`. The middle of the word does not find
+it, and neither does `paragraph`. A word of its title typed with the text word
+names `["title", "text"]`. A word of its title with one of its summary names
+`["title", "summary"]`, with no `around`. A project with unlabelled marker
+text (§13.4) is found by a word of that text, and not by a marker such as
+`**`. Once the text is saved without the word, the word does not find it. A
+project with the word in its title comes above one with it only in its text. A
+deleted project is not found, and a restored one is. After a password's
+earlier changes are removed (§6.5), they still do not find it. A reader who
+cannot read the project's home finds nothing, while a reader of the home finds
+it. A `search` on a type that is not indexed is refused. A nonsense word
+answers no files. The reference relay runs these through its own write
+transaction on Postgres, and against production as two QA identities.
 
 ---
 
@@ -4625,6 +4713,21 @@ being its children's text joined by `\n`, compared exactly, code unit for code
 unit, with no Unicode normalisation, so an offset into it is an offset into the
 block's own text. It is the text as stored, not as drawn: a mention is its `nostr:` text (§13.1), never the
 name a reader draws for it, and nothing is trimmed.
+
+#### Search text
+
+*Added 2026-11-02 (ALO-3), record
+[search-finds-a-file-by-the-words-of-its-current-fields](https://github.com/estiva-app/estiva-docs/blob/main/decisions/search-finds-a-file-by-the-words-of-its-current-fields.md).*
+A relay searches a block document's words (§6.13), never its JSON. The words
+are the `text` of every `text` run, in document order, with each block ending
+its line. Nothing in `attrs` adds words: not a link's `href`, a language, an
+attachment's URL or a widget's settings. Block ids, types and mark names add
+none either. A run marked `reference` adds nothing, so a mention is not a
+word. A link on words adds those words. A labelled body that does not parse
+adds no words, and is never searched as it is. A text with no
+`content-format` is marker text (§13.2, §13.4). Its words are that text with
+the dialect's markers taken out, and a link keeps only its words. Nothing is
+refused for a missing label.
 
 ### 13.4 Reading what is already published
 

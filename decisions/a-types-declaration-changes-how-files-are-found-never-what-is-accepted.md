@@ -5,6 +5,12 @@
 - Decided by: Miky, in the shaping session "Re-confirm the file model before projects move" (2026-10-30), on the brief "Whole File or Fields" ([page](briefs/whole-file-or-its-fields.html), "The smaller question"): find and rank only, as recommended, after asking for the trade-offs
 - Area: Files
 
+> Superseded in part, 2026-11-02: "a save with text says its format", under
+> which a save with text and no label is refused, is replaced by
+> [search-finds-a-file-by-the-words-of-its-current-fields](search-finds-a-file-by-the-words-of-its-current-fields.md):
+> text with no label is read as marker text and found by its words, and
+> nothing is refused for a missing label. The rest of this record stands.
+
 ## Who it affects
 
 Miky and Katerina see nothing change. An outside company sharing a Folder with
