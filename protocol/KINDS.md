@@ -52,7 +52,7 @@ nobody held the whole list.
 
 | Kind | Name | Notes |
 | --- | --- | --- |
-| `30852` | Named first record | **Reserved 2026-10-30; no relay accepts it yet.** The first record of every type that is not one of Osnova's four base types (`30840`, `30842`, `30850`, `30851`): `d`, exactly one `k` naming the type ([TYPES.md](TYPES.md)), `h` always (never `buzz-channel`), one `["set", <field>, <value>]` per first value, empty `content`. Addressable, written once. The relay refuses no `k`, two, or one naming a base type. Changes are `1851`s naming it by `a` and `O`, each but a `member:<P>` with `prev` from the start (SPEC §6.2). Ask with `"kinds": [30852]` and `#k` |
+| `30852` | Named first record | **Accepted by the relay since 2026-11-02** (reserved 2026-10-30), kept in order and written once from its first event, whatever the switch (SPEC §6.13), and never deleted by a `kind:5`. The first record of every type that is not one of Osnova's four base types (`30840`, `30842`, `30850`, `30851`): `d`, exactly one `k` naming the type ([TYPES.md](TYPES.md)), `h` always (never `buzz-channel`), one `["set", <field>, <value>]` per first value, empty `content`. Addressable, written once. The relay refuses no `k`, two, or one naming a base type. Changes are `1851`s naming it by `a` and `O`, each but a `member:<P>` with `prev` from the start (SPEC §6.2). Ask with `"kinds": [30852]` and `#k` |
 
 ### Buzz's artifacts — upstream NIP-AR, not files
 
@@ -66,11 +66,11 @@ nobody held the whole list.
 | Kind | Name | Notes |
 | --- | --- | --- |
 | `9007` | Folder create (NIP-29 create group) | The container. Followed by a `1852` so the Folder has state from birth. See §3 |
-| `9002` | Folder rename (NIP-29 edit metadata) | The only rename: owners and admins only (relay). The Folder's title is the `39000` name; a `1852` never carries one |
+| `9002` | Folder rename (NIP-29 edit metadata) | The only rename: owners and admins only (relay). The Folder's title is the `39000` name; a `1852` never carries one. Refused by the relay when it carries a `company` tag, and on the Company Folder when it archives it, makes it private or sets a `ttl` (SPEC §3.4) |
 | `9008` | Folder delete (NIP-29 delete group) | **Refused by the relay while the Folder holds a file** (a `30840`/`30842`/`30850`/`30851`/`30852` first record under its `h` — deleted ones included, a file deleted as a field counting — or anything its listing names), and always for the Company Folder (SPEC §3.4); channel owner, the owner of its owner-role agent, or a workspace owner/admin. An accepted one hides every event under the `h` |
 | `1852` | Folder command | `add` / `remove` / `set` addresses, or a file by its id in an `o` tag (SPEC §3.3); any member may send one, so it carries no name. Never names a `39000:` address — Folders do not nest |
 | `30890` | Folder state | **Relay-signed**, never an app's. What a Folder lists: addresses in `a` tags, files by id in `o` tags. A NIP-29 group without one is a conversation space, not a Folder |
-| `39000` | Group metadata | Relay-signed, NIP-29. The Folder's address; no `kind:31990` may claim it |
+| `39000` | Group metadata | Relay-signed, NIP-29. The Folder's address; no `kind:31990` may claim it. A bare `["company"]` marks the workspace's Company Folder, on one Folder only (SPEC §3.4) |
 | `9000` / `9001` | Add / remove member | NIP-29, unchanged |
 
 ### Messages and comments — written by every app, owned by none ([SPEC §7.8](SPEC.md))
@@ -148,8 +148,8 @@ of the three.
 | `AdminUsers` | Membership administration | `9030`, `9031` |
 
 `45010` takes NIP-AR's own path (`handlers/artifact.rs`), for Buzz's own uses
-only. A client's `45011` is refused: only the relay writes one. `30852`, once a
-relay accepts it, is `MessagesWrite` like the four base kinds.
+only. A client's `45011` is refused: only the relay writes one. `30852` is
+`MessagesWrite` like the four base kinds.
 
 `MessagesWrite` on `1851` is doing real work: it is what lets one member set a
 field on another member's object, which is the normal case in a tracker.
@@ -189,34 +189,30 @@ which apps a workspace added; until then nothing is added to this table.
 Gate 1 of three. Estiva ID's `/sign` refuses any kind not in the calling app's
 `allowed_kinds`, returning `422 policy_violation / kind_not_allowed`.
 
-**A named type's first record is checked by its type too** (*added
-2026-10-30*, estiva-id#90; *re-pointed 2026-10-30* from `45010`'s `type` to
-`30852`'s `k`). Beside `allowed_kinds` each credential holds `allowed_types`,
-and `/sign` refuses a `30852` whose `k` tag is not in it, or that has none or two,
-with `422 type_not_allowed`: a file's type may be made only by an app whose
-credential lists it. An empty list refuses every `30852`, so granting the kind
-alone signs nothing. The token says which types the app may make
-(`allowed_types`). The list limits what Estiva's apps and agents sign; the
-relay accepts any type that is not a base type (SPEC §6.1). The four base types
-are granted by their own kinds, as before. The `refuses_old_projects` fence
-built for the artifact move is retired with it (SPEC §6.13).
+**A named type's first record is checked by its kind only** (*since
+2026-11-01*, estiva-id#91). The per-type list a credential held beside
+`allowed_kinds` (`allowed_types`, estiva-id#90) is removed, so `/sign` checks a
+`30852` as it checks any kind, and the relay is what refuses one with no `k`,
+two, or a base type (SPEC §6.1). The four base types are granted by their own
+kinds. The `refuses_old_projects` fence built for the artifact move is retired
+(SPEC §6.13), and no app holds `45010` any more.
 
 Source of truth: `SEED_APPS` in `estiva-id/src/db/seed.ts`, stored in the
 `app_credentials` table.
 
-| App | `client_id` | Allowed kinds | Allowed types |
-| --- | --- | --- | --- |
-| Estiva Peek | `estiva-peek` | `9, 7, 5, 9007, 27235, 1851, 9101, 9002, 9008, 1111, 30078, 41010, 41011, 41012, 22242, 30851, 40003, 1852, 24242, 30840, 30850, 45010` | `osnova.project` |
-| Estiva Ship | `estiva-ship` | `30850, 30851, 1851, 9, 5, 9007, 9002, 31989, 27235, 1111, 30078, 7, 40003, 1852, 24242, 22242, 45010` | `osnova.project` |
-| Estiva Leaf | `estiva-leaf` | `27235, 22242, 30842, 1852, 1851, 1111, 40003, 5, 24242, 9101, 7, 45010` | `osnova.project` |
+| App | `client_id` | Allowed kinds |
+| --- | --- | --- |
+| Estiva Peek | `estiva-peek` | `9, 7, 5, 9007, 27235, 1851, 9101, 9002, 9008, 1111, 30078, 41010, 41011, 41012, 22242, 30851, 40003, 1852, 24242, 30840, 30850` |
+| Estiva Ship | `estiva-ship` | `30850, 30851, 1851, 9, 5, 9007, 9002, 31989, 27235, 1111, 30078, 7, 40003, 1852, 24242, 22242` |
+| Estiva Leaf | `estiva-leaf` | `27235, 22242, 30842, 1852, 1851, 1111, 40003, 5, 24242, 9101, 7` |
 
-*`45010` and `osnova.project` read from the rows after the re-seed,
-2026-10-30.* The agents' credentials are not seeded: `claude-agent`,
-`pc-0a4935` and `vscode-604525` were granted `45010` and `osnova.project` the
-same day, beside the kinds each already held. Those grants are left from the
-artifact shape and sign nothing an app writes; Estiva ID's check moves from
-`45010` to `30852` with the relay work of the projects. No credential holds
-`9005`, so no app or agent removes a change for good (SPEC §6.5).
+*Copied from `seed.ts` on origin/main, 2026-11-02.* **The production rows
+differ from the seed:** on 2026-11-02 Peek, Ship and Leaf each signed a
+`30852` as QA-1, though the seed grants none of them the kind. The agents'
+credentials are not seeded: `claude-agent`, `pc-0a4935` and `vscode-604525`
+were granted `45010` on 2026-10-30, which signs nothing an app writes now. No
+credential holds `9005`, so no app or agent removes a change for good (SPEC
+§6.5).
 
 *Copied from `seed.ts` on origin/main, 2026-10-03 (MAN-3); Leaf's row
 2026-10-14 (Leaf 1), its `9101` 2026-10-16 (LEAF-5: resolving a comment's

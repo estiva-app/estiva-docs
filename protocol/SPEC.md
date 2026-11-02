@@ -194,7 +194,7 @@ produce the same events in the same order.
 | --- | --- | --- |
 | **create** | `kind:9007` with a new id and its `name`; then `kind:1852` `add` with no addresses and no `name`, so the Folder has state from birth | — |
 | **rename** | `kind:9002` with the new `name`. Nothing else: a `kind:1852` never carries a name | by the relay, to anybody but the channel's owners and admins |
-| **archive** / **restore** | `kind:1851` on the Folder's address, `field` `archived`, `value` `true` (or empty to restore), `h` the Folder itself; `content` MAY carry what the person said about it | by the consumer, to anybody but the Folder's owners and admins; a reader ignores one from anybody else (§3.2) |
+| **archive** / **restore** | `kind:1851` on the Folder's address, `field` `archived`, `value` `true` (or empty to restore), `h` the Folder itself; `content` MAY carry what the person said about it | by the consumer, to anybody but the Folder's owners and admins; a reader ignores one from anybody else (§3.2). By the relay, an archive of the Company Folder, for good (§3.4) |
 | **delete** | `kind:9008` with the Folder's `h` | by the relay, while the Folder holds a file — a first record (`30840`, `30842`, `30850`, `30851` or `30852`) under its `h`, deleted ones included (§6.5), or anything its listing names — and for good on the Company Folder (§3.4), and to anybody but the channel's owner, the person who owns an owner-role agent in the channel, or an owner or admin of the workspace on the relay's roster |
 | **place** a new file | the file's root, with this Folder's `h` (or the tag its owner's `placement` names, §7.3) — under a parent, the parent's own Folder instead (§6.7); then `kind:1852` `add` naming its address | — |
 | **unlist** a deleted file | the `kind:5`; then `kind:1852` `remove` naming its address, in each Folder whose state names it (§7.3) | — |
@@ -251,11 +251,25 @@ produce the same events in the same order.
 - **Every workspace has exactly one Company Folder.** The relay marks it as the
   company's in the `kind:39000` metadata it signs, with a bare `["company"]`
   tag beside NIP-29's `["private"]` and `["closed"]`, and makes it when the
-  workspace is set up. Estiva's is Estiva HQ.
+  workspace is set up: an open Folder owned by the workspace's owner, born
+  with its state (`kind:30890`) like any Folder (§3.3). Its name is the
+  relay's to choose and its owners' to change (the reference relay names it
+  Company). Estiva's is Estiva HQ.
+- **A workspace set up before its relay had the mark** gets one when the relay
+  is upgraded: its operator names an existing open Folder with its state,
+  once, and the mark never moves after that. A relay serving such a workspace
+  unmarked does not conform to this section, and an app is never asked to
+  handle a workspace without one. (On the reference relay,
+  `BUZZ_COMPANY_FOLDER`, read at startup; it logs a warning while the
+  workspace has none.)
 - **It is kept for good.** Its owners and admins can rename it. The relay
-  refuses to delete it (`kind:9008`), archive it (§3.3), make it private, or
-  take the mark off it. Every member of the workspace reads it (Miky,
-  2026-10-29).
+  refuses to delete it (`kind:9008`), archive it (§3.3: a `kind:1851` setting
+  `archived` to anything but empty on its address, as `field`/`value` or as a
+  `set`; or a `kind:9002` `archived`), make it private (`kind:9002`
+  `visibility` `private`), give it a `ttl`, which would archive it when it ran
+  out, or take the mark off it, with a reason naming the Company Folder.
+  Restoring it (an empty `archived`) lands. Every member of the workspace reads
+  it (Miky, 2026-10-29).
 - **Only the relay sets the mark.** A client event carrying a `company` tag
   (a `kind:9007` or `kind:9002`) is refused, so no second Folder can be marked.
 - **An app finds it by the mark**, never by its name or id, and trusts only the
@@ -266,8 +280,9 @@ produce the same events in the same order.
   names the Company Folder, and its changes carry that `h`, §6.2), and the
   company's statuses (§7.4).
 
-The relay's mark and its refusals are built with the relay work of the projects
-that need them; until then an app has no mark to read and cannot find one.
+*Built 2026-11-02* (estiva-app/buzz, ticket 84e39a13): the mark, its
+refusals, and a new workspace's Company Folder. A relay that predates it has no
+mark to read, and an app on it cannot find one.
 
 ---
 
@@ -612,8 +627,9 @@ author and under any of the five kinds, deleted ones included, and one whose
 new channel whose id a file already holds, deleted ones included. An app that
 is refused makes a new id and tries again without telling the person.
 
-**Written once.** From the switch (§6.13) the relay refuses a second, different
-event at a first record's address: the first record of a `30840`, `30842`,
+**Written once.** From the switch (§6.13), and for a `30852` from its first
+event, the relay refuses a second, different event at a first record's
+address: the first record of a `30840`, `30842`,
 `30850`, `30851` or `30852` is never replaced, which changes NIP-01's
 replaceable rule for these kinds. Sending the same event again is a
 `duplicate:`, not a refusal. Everything that changes after creation is a field
