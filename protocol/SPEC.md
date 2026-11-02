@@ -2332,9 +2332,9 @@ A relay that keeps files in order advertises
 
 `files` is the switch and only the switch: it says what the relay refuses,
 never whether the list read exists. From the moment it does — **the switch** — it writes no first record twice
-(§6.1), refuses a change filed in another Folder than its file's, one whose
-`a` and `O` disagree, and one whose `prev` is present and not its field's
-current change (§6.2). A type in `requires_prev`, and every `30852` type, is
+(§6.1), refuses a change filed in another Folder than its file's, and one whose
+`a` and `O` disagree. A change whose `prev` is present and not its field's
+current change is refused before the switch too, on every type (§6.2). A type in `requires_prev`, and every `30852` type, is
 **kept in order**: a change with no `prev` is refused (a `member:<P>` change
 excepted, §11.8), and so is a `kind:5`
 naming its first record or a change (§6.5). An app reads the list and never
@@ -2356,11 +2356,14 @@ not its type, falls back to §5.2's search by title.
 relay's NIP-AR support (`kind:45010`) stays for Buzz's own uses, agent and team
 settings, and is not how a file is kept.
 
-**Where it stands (2026-11-02).** The Estiva relay answers the list read and
-its search, and advertises `file_search`; it does not advertise `files` yet,
-and `file_list` and `text` are being added (ALO-7). No app writes `prev` or
-`set` yet. Projects are the first type kept in order; the agent follows this
-section first, then Ship, Peek and Leaf.
+**Where it stands (2026-11-02).** The Estiva relay answers the list read,
+a named file's current text and its search, and advertises `file_list`
+(`newest`, `text`) and `file_search`; it does not advertise `files` yet. The
+agent (estiva-agent 0.28.0) reads projects by the list read, opens one with its
+current text, and writes each project field with `prev`, merging a text change
+or asking as §13.3 says (ALO-7); its delete is still a `kind:5` until the
+relay keeps projects in order. Ship, Peek and Leaf write no `prev` yet, and
+no app writes `set`. Projects are the first type kept in order.
 
 ### 6.14 A file's list of other files
 
