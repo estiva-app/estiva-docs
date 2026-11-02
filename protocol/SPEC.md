@@ -440,7 +440,7 @@ picker can reach a file in a Folder the client has not loaded (*decided
 | Event | What the search matches |
 | --- | --- |
 | A message: `kind:9`, `kind:1111` (and profiles, `kind:0`) | its `content` |
-| An object: any kind `30000`–`39999` except the relay-signed `39000`–`39009` and the private kinds below | its root `title` tag; on a `30851` also its root `ref` (§6.1). Never `content`, so a description is not searchable. |
+| An object: any kind `30000`–`39999` except the relay-signed `39000`–`39009` and the private kinds below | its root `title` tag; for a base type, the root tag(s) its `title` field's first value is read from ([TYPES.md](TYPES.md): a `30850`'s `name`, else `title`); on a `30851` also its root `ref` (§6.1). Never `content`, so a description is not searchable. |
 | A `kind:1851` change (§6.2) with `field` `title`, aimed at such an object | its `value` |
 | A `kind:1851` with `field` `ref`, aimed at a `30851:` address | its `value` |
 | Any other `kind:1851`; app data (`kind:30078`); a kind only its author may read or that carries ciphertext (on the reference relay `30179`, `30300`, `30350`, `30622`), and a `kind:1851` aimed at one | nothing |
@@ -448,6 +448,17 @@ picker can reach a file in a Folder the client has not loaded (*decided
 The object row is a rule rather than a list, so a new object kind is searchable
 by title on the day it is registered (§8), with no change to the relay. A kind
 that is private to its author is the exception, and a relay names it.
+
+*Corrected 2026-11-02.* The row used to say only "its root `title` tag", while a
+project root has always carried its name in `name` (§6.1). A relay built from
+that wording found no project by its name: the Estiva relay found one only
+after a rename, through its `kind:1851`. A project's title field starts from
+its root `name`, else `title`, as TYPES.md says, and the relay reads both. This
+follows the records
+[search-looks-in-the-base-and-every-field-an-added-app-marks-as-words](https://github.com/estiva-app/estiva-docs/blob/main/decisions/search-looks-in-the-base-and-every-field-an-added-app-marks-as-words.md)
+(a base type's word fields are built into the relay, from the directory) and
+[osnovas-base-types-keep-their-records-and-every-new-type-starts-named](https://github.com/estiva-app/estiva-docs/blob/main/decisions/osnovas-base-types-keep-their-records-and-every-new-type-starts-named.md)
+(the four base types keep their roots, so no root gains a `title` tag).
 
 **Which fields are words** (*added 2026-10-30*, record
 [search-looks-in-the-base-and-every-field-an-added-app-marks-as-words](https://github.com/estiva-app/estiva-docs/blob/main/decisions/search-looks-in-the-base-and-every-field-an-added-app-marks-as-words.md)).
