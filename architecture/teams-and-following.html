@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Teams and following</title>
+<!--
+  Architecture page for the project "Teams and following" (process/ARCHITECTURE.md),
+  copied from architecture/template.html and cut from architecture/estiva.html.
+  Classes: .b box · .w card · .ok new · .bad goes away · .q undecided (dashed)
+  · .f untouched (faint) · .a arrow · .an new arrow · .aq undecided arrow
+  · .m muted second line · .h bold label · .tag milestone tag.
+-->
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
+.legend .lgone::before { background: var(--warn-bg); border-color: var(--warn); }
+.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
+.legend .lf::before { opacity: .45; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+/* Below 560px a diagram scrolls inside its figure instead of shrinking its text. */
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); stroke-width: 1.5; }
+svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .f { opacity: .45; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
+svg .aq { stroke: var(--accent); fill: none; stroke-width: 1.6; stroke-dasharray: 5 4; marker-end: url(#arr-q); }
+svg .life { stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 3 4; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 560px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+tr.new td { background: var(--ok-bg); }
+td.q { outline: 1.5px dashed var(--accent); outline-offset: -4px; }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+.checked li { font-size: .92rem; }
+</style>
+</head>
+<body>
+<!-- Arrowheads, shared by every diagram on the page. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+    <marker id="arr-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<main>
+
+<h1>Teams and following</h1>
+<p class="sub"><span class="state">Shaped, 2 Nov 2026</span> · Ship project "Teams and following" · Goal: you see what is said in the teams you are in and the places you follow, at the level you chose, and nothing else.</p>
+<p class="sub">"Today" is cut from <a href="https://docs.estiva.app/architecture/estiva.html">Estiva architecture</a> (as built, 23 Oct 2026).</p>
+
+<p>Every Folder becomes a team: the same group, now with members and followers, and three kinds of place: its chat, which Peek draws for the first time; its spaces, the topics it marks as lasting; and the other topics it leads. Every topic or space has one switch per person: Not following, Important or All. Joining a topic is choosing a level, and someone can add you to one, at Important; you can always leave. One shared rule, in the code every app already uses, works out what is "in what you follow", and the relay makes sure only you set your own level. Start with the Map, then Objects for what a team is.</p>
+
+<ul>
+<li><b>M1</b> The prototype shows a team's three kinds of place, its people, the switch on a place, Add, and who follows a place.</li>
+<li><b>M2</b> The SPEC says what a team, its chat, its spaces, Add and following are; the relay keeps each person's level theirs alone; the shared code works out what you follow.</li>
+<li><b>M3</b> Peek's Teams: each team's chat, spaces and topics, its people, Join, Leave, Follow and marking a space; following, joining or leaving a topic or space, adding someone, and who follows it.</li>
+<li><b>M4</b> The Company team, with everyone in it; Ship, Leaf and Claude say Team.</li>
+</ul>
+
+<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lf">untouched, for orientation</span></div>
+
+<h2 id="map">Map</h2>
+
+<h3>Today</h3>
+<figure>
+<svg viewBox="0 0 720 385" role="img">
+<title>Today: Peek, Ship, Leaf and Claude use the shared conversation code, which lights the conversations you are a member of, minus your mutes. The relay keeps nine open Folders whose rosters list only Miky, each file's members, and your encrypted mutes and read state. Peek draws no Folder chat.</title>
+<rect class="b" x="20" y="20" width="230" height="72" rx="8"/><text x="36" y="44" class="h">Peek</text><text x="36" y="63" class="m">chat</text><text x="36" y="80" class="m">draws no Folder chat</text>
+<rect class="b" x="270" y="20" width="140" height="72" rx="8"/><text x="286" y="44" class="h">Ship</text><text x="286" y="63" class="m">projects, issues</text><text x="286" y="80" class="m">says Folder</text>
+<rect class="b" x="430" y="20" width="130" height="72" rx="8"/><text x="446" y="44" class="h">Leaf</text><text x="446" y="63" class="m">documents</text><text x="446" y="80" class="m">says Folder</text>
+<rect class="b" x="580" y="20" width="120" height="72" rx="8"/><text x="596" y="44" class="h">Claude</text><text x="596" y="63" class="m">the agent</text><text x="596" y="80" class="m">says Folder</text>
+
+<path class="a" d="M135,92 L135,126"/><text x="143" y="114" class="m">uses</text>
+<path class="a" d="M340,92 L340,126"/>
+<path class="a" d="M495,92 L495,126"/>
+<path class="a" d="M640,92 L640,126"/>
+
+<rect class="b" x="20" y="130" width="680" height="64" rx="8"/>
+<text x="36" y="154" class="h">Shared conversation code</text><text x="240" y="154" class="m">inside every app</text>
+<text x="36" y="173" class="m">lights the conversations you are a member of, minus your mutes</text>
+<text x="36" y="189" class="m">conversation package · membership.ts, unread.ts</text>
+
+<path class="a" d="M360,194 L360,236"/><text x="368" y="220" class="m">write, read</text>
+
+<rect class="w" x="20" y="240" width="680" height="130" rx="10"/>
+<text x="36" y="264" class="h">The relay</text><text x="112" y="264" class="m">the workspace · built on Buzz · stores and checks every event</text>
+<rect class="b" x="36" y="278" width="210" height="80" rx="8"/><text x="50" y="298" class="h">Folder rosters</text><text x="50" y="316" class="m">9 Folders, all open</text><text x="50" y="332" class="m">each roster lists only Miky</text><text x="50" y="348" class="m">group roster · 39002</text>
+<rect class="b" x="257" y="278" width="210" height="80" rx="8"/><text x="271" y="298" class="h">Each file's members</text><text x="271" y="316" class="m">who is in its conversation;</text><text x="271" y="332" class="m">writing in it makes you one</text><text x="271" y="348" class="m">a member field on the file</text>
+<rect class="b" x="478" y="278" width="210" height="80" rx="8"/><text x="492" y="298" class="h">Mutes and read state</text><text x="492" y="316" class="m">yours alone,</text><text x="492" y="332" class="m">encrypted to you</text><text x="492" y="348" class="m">30078</text>
+</svg>
+<figcaption>Today a Folder is a box of files: its roster lists only Miky in all nine, anyone in the workspace reads and writes an open Folder, and Peek draws no chat of its own for one. A dot comes from the conversations you are a member of. Estiva ID, the live socket and the relay's stores are left out; this project does not change them.</figcaption>
+</figure>
+
+<h3>After</h3>
+<figure>
+<svg viewBox="0 0 720 515" role="img">
+<title>After: Peek draws Teams, prototyped in M1 and built in M3. Ship, Leaf and Claude say Team in M4. The shared conversation code works out what is in what you follow in M2. The relay's team rosters are written by Join and Leave in M3 and gain the Company team in M4; anyone in the company may join an open team, and only its members add someone or mark a space. Each place's people now means who is in it, by Join or Add, at Important; writing no longer puts you in a topic or space. New in M2: whether a topic is a space, who follows each place at which level, which only that person may set, and your private list of the teams you follow and the defaults you turned off.</title>
+<rect class="ok" x="20" y="20" width="230" height="88" rx="8"/><text x="36" y="44" class="h">Peek</text><text x="242" y="44" class="tag" text-anchor="end">M1 prototype · M3</text>
+<text x="36" y="63" class="m">Teams: chat, spaces, topics</text><text x="36" y="80" class="m">Join, Leave, Follow a team</text><text x="36" y="97" class="m">one switch on a place; Add</text>
+<rect class="ok" x="270" y="20" width="140" height="88" rx="8"/><text x="286" y="44" class="h">Ship</text><text x="402" y="44" class="tag" text-anchor="end">M4</text><text x="286" y="63" class="m">projects, issues</text><text x="286" y="80" class="m">says Team</text>
+<rect class="ok" x="430" y="20" width="130" height="88" rx="8"/><text x="446" y="44" class="h">Leaf</text><text x="552" y="44" class="tag" text-anchor="end">M4</text><text x="446" y="63" class="m">documents</text><text x="446" y="80" class="m">says Team</text>
+<rect class="ok" x="580" y="20" width="120" height="88" rx="8"/><text x="596" y="44" class="h">Claude</text><text x="692" y="44" class="tag" text-anchor="end">M4</text><text x="596" y="63" class="m">the agent</text><text x="596" y="80" class="m">says Team</text>
+
+<path class="an" d="M135,108 L135,146"/><text x="143" y="132" class="m">uses the new rule</text>
+<path class="a" d="M340,108 L340,146"/>
+<path class="a" d="M495,108 L495,146"/>
+<path class="a" d="M640,108 L640,146"/>
+
+<rect class="ok" x="20" y="150" width="680" height="76" rx="8"/>
+<text x="36" y="174" class="h">Shared conversation code</text><text x="240" y="174" class="m">works out "in what you follow", the same way in every app</text><text x="692" y="174" class="tag" text-anchor="end">M2</text>
+<text x="36" y="194" class="m">from your teams, the teams you follow, who is in each place, your level on it, and your mutes</text>
+<text x="36" y="212" class="m">a team's default is worked out each time, never written · conversation package</text>
+
+<path class="a" d="M360,226 L360,276"/><text x="368" y="255" class="m">write, read</text>
+
+<rect class="w" x="20" y="280" width="680" height="220" rx="10"/>
+<text x="36" y="304" class="h">The relay</text><text x="112" y="304" class="m">the workspace · built on Buzz · stores and checks every event</text>
+<rect class="ok" x="36" y="318" width="210" height="80" rx="8"/><text x="50" y="338" class="h">Team rosters</text><text x="238" y="338" class="tag" text-anchor="end">M3 · M4</text><text x="50" y="356" class="m">Join and Leave write them</text><text x="50" y="372" class="m">Company team: everyone</text><text x="50" y="388" class="m">group roster · 39002</text>
+<rect class="ok" x="257" y="318" width="210" height="80" rx="8"/><text x="271" y="338" class="h">Each file's members</text><text x="459" y="338" class="tag" text-anchor="end">M2</text><text x="271" y="356" class="m">on a topic or space: who is in</text><text x="271" y="372" class="m">it, by Join or Add; writing no</text><text x="271" y="388" class="m">longer puts you in; same field</text>
+<rect class="b" x="478" y="318" width="210" height="80" rx="8"/><text x="492" y="338" class="h">Mutes and read state</text><text x="492" y="356" class="m">yours alone,</text><text x="492" y="372" class="m">encrypted to you</text><text x="492" y="388" class="m">unchanged</text>
+
+<rect class="ok" x="36" y="408" width="210" height="80" rx="8"/><text x="50" y="428" class="h">A topic is a space</text><text x="238" y="428" class="tag" text-anchor="end">M2</text><text x="50" y="448" class="m">a role on the team's own</text><text x="50" y="464" class="m">list; a move drops it</text><text x="50" y="480" class="m">marked by its members</text>
+<rect class="ok" x="257" y="408" width="210" height="80" rx="8"/><text x="271" y="428" class="h">Who follows each place</text><text x="459" y="478" class="tag" text-anchor="end">M2</text><text x="271" y="446" class="m">All or Important, per person;</text><text x="271" y="462" class="m">only you set yours, and the</text><text x="271" y="478" class="m">relay refuses anyone else</text>
+<rect class="ok" x="478" y="408" width="210" height="80" rx="8"/><text x="492" y="428" class="h">The teams you follow</text><text x="680" y="428" class="tag" text-anchor="end">M2</text><text x="492" y="446" class="m">and the defaults you turned</text><text x="492" y="462" class="m">off: one private list,</text><text x="492" y="478" class="m">encrypted to you</text>
+</svg>
+<figcaption>M1 prototypes Peek's Teams in Storybook before anything is built. M2 writes the SPEC, adds the three new things the relay keeps (bottom row), gives a topic's members their new meaning, and puts one rule for "in what you follow" in the shared code; M3 builds Peek's Teams on it; M4 marks the Company team and changes the word in Ship, Leaf and Claude. Ship's and Leaf's own Teams sidebars are not in this project. A team's spaces are a role on its own list; only its members mark one.</figcaption>
+</figure>
+
+<h2 id="objects">Objects</h2>
+
+<h3>Today</h3>
+<figure>
+<svg viewBox="0 0 720 300" role="img">
+<title>Today: a Folder is a group the relay lists. Its roster lists only Miky in all nine Folders. Its own chat exists on the wire and Peek draws none. It holds topics made in Peek and projects, issues and documents made in Ship and Leaf. Each file has members, the people in its conversation, and writing in it makes you one. The Company Folder is decided and specified, not built.</title>
+<rect class="w" x="20" y="20" width="470" height="264" rx="10"/>
+<text x="36" y="44" class="h">Folder</text>
+<text x="36" y="63" class="m">a group the relay lists: its name, admins and roster</text>
+<text x="36" y="79" class="m">group · 39000–39002, its files listed by 30890</text>
+<rect class="b" x="36" y="96" width="210" height="56" rx="8"/><text x="50" y="118" class="h">Roster</text><text x="50" y="137" class="m">lists only Miky, in all 9</text>
+<g class="f"><rect class="b" x="262" y="96" width="212" height="56" rx="8"/><text x="276" y="118" class="h">Its own chat</text><text x="276" y="137" class="m">on the wire; Peek draws none</text></g>
+<rect class="b" x="36" y="168" width="210" height="56" rx="8"/><text x="50" y="190" class="h">Topics</text><text x="50" y="209" class="m">conversations, made in Peek</text>
+<rect class="b" x="262" y="168" width="212" height="56" rx="8"/><text x="276" y="190" class="h">Ship and Leaf files</text><text x="276" y="209" class="m">projects, issues, documents</text>
+<text x="36" y="256" class="m">open: anyone in the workspace may read and write in it</text>
+
+<g class="f"><rect class="b" x="508" y="20" width="192" height="72" rx="8"/><text x="522" y="42" class="h">Company Folder</text><text x="522" y="61" class="m">decided, not built</text><text x="522" y="78" class="m">SPEC §3.4</text></g>
+<rect class="b" x="508" y="150" width="192" height="88" rx="8"/><text x="522" y="172" class="h">A file's members</text><text x="522" y="191" class="m">who is in its conversation;</text><text x="522" y="207" class="m">writing makes you one,</text><text x="522" y="223" class="m">and members are told</text>
+<path class="a" d="M508,196 L494,196"/>
+</svg>
+<figcaption>A Folder holds files and has a roster nobody fills in: Peek writes no Join or Leave, so all nine list only Miky. You are told about a conversation because you are its member, and writing in it makes you one. Nothing marks a topic as one that lasts.</figcaption>
+</figure>
+
+<h3>After</h3>
+<figure>
+<svg viewBox="0 0 720 450" role="img">
+<title>After: a team is a Folder with people. Its members and its followers; anyone may join an open team, and only members add someone; agents show apart, marked. It holds three kinds of place. Its chat: members follow it at Important by default. Its spaces: topics the team marks as lasting, followed at Important by its members and followers; only its members mark one. The topics it leads: nobody follows them by default; you join one or someone adds you. Ship and Leaf files are unchanged. A place has one switch per person, Not following, Important or All; Add puts someone in at Important and they can leave; someone who left and is added again is back in. A topic is in exactly one team, and a space is the team's own mark on its list, which a move drops. The Company team is the Company Folder the relay marks and keeps, with everyone in it.</title>
+<rect class="w" x="20" y="20" width="504" height="414" rx="10"/>
+<text x="36" y="44" class="h">Team</text><text x="508" y="44" class="tag" text-anchor="end">M2 · M3</text>
+<text x="36" y="63" class="m">a Folder with people: the same group, under the same name</text>
+<text x="36" y="79" class="m">readable by anyone in the company in this stage</text>
+
+<rect class="ok" x="36" y="96" width="228" height="84" rx="8"/><text x="50" y="118" class="h">Members</text><text x="50" y="137" class="m">part of it</text>
+<rect class="ok" x="46" y="148" width="208" height="22" rx="11"/><text x="58" y="163" class="tag">anyone joins; members add</text>
+<rect class="ok" x="280" y="96" width="228" height="84" rx="8"/><text x="294" y="118" class="h">Followers</text><text x="294" y="137" class="m">not in it; they see its spaces;</text><text x="294" y="153" class="m">each keeps a private list</text>
+
+<text x="36" y="206" class="h">Three kinds of place</text><text x="200" y="206" class="m">· who follows each by default</text>
+<rect class="ok" x="36" y="216" width="150" height="148" rx="8"/><text x="50" y="238" class="h">Its chat</text>
+<text x="50" y="256" class="m">about no file; drawn</text><text x="50" y="272" class="m">in Peek for the first</text><text x="50" y="288" class="m">time</text><text x="50" y="316" class="tag">members,</text><text x="50" y="332" class="tag">at Important</text>
+<rect class="ok" x="196" y="216" width="150" height="148" rx="8"/><text x="210" y="238" class="h">Its spaces</text>
+<text x="210" y="256" class="m">topics it marks on</text><text x="210" y="272" class="m">its list, such as #bug</text><text x="210" y="290" class="tag">members and</text><text x="210" y="306" class="tag">followers,</text><text x="210" y="322" class="tag">at Important</text>
+<rect class="ok" x="200" y="334" width="142" height="22" rx="11"/><text x="207" y="349" class="tag">members mark one</text>
+<rect class="ok" x="356" y="216" width="152" height="148" rx="8"/><text x="370" y="238" class="h">Topics it leads</text>
+<text x="370" y="256" class="m">every other topic</text><text x="370" y="272" class="m">it lists; shown in its</text><text x="370" y="288" class="m">section to members</text><text x="370" y="304" class="m">and followers</text><text x="370" y="332" class="tag">nobody: join one,</text><text x="370" y="348" class="tag">or be added</text>
+
+<g class="f"><rect class="b" x="36" y="380" width="472" height="38" rx="8"/><text x="50" y="404" class="h">Ship and Leaf files</text><text x="190" y="404" class="m">unchanged: filed in the team as in the Folder</text></g>
+
+<rect class="ok" x="540" y="20" width="160" height="118" rx="8"/><text x="554" y="42" class="h">Company team</text><text x="692" y="42" class="tag" text-anchor="end">M4</text>
+<text x="554" y="61" class="m">the Company Folder</text><text x="554" y="77" class="m">the relay marks and</text><text x="554" y="93" class="m">keeps; everyone in</text><text x="554" y="109" class="m">the company is in it;</text><text x="554" y="125" class="m">its chat is #general</text>
+<path class="an" d="M540,60 L528,60"/>
+
+<rect class="ok" x="540" y="170" width="160" height="264" rx="8"/><text x="554" y="192" class="h">A topic or space</text><text x="692" y="210" class="tag" text-anchor="end">M2 · M3</text>
+<text x="554" y="230" class="m">one switch per person:</text><text x="554" y="246" class="m">Not following,</text><text x="554" y="262" class="m">Important or All;</text><text x="554" y="278" class="m">joining is choosing</text><text x="554" y="294" class="m">a level</text>
+<text x="554" y="318" class="m">Add puts someone in</text><text x="554" y="334" class="m">at Important; they</text><text x="554" y="350" class="m">can always leave</text>
+<text x="554" y="374" class="m">who is in, at each</text><text x="554" y="390" class="m">level, is visible</text>
+<text x="554" y="414" class="m">re-added after leaving:</text><text x="554" y="428" class="m">back in, as on any file</text>
+<path class="an" d="M508,290 L536,290"/>
+</svg>
+<figcaption>A team is not a new object: it is the Folder, with people and three kinds of place. Its chat and its spaces are followed by default; the topics it leads only by choice or by an Add. Anyone in the company can read all three in this stage; the defaults decide only whose dot lights. Writing in a place still puts you only in that conversation, and a name in a topic's text puts nobody in it. A topic is in exactly one team, and its spaces are what the team marks on its own list, so a move drops the mark and the new team decides (records a-topic-lives-in-exactly-one-team, a-space-is-the-teams-own-mark-on-a-topic-it-lists, in estiva-docs pull request #374, which count once Miky merges it). Anyone in the company may join an open team; only its members add someone or mark a space, and agents show among its people apart, marked as agents. Someone who left a topic and is added again is back in, as the Accepted record on adding anyone to a file says.</figcaption>
+</figure>
+
+<h2 id="flow">Flow</h2>
+<p>Katerina is a member of a team. Miky starts a new conversation in its chat, then replies in a conversation she is not in.</p>
+
+<h3>Today</h3>
+<figure>
+<svg viewBox="0 0 720 185" role="img">
+<title>Today: Peek offers no team chat to write in. A Folder's own chat exists in the protocol and no app shows one. Peek skips a Folder's own chat, so nothing would light for Katerina.</title>
+<rect class="b" x="20" y="14" width="150" height="40" rx="8"/><text x="95" y="39" class="h" text-anchor="middle">Miky · Peek</text>
+<rect class="b" x="285" y="14" width="150" height="40" rx="8"/><text x="360" y="39" class="h" text-anchor="middle">Relay</text>
+<rect class="b" x="550" y="14" width="150" height="40" rx="8"/><text x="625" y="39" class="h" text-anchor="middle">Katerina · Peek</text>
+<line class="life" x1="95" y1="54" x2="95" y2="175"/><line class="life" x1="360" y1="54" x2="360" y2="175"/><line class="life" x1="625" y1="54" x2="625" y2="175"/>
+<text x="105" y="86">1  Peek offers no team chat</text><text x="123" y="102" class="m">no screen for a Folder's own chat</text>
+<text x="370" y="124">2  a Folder's own chat exists</text><text x="388" y="140" class="m">in the protocol; no app shows one</text>
+<text x="706" y="164" text-anchor="end">3  Peek skips it: nothing would light</text>
+</svg>
+<figcaption>Today the scenario cannot start: there is nowhere in Peek to post to a team, and Peek's dots leave a Folder's own chat out on purpose.</figcaption>
+</figure>
+
+<h3>After: a new conversation in a team's chat</h3>
+<figure>
+<svg viewBox="0 0 720 525" role="img">
+<title>After: Miky starts a new conversation in the team's chat. Peek sends it to the team. The relay checks he may write there, which in an open team is anyone in the company, stores it and pushes it live. Katerina's app works out that she is a member, so the team's chat is in what she follows, and lights her dot. Miky then replies in a conversation she is not in; it is stored and pushed the same way, and her dot stays dark: members follow the chat at Important, so a reply lights only in a conversation you are in.</title>
+<rect class="b" x="20" y="14" width="150" height="40" rx="8"/><text x="95" y="39" class="h" text-anchor="middle">Miky · Peek</text>
+<rect class="b" x="285" y="14" width="150" height="40" rx="8"/><text x="360" y="39" class="h" text-anchor="middle">Relay</text>
+<rect class="b" x="550" y="14" width="150" height="40" rx="8"/><text x="625" y="39" class="h" text-anchor="middle">Katerina · Peek</text>
+<line class="life" x1="95" y1="54" x2="95" y2="515"/><line class="life" x1="360" y1="54" x2="360" y2="515"/><line class="life" x1="625" y1="54" x2="625" y2="515"/>
+
+<text x="105" y="84">1  starts a new conversation</text><text x="123" y="100">in the team's chat</text>
+<path class="a" d="M95,140 L356,140"/><text x="105" y="134">2  Peek sends it to the team</text><text x="123" y="156" class="m">its own chat · 9 with its h</text>
+<rect class="b" x="370" y="168" width="200" height="62" rx="6"/><text x="380" y="188">3  checks he may write</text><text x="398" y="206" class="m">an open team: anyone in</text><text x="398" y="222" class="m">the company; stores it</text>
+<path class="a" d="M360,252 L621,252"/><text x="375" y="246">4  pushed live to her open Peek</text>
+<rect class="ok" x="430" y="266" width="270" height="88" rx="6"/><text x="440" y="286">5  her app works it out</text><text x="692" y="286" class="tag" text-anchor="end">M2 · M3</text>
+<text x="458" y="304" class="m">she is a member, so the team's chat</text><text x="458" y="320" class="m">is in what she follows; a new</text><text x="458" y="336" class="m">conversation lights her dot</text>
+
+<text x="105" y="384">6  replies in a conversation</text><text x="123" y="400">Katerina is not in</text>
+<path class="a" d="M95,420 L621,420"/><text x="375" y="414">7  stored and pushed as before</text>
+<rect class="ok" x="430" y="434" width="270" height="78" rx="6"/><text x="440" y="454">8  her dot stays dark</text><text x="692" y="454" class="tag" text-anchor="end">M2 · M3</text>
+<text x="458" y="474" class="m">she follows the chat at Important:</text><text x="458" y="490" class="m">a reply lights only those in that</text><text x="458" y="505" class="m">conversation, unless she sets All</text>
+</svg>
+<figcaption>The relay does not decide who is told: it stores and pushes the message to whoever can read the team. Each reader's app works out from the shared rule whether it lights. Signing at Estiva ID is left out, as in the base page.</figcaption>
+</figure>
+
+<h3>After: following a team you are not in</h3>
+<figure>
+<svg viewBox="0 0 720 475" role="img">
+<title>After: Miky follows a team he is not in. His private list, encrypted to him, is stored by the relay and nobody else can read it. His app works out that the team's spaces are followed at Important. Katerina starts a new conversation in one space and then replies in a conversation Miky is not in; the new one lights for him and the reply stays dark. Miky sets that space to All; the relay accepts his level because only he may set it, and the next reply lights.</title>
+<rect class="b" x="20" y="14" width="150" height="40" rx="8"/><text x="95" y="39" class="h" text-anchor="middle">Miky · Peek</text>
+<rect class="b" x="285" y="14" width="150" height="40" rx="8"/><text x="360" y="39" class="h" text-anchor="middle">Relay</text>
+<rect class="b" x="550" y="14" width="150" height="40" rx="8"/><text x="625" y="39" class="h" text-anchor="middle">Katerina · Peek</text>
+<line class="life" x1="95" y1="54" x2="95" y2="465"/><line class="life" x1="360" y1="54" x2="360" y2="465"/><line class="life" x1="625" y1="54" x2="625" y2="465"/>
+
+<text x="105" y="84">1  follows a team he is not in</text>
+<path class="an" d="M95,112 L356,112"/><text x="105" y="106">2  his private list, encrypted</text>
+<rect class="b" x="370" y="122" width="200" height="44" rx="6"/><text x="380" y="141">3  stores it</text><text x="398" y="157" class="m">nobody else can read it</text>
+<rect class="ok" x="20" y="176" width="320" height="46" rx="6"/><text x="30" y="196">4  his app: the team's spaces at Important</text><text x="48" y="213" class="m">worked out, never written</text><text x="332" y="213" class="tag" text-anchor="end">M2 · M3</text>
+
+<text x="706" y="246" text-anchor="end">5  a new conversation in one space,</text><text x="706" y="262" text-anchor="end" class="m">then a reply in one Miky is not in</text>
+<path class="a" d="M625,288 L99,288"/><text x="375" y="282">6  stored, pushed live</text>
+<text x="105" y="312">7  the new one lights; the reply</text><text x="123" y="328" class="m">stays dark: he follows at Important</text>
+
+<text x="105" y="360">8  sets that space to All</text>
+<path class="an" d="M95,372 L356,372"/>
+<rect class="ok" x="370" y="382" width="240" height="46" rx="6"/><text x="380" y="402">9  only he sets his level</text><text x="602" y="402" class="tag" text-anchor="end">M2</text><text x="398" y="418" class="m">a level for anyone else is refused</text>
+<text x="105" y="456">10  the next reply in it lights</text>
+</svg>
+<figcaption>Which teams Miky follows lives only in his own encrypted list, so only his app can work out that those spaces are his. His level on a place is the one new thing the relay must check: anyone who can read the place sees it, and only he may change it.</figcaption>
+</figure>
+
+<h3>After: adding someone to a topic a team leads</h3>
+<figure>
+<svg viewBox="0 0 720 470" role="img">
+<title>After: Miky adds Katerina to a topic Engineering leads. Peek writes that she is in it, signed by Miky; anyone may add someone, as today. Her app works out that she is in at Important: the topic shows on her Topics and in Engineering's section, and its next new conversation lights. She leaves with the same switch; that is signed by her, and only her leave counts. The next new conversation does not light. If Miky adds her again, she is back in, as on any file.</title>
+<rect class="b" x="20" y="14" width="150" height="40" rx="8"/><text x="95" y="39" class="h" text-anchor="middle">Miky · Peek</text>
+<rect class="b" x="285" y="14" width="150" height="40" rx="8"/><text x="360" y="39" class="h" text-anchor="middle">Relay</text>
+<rect class="b" x="550" y="14" width="150" height="40" rx="8"/><text x="625" y="39" class="h" text-anchor="middle">Katerina · Peek</text>
+<line class="life" x1="95" y1="54" x2="95" y2="460"/><line class="life" x1="360" y1="54" x2="360" y2="460"/><line class="life" x1="625" y1="54" x2="625" y2="460"/>
+
+<text x="105" y="84">1  adds Katerina to a topic</text><text x="123" y="100" class="m">Engineering leads</text>
+<path class="an" d="M95,124 L356,124"/><text x="105" y="118">2  "she is in it", signed by Miky</text><text x="123" y="140" class="m">the member field, as today's Add</text>
+<rect class="b" x="370" y="150" width="200" height="44" rx="6"/><text x="380" y="169">3  anyone may add; stores it</text><text x="398" y="185" class="m">and pushes it to her</text>
+<path class="a" d="M360,206 L621,206"/>
+<rect class="ok" x="400" y="216" width="300" height="76" rx="6"/><text x="410" y="236">4  her app: in it, at Important</text><text x="692" y="236" class="tag" text-anchor="end">M2 · M3</text>
+<text x="428" y="254" class="m">on her Topics, and in Engineering's</text><text x="428" y="270" class="m">section; the next new conversation</text><text x="428" y="286" class="m">lights; no level is written for her</text>
+
+<text x="706" y="318" text-anchor="end">5  she leaves: Not following</text>
+<path class="an" d="M621,340 L364,340"/><text x="380" y="334">6  "I'm out", signed by her</text>
+<rect class="b" x="150" y="350" width="200" height="44" rx="6"/><text x="160" y="369">7  only her own leave counts</text><text x="178" y="385" class="m">as today; stored</text>
+<text x="706" y="378" text-anchor="end">8  the next new conversation</text><text x="706" y="394" text-anchor="end" class="m">does not light for her</text>
+<rect class="b" x="20" y="410" width="330" height="44" rx="6"/><text x="30" y="429">9  if Miky adds her again, she is back in</text><text x="48" y="446" class="m">as on any file: anyone may re-add</text>
+</svg>
+<figcaption>Add and leave reuse the member field every app already writes, so nothing new goes on the wire for them; what changes is what it means on a topic or space: in it at Important, no longer told about every message. Her level stays hers: an Add never writes one. Signing at Estiva ID is left out.</figcaption>
+</figure>
+
+<h2 id="access">Access</h2>
+<p>Every Folder is open today, so "whoever can read the team" is everyone in the company until private teams exist. That is the intended default of this stage, not something left behind: private and secret teams are the next stage (SPEC §3.1; the draft's Not in scope).</p>
+<div class="tw">
+<table>
+<thead><tr><th>What</th><th>Who can see it</th><th>Who can change it</th><th>Checked by</th></tr></thead>
+<tbody>
+<tr><td>A Folder's admins and members (today)</td><td>Whoever can read the Folder</td><td>Written only by the relay; only owners and admins make someone an admin</td><td>The relay</td></tr>
+<tr class="new"><td>A team's members</td><td>Anyone who can read the team</td><td>Join and Leave from Peek (M3): anyone in the company joins an open team; only its members add someone else</td><td>The relay keeps the roster, as today, and from M3 checks that only members add someone else</td></tr>
+<tr class="new"><td>Who is in a topic or space (Join, Add)</td><td>Anyone who can read the place</td><td>Anyone may add someone; only you take yourself out, as today</td><td>Each reader ignores a leave not signed by the person, as today</td></tr>
+<tr class="new"><td>Whether a topic is one of its team's spaces (a role on the team's own list; a move drops it)</td><td>Anyone in the company, as every team's list is public</td><td>Only the team's members</td><td>The relay, which keeps the team's list</td></tr>
+<tr class="new"><td>A place's follower levels (All or Important)</td><td>Anyone who can read the place</td><td>Only that person, for their own level</td><td>The relay, from M2: it refuses a level set for anyone else</td></tr>
+<tr class="new"><td>The teams you follow, and the team defaults you turned off</td><td>Only you</td><td>Only you</td><td>Encrypted to you, as your mutes are today; the relay takes only your own signature on it</td></tr>
+<tr class="new"><td>A team's default (its chat at Important for members; its spaces at Important for members and followers; its other topics for nobody)</td><td>Not stored: each app works it out</td><td>Nobody; your own level on a place wins over it</td><td>Each app, through the shared conversation code</td></tr>
+<tr class="new"><td>A team's chat</td><td>Anyone in the company, in this stage, as every Folder's chat is today; only members are told about it</td><td>Written by anyone who may write in the team; edited or deleted as any message is</td><td>The relay, for reading and writing; who is told is worked out by each app</td></tr>
+<tr class="new"><td>Which Folder is the Company team (M4)</td><td>Everyone in the company</td><td>Only the relay marks it, and it cannot be deleted (SPEC §3.4)</td><td>The relay, once built; specified today, not built</td></tr>
+<tr><td>Your mutes (today)</td><td>Only you</td><td>Only you</td><td>The relay takes only your signature; encrypted to you</td></tr>
+</tbody>
+</table>
+</div>
+<p class="sub">Green rows are new in this project; every decision on the page is answered. "Who is told" is not access: it decides only whose dot lights, never who can read.</p>
+
+<h2 id="checked">Checked</h2>
+<p class="sub">Checked on 1 Nov 2026, from <code>origin/main</code> of each repository and <code>origin/nfb-demo-kinds</code> for the relay, plus production facts recorded in the project's description in Ship that day.</p>
+<ul class="checked">
+<li><b>Boxes, names and positions.</b> Cut from <code>estiva-docs:architecture/estiva.html</code> (as built, 23 Oct): the app row, the relay, the shared package "Comments and unread" (<code>conversation</code>), the Folder and its files, and the Access rows for a Folder's admins and members and for read state. Estiva ID, the live socket, the relay's stores and the other shared packages are left out because nothing here changes them.</li>
+<li><b>Nine Folders, all open, each roster listing only Miky.</b> The joincheck probe on production, 1 Nov, as recorded in the project's Technical notes in Ship; not re-run for this page.</li>
+<li><b>Anyone in the workspace reads and writes an open Folder.</b> <code>buzz:crates/buzz-relay/src/handlers/ingest.rs</code> (<code>check_channel_membership</code>) and <code>crates/buzz-db/src/store/channel_members.rs</code> (<code>get_accessible_channel_ids</code>), both re-read. Every Folder is open by design: SPEC §3.1.</li>
+<li><b>Peek writes no Join, Leave, add or remove.</b> No NIP-29 <code>kind:9000/9001/9021/9022</code> from Peek, per the project's description in Ship (1 Nov); not re-checked here.</li>
+<li><b>Peek draws no Folder chat.</b> <code>peek-app:src/api/teamUnread.ts:46-51</code>, re-read: "Peek has no screen for its own messages (2026-10-05)". A Folder's own chat being in the protocol: the base page's Objects table.</li>
+<li><b>Shared conversation code.</b> <code>estiva-foundation:packages/conversation/src/membership.ts</code> (mutes as <code>estiva:muted:v1</code> at :256, encrypted to self at :284-290) and <code>unread.ts:38</code> (a muted stream still counts a mention), re-read.</li>
+<li><b>Company Folder.</b> <code>estiva-docs:protocol/SPEC.md</code> §3.4 and the Accepted record <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-workspace-has-one-company-folder-the-relay-marks-and-keeps.md">every-workspace-has-one-company-folder-the-relay-marks-and-keeps</a>. Not built: per its Ship issue (84e39a13, todo); not re-checked in the relay.</li>
+<li><b>The after pictures.</b> Rest on the Accepted records <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-team-has-members-and-followers-and-a-place-is-followed-at-a-level.md">a-team-has-members-and-followers-and-a-place-is-followed-at-a-level</a> (who can see members, levels and the teams you follow) and <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/writing-in-a-place-never-follows-it.md">writing-in-a-place-never-follows-it</a>; this project supersedes <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-folder-is-called-a-folder-never-a-team.md">a-folder-is-called-a-folder-never-a-team</a> and, for team chats, <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-folders-own-chat-is-unread-only-for-a-mention.md">a-folders-own-chat-is-unread-only-for-a-mention</a> (both Accepted today).</li>
+<li><b>Add, Join and Leave write one member field</b> (re-checked 2 Nov). <code>estiva-foundation:packages/conversation/src/membership.ts:228</code> (<code>buildMembershipChange</code>: "Join" when the person signs it, "Add" when someone else does, "Leave" for <code>false</code>); a mention in a file's text writes the same through <code>textMentions.ts:122</code>. SPEC §11.8: anyone may set it to true, only the person's own false counts.</li>
+<li><b>A topic has no text today.</b> SPEC §6.7 (bare file, <code>kind:30840</code>): its fields are title, parent, summary, archived, the member field and its list of files; "a reader ignores a <code>description</code> change aimed at a <code>30840</code>". So "a name in a topic's text puts nobody in it" changes nothing written today. A <code>space</code> field is new there.</li>
+<li><b>Three kinds of place, Add, and where a led topic shows.</b> Miky's answers of 2 Nov in the shaping session, in the project's description in Ship; their records are in estiva-docs pull requests #372 and #374 and count once he merges them.</li>
+<li><b>Not verified.</b> What the running images do, apart from the joincheck probe; whether the rosters still list only Miky when you read this; the relay's present rules for a join request, which are not drawn. How the relay will refuse a level set for someone else, and how the teams you follow are stored, are proposed shapes for M2, not built.</li>
+</ul>
+
+</main>
+</body>
+</html>
