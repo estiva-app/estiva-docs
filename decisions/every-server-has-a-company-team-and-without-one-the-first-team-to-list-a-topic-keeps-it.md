@@ -26,12 +26,8 @@ a team first.
   SPEC §3.4 already says a relay serving a workspace without the mark does not
   conform.
 - The SPEC did not say what the server does with such a topic when no team is
-  marked. The reference relay (estiva-app/buzz#47) then counts every team as
-  its home, which the product review raised as an unasked call.
-- Miky first answered "the first team to list it keeps it". The security
-  review then found that, with anyone allowed to list it, a member could put
-  someone else's topic in a private team, or in one they then archive, where
-  nobody else could move it out.
+  marked, which the product review of estiva-app/buzz#47 raised as an
+  unasked call.
 
 ## Decision
 
@@ -45,9 +41,6 @@ a team first.
 
 ## Rejected alternatives
 
-- **Anyone lists it first.** The first answer: whichever team lists it first
-  keeps it. Simple, but a member could claim a topic that is not theirs and
-  park it where nobody else can move it.
 - **Nowhere until one is marked.** The one-home rule holds everywhere: the
   topic stays on no team's list until the company marks a Company team, and
   people on that server cannot see it in any team until then, which "a topic
