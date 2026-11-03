@@ -70,9 +70,9 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <main>
 
 <h1>Ship's Topics navigation</h1>
-<p class="sub"><span class="state">Shaped, 2026-11-02</span> · <a href="https://ship.estiva.app/#/project/e27f6e92-963b-4e40-8789-923eae85afbd">Ship project</a> · Goal: in Ship you find work by topic, from a new sidebar and a Topics page where your topics come first.</p>
+<p class="sub"><span class="state">Shaped, 2026-11-02; reshaped to the approved prototype the same day</span> · <a href="https://ship.estiva.app/#/project/e27f6e92-963b-4e40-8789-923eae85afbd">Ship project</a> · Goal: Ship opens on Topics, and you find work by topic: a sidebar of Topics, Projects and Issues (then each Folder's own), and the three pages share one pattern of tabs with counts.</p>
 
-<p>Ship learns to browse by topic. It gains a Topics page, a page for each topic, a Home and a new sidebar, and all of them draw from <strong>one read</strong> of every topic and what it lists, kept in the shared package. Nothing new is written to the relay: topics and their lists are the ones "Topics group files" built. Look first at the Map's "after": the green read in the middle is the riskiest part, and everything Ship draws hangs off it.</p>
+<p>Ship learns to browse by topic. It opens on a Topics page, gains a page for each topic, a Projects page and a new sidebar, and everything about topics draws from <strong>one read</strong> of every topic, what it lists, and its conversations in Peek with what is new for you, kept in the shared package. Nothing new is written to the relay: topics and their lists are the ones "Topics group files" built. Look first at the Map's "after": the green read in the middle is the riskiest part, and everything Ship draws hangs off it.</p>
 
 <div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lf">untouched, for orientation</span></div>
 
@@ -101,19 +101,19 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <h3>After</h3>
 <figure>
 <svg viewBox="0 0 720 440" role="img">
-<title>After: Ship has a new sidebar (M4), a Topics page and a topic page that every topic link in Ship opens (M3), Home (M5); all read one cached list of every topic from the shared package (M2), which Add to topic in Ship and Leaf uses too; a topic page links to the conversation in Peek; the prototype comes first (M1)</title>
-<rect class="ok" x="20" y="20" width="200" height="86" rx="8"/><text x="36" y="42" class="h">Sidebar</text><text x="36" y="60" class="m">Home · Topics · Projects ·</text><text x="36" y="76" class="m">Issues, then each Folder's</text><text x="36" y="92" class="m">own; no "Not in a Folder"</text><text x="176" y="42" class="tag">M4</text>
-<rect class="ok" x="240" y="20" width="200" height="86" rx="8"/><text x="256" y="42" class="h">Topics page</text><text x="256" y="60" class="m">Your topics · Other topics</text><text x="256" y="76" class="m">· Archived</text><text x="256" y="92" class="m">no work listed: not shown</text><text x="396" y="42" class="tag">M3</text>
+<title>After: Ship has a new sidebar and opens on Topics (M5), a Topics page and a topic page that every topic link in Ship opens (M3), a Projects page (M4); the topic pages read one cached list of every topic from the shared package (M2), which Add to topic in Ship and Leaf uses too; for the Topics page only, the read also takes each topic's conversations in Peek and your read state from the relay, judged by Peek's dot rule now in the shared package; a topic page links to the conversation in Peek; the prototype came first (M1)</title>
+<rect class="ok" x="20" y="20" width="200" height="86" rx="8"/><text x="36" y="42" class="h">Sidebar</text><text x="36" y="60" class="m">Topics · Projects · Issues,</text><text x="36" y="76" class="m">then each Folder's own;</text><text x="36" y="92" class="m">Ship opens on Topics</text><text x="176" y="42" class="tag">M5</text>
+<rect class="ok" x="240" y="20" width="200" height="86" rx="8"/><text x="256" y="42" class="h">Topics page</text><text x="256" y="60" class="m">tabs All · Your · Other ·</text><text x="256" y="76" class="m">Archived; conversations,</text><text x="256" y="92" class="m">Peek's dot on yours</text><text x="396" y="42" class="tag">M3</text>
 <rect class="ok" x="460" y="20" width="240" height="86" rx="8"/><text x="476" y="42" class="h">A topic's page in Ship</text><text x="476" y="60" class="m">projects, issues, Leaf links,</text><text x="476" y="76" class="m">archived work behind a link;</text><text x="476" y="92" class="m">every topic link in Ship opens it</text><text x="656" y="42" class="tag">M3</text>
-<rect class="ok" x="20" y="140" width="200" height="80" rx="8"/><text x="36" y="162" class="h">Home</text><text x="36" y="180" class="m">your topics, projects, and</text><text x="36" y="196" class="m">issues assigned to you</text><text x="176" y="162" class="tag">M5</text>
+<rect class="ok" x="20" y="140" width="200" height="80" rx="8"/><text x="36" y="162" class="h">Projects page</text><text x="36" y="180" class="m">tabs, lead, progress bar,</text><text x="36" y="196" class="m">table or cards; Ship's own</text><text x="36" y="212" class="m">projects, not this read</text><text x="176" y="162" class="tag">M4</text>
 <rect class="ok" x="240" y="140" width="200" height="80" rx="8"/><text x="256" y="162" class="h">Add to topic</text><text x="256" y="180" class="m">only your Folders' topics,</text><text x="256" y="196" class="m">none archived; "Topics: …"</text><text x="256" y="212" class="m">says (archived); shown once</text><text x="396" y="162" class="tag">M2</text>
-<g class="f"><rect class="b" x="560" y="140" width="140" height="80" rx="8"/><text x="576" y="164" class="h">Peek</text><text x="576" y="182" class="m">the conversation</text></g>
-<rect class="ok" x="160" y="256" width="400" height="62" rx="8"/><text x="176" y="278" class="h">One read of every topic</text><text x="176" y="296" class="m">kept while Ship is open · what each lists · archived · yours</text><text x="176" y="310" class="m">shared package (interop)</text><text x="516" y="278" class="tag">M2</text>
-<rect class="ok" x="580" y="256" width="120" height="62" rx="8"/><text x="594" y="280" class="h">Leaf</text><text x="594" y="298" class="m">Add to topic</text><text x="594" y="312" class="m">uses it too</text>
+<rect class="ok" x="560" y="140" width="140" height="80" rx="8"/><text x="576" y="164" class="h">Peek</text><text x="576" y="182" class="m">a topic's conversation;</text><text x="576" y="198" class="m">its dot's rule, now</text><text x="576" y="214" class="m">in the shared package</text>
+<rect class="ok" x="160" y="256" width="400" height="62" rx="8"/><text x="176" y="278" class="h">One read of every topic</text><text x="176" y="296" class="m">kept while Ship is open · what each lists · archived · yours</text><text x="176" y="310" class="m">its conversations · new for you · shared package</text><text x="516" y="278" class="tag">M2</text>
+<rect class="ok" x="580" y="256" width="120" height="62" rx="8"/><text x="594" y="280" class="h">Leaf</text><text x="594" y="298" class="m">Add to topic,</text><text x="594" y="312" class="m">no conversations</text>
 <rect class="b" x="160" y="376" width="400" height="50" rx="8"/><text x="176" y="398" class="h">Relay</text><text x="176" y="416" class="m">unchanged: nothing new is written</text>
 <g class="f"><rect class="b" x="20" y="376" width="120" height="50" rx="8"/><text x="32" y="398" class="h">Prototype</text><text x="32" y="416" class="m">estiva-ui · M1</text></g>
 <path class="an" d="M430,106 L430,124 L452,124 L452,252"/>
-<path class="an" d="M120,220 L120,238 L250,238 L250,252"/>
+<path class="an" d="M600,220 L600,236 L546,236 L546,252"/><text x="552" y="250" class="m">its dot's rule</text>
 <path class="an" d="M340,220 L340,252"/>
 <path class="an" d="M520,106 L520,252"/>
 <path class="an" d="M580,287 L564,287"/>
@@ -121,7 +121,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <path class="an" d="M630,106 L630,136"/><text x="642" y="119" class="m">Conversation</text><text x="642" y="131" class="m">in Peek</text>
 <g class="f"><path class="a" d="M90,320 L90,300 L156,300"/><text x="20" y="340" class="m">"yours" becomes what you follow</text><text x="20" y="354" class="m">once "Teams and following" lands</text></g>
 </svg>
-<figcaption>Every Ship surface reads the same cached list, so a topic is read once, not on every open of Add to topic. Every topic link in Ship, on the "Topics: …" line or in a description or comment, opens the topic's page in Ship; Leaf's still open Peek. A topic shows on Topics only while it lists a project or issue that is not archived (done ones count), and moves under Archived when all of it is; a Folder's Topics shows only the topics filed in that Folder. Ship now opens on Home. Spaces never show in Ship. "Yours" switches from membership to following when "Teams and following" lands its rule, in this one read; that is a dependency, not a decision here, so it is drawn faded. Peek and the relay do not change.</figcaption>
+<figcaption>Every Ship surface reads the same cached list, so a topic is read once, not on every open of Add to topic. Every topic link in Ship, on the "Topics: …" line or in a description or comment, opens the topic's page in Ship; Leaf's still open Peek. A topic shows on Topics only while it lists a project or issue that is not archived (done ones count), and moves under Archived when all of it is; a Folder's Topics shows only the topics filed in that Folder. Ship now opens on Topics; Home is parked, to come back as the activity on your work. Each topic also carries how many conversations it has in Peek and, on your own topics only, the dot Peek's Topics shows: its talk and your read state come into the one read, judged by Peek's own rule moved into the shared package, so Ship and Peek cannot disagree. Comments on the issues a topic lists stay on those issues. The Projects page reads Ship's own projects, not this read; Issues gets the tabs All and Assigned to me, and the sidebar's "Not in a Folder" fold goes, its projects under Projects. Spaces never show in Ship. "Yours" switches from membership to following when "Teams and following" lands its rule, in this one read; that is a dependency, not a decision here, so it is drawn faded. The relay does not change, and Peek draws the same dots from the rule it now shares.</figcaption>
 </figure>
 
 <h2>Flow</h2>
@@ -135,14 +135,14 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <line class="life" x1="95" y1="54" x2="95" y2="320"/><line class="life" x1="290" y1="54" x2="290" y2="320"/><line class="life" x1="475" y1="54" x2="475" y2="320"/><line class="life" x1="640" y1="54" x2="640" y2="320"/>
 <text x="104" y="80">1  opens Topics</text>
 <path class="an" d="M95,96 L286,96"/>
-<path class="a" d="M290,118 L471,118"/><text x="300" y="112" class="m">2  every topic and its list, once</text>
+<path class="a" d="M290,118 L471,118"/><text x="300" y="112" class="m">2  every topic, its list, its talk, once</text>
 <path class="a" d="M475,140 L294,140"/>
-<rect class="ok" x="300" y="150" width="170" height="40" rx="6"/><text x="310" y="168">3  works out yours,</text><text x="310" y="184" class="m">archived, Folders; keeps it</text>
-<path class="an" d="M290,208 L99,208"/><text x="104" y="226">4  Your topics, Other topics,</text><text x="104" y="242" class="m">each with its projects and issues</text>
+<rect class="ok" x="300" y="150" width="170" height="40" rx="6"/><text x="310" y="168">3  works out yours, archived,</text><text x="310" y="184" class="m">conversations, new; keeps it</text>
+<path class="an" d="M290,208 L99,208"/><text x="104" y="226">4  Your topics: each with its</text><text x="104" y="242" class="m">projects, conversations, Peek's dot</text>
 <text x="104" y="270">5  opens a topic, Widgets:</text><text x="104" y="286" class="m">drawn from the kept copy</text>
 <path class="a" d="M95,306 L636,306"/><text x="300" y="300" class="m">6  Conversation in Peek opens the topic there</text>
 </svg>
-<figcaption>Miky's 29 Oct moment, after this project: in Ship, the topics he is in come first, each with the few projects and issues it lists. Add to topic later in the session reads from the same kept copy.</figcaption>
+<figcaption>Miky's 29 Oct moment, after this project: in Ship, his own topics have their tab, each with the few projects and issues it lists, its conversations and Peek's dot. Add to topic later in the session reads from the same kept copy.</figcaption>
 </figure>
 
 <p>No Objects or Access view: no object changes what it is, and who can read or change a topic or its list stays as "Topics group files" left it (whoever may write in the topic's Folder adds or removes an entry; the relay checks it).</p>
@@ -154,7 +154,9 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <li>Add to topic's read: <code>readTopicChoices</code>, <code>src/api/foreign.ts:355</code>, reads every <code>kind:30840</code> root, resolves each and folds membership over all history on each call; no cache.</li>
 <li>The shared package has <code>topicsOfFile</code> and <code>topicLists</code>: estiva-foundation <code>packages/interop/src/topics.ts</code>, <code>origin/main</code>.</li>
 <li>The decided sidebar and the cuts: project "Navigation &amp; structure", Decided 29 Oct; Miky in the shaping session, 2 Nov.</li>
-<li>Not verified here: the read's time and size on Miky's workspace (measured at milestone 2's kickoff), and Leaf's copy of the read, named from "Topics group files"' Later list.</li>
+<li>Peek's dot on a topic is its file badge, not its Folder's stream: <code>TopicsColumn.tsx</code> passes only your topics to <code>useConversationBadges</code>, which counts a topic's thread roots and judges what is new against the topic's own read marker with <code>streamHasUnread</code> (<code>src/api/streamUnread.ts</code>), only for what you are a member of; peek-app <code>origin/main</code> (b3db3bc7).</li>
+<li>The read on Miky's workspace, measured as him on 2 Nov at milestone 2's kickoff: 34 topics in 8 Folders, roots 17 KB and lists 41 KB, one request each, no paging; the conversations, read as Peek's badges read them, 1,066 messages, 1.1 MB, 660 ms in one request.</li>
+<li>Not verified here: Leaf's copy of the read, named from "Topics group files"' Later list.</li>
 </ul>
 
 </main>
