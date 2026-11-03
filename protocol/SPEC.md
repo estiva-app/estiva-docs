@@ -223,7 +223,7 @@ produce the same events in the same order.
 | **start a conversation** | `kind:9` with the Folder's `h` (§6.4) | — |
 | **join** a team | `kind:9021` with the team's `h`, signed by the person joining | by the relay, on a team that is not open (private teams are a later stage) |
 | **leave** a team | `kind:9022` with the team's `h`, signed by the person leaving | by the relay, on the Company team (§3.4); and NIP-29's own rule for a sole owner |
-| **add** someone to a team | `kind:9000` with the team's `h` and `["p", <pubkey>]` | by the relay, adding someone else, to anybody who is not a member of the team (a person naming only themselves joins, as with `kind:9021`); a `kind:9000` granting or changing a role (owner, admin) to anybody but the team's owners and admins; and any `kind:9000` into a DM or any other group that is not a team — one holding no relay-signed `kind:30890` (Miky, 2026-11-02). Several people in one `kind:9000` are decided one by one, in tag order: a person refused does not refuse the others |
+| **add** someone to a team | `kind:9000` with the team's `h` and `["p", <pubkey>]` | by the relay, adding someone else, to anybody who is not a member of the team (a person naming only themselves joins, as with `kind:9021`); a `kind:9000` granting or changing a role (owner, admin) to anybody but the team's owners and admins; and any `kind:9000` into a DM or any other group that is not a team — one holding no relay-signed `kind:30890` (Miky, 2026-11-02). Several people in one `kind:9000` are decided one by one, in tag order: a person refused does not refuse the others, the event is answered accepted while anyone in it is added (refused only when nobody is), and the sender learns who was added from the team's `kind:39002` (Miky, 2026-11-03) |
 | **remove** someone from a team | `kind:9001` with the team's `h` and `["p", <pubkey>]` | by the relay, to anybody but the team's owners and admins (`kind:39001`) and, for an agent, the person who owns it when they are a member of the team; and on the Company team, for anyone still in the company (§3.4) |
 | **mark** a space, or **unmark** it | `kind:1852` `add` naming the topic with the `space` role (below), or naming it without the role | by the relay, to anybody who is not a member of the team: any `kind:1852` — `add`, `remove` or `set`, a move's included — that gives an entry a role, or changes or removes an entry carrying one |
 | **follow** a team, or stop | no public event: the person's own `estiva:teams:v1` list (§11.8) | — |
@@ -337,7 +337,8 @@ produce the same events in the same order.
   anyone in the company may join an open team, and **any member** of a team
   may add someone to it, where upstream lets only admins; removing someone else
   stays with the team's owners and admins, as upstream, plus the person who
-  owns an agent removing that agent. A member is a person on the roster, and
+  owns an agent removing that agent when they are a member of the team. A
+  member is a person on the roster, and
   nothing else makes one (§11.8). A membership change on a file (§11.8) is
   never a team's membership. Which apps offer which is each app's call.
 - **Where the relay stands (2026-11-03).** The member-only checks on `add` and
