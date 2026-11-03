@@ -68,7 +68,9 @@ The brief Miky decided on:
   and `embed` take `<d>`, §13.6.1–§13.6.2).
 - A chip in text is the file's link. A pick from `[` or Cmd+K inserts the
   app's link form that carries only the file's id, never its title (Ship's
-  `/#/project/<d>`), so someone who cannot open the file learns nothing from
+  `https://ship.estiva.app/project/<d>`, the path form every app's host
+  answers; *amended 2026-11-03* by Miky, in the ALO-4 session, from
+  `/#/project/<d>`, which opens only on Ship), so someone who cannot open the file learns nothing from
   the message and a rename leaves nothing stale (§13.1, C25). A pasted link
   stays as the person pasted it. A type whose app publishes no link has no
   chip in text.
