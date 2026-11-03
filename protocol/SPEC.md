@@ -257,7 +257,11 @@ produce the same events in the same order.
   entry only when the `a` is the **full address of the file holding the id**:
   that file's kind, the author of its first record, and the id (*added
   2026-11-03*). An `a` with the same `d` and another kind or author is a
-  different entry, and the relay keeps it apart. A command names each file once, in one form. A reader reads `a` and `o`
+  different entry, and the relay keeps it apart. An `a` in a command is spelled
+  the one way NIP-01 spells an address, `<kind>:<pubkey>:<d>` with the kind in
+  plain decimal and the pubkey in 64 lowercase hex characters; the relay
+  refuses any other spelling (an uppercase key, a padded kind, a `nostr:`
+  prefix), so one file never has two entries. A command names each file once, in one form. A reader reads `a` and `o`
   entries alike, and draws a file named twice once, at its first entry, only
   when the `a` is that full address; when it cannot tell, it draws both. While an app reading only `a` entries
   remains, an app lists a file by its address; it lists by `o` once every app
@@ -1396,9 +1400,14 @@ its owners and admins (§3.3).
   archived. A project, an issue or another file is still listed and unlisted
   there as before. The relay reads the team's `archived` from its owners' and
   admins' changes (§3.3's archive row), at the gate and again where the
-  command is applied; an empty `archived` lifts the refusal. A team archived
-  with NIP-29's `kind:9002` `archived` takes no write at all, so a command in
-  it is refused earlier, with `invalid: channel is archived`.
+  command is applied; an empty `archived` lifts the refusal. **A team is
+  archived only by this field** (*added 2026-11-03*; record
+  [a-team-is-archived-only-by-its-field](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-team-is-archived-only-by-its-field.md)):
+  the relay refuses NIP-29's `kind:9002` `archived` on a team, as on the
+  Company team (§3.4), and a `kind:9002` clearing it lands. *Where it stands
+  (2026-11-03):* the reference relay still takes the flag, and then refuses
+  every write in that team; the refusal is built in the TEA issue "When the
+  server says no, every app knows why".
 - **Not covered yet.** Whether a file counts as archived because every Folder
   listing it is archived, and whether a `kind:9` may be sent in an archived
   Folder, wait for the Folders-as-labels rework; until then each app keeps
@@ -3597,9 +3606,9 @@ staged field, or writes one, also conforms to these.
 | C32 | **A status change carries its stage.** Setting a status from any control writes one `1851` with `field` `status`, `value` the option's id and, last, `["stage", "status", <the option's stage>]`; a creation that sets a status carries the same `stage` last on its root. Clearing it writes no `stage`. A change to a field whose vocabulary has no stages, such as `archived`, carries none |
 | C33 | **The change's stage counts.** A file whose current status change has value `in_progress` and stage `done` counts as done, even though the listing gives `in_progress` the stage `started`. A change whose stage is `paused` counts by the listing's stage. A change with no stage counts as before this rule. A `["stage","title","done"]` on a title change, or a `["stage","priority","done"]` on a status change, is ignored |
 | C34 | **An unknown option is shown.** A file whose current status is `triage` with stage `started`, an id no layer the reader can read lists, shows `triage` as its status and counts as `started`; it is not dropped from a list, a board or a count |
-| C43 | **A level on a place is its person's own** (*added 2026-11-02*, §11.8). A `follow:<P>` with `all` or `important` signed by `P` sets `P`'s level; one signed by anybody else, or with `P` not the signer's lowercase hex, is refused by the relay and ignored by a reader; any other value than `all`, `important` or empty is refused by the relay and sets nothing. `P`'s own `member:<P>`=`false` ends every level and join before it, from any app; a level, join or Add after it puts `P` back in. An Add puts `P` in at Important and never sets a level. A `follow:<P>`'s `p` places `P` on nothing |
-| C44 | **A team's default** (*added 2026-11-02*, §11.8). A member of a team is in its chat and spaces at Important, a follower (by `estiva:teams:v1`) in its spaces, nobody in the topics it leads, and nobody in any place of an archived team by any way, a chosen level included; a place in `off` is not reached. Nothing before the later of the person's join (the earliest `kind:9000`/`9021` since their last leave, or the `kind:9007` for its maker) or follow `since` and the space's marking `add` or `move` (the earliest since it was last unmarked) is unread. Important lights a new conversation, a reply in a conversation the person wrote in or is mentioned in, and a mention; All also every reply and the conversations on the files the place lists; a list entry lights nothing |
-| C45 | **A space, a topic's one team, and a move** (*added 2026-11-02*, §3.3, §6.5). A `kind:1852` `add` carrying `["a", <addr>, "", "space"]` (or the `o` form) marks the entry a space, and an `add` without the role unmarks it; a role a reader does not know leaves the entry listed. The relay refuses an `add` or `set` that lists a topic another team's `kind:30890` lists, a `remove` of a topic no other team lists unless the topic is archived or deleted, and an `add` of a topic no team lists anywhere but its home. A `move` from team A to team B changes both lists in one write; the same move sent again is a duplicate; one from a team that does not list the topic, or into or out of an archived team, is refused and changes neither list. In an archived team an `add` naming a topic is refused and one naming a project lands. A topic found on two teams' lists is drawn in the one whose `add` or `move` naming it is newest. A move's entry keeps the role only when it carries it |
+| C48 | **A level on a place is its person's own** (*added 2026-11-02*, §11.8). A `follow:<P>` with `all` or `important` signed by `P` sets `P`'s level; one signed by anybody else, or with `P` not the signer's lowercase hex, is refused by the relay and ignored by a reader; any other value than `all`, `important` or empty is refused by the relay and sets nothing. `P`'s own `member:<P>`=`false` ends every level and join before it, from any app; a level, join or Add after it puts `P` back in. An Add puts `P` in at Important and never sets a level. A `follow:<P>`'s `p` places `P` on nothing |
+| C49 | **A team's default** (*added 2026-11-02*, §11.8). A member of a team is in its chat and spaces at Important, a follower (by `estiva:teams:v1`) in its spaces, nobody in the topics it leads, and nobody in any place of an archived team by any way, a chosen level included; a place in `off` is not reached. Nothing before the later of the person's join (the earliest `kind:9000`/`9021` since their last leave, or the `kind:9007` for its maker) or follow `since` and the space's marking `add` or `move` (the earliest since it was last unmarked) is unread. Important lights a new conversation, a reply in a conversation the person wrote in or is mentioned in, and a mention; All also every reply and the conversations on the files the place lists; a list entry lights nothing |
+| C50 | **A space, a topic's one team, and a move** (*added 2026-11-02*, §3.3, §6.5). A `kind:1852` `add` carrying `["a", <addr>, "", "space"]` (or the `o` form) marks the entry a space, and an `add` without the role unmarks it; a role a reader does not know leaves the entry listed. The relay refuses an `add` or `set` that lists a topic another team's `kind:30890` lists, a `remove` of a topic no other team lists unless its author archived it or it is deleted, and an `add` of a topic no team lists anywhere but its home. A `move` from team A to team B changes both lists in one write; the same move sent again is a duplicate; one from a team that does not list the topic, or into or out of an archived team, is refused and changes neither list. In an archived team an `add` naming a topic is refused and one naming a project lands. A topic found on two teams' lists is drawn in the one whose `add` or `move` naming it is newest. A move's entry keeps the role only when it carries it |
 
 ### 9.1 Reference checks
 
