@@ -1,8 +1,8 @@
-# Every server must have a Company team; on one that has none anyway, a topic made outside any team goes to the first team that lists it
+# Every workspace must have a Company team; on a server without one anyway, a topic made outside any team goes to the first team its author lists it in
 
 - Date: 2026-11-03
 - Status: Accepted
-- Decided by: Miky, in the TEA-3 session (2026-11-03), answering the product review of estiva-app/buzz#47: the first team to list it keeps it, and "having a Company team should be a firm rule on protocol level"
+- Decided by: Miky, in the TEA-3 session (2026-11-03): answering the product review of estiva-app/buzz#47, the first team to list it keeps it, and "having a Company team should be a firm rule on protocol level"; then, answering the security review of estiva-app/estiva-docs#391, only its author lists it first (A, as recommended)
 - Area: Folders
 
 ## Who it affects
@@ -10,9 +10,10 @@
 Nobody at Estiva sees a change: Estiva HQ is our Company team. An outside
 company running its own server learns that a Company team is not optional:
 a workspace without one does not conform. If its server runs one anyway, a
-topic made outside any team (inside a Ship project, say) is not stuck on no
-list: the first team that lists it keeps it, and from then on it moves like
-any other topic.
+topic Alice made outside any team (inside a Ship project, say) is not stuck
+on no list: Alice lists it in the team she picks, that team keeps it, and
+from then on it moves like any other topic. Nobody else can put her topic in
+a team first.
 
 ## Context
 
@@ -27,17 +28,26 @@ any other topic.
 - The SPEC did not say what the server does with such a topic when no team is
   marked. The reference relay (estiva-app/buzz#47) then counts every team as
   its home, which the product review raised as an unasked call.
+- Miky first answered "the first team to list it keeps it". The security
+  review then found that, with anyone allowed to list it, a member could put
+  someone else's topic in a private team, or in one they then archive, where
+  nobody else could move it out.
 
 ## Decision
 
 - **A Company team is a firm protocol rule.** Every workspace a server hosts
   has one; the SPEC states it as a requirement, not a default.
-- **On a server without one anyway, the first team to list a topic made
-  outside any team keeps it.** After that it is on one team's list and leaves
+- **On a server without one anyway, only a topic's author lists it first**,
+  in any team they may list it in. That team keeps it; after that it leaves
   only by moving, as every topic does.
+- The relay rule is built in the TEA issue "When the server says no, every
+  app knows why".
 
 ## Rejected alternatives
 
+- **Anyone lists it first.** The first answer: whichever team lists it first
+  keeps it. Simple, but a member could claim a topic that is not theirs and
+  park it where nobody else can move it.
 - **Nowhere until one is marked.** The one-home rule holds everywhere: the
   topic stays on no team's list until the company marks a Company team, and
   people on that server cannot see it in any team until then, which "a topic
@@ -47,12 +57,11 @@ any other topic.
 
 - An app never has to handle a workspace without a Company team, and a server
   that has none still keeps every topic on one list.
-- On such a server, who first lists the topic decides its team; on a
-  conforming server nothing changes. This brings back "whoever lists it first
-  keeps it", which the records on an archived team's list and on a topic
-  always having a team ("Leave it to whichever team lists it first") turned
-  down, only
-  where there is no Company team to be the home: the alternative there is a
-  topic on no list.
+- On such a server, the author decides the topic's first team; on a
+  conforming server nothing changes. "Leave it to whichever team lists it
+  first", which the record
+  [a-topic-always-has-a-team-and-moves-in-one-action](a-topic-always-has-a-team-and-moves-in-one-action.md)
+  turned down, does not come back: the choice is the author's, and only where
+  there is no Company team to be the home.
 - Two-way: the fallback reaches only non-conforming servers, and topics it
   placed stay where they were put.

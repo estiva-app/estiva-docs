@@ -125,7 +125,7 @@ heading here.
 - [A space is a team's own mark on a topic it lists, so a move hands the choice to the team it moves to](a-space-is-the-teams-own-mark-on-a-topic-it-lists.md) — Accepted, 2026-11-02
 - [Anyone in the company may join an open team; only its members add someone to it or mark one of its spaces, and the relay checks it](anyone-may-join-an-open-team-and-only-its-members-add-or-mark.md) — Accepted, 2026-11-02
 - [A team is archived one way, by its archived field like every file; the server refuses the groups archived flag on a team](a-team-is-archived-only-by-its-field.md) — Accepted, 2026-11-03
-- [Every server must have a Company team; on one that has none anyway, a topic made outside any team goes to the first team that lists it](every-server-has-a-company-team-and-without-one-the-first-team-to-list-a-topic-keeps-it.md) — Accepted, 2026-11-03
+- [Every workspace must have a Company team; on a server without one anyway, a topic made outside any team goes to the first team its author lists it in](every-server-has-a-company-team-and-without-one-the-first-team-to-list-a-topic-keeps-it.md) — Accepted, 2026-11-03
 
 ## Read state
 
