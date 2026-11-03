@@ -321,10 +321,7 @@ produce the same events in the same order.
   serving one anyway lets only such a topic's author list it first, in any
   team they may list it in, so none is left with nowhere to go (*added
   2026-11-03*; record
-  [every-server-has-a-company-team-and-without-one-the-first-team-to-list-a-topic-keeps-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-server-has-a-company-team-and-without-one-the-first-team-to-list-a-topic-keeps-it.md)).
-  *Where it stands (2026-11-03):* the reference relay lets anyone list it
-  first; the author rule is built in the TEA issue "When the server says no,
-  every app knows why". A reader that finds a
+  [every-server-has-a-company-team-and-without-one-the-first-team-to-list-a-topic-keeps-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-server-has-a-company-team-and-without-one-the-first-team-to-list-a-topic-keeps-it.md)). A reader that finds a
   topic on two teams' lists, as one listed before the relay refused it can
   be, draws it in the one whose `kind:1852` `add` or `move` naming it (read by
   `#a` and `#o`) is the newest that a current `kind:30890` still reflects. Other files are unaffected:
