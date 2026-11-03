@@ -4389,6 +4389,12 @@ for `P`. `P` is in since the earliest start among the ways that hold now:
   member marking it again moves nothing); for a team's chat, the team's own
   start.
 
+Turning a place up to All starts nothing over. What lights only at All (such
+as a reply in a conversation `P` is not in) is unread from the time of the
+`follow:<P>` change that turned the level to All (a later change that keeps
+it at All moves nothing), never from before it, so choosing All brings back
+no backlog; what Important lights keeps the start above (Miky, 2026-11-03).
+
 **What is unread on a place.** A message on place `X` is unread for `P` when
 `P` is in `X`, `P` did not write it, its `created_at` is at or after `P`'s
 start, it is newer than `P`'s effective marker for it (§11.3), and `P`'s level
@@ -4439,12 +4445,11 @@ once, in both.
 company does to a conversation in a place, and how following reaches the
 older topics that are still channels.
 
-*Where it stands (2026-11-02).* The relay's refusal of a `follow:<P>` not
-signed by `P` is built in the relay issue of the project *Teams and
-following*, and the shared fold in `@estiva-app/conversation`, which every app
-reads, in its "every app works out what you follow the same way" issue. Until
-both reach every app, an app on an older package reads a level as an ordinary
-field.
+*Where it stands (2026-11-03).* The Estiva relay refuses a `follow:<P>` not
+signed by `P`. The shared fold is `@estiva-app/conversation` 0.28.0, and Peek,
+Ship, Leaf and the agent CLI all read it since 3 Nov, so no app reads a level
+as a placement any more. None of them draws its dots from the fold yet, and
+none writes a level: both come with the following switch.
 
 #### Muting is private
 
