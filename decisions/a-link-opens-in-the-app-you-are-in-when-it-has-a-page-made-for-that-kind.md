@@ -3,8 +3,11 @@
 - Date: 2026-11-03
 - Status: Accepted
 - Decided by: Miky, in the kickoff session of "A topic's page in Ship, and every topic link inside Ship opens it", on the brief "Which app a link opens" ([page](briefs/topic-links-inside-ship.html))
-- Supersedes: part 2 of [a-files-path-is-the-same-on-every-apps-host.md](a-files-path-is-the-same-on-every-apps-host.md), "a click opens the address as written, in the app it names"
 - Area: Links & widgets
+
+> Supersedes in part
+> [a-files-path-is-the-same-on-every-apps-host](a-files-path-is-the-same-on-every-apps-host.md):
+> its "a click opens the address as written, in the app it names".
 
 ## Who it affects
 
