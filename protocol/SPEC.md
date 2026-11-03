@@ -257,7 +257,8 @@ produce the same events in the same order.
   once, in one form. A reader reads `a` and `o` entries alike, and draws a file
   named twice once, at its first entry. While an app reading only `a` entries
   remains, an app lists a file by its address; it lists by `o` once every app
-  reading the Folder reads both (the projects switch, for projects).
+  reading the Folder reads both (for projects, once every app reading
+  projects reads `o`: §6.4, "Apps move to the pair type by type").
 - **Move adds before it removes.** State is per Folder, so there is no atomic
   move; a failure between the two leaves the file listed in both — visible,
   obviously wrong, fixed by moving again — where the other order would leave it
@@ -1111,8 +1112,9 @@ and the type's `K` from its comment, and its lowercase tags stay `e`,
 would show under one file for a reader asking `#A` and under another for one
 asking `#O`. A comment with no `A` is read by its `a`, so one whose `a` and
 `O` disagree is ignored too, and an ignored comment is no mention of either
-file. A mention or a listing carries `o` only, never a `k`: `k` goes
-with a top-level comment's `o` as NIP-22's parent kind, and nowhere else.
+file. A mention or a listing that names a file by its id carries its `o`
+with no `k` beside it: a `k` accompanies an `o` only on a top-level
+comment, as NIP-22's parent kind.
 
 The pair is offered to Block as a client convention, a fourth thing a comment
 can be about. What Block or NIP-22 refuses, Estiva carries as its own rule.
@@ -3523,7 +3525,7 @@ throwaway relay or a fake query.
 | C42 | **A merge that asks** (§13.3). Base has b1–b3; theirs deletes b2 and rewrites b3; mine rewrites b2 and b3 differently, and sets `status` in the same change. b2 asks (edited against deleted) and b3 asks (changed by both); nothing of mine is saved, the status included. A marker text changed by both asks as one block |
 | C43 | **One listing entry per file** (*added 2026-11-02*, §3.3). A Folder lists project P as `["a", addr]`; an `add` naming `["o", d]` leaves one entry, `a`, in its place; a `remove` by `["o", d]` takes it off. A reader given a `30890` with `["a", addr]` and `["o", d]` for one file draws it once, at the first |
 | C44 | **A comment in both forms** (§6.4). A top-level comment on P carries `A`, `K` `30850`, `P`, `O` d, `K` `osnova.project`, `a`, `k` `30850`, `o` d, `k` `osnova.project`, in that order; it is found by `#A` and by `#O`, and a reader takes kind 30850 and type `osnova.project`. Its reply carries `A`, `K`, `P`, `O`, `K` `osnova.project`, `e`, `["k","1111"]`, `p`. A comment whose `O` is not its `A`'s `d` is not drawn under either file |
-| C45 | **A file's marker in two keys** (§11.3, §11.8). Read state with `30850:pk:d` at T1 and `file:d` at T2 > T1 marks P's comments at or before T2 read; with only the address key, P has a marker. A read written by an app writes `file:d` |
+| C45 | **A file's marker in two keys** (§11.3, §11.6). Read state with `30850:pk:d` at T1 and `file:d` at T2 > T1 marks P's comments at or before T2 read; with only the address key, P has a marker. A read written by an app writes `file:d` |
 | C46 | **One card per file** (§13.6.1, §13.6.2). A message with `["embed", addr, "detailed"]` whose edit carries `["embed", d, "detailed"]` draws one card; an edit with `["embed", d, "none"]` removes the card the address drew. Two `part` tags, one by the address and one by the id, draw the first |
 | C47 | **A picked project chip** (§13.1). A pick of P from `[` inserts `https://<ship host>/project/<d>` with `["o", d]` and no title; a reader on any app's host resolves it to P (§7.7) |
 
@@ -3748,7 +3750,9 @@ the marker of the stream it is in:
   file — is in that **file's stream**, whose marker is the file's address. A
   root with two `a` tags is in both streams, and is unread in each until that
   file has been read; a root whose `O` names a file is in that file's stream,
-  whose marker is `file:<d>`;
+  whose marker is `file:<d>`. For a file named both ways, the marker is the
+  later of its address key and its `file:<d>` key (§11.6), whichever form the
+  root carries;
 - a reply is in its root's stream, under `thread:<root>`.
 
 A thread attaches to a file by *comment* — its root's own `a` tag — and never
@@ -3798,7 +3802,7 @@ stream reads its top-level messages. A reply stays unread until its own thread
 is opened, however old the thread is and however far past it the stream has
 been read. With `<stream>` the channel uuid for a root in the general
 stream and the file's marker for a root about that file (the later of its
-address key and its `file:<d>` key, §11.8):
+address key and its `file:<d>` key, §11.6):
 
 ```
 effective(thread:<root>) = max( merged[thread:<root>],
@@ -5550,7 +5554,7 @@ rule changed.*
 | `V` in a sentence | `V`'s chip in the sentence, and `V`'s row under the message | `V`'s chip only |
 
 - **The body names it.** A writer MUST NOT add an `embed` for a value the body
-  does not name (an edit's carried set may hold one, which draws nothing), and writes the matching `a`/`q`
+  does not name (an edit's carried set may hold one, which draws nothing), and writes the matching `a`/`o`/`q`
   on the message and on every edit, for what its words name then (§6.8, amended 2026-10-27). A reader draws a card for a value only while the
   folded body names it, by a `nostr:` reference or by an app URL that resolves
   to it (§7.7), written bare or as a link's target, and checks nothing else. A
@@ -5561,15 +5565,15 @@ rule changed.*
   §7.7 (a declared origin, and the `<type>` and shape against a published
   `urls` pattern, and one author for the identity), never by its trailing identifier alone: otherwise a
   link to any site wears a real object's card. A reader that cannot resolve
-  links draws no card for one. There is no `a`/`q` match, so a
+  links draws no card for one. There is no `a`/`o`/`q` match, so a
   reference first named in an edit can carry a card. This is §13.6.1's rule for
   `part`. Text in a code span names nothing (§13.1).
 - **First per value.** A reader takes the first `embed` for a value and ignores
   the rest. When a `part` and an `embed` name the same file, the part wins,
   and a writer MUST NOT write both. A file's address and its id are one value
   (*added 2026-11-02*, ALO-4): an `embed` by `<d>` and one by the address of
-  the same file draw one card, the first, and `["embed", <either>, "none"]`
-  removes it.
+  the same file draw one card, the first, and an edit whose set carries
+  `["embed", <either>, "none"]` removes it.
 - **Unknown layout.** A reader draws a layout value it does not know as
   `compact`: the author asked for a card, and the smallest is the safe reading.
   `none` is defined from the start, so no reader ever draws it. A document's
