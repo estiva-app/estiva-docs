@@ -1117,7 +1117,7 @@ would show under one file for a reader asking `#A` and under another for one
 asking `#O`. They name one file only when the `A` is the full address of the
 file holding the `O`'s id — that file's kind, the author of its first record,
 and the id (*added 2026-11-03*); a matching `d` alone is not enough. A comment
-carries exactly one `O` and at most one `A`, and one with more is ignored. The
+carries at most one `O` and at most one `A`, and one with two different values of either is ignored. The
 comment is about its `A`'s file; with no `A` it is read by its `a`, so one
 whose `a` and `O` disagree is ignored too; the `O` alone decides only when
 there is neither. An ignored comment is no mention of either file, and is in
