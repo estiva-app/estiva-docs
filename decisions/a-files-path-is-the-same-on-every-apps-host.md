@@ -1,7 +1,7 @@
 # A file's address is the same in every app with only the host changed, every app answers it, and a pasted one is that file on any Estiva app's host
 
 - Date: 2026-10-20
-- Status: Accepted
+- Status: Accepted; its part 2's "a click opens the address as written, in the app it names" superseded by [a-link-opens-in-the-app-you-are-in-when-it-has-a-page-made-for-that-kind](a-link-opens-in-the-app-you-are-in-when-it-has-a-page-made-for-that-kind.md), 2026-11-03
 - Decided by: Miky, in the kickoff session of "Ship's address for a project or issue opens it in Leaf too", on the brief "One file, one address, any app's host" ([page](briefs/a-files-address-on-every-host.html)); the serving rule first in RFC 0.5 §7.7, 21 September
 - Area: Links & widgets
 

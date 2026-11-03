@@ -5727,6 +5727,15 @@ it opens the file as the reader would open its reference. The same rule in
 every app (clarified 2026-10-27, PEEKM-7; Leaf's rule since WBM-11, now
 `linkReader().opener` in `@estiva-app/interop`).
 
+One exception: when the reader's own app has a page made for that kind of
+file (a kind it owns, or, for a file no app owns, a page of its own for that
+kind; never a general view of every file, such as a conversation or a
+document view) and that page shows everything the link names, the click
+stays in the reader's app, at the file's own path. A link to one message or
+one block that page does not show opens as written. Each app judges this
+about itself and declares nothing for it (decided 2026-11-03, record
+`a-link-opens-in-the-app-you-are-in-when-it-has-a-page-made-for-that-kind`).
+
 A link to one block (§7.7) is its object's chip in a sentence too, and the
 chip opens the URL as written, so a click lands on the block. Alone on its
 line it draws nothing while the message's `part` for that object draws the

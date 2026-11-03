@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Which app a link opens</title>
+<style>
+:root { --bg:#fbfaf7; --ink:#1d1d1b; --muted:#66625a; --box:#ffffff; --line:#c9c3b6; --ship:#2f6fd6; --peek:#c2410c; --leaf:#15803d; --pick:#fff4d6; }
+@media (prefers-color-scheme: dark) { :root { --bg:#16161a; --ink:#ecebe6; --muted:#a19d94; --box:#22222a; --line:#45444c; --ship:#7aa7f0; --peek:#f59e6b; --leaf:#6ad48f; --pick:#3a3320; } }
+body { background:var(--bg); color:var(--ink); font:16px/1.55 system-ui, sans-serif; margin:0; }
+main { max-width:760px; margin:0 auto; padding:24px 16px 64px; }
+h1 { font-size:26px; line-height:1.25; margin:0 0 8px; }
+h2 { font-size:19px; margin:32px 0 8px; }
+p, li { color:var(--ink); }
+.muted { color:var(--muted); font-size:14px; }
+table { border-collapse:collapse; width:100%; font-size:14px; display:block; overflow-x:auto; }
+th, td { border:1px solid var(--line); padding:6px 8px; vertical-align:top; text-align:left; }
+th { background:var(--box); }
+tr.pick td { background:var(--pick); }
+svg { width:100%; height:auto; display:block; margin:8px 0 4px; }
+svg text { font:13px system-ui, sans-serif; fill:var(--ink); }
+svg .box { fill:var(--box); stroke:var(--line); }
+svg .ship { stroke:var(--ship); fill:none; stroke-width:2; }
+svg .peek { stroke:var(--peek); fill:none; stroke-width:2; }
+svg .leaf { stroke:var(--leaf); fill:none; stroke-width:2; }
+.opt { border:1px solid var(--line); background:var(--box); border-radius:8px; padding:12px 14px; margin:12px 0; }
+.opt h3 { margin:0 0 6px; font-size:16px; }
+code { font-size:13px; }
+</style>
+</head>
+<body>
+<main>
+<h1>When you click a link to a topic inside Ship, do you stay in Ship?</h1>
+<p class="muted">Brief for Miky · 3 Nov 2026 · from the kickoff of "A topic's page in Ship"</p>
+
+<h2>The question</h2>
+<p>Ship is getting its own page for a topic. When someone has <b>written</b> a link to a topic in an issue's description or a comment — the link is Peek's address, because that is what you copy from Peek — should clicking it inside Ship open Ship's page for that topic, or Peek, as the address says?</p>
+
+<h2>Today</h2>
+<p>On 20 Oct you decided: <b>a link opens as written, in the app its address names</b>, and every app answers every app's address on its own host. So in Ship, a link to <code>peek.estiva.app/topic/…</code> opens Peek, and a link to <code>leaf.estiva.app/issue/…</code> opens Leaf, not Ship's issue page.</p>
+<p>On 2 Nov, shaping this project, you decided: <b>every topic link inside Ship opens Ship's topic page</b>, in a description or comment too; Leaf's topic links still open Peek. The two calls disagree on one case only: a topic link someone <i>wrote</i>. The "Topics: …" line, the Topics page and a topic Ship draws itself are not written links, so they open Ship's page whatever you pick here.</p>
+
+<h2>Why it reaches beyond this ticket</h2>
+<p>It is the click rule every app follows, Peek, Leaf and an outside company's app included, so it goes in the Specification. Nothing is written to the relay: links in old messages stay as they are and only where a click lands changes. <b>Two-way door</b>, but undoing it means a release of every app that follows it.</p>
+<p>The obvious rule, "stay in the app you are in whenever it can show the file", fails: Peek can show <i>every</i> file as a conversation, so every Ship issue link in Peek would open a Peek conversation instead of the issue, and an outside app's links would never reach that app from Peek or Leaf. A working rule has to tell a page made for that kind of file from a general view of every file.</p>
+
+<h2>The picture</h2>
+<p class="muted">Miky, in Ship, clicks links written in an issue. Blue lands in Ship, orange in Peek, green in Leaf.</p>
+<svg viewBox="0 0 720 300" role="img">
+<title>Where three written links land in Ship under each option</title>
+<text x="10" y="20" font-weight="600">Written link, clicked in Ship</text>
+<text x="250" y="20" font-weight="600">A · as written</text>
+<text x="410" y="20" font-weight="600">B · any view</text>
+<text x="565" y="20" font-weight="600">C · a page made for it</text>
+<rect class="box" x="10" y="40" width="220" height="56" rx="6"/><text x="20" y="62">a topic</text><text x="20" y="82" class="muted" style="fill:var(--muted)">peek.estiva.app/topic/…</text>
+<rect class="box" x="10" y="120" width="220" height="56" rx="6"/><text x="20" y="142">one message in a topic</text><text x="20" y="162" style="fill:var(--muted)">peek…/topic/…?thread=…</text>
+<rect class="box" x="10" y="200" width="220" height="56" rx="6"/><text x="20" y="222">an issue, Leaf's address</text><text x="20" y="242" style="fill:var(--muted)">leaf.estiva.app/issue/…</text>
+<g>
+<text x="250" y="72" style="fill:var(--peek)">→ Peek</text><text x="250" y="152" style="fill:var(--peek)">→ Peek</text><text x="250" y="232" style="fill:var(--leaf)">→ Leaf</text>
+<text x="410" y="72" style="fill:var(--ship)">→ Ship's topic page</text><text x="410" y="152" style="fill:var(--ship)">→ Ship's topic page</text><text x="410" y="166" style="fill:var(--muted)">(the message is lost)</text><text x="410" y="232" style="fill:var(--ship)">→ Ship's issue page</text>
+<text x="565" y="72" style="fill:var(--ship)">→ Ship's topic page</text><text x="565" y="152" style="fill:var(--peek)">→ Peek, on the message</text><text x="565" y="166" style="fill:var(--muted)">(Ship can't show it)</text><text x="565" y="232" style="fill:var(--ship)">→ Ship's issue page</text>
+</g>
+<text x="10" y="290" style="fill:var(--muted)">In Peek and Leaf, B would also pull every Ship link into Peek's conversation or Leaf's page; A and C leave them as today.</text>
+</svg>
+
+<h2>Options</h2>
+<div class="opt"><h3>A · Do less: a written link opens as written (the 20 Oct rule stands)</h3>
+<p>The "Topics: …" line and the Topics page open Ship's topic page; a topic link someone wrote in a description opens Peek. <b>What could go wrong:</b> one screen, two outcomes — the same topic opens Ship from the Topics line and Peek from the sentence above it, which is the "every click leaves Ship" you wanted gone. Part of your 2 Nov call is dropped.</p></div>
+<div class="opt"><h3>B · Stay in the app you are in whenever it can show the file</h3>
+<p>Simple to say. <b>What could go wrong:</b> Peek shows every file as a conversation and Leaf every file as a page, so Ship's issue links in Peek open Peek, in Leaf open Leaf, and an outside app is never reached from either. A link to one message lands on a topic page that cannot show it.</p></div>
+<div class="opt"><h3>C · Stay only when the app you are in has a page made for that kind of file, and it can show what the link points at (recommended)</h3>
+<p>In Ship, a topic link opens Ship's topic page; a link to one message in a topic still opens Peek, on that message; a Ship issue written with Leaf's address opens Ship's issue page (today it opens Leaf). Peek keeps opening topics itself. In Leaf nothing changes: Leaf's page for an issue is its general page for every file, not one made for issues, so Ship links still open Ship. <b>What could go wrong:</b> it is one more rule an outside app must apply about itself ("do I have a page made for this kind?"); an app that wrongly says yes keeps people from the file's own app. Each app decides this about itself and never declares it, so no app's manifest lists another's types (you rejected that list on 20 Oct).</p></div>
+
+<h2>Trade-offs</h2>
+<table>
+<tr><th>Option</th><th>Protocol shape</th><th>What Miky and Katerina see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td>A · as written</td><td>Unchanged: the writer's host decides</td><td>In Ship, a topic opens Ship from the Topics line, Peek from a description</td><td>Simplest rule</td><td>None</td><td>None; the description half of the ticket is dropped</td></tr>
+<tr><td>B · any view</td><td>Reader's app decides, always</td><td>Ship and Leaf links in Peek open Peek's conversation; Ship links in Leaf open Leaf</td><td>Its links never reach its app from Peek or Leaf</td><td>High: every app's opener changes</td><td>Shared reader and three apps</td></tr>
+<tr class="pick"><td>C · a page made for it</td><td>Writer's host decides unless the reader's app has a page made for that kind that shows everything the link names</td><td>In Ship, every topic opens Ship's page; a message link still lands on the message in Peek; Leaf and Peek unchanged</td><td>Its links reach its app unless the reader's app has its own page for that kind</td><td>One Specification rule; three app releases; nothing on the relay</td><td>Shared reader takes "my own kinds"; Ship passes issues, projects and topics</td></tr>
+</table>
+
+<h2>How others do it</h2>
+<ul>
+<li><b>Slack / Linear:</b> a Linear link in Slack unfurls in Slack but opens Linear; Linear opens its own issue links in Linear. That is C: the app with a page made for the thing keeps it.</li>
+<li><b>Google Workspace:</b> a Docs link in Gmail opens Docs, never a Gmail view of the doc — A for apps without their own page.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<p><b>C.</b> It keeps what the 20 Oct rule is for — an address names one file whatever the host, and a link to one block or message lands on it — and it gives you what you asked on 2 Nov: while you browse work in Ship, a topic opens in Ship. The host names the perspective; when you are already in a perspective made for that kind of file, that is the one you chose. A topic is a file no app owns (Peek opens it because it shows every file's conversation), so the rule cannot be "the owner's app"; it has to be "a page made for that kind".</p>
+
+<h2>Checked</h2>
+<ul>
+<li>A topic link in a Ship description is stored as Peek's address, <code>https://peek.estiva.app/topic/&lt;slug&gt;-&lt;d&gt;</code> (probe kits and Peek's declared addresses).</li>
+<li>Ship today opens a written link as written, with a pointer to the 20 Oct record (<code>src/lib/referenceLink.ts</code>); so a Leaf-address issue link opens Leaf from Ship today.</li>
+<li>A topic is a file no app owns (KINDS, "Bare file"); Peek is where it opens because it shows every file's conversation.</li>
+<li>Production today: every row on Ship's Topics opens <code>peek.estiva.app/o/…</code> (probe as QA-1, 3 Nov).</li>
+<li>Leaf's issue view is its general page of a file (pre-review, Leaf <code>src/document/linked.ts</code>); not re-checked by hand.</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="muted">Supersedes part 2 of <code>a-files-path-is-the-same-on-every-apps-host</code>. SPEC §13.6.2 click rule and §7.7's closing paragraph; one conformance row; interop <code>writtenOpenerOf</code> takes the reader's own kinds. Ticket SHIPS-4 (Ship's Topics navigation). Kinds: topic 30840, Leaf document 30842; Peek's message link <code>?thread=</code> names a kind 1111 comment.</p>
+</main>
+</body>
+</html>
