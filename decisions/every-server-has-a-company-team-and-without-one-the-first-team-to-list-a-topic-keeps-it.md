@@ -9,7 +9,7 @@
 
 Nobody at Estiva sees a change: Estiva HQ is our Company team. An outside
 company running its own server learns that a Company team is not optional:
-without one its server does not conform. If it runs one without anyway, a
+a workspace without one does not conform. If its server runs one anyway, a
 topic made outside any team (inside a Ship project, say) is not stuck on no
 list: the first team that lists it keeps it, and from then on it moves like
 any other topic.
@@ -48,6 +48,9 @@ any other topic.
 - An app never has to handle a workspace without a Company team, and a server
   that has none still keeps every topic on one list.
 - On such a server, who first lists the topic decides its team; on a
-  conforming server nothing changes.
+  conforming server nothing changes. This brings back "whoever lists it first
+  keeps it", which the record on an archived team's list turned down, only
+  where there is no Company team to be the home: the alternative there is a
+  topic on no list.
 - Two-way: the fallback reaches only non-conforming servers, and topics it
   placed stay where they were put.

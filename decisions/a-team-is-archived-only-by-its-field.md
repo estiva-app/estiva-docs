@@ -8,7 +8,8 @@
 ## Who it affects
 
 When Miky archives a team in Peek or Ship, it is greyed out in every app, its
-topics stay where they are, and people can still talk in it. That is the only
+topics stay where they are, and the server does not stop its chat (whether
+people should still talk there waits for the Folders rework). That is the only
 way a team is archived. An outside company sees one event called "archived"
 on a team, with one meaning, the same as for a project or a page.
 

@@ -7,7 +7,8 @@
 
 ## Who it affects
 
-Katerina moves a topic out of a team that is archived. Peek tells her
+Someone moves a topic out of a team that is archived (no one at Estiva has
+met a refusal yet; QA-1 did on 3 Nov). Peek tells them
 "Nothing was moved: one of the Folders is archived." It knows that because
 the server's answer starts with a code for "archived", not because Peek
 recognised a word in an English sentence. A topic that may go only to its
