@@ -253,9 +253,13 @@ produce the same events in the same order.
 - **One entry per file, in either form** (*added 2026-11-02*, ALO-4). A file's
   address and its id are one entry: an `add` naming a file already listed in
   the other form keeps the entry in the form and place it was listed in, and a
-  `remove` or a `set` by either form acts on it. A command names each file
-  once, in one form. A reader reads `a` and `o` entries alike, and draws a file
-  named twice once, at its first entry. While an app reading only `a` entries
+  `remove` or a `set` by either form acts on it. An `a` and an `o` are one
+  entry only when the `a` is the **full address of the file holding the id**:
+  that file's kind, the author of its first record, and the id (*added
+  2026-11-03*). An `a` with the same `d` and another kind or author is a
+  different entry, and the relay keeps it apart. A command names each file once, in one form. A reader reads `a` and `o`
+  entries alike, and draws a file named twice once, at its first entry, only
+  when the `a` is that full address; when it cannot tell, it draws both. While an app reading only `a` entries
   remains, an app lists a file by its address; it lists by `o` once every app
   reading the Folder reads both (for projects, once every app reading
   projects reads `o`: §6.4, "Apps move to the pair type by type").
@@ -1110,9 +1114,14 @@ and the type's `K` from its comment, and its lowercase tags stay `e`,
 `["k", "1111"]` and `p` (the Replies table below). **A comment whose `A` and
 `O` name different files is ignored**, as a change is (§6.2): otherwise it
 would show under one file for a reader asking `#A` and under another for one
-asking `#O`. A comment with no `A` is read by its `a`, so one whose `a` and
-`O` disagree is ignored too, and an ignored comment is no mention of either
-file. A mention or a listing that names a file by its id carries its `o`
+asking `#O`. They name one file only when the `A` is the full address of the
+file holding the `O`'s id — that file's kind, the author of its first record,
+and the id (*added 2026-11-03*); a matching `d` alone is not enough. A comment
+carries exactly one `O` and at most one `A`, and one with more is ignored. The
+comment is about its `A`'s file; with no `A` it is read by its `a`, so one
+whose `a` and `O` disagree is ignored too; the `O` alone decides only when
+there is neither. An ignored comment is no mention of either file, and is in
+no stream (§11.1). A mention or a listing that names a file by its id carries its `o`
 with no `k` beside it: a `k` accompanies an `o` only on a top-level
 comment, as NIP-22's parent kind.
 
@@ -1872,7 +1881,7 @@ arrive later, and a dropped edit is not recovered by a re-read.
 **An edit changes the body, the attachments and the cards, and nothing else.**
 It does not change the target's kind, channel, place in a thread or author. An
 edit that appears to change any of those is folded for its content and its
-`imeta`, `embed`, `a` and `q` tags, and ignored for the rest. Cards (`embed`,
+`imeta`, `embed`, `a`, `o` and `q` tags, and ignored for the rest. Cards (`embed`,
 §13.6.2) fold exactly as attachments do below, and are matched against the
 folded body, not against an `a` or `q` (amended 2026-10-13, OPT-16).
 
@@ -3523,8 +3532,8 @@ throwaway relay or a fake query.
 | C40 | **Opening a file reads one text** (*added 2026-11-02*, §6.13). A project with 40 text saves, read with `{"fields": "newest", "kinds": [30850], "#d": [d], "text": true}`, returns its first record, one change per field and exactly one `description` change, the current one, whose id names it as the next save's `prev`. The same filter without `#d` is refused. A member who cannot read the project's home Folder, sending the same filter, gets no `description` change. A project whose text was never changed returns no `description` change, and its text is the first record's seed. NIP-11 lists `file_list` whether or not it lists `files` |
 | C41 | **A merge that asks nothing** (§13.3). Base is b1, b2, b3, b4; theirs is b1, b2′, b3, n1, b4; mine is b2, b3, m1, b1, b4′ (b1 moved, m1 added, b4 rewritten). The merge is b2′, b3, n1, m1, b1, b4′ in that order, nothing asks, and the save names theirs as `prev` |
 | C42 | **A merge that asks** (§13.3). Base has b1–b3; theirs deletes b2 and rewrites b3; mine rewrites b2 and b3 differently, and sets `status` in the same change. b2 asks (edited against deleted) and b3 asks (changed by both); nothing of mine is saved, the status included. A marker text changed by both asks as one block |
-| C43 | **One listing entry per file** (*added 2026-11-02*, §3.3). A Folder lists project P as `["a", addr]`; an `add` naming `["o", d]` leaves one entry, `a`, in its place; a `remove` by `["o", d]` takes it off. A reader given a `30890` with `["a", addr]` and `["o", d]` for one file draws it once, at the first |
-| C44 | **A comment in both forms** (§6.4). A top-level comment on P carries `A`, `K` `30850`, `P`, `O` d, `K` `osnova.project`, `a`, `k` `30850`, `o` d, `k` `osnova.project`, in that order; it is found by `#A` and by `#O`, and a reader takes kind 30850 and type `osnova.project`. Its reply carries `A`, `K`, `P`, `O`, `K` `osnova.project`, `e`, `["k","1111"]`, `p`. A comment whose `O` is not its `A`'s `d` is not drawn under either file |
+| C43 | **One listing entry per file** (*added 2026-11-02*, §3.3). A Folder lists project P as `["a", addr]`; an `add` naming `["o", d]` leaves one entry, `a`, in its place; a `remove` by `["o", d]` takes it off. A reader given a `30890` with `["a", addr]` and `["o", d]` for one file draws it once, at the first entry. An `add` of `["a", "30851:<P's author>:d"]` or `["a", "30850:<another author>:d"]` is a separate entry: P stays listed and drawn, and a `remove` by `["o", d]` takes P's entry off and leaves that one (*added 2026-11-03*) |
+| C44 | **A comment in both forms** (§6.4). A top-level comment on P carries `A`, `K` `30850`, `P`, `O` d, `K` `osnova.project`, `a`, `k` `30850`, `o` d, `k` `osnova.project`, in that order; it is found by `#A` and by `#O`, and a reader takes kind 30850 and type `osnova.project`. Its reply carries `A`, `K`, `P`, `O`, `K` `osnova.project`, `e`, `["k","1111"]`, `p`. A comment whose `O` is not its `A`'s `d` is not drawn under either file, nor is one whose `A` has P's `d` with another kind or another author, one with two `O`s or two `A`s, or one with no `A` whose `a` is not P's full address (*added 2026-11-03*) |
 | C45 | **A file's marker in two keys** (§11.3, §11.6). Read state with `30850:pk:d` at T1 and `file:d` at T2 > T1 marks P's comments at or before T2 read; with only the address key, P has a marker. A read written by an app writes `file:d` |
 | C46 | **One card per file** (§13.6.1, §13.6.2). A message with `["embed", addr, "detailed"]` whose edit carries `["embed", d, "detailed"]` draws one card; an edit with `["embed", d, "none"]` removes the card the address drew. Two `part` tags, one by the address and one by the id, draw the first |
 | C47 | **A picked project chip** (§13.1). A pick of P from `[` inserts `https://<ship host>/project/<d>` with `["o", d]` and no title; a reader on any app's host resolves it to P (§7.7) |
@@ -3747,10 +3756,11 @@ the marker of the stream it is in:
   whether or not it carries an `a`, which on a `kind:9` is a mention (§6.4) —
   is in the **general stream**, whose marker is the channel uuid;
 - a root whose root-level `a` tag names a file — a `kind:1111` about that
-  file — is in that **file's stream**, whose marker is the file's address. A
+  file, except one §6.4 ignores — is in that **file's stream**, whose marker
+  is the file's address. A
   root with two `a` tags is in both streams, and is unread in each until that
-  file has been read; a root whose `O` names a file is in that file's stream,
-  whose marker is `file:<d>`. For a file named both ways, the marker is the
+  file has been read; a root whose `O` names a file, unless §6.4 ignores it,
+  is in that file's stream, whose marker is `file:<d>`. For a file named both ways, the marker is the
   later of its address key and its `file:<d>` key (§11.6), whichever form the
   root carries;
 - a reply is in its root's stream, under `thread:<root>`.
