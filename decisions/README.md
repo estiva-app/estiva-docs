@@ -124,6 +124,8 @@ heading here.
 - [The server keeps an archived team's list of topics as it is, for every app, and a topic made outside any team has the Company team as its home](an-archived-teams-list-is-kept-by-the-server-and-a-topic-made-outside-a-team-is-the-company-teams.md) — Accepted, 2026-11-02
 - [A space is a team's own mark on a topic it lists, so a move hands the choice to the team it moves to](a-space-is-the-teams-own-mark-on-a-topic-it-lists.md) — Accepted, 2026-11-02
 - [Anyone in the company may join an open team; only its members add someone to it or mark one of its spaces, and the relay checks it](anyone-may-join-an-open-team-and-only-its-members-add-or-mark.md) — Accepted, 2026-11-02
+- [A team is archived one way, by its archived field like every file; the server refuses the groups archived flag on a team](a-team-is-archived-only-by-its-field.md) — Accepted, 2026-11-03
+- [Every server must have a Company team; on one that has none anyway, a topic made outside any team goes to the first team that lists it](every-server-has-a-company-team-and-without-one-the-first-team-to-list-a-topic-keeps-it.md) — Accepted, 2026-11-03
 
 ## Read state
 
@@ -252,6 +254,7 @@ properties and its history.
 - [RFCs are no longer a kind of document: what is still true moves into the Specification and a builder's guide](rfcs-are-retired.md) — Accepted, 2026-10-02
 - [A copy of an app holds one workspace, which the sign-in picks and a company's own address picks for you; a sign-in is good for that one workspace, and a person has one name and picture in all of them](the-sign-in-picks-the-workspace.md) — Accepted, 2026-10-26
 - [A relay too busy to answer says it is busy, at every door; a host it does not know still gets the same answer as before](a-busy-relay-says-it-is-busy.md) — Accepted, 2026-10-27
+- [When the server refuses a change, it says why with a short code every app reads, before its sentence](a-refusal-starts-with-a-reason-code-every-app-reads.md) — Accepted, 2026-11-03
 
 # Research
 

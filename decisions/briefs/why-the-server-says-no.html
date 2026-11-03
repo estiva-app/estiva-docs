@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Why the server says no</title>
+<style>
+:root{--bg:#fbfaf7;--ink:#1d1d1b;--soft:#5d5b55;--box:#ffffff;--line:#c9c5bb;--accent:#2f5d8a;--accent-bg:#e7eef6;--warn:#9a4b16;--warn-bg:#f8ece2;--ok:#2e6b3a;--ok-bg:#e5f1e7}
+@media (prefers-color-scheme:dark){:root{--bg:#171715;--ink:#ecebe6;--soft:#a9a69e;--box:#22221f;--line:#4a4842;--accent:#8db6e0;--accent-bg:#1f2b38;--warn:#e7a571;--warn-bg:#3a2a1e;--ok:#8fcb99;--ok-bg:#1f3123}}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;margin:0}
+main{max-width:760px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:1.6rem;margin:0 0 4px}h2{font-size:1.25rem;margin:40px 0 8px;border-top:1px solid var(--line);padding-top:24px}h3{font-size:1.02rem;margin:22px 0 6px}
+.q{background:var(--accent-bg);border-left:4px solid var(--accent);padding:12px 14px;border-radius:4px;font-weight:600}
+.rec{background:var(--ok-bg);border-left:4px solid var(--ok);padding:12px 14px;border-radius:4px}
+.warn{background:var(--warn-bg);border-left:4px solid var(--warn);padding:10px 14px;border-radius:4px}
+.muted{color:var(--soft);font-size:.92rem}
+table{border-collapse:collapse;width:100%;font-size:.9rem;margin:8px 0}th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}th{background:var(--box)}
+.scroll{overflow-x:auto}
+svg{width:100%;height:auto;display:block;margin:8px 0}
+svg text{font:13px system-ui,sans-serif;fill:var(--ink)}
+svg .b{fill:var(--box);stroke:var(--line);stroke-width:1.5}
+svg .a{stroke:var(--soft);stroke-width:1.5;fill:none;marker-end:url(#h)}
+svg .bad{fill:var(--warn-bg);stroke:var(--warn)}svg .good{fill:var(--ok-bg);stroke:var(--ok)}
+code{font-size:.88em}
+</style>
+</head>
+<body><main>
+<h1>Why the server says no</h1>
+<p class="muted">Two protocol questions found while reviewing “Only you can set your following…” (the moves in Peek, Ship, Leaf and the agent). They are independent: either can be answered without the other. About five minutes.</p>
+
+<h2>1. How an app learns why a change was refused</h2>
+<p class="q">When the server refuses a change, such as moving a topic to another team, should it say why in a short code every app can read, or only in an English sentence?</p>
+
+<h3>Today</h3>
+<p>Katerina moves a topic out of a team that is archived. The server says no with a sentence: “team 31afb7af is archived; its list does not change”. Peek looks for the word “archived” in that sentence and tells her, in Peek’s words, “Nothing was moved: one of the Folders is archived.” Ship, Leaf and the agent do the same, through one shared helper that matches words. The SPEC promises “a reason” but never says which sentences.</p>
+
+<h3>Why it reaches beyond this ticket</h3>
+<p>Every refusal any app explains goes through this: moves today, and later anything the server checks for a person. An outside company that runs its own server cannot know which sentences to send, so our apps tell its people “Nothing was moved. Try again.”, and trying again never works. An outside app has to copy our word list. Some refusals already read wrong in our own apps: a topic that may go only to its home team gets “Try again”, which cannot succeed.</p>
+<p><b>Two-way door.</b> A code can be added beside the sentence. Old apps keep reading the sentence, and nothing stored on the server changes. Undoing it later means apps go back to reading words.</p>
+
+<h3>The picture</h3>
+<svg viewBox="0 0 720 220" role="img"><title>Today: apps match words; option A: apps read a code</title>
+<defs><marker id="h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0L10,5L0,10z" fill="var(--soft)"/></marker></defs>
+<text x="10" y="18" font-weight="600">Today</text>
+<rect class="b" x="10" y="30" width="150" height="60" rx="6"/><text x="22" y="56">Server</text><text x="22" y="76" class="muted">refuses the move</text>
+<path class="a" d="M160 60 H250"/>
+<rect class="b bad" x="250" y="30" width="200" height="60" rx="6"/><text x="262" y="54">“team … is archived;</text><text x="262" y="72">its list does not change”</text>
+<path class="a" d="M450 60 H520"/>
+<rect class="b" x="520" y="30" width="190" height="60" rx="6"/><text x="532" y="54">Each app guesses</text><text x="532" y="72">from the words</text>
+<text x="10" y="128" font-weight="600">Option A</text>
+<rect class="b" x="10" y="140" width="150" height="60" rx="6"/><text x="22" y="166">Any server</text><text x="22" y="186" class="muted">refuses the move</text>
+<path class="a" d="M160 170 H250"/>
+<rect class="b good" x="250" y="140" width="200" height="60" rx="6"/><text x="262" y="164">code: team-archived</text><text x="262" y="182">+ the same sentence</text>
+<path class="a" d="M450 170 H520"/>
+<rect class="b" x="520" y="140" width="190" height="60" rx="6"/><text x="532" y="164">Each app reads the code,</text><text x="532" y="182">says it in its own words</text>
+</svg>
+
+<h3>Options</h3>
+<p><b>A. A short code before the sentence.</b> The SPEC lists a handful of reasons, such as archived, not a member, changed since you looked, not its home team, leaves only by moving. The server puts one in front of its sentence. Katerina sees the same message as today, and a topic that can only go home says so instead of “Try again”. An outside company sends the codes from its own server and gets the right messages in our apps for free. <i>What could go wrong:</i> the list grows with every new rule, and someone has to keep it tidy. An app that meets a code it does not know falls back to “Nothing was moved.”</p>
+<p><b>B. Name the exact sentences in the SPEC.</b> Nothing new on the wire: the English becomes the contract. An outside server must send our sentences word for word. <i>What could go wrong:</i> rewording a sentence for clarity becomes a protocol change, and translating one breaks every app.</p>
+<p><b>C. Leave it (do less).</b> Our apps keep matching words. An outside server gets the generic “Nothing was moved. Try again.” for every refusal. <i>What could go wrong:</i> the wrong advice stays, and each new refusal adds another word to match.</p>
+
+<div class="scroll"><table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td>A. Code</td><td>A fixed reason list, like Nostr’s own prefixes</td><td>The right reason every time</td><td>Conforms by sending codes</td><td>Low: additive</td><td>Relay codes; one helper change in interop</td></tr>
+<tr><td>B. Sentences</td><td>English is the contract</td><td>Same as today</td><td>Must copy our English</td><td>Medium: the wording is frozen</td><td>SPEC text only</td></tr>
+<tr><td>C. Leave</td><td>Unstated</td><td>Wrong advice on some refusals</td><td>Generic messages only</td><td>None</td><td>None</td></tr>
+</table></div>
+
+<h3>How others do it</h3>
+<p class="muted">Nostr itself already does half of this: a refusal starts with a fixed word (<code>invalid:</code>, <code>restricted:</code>, <code>rate-limited:</code>), then free text. Slack’s API answers <code>"error": "channel_not_found"</code>, and Matrix answers <code>errcode: M_FORBIDDEN</code> plus a sentence. Each of them separates a code apps read from words people read.</p>
+
+<p class="rec"><b>Recommendation: A.</b> It is the shape Nostr and every API we would compare with already use. A code is what lets an outside server work with our apps, and it lets each app say the right thing, “this can only go to its home team” included. The sentence stays for people reading logs.</p>
+
+<h2>2. A team that can be archived two ways</h2>
+<p class="q">Should a team have one way of being archived, or keep two that do different things?</p>
+
+<h3>Today</h3>
+<p>When Miky archives a team in Peek or Ship, the app writes the team’s “archived” field, the same way it archives a project or a page. Apps read it and grey the team out, and as of this ticket the server keeps the team’s topics where they are. There is a second way, from Nostr’s groups standard: an “archived” flag on the group’s own settings. When that is set, the server refuses <i>every</i> write in the team, its chat included. Our apps never set it, and only Peek’s conversation list reads it, to hide the channel.</p>
+
+<h3>Why it reaches beyond this ticket</h3>
+<p>An outside company sees two events both called “archived” on a team. One keeps its topics and still lets people talk. The other freezes the whole team, which is the option the accepted record “an archived team’s list is kept by the server” turned down, because whether people can still talk in an archived team waits for the Folders rework. Any Nostr groups client can set the second flag today, and our apps would mostly not show that the team is frozen.</p>
+<p><b>Two-way door.</b> Refusing the groups flag on a team can be lifted later. A team already frozen by it can be unfrozen by its owner.</p>
+
+<svg viewBox="0 0 720 150" role="img"><title>Two archive switches on one team</title>
+<rect class="b" x="10" y="20" width="200" height="50" rx="6"/><text x="22" y="42">Our apps: the team’s</text><text x="22" y="60">“archived” field</text>
+<rect class="b bad" x="10" y="85" width="200" height="50" rx="6"/><text x="22" y="107">Any groups client: the</text><text x="22" y="125">group’s “archived” flag</text>
+<path class="a" d="M210 45 H300"/><path class="a" d="M210 110 H300"/>
+<rect class="b" x="300" y="20" width="410" height="50" rx="6"/><text x="312" y="42">Topics stay put; people can still talk;</text><text x="312" y="60">apps grey the team out</text>
+<rect class="b bad" x="300" y="85" width="410" height="50" rx="6"/><text x="312" y="107">Nothing can be written, chat included;</text><text x="312" y="125">our apps mostly do not show it</text>
+</svg>
+
+<h3>Options</h3>
+<p><b>A. One way: the field.</b> The server refuses the groups flag on a team, as it already does for the Company team, and the SPEC says a team is archived only by its field. <i>What could go wrong:</i> an outside groups client that archives a team gets a refusal and must use the field. Direct messages are not teams and keep their own archive.</p>
+<p><b>B. One meaning, both ways.</b> The server and every app treat either as the same archive: topics kept, chat open. <i>What could go wrong:</i> the groups flag would then mean something weaker than it does in every other Nostr groups server, which is confusing for anyone who knows the standard.</p>
+<p><b>C. Keep both (do less).</b> The SPEC says what each does: the field keeps the topics, the flag freezes everything. <i>What could go wrong:</i> a frozen team looks normal in our apps until someone tries to write.</p>
+
+<div class="scroll"><table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td>A. Field only</td><td>One archive, the same as for every file</td><td>One meaning of archived</td><td>One event to learn; groups clients refused</td><td>Low</td><td>One relay rule, like the Company team’s</td></tr>
+<tr><td>B. Both, one meaning</td><td>Two events, one meaning</td><td>One meaning</td><td>A groups flag weaker than the standard</td><td>Medium</td><td>Relay and all apps read both</td></tr>
+<tr><td>C. Keep both</td><td>Two events, two meanings</td><td>A frozen team can look normal</td><td>Two archives to explain</td><td>None</td><td>SPEC text only</td></tr>
+</table></div>
+
+<p class="rec"><b>Recommendation: A.</b> A team is a file in our protocol, and files are archived by their field. One switch with one meaning is what an outside company can follow. It keeps the call you already made: archiving keeps the topics and leaves talking for the Folders rework.</p>
+
+<h2>Checked</h2>
+<ul>
+<li>Apps read the reason by matching words: interop 0.74.1 <code>readMoveRefusal</code> matches <code>archived</code>, <code>only the team's members|not a channel member</code>, <code>does not list|lists none of|listed by one team</code>, and falls back to a generic reason.</li>
+<li>The home and remove refusals fall to the generic “Try again”: their texts (“a topic on no team's list goes first to its home…”, “a topic leaves a team only by moving…”, from buzz#47) match none of those patterns.</li>
+<li>The SPEC names no refusal sentence for moves. The draft SPEC change in estiva-docs#379 quotes one, <code>invalid: channel is archived</code>, which would be replaced by A.</li>
+<li>The groups “archived” flag freezes every write at the server (ingest answers <code>invalid: channel is archived</code>; buzz#47 notes). The server already refuses it on the Company team (SPEC §3.4).</li>
+<li>Our apps never write the groups flag. Peek reads it only in its conversation list (<code>src/nostr/dms.ts</code>), to hide an archived channel.</li>
+<li><b>Not checked:</b> whether any team on production carries the groups flag today.</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="muted">Ticket TEA-3 (Teams and following). NIP-01 <code>OK</code> message prefixes; NIP-29 <code>kind:9002</code> <code>archived</code> / <code>kind:39000</code>. The field archive is a <code>kind:1851</code> <code>archived</code> on the team’s address (SPEC §3.3, §6.5). Relay: estiva-app/buzz#47. SPEC: estiva-app/estiva-docs#379. Record: an-archived-teams-list-is-kept-by-the-server-and-a-topic-made-outside-a-team-is-the-company-teams (Accepted 2026-11-03). Interop <code>readMoveRefusal</code> (estiva-foundation#191). Security review of docs#379, findings 4 and 5.</p>
+</main></body>
+</html>
