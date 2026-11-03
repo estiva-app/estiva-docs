@@ -4391,9 +4391,9 @@ for `P`. `P` is in since the earliest start among the ways that hold now:
 
 Turning a place up to All starts nothing over. What lights only at All (a
 reply in a conversation `P` is not in) is unread from the time of the
-`follow:<P>` change that chose All, never from before it, so choosing All
-brings back no backlog; what Important lights keeps the start above (Miky,
-2026-11-03).
+`follow:<P>` change that turned the level to All (a later change that keeps
+it at All moves nothing), never from before it, so choosing All brings back
+no backlog; what Important lights keeps the start above (Miky, 2026-11-03).
 
 **What is unread on a place.** A message on place `X` is unread for `P` when
 `P` is in `X`, `P` did not write it, its `created_at` is at or after `P`'s
