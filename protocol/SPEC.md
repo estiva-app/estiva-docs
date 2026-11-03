@@ -288,9 +288,9 @@ produce the same events in the same order.
   `add` without `space` unmarks it, and so does an entry without it in a `set`.
   `space` is the only role. A reader ignores a role it does not know and still
   lists the entry, but the relay refuses a command naming one, or a role after
-  a non-empty third element, rather than drop it. A file is one entry whichever
-  form names it: an `o` of `<d>` and an `a` ending `:<d>` are the same entry, so
-  a command in either form re-marks, unmarks or removes it. The topic itself
+  a non-empty third element, rather than drop it. A file is one entry in
+  either form, as above, so a command naming it by its id or by its full
+  address re-marks, unmarks or removes it. The topic itself
   carries no mark: a space is the team's choice about its own list, so a move
   drops it (above). Who may change a mark is any member of the team, as for
   adding someone: the relay refuses a `kind:1852` that names an entry with a
@@ -304,16 +304,20 @@ produce the same events in the same order.
   team's `kind:30890` lists it; a `move` is never refused for this, since it
   takes the topic off the list it leaves in the same write. An entry the
   team already lists is not refused, so it re-marks and unmarks its own topics
-  as before. **A topic leaves a team only by moving**, or when it is deleted:
-  the relay refuses a `remove` (or a `set` leaving it out) of a topic that is
-  not deleted while no other team lists it. **A topic no team lists has a
-  home** (Miky, 2026-11-02): the team its `h` names, or the Company team (§3.4)
-  when its `h` is not a team (a topic made inside a Ship project, say). The
-  relay refuses an `add` or `set` listing it anywhere else; once listed at
-  home it moves like any other. A reader that finds a topic on two teams' lists, as one listed
-  before the relay refused it can be, draws it
-  in the one whose `kind:1852` `add` naming it (read by `#a` and `#o`) is the
-  newest that a current `kind:30890` still reflects. Other files are unaffected:
+  as before. **A topic leaves a team only by moving, or by being archived or
+  deleted**: the relay refuses a `remove` (or a `set` leaving it out) of a
+  topic that is neither deleted nor archived (its author's newest `archived`
+  change, §6.5) while no other team lists it. **A topic no team lists has a
+  home** (record
+  [an-archived-teams-list-is-kept-by-the-server-and-a-topic-made-outside-a-team-is-the-company-teams](https://github.com/estiva-app/estiva-docs/blob/main/decisions/an-archived-teams-list-is-kept-by-the-server-and-a-topic-made-outside-a-team-is-the-company-teams.md)):
+  the team its `h` names, or the Company team (§3.4) when its `h` is not a
+  team (a topic made inside a Ship project, say). The relay refuses an `add`
+  or `set` listing it anywhere else; once listed at home it moves like any
+  other. A relay with no Company team marked counts every team as such a
+  topic's home, so none is left with nowhere to go. A reader that finds a
+  topic on two teams' lists, as one listed before the relay refused it can
+  be, draws it in the one whose `kind:1852` `add` or `move` naming it (read by
+  `#a` and `#o`) is the newest that a current `kind:30890` still reflects. Other files are unaffected:
   a project or an issue may still be listed in more than one Folder.
 - **Membership** — adding people (`kind:9000`, `9001`), joining and leaving
   (`9021`, `9022`) — is NIP-29's events with this suite's rules, which differ
@@ -331,7 +335,7 @@ produce the same events in the same order.
   `move`, and a topic's one team, its home and an archived team's kept list are
   built in the relay issue of the project *Teams and following*, and the
   Company team's roster (§3.4) in its Company team issue; a relay that
-  predates them does not keep the role and refuses a `from`.
+  predates them does not keep the role and refuses a `move`.
 - **Where the apps stand (2026-10-03).** Shipped code predates parts of this
   section, and each gap has an issue in *Manifests: every app declares its
   actions*: interop has no delete planner and moves a single address, not a
@@ -1364,7 +1368,8 @@ its owners and admins (§3.3).
   comments, a `kind:40003` or `kind:5` on its comments, a `kind:5` taking back
   a reaction on it or on its comments, a new child under it, or a change to
   its list of files (`lists:<d>`, §6.14). Its own Archive and Unarchive, Delete, and a move out of an archived
-  parent stay offered. A reader MUST show such events whatever their
+  parent stay offered, except a topic's move out of an archived team, which
+  the relay refuses (below). A reader MUST show such events whatever their
   `created_at`: an older app, an outside client or an agent can still write
   one. Reading reactions still follows §6.6.
 - **Archived with a file above it, at any depth.** A file is archived with the
@@ -1382,13 +1387,18 @@ its owners and admins (§3.3).
 - **No relay lock, but for a team's list.** Archive is a view folded at read
   time, not an access boundary: a lock would protect nothing, and a reader
   folds any change whenever it was made. The one exception is a team's list
-  (*added 2026-11-03*, Miky, 2026-11-02): **an archived team keeps its
-  topics** until it is unarchived, so the relay refuses any `kind:1852` that
-  changes an archived team's `kind:30890` — an `add`, `remove` or `set` in
-  it, and a `move` into or out of it — with a reason that says the team is
-  archived. The relay reads the team's `archived` from its owners' and
+  (*added 2026-11-03*; record
+  [an-archived-teams-list-is-kept-by-the-server-and-a-topic-made-outside-a-team-is-the-company-teams](https://github.com/estiva-app/estiva-docs/blob/main/decisions/an-archived-teams-list-is-kept-by-the-server-and-a-topic-made-outside-a-team-is-the-company-teams.md)):
+  **an archived team keeps its topics** until it is unarchived, so the relay
+  refuses a `kind:1852` that changes which topics an archived team's
+  `kind:30890` lists or marks — an `add`, `remove` or `set` naming a topic,
+  and a `move` into or out of it — with a reason that says the team is
+  archived. A project, an issue or another file is still listed and unlisted
+  there as before. The relay reads the team's `archived` from its owners' and
   admins' changes (§3.3's archive row), at the gate and again where the
-  command is applied; an empty `archived` lifts the refusal.
+  command is applied; an empty `archived` lifts the refusal. A team archived
+  with NIP-29's `kind:9002` `archived` takes no write at all, so a command in
+  it is refused earlier, with `invalid: channel is archived`.
 - **Not covered yet.** Whether a file counts as archived because every Folder
   listing it is archived, and whether a `kind:9` may be sent in an archived
   Folder, wait for the Folders-as-labels rework; until then each app keeps
@@ -3588,8 +3598,8 @@ staged field, or writes one, also conforms to these.
 | C33 | **The change's stage counts.** A file whose current status change has value `in_progress` and stage `done` counts as done, even though the listing gives `in_progress` the stage `started`. A change whose stage is `paused` counts by the listing's stage. A change with no stage counts as before this rule. A `["stage","title","done"]` on a title change, or a `["stage","priority","done"]` on a status change, is ignored |
 | C34 | **An unknown option is shown.** A file whose current status is `triage` with stage `started`, an id no layer the reader can read lists, shows `triage` as its status and counts as `started`; it is not dropped from a list, a board or a count |
 | C43 | **A level on a place is its person's own** (*added 2026-11-02*, §11.8). A `follow:<P>` with `all` or `important` signed by `P` sets `P`'s level; one signed by anybody else, or with `P` not the signer's lowercase hex, is refused by the relay and ignored by a reader; any other value than `all`, `important` or empty is refused by the relay and sets nothing. `P`'s own `member:<P>`=`false` ends every level and join before it, from any app; a level, join or Add after it puts `P` back in. An Add puts `P` in at Important and never sets a level. A `follow:<P>`'s `p` places `P` on nothing |
-| C44 | **A team's default** (*added 2026-11-02*, §11.8). A member of a team is in its chat and spaces at Important, a follower (by `estiva:teams:v1`) in its spaces, nobody in the topics it leads, and nobody in any place of an archived team by any way, a chosen level included; a place in `off` is not reached. Nothing before the later of the person's join (the earliest `kind:9000`/`9021` since their last leave, or the `kind:9007` for its maker) or follow `since` and the space's marking `add` (the earliest since it was last unmarked) is unread. Important lights a new conversation, a reply in a conversation the person wrote in or is mentioned in, and a mention; All also every reply and the conversations on the files the place lists; a list entry lights nothing |
-| C45 | **A space, a topic's one team, and a move** (*added 2026-11-02*, §3.3, §6.5). A `kind:1852` `add` carrying `["a", <addr>, "", "space"]` (or the `o` form) marks the entry a space, and an `add` without the role unmarks it; a role a reader does not know leaves the entry listed. The relay refuses an `add` or `set` that lists a topic another team's `kind:30890` lists, a `remove` of a live topic no other team lists, and an `add` of a topic no team lists anywhere but its home. A `move` from team A to team B changes both lists in one write; the same move sent again is a duplicate; one from a team that does not list the topic, or into or out of an archived team, is refused and changes neither list. A topic found on two teams' lists is drawn in the one whose `add` naming it is newest. A move's entry keeps the role only when it carries it |
+| C44 | **A team's default** (*added 2026-11-02*, §11.8). A member of a team is in its chat and spaces at Important, a follower (by `estiva:teams:v1`) in its spaces, nobody in the topics it leads, and nobody in any place of an archived team by any way, a chosen level included; a place in `off` is not reached. Nothing before the later of the person's join (the earliest `kind:9000`/`9021` since their last leave, or the `kind:9007` for its maker) or follow `since` and the space's marking `add` or `move` (the earliest since it was last unmarked) is unread. Important lights a new conversation, a reply in a conversation the person wrote in or is mentioned in, and a mention; All also every reply and the conversations on the files the place lists; a list entry lights nothing |
+| C45 | **A space, a topic's one team, and a move** (*added 2026-11-02*, §3.3, §6.5). A `kind:1852` `add` carrying `["a", <addr>, "", "space"]` (or the `o` form) marks the entry a space, and an `add` without the role unmarks it; a role a reader does not know leaves the entry listed. The relay refuses an `add` or `set` that lists a topic another team's `kind:30890` lists, a `remove` of a topic no other team lists unless the topic is archived or deleted, and an `add` of a topic no team lists anywhere but its home. A `move` from team A to team B changes both lists in one write; the same move sent again is a duplicate; one from a team that does not list the topic, or into or out of an archived team, is refused and changes neither list. In an archived team an `add` naming a topic is refused and one naming a project lands. A topic found on two teams' lists is drawn in the one whose `add` or `move` naming it is newest. A move's entry keeps the role only when it carries it |
 
 ### 9.1 Reference checks
 
@@ -4355,7 +4365,7 @@ for `P`. `P` is in since the earliest start among the ways that hold now:
   person, and a later `kind:9000` that changes `P`'s role is not a join), or
   the `kind:9007` for the person who made the team; for a follower, the time
   kept for the team in their private list. The place coming in: for a space,
-  the `created_at` of the earliest `kind:1852` `add` naming it with the `space`
+  the `created_at` of the earliest `kind:1852` `add` or `move` naming it with the `space`
   role since the last one that unmarked or removed it, while the current
   `kind:30890` still marks it (a `kind:30890` keeps no time per entry, and a
   member marking it again moves nothing); for a team's chat, the team's own
