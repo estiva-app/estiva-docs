@@ -1109,7 +1109,9 @@ and the type's `K` from its comment, and its lowercase tags stay `e`,
 `["k", "1111"]` and `p` (the Replies table below). **A comment whose `A` and
 `O` name different files is ignored**, as a change is (§6.2): otherwise it
 would show under one file for a reader asking `#A` and under another for one
-asking `#O`. A mention or a listing carries `o` only, never a `k`: `k` goes
+asking `#O`. A comment with no `A` is read by its `a`, so one whose `a` and
+`O` disagree is ignored too, and an ignored comment is no mention of either
+file. A mention or a listing carries `o` only, never a `k`: `k` goes
 with a top-level comment's `o` as NIP-22's parent kind, and nowhere else.
 
 The pair is offered to Block as a client convention, a fourth thing a comment
