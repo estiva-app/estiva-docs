@@ -40,8 +40,8 @@ our word list.
   looked, not its home team, leaves only by moving.
 - **Apps read the code and say it in their own words.** The sentence stays,
   for people reading logs and for apps that predate the code.
-- **An app that meets a code it does not know** says "Nothing was moved."
-  without guessing.
+- **An app that meets a code it does not know** says only that nothing
+  changed ("Nothing was moved." for a move), without guessing why.
 - The relay's codes, the SPEC's list and the shared helper are built in the
   TEA issue "When the server says no, every app knows why".
 

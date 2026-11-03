@@ -30,8 +30,8 @@ any other topic.
 
 ## Decision
 
-- **A Company team is a firm protocol rule.** Every server has one; the SPEC
-  states it as a requirement, not a default.
+- **A Company team is a firm protocol rule.** Every workspace a server hosts
+  has one; the SPEC states it as a requirement, not a default.
 - **On a server without one anyway, the first team to list a topic made
   outside any team keeps it.** After that it is on one team's list and leaves
   only by moving, as every topic does.

@@ -26,14 +26,15 @@ on a team, with one meaning, the same as for a project or a page.
   down, because whether people can talk in an archived team waits for the
   Folders rework.
 - The server already refuses the flag on the Company team (SPEC §3.4).
-- On 3 Nov, of the 55 team settings QA-1 can read on production, 3 carry the
+- On 3 Nov, of the 55 groups (teams and conversations) QA-1 can read on production, 3 carry the
   flag, all probe throwaways.
 
 ## Decision
 
 - **A team is archived only by its `archived` field.** The server refuses the
   groups `archived` flag on a team, as it already does on the Company team,
-  and the SPEC says so.
+  and the SPEC says so. Clearing the flag still lands, so a team that carries
+  it can be unfrozen.
 - **A direct message is not a team** and keeps its own archive.
 - The refusal is built in the TEA issue "When the server says no, every app
   knows why".
