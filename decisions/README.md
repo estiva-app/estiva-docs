@@ -120,7 +120,8 @@ heading here.
 - [Every workspace has exactly one Company Folder, which the relay marks and keeps for good](every-workspace-has-one-company-folder-the-relay-marks-and-keeps.md) — Accepted, 2026-10-30
 - [Everyone in the company is on the Company team's member list, and the relay keeps them there](everyone-in-the-company-is-on-the-company-teams-list-and-the-relay-keeps-it.md) — Accepted, 2026-11-02
 - [A topic lives in exactly one team, and only a move changes which](a-topic-lives-in-exactly-one-team.md) — Accepted, 2026-11-02
-- [A topic always has a team: a move changes both teams' lists in one action, and a topic on no list can go back only to the team it was created in](a-topic-always-has-a-team-and-moves-in-one-action.md) — Accepted, 2026-11-02
+- [A topic always has a team: a move changes both teams' lists in one action, and a topic on no list can go back only to the team it was created in](a-topic-always-has-a-team-and-moves-in-one-action.md) — Accepted, 2026-11-02; its parts on an archived team's topics and on a topic not created in a team superseded by the one below, 2026-11-02
+- [The server keeps an archived team's list of topics as it is, for every app, and a topic made outside any team has the Company team as its home](an-archived-teams-list-is-kept-by-the-server-and-a-topic-made-outside-a-team-is-the-company-teams.md) — Accepted, 2026-11-02
 - [A space is a team's own mark on a topic it lists, so a move hands the choice to the team it moves to](a-space-is-the-teams-own-mark-on-a-topic-it-lists.md) — Accepted, 2026-11-02
 - [Anyone in the company may join an open team; only its members add someone to it or mark one of its spaces, and the relay checks it](anyone-may-join-an-open-team-and-only-its-members-add-or-mark.md) — Accepted, 2026-11-02
 
