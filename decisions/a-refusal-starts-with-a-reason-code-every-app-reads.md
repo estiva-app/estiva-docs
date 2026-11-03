@@ -39,6 +39,10 @@ our word list.
 - **A refusal carries a short reason code before its sentence.** The SPEC
   lists the codes; the first are: archived, not a member, changed since you
   looked, not its home team, leaves only by moving.
+- **A code never tells the sender more than they can read.** An access
+  refusal comes first, and is the same for a team that does not exist as for
+  one the sender cannot read; a code about a topic's teams answers only for a
+  topic the sender can read.
 - **Apps read the code and say it in their own words.** The sentence stays,
   for people reading logs and for apps that predate the code.
 - **An app that meets a code it does not know** says only that nothing

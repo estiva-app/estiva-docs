@@ -49,7 +49,9 @@ any other topic.
   that has none still keeps every topic on one list.
 - On such a server, who first lists the topic decides its team; on a
   conforming server nothing changes. This brings back "whoever lists it first
-  keeps it", which the record on an archived team's list turned down, only
+  keeps it", which the records on an archived team's list and on a topic
+  always having a team ("Leave it to whichever team lists it first") turned
+  down, only
   where there is no Company team to be the home: the alternative there is a
   topic on no list.
 - Two-way: the fallback reaches only non-conforming servers, and topics it
