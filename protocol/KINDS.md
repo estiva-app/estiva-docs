@@ -31,7 +31,7 @@ nobody held the whole list.
 | Kind | Name | Notes |
 | --- | --- | --- |
 | `5` | Deletion | NIP-09. A *request* — relays may decline. Accepted from the author **or** the author's NIP-OA owner, which no client can evaluate ([SPEC §6.5](SPEC.md)) |
-| `9101` | **Estiva assertion** | A statement *about* something in the channel rather than a message in it. `resolution` is the first and currently only subtype, named by the `t` tag. Estiva-specific |
+| `9101` | **Estiva assertion** | A statement *about* something in the channel rather than a message in it. `resolution` is the first and currently only subtype, named by the `t` tag: it resolves or reopens a thread, `h` its top-level message's Folder, and the newest counts (SPEC §6.4, "Resolving a thread"). Estiva-specific |
 
 ### Issue tracking — written by Estiva Ship
 
@@ -122,6 +122,7 @@ listing never changes who can read a file.
 | `30840` Bare file / `30842` Document | the team it was filed in |
 | `1851` change | the team of the object it changes |
 | `1111` comment / `9` message | the team it was filed in |
+| `9101` assertion | the team of the message it is about (SPEC §6.4, "Resolving a thread") |
 
 **There is no workspace object, deliberately.** Buzz resolves a *community*
 from the request host before a connection is authenticated, so **the relay URL

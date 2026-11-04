@@ -1055,6 +1055,8 @@ tie on everything else **the higher `id` is the later write and wins**. Ship,
 addressable *record* are NIP-01's, where the later `created_at` and then the
 **lower** `id` is the one that stands. From the switch a first record has one
 version (§6.1); a reader that holds two written before it takes NIP-01's.
+An event with no trusted `ts` sorts at its `created_at` × 1000, so it compares
+with a `ts` in milliseconds (*added 2026-11-04*, ONE-2).
 
 - **A field's first value is the first record's**: a base type's root tag
   (§6.1's table, such as `title`; for `description`, a project's
@@ -1346,6 +1348,47 @@ Ship's reply button, writes a flat `kind:1111` since SHI-28 (2026-09-30), so a
 reader does not read a `kind:9` as a comment or a comment's reply, and Ship's
 manifest declares no `emits.alsoRead` (§7.3).
 
+#### Resolving a thread — added 2026-11-04 (ONE-2)
+
+*Decided 2026-10-28 (Miky): anyone who may comment resolves or reopens, and
+the newest counts* (why:
+https://github.com/estiva-app/estiva-docs/blob/main/decisions/anyone-who-may-comment-resolves-or-reopens-a-thread-and-the-newest-counts.md).
+
+A thread is resolved, or reopened, by a `kind:9101` *about* its top-level
+message, never by a change to it. A reopen is another `9101`, not a deletion of
+the resolve before it, so who resolved, who reopened and why stay readable.
+
+| tag | value |
+| --- | --- |
+| `h` | **the team of the message it is about**: the comment's `h`, or the channel's for a `kind:9` |
+| `e` | the first unmarked `e`: the thread's **top-level** message, a `kind:1111` comment or a channel `kind:9` |
+| `t` | `resolution` |
+| `action` | `resolved` or `reopened` |
+| `e` … `support` | optional, `["e", <reply id>, "", "support"]`: the reply in that thread that carried it |
+| `ts` | as §6.2 |
+
+The note, when there is one, is the `content`.
+
+- **Who.** Anyone who may write in the message's team may resolve or reopen
+  its thread. A reader does not weigh one person's `9101` above another's.
+- **Which counts.** The newest, in §6.3's order: `ts` when trusted, then
+  `created_at`, then the higher `id`. A resolve and a reopen in the same
+  second are told apart by `ts`; without one, by `id`.
+- **What a reader ignores.** A `9101` whose `h` is not its target's team,
+  whatever else it says; one whose target is a reply, which is not walked to
+  its root (only a top-level message has a state); and one whose `action` is
+  neither value. A `support` that names an event outside the thread is dropped
+  and the resolve stands.
+- **Where the relay stands.** A relay SHOULD refuse a `9101` filed outside its
+  target's team; a reader ignores one either way.
+- **What a thread offers.** An open thread offers Resolve and a resolved one
+  Reopen, while the reader may write in its team. A thread whose top-level
+  message was deleted, or whose file is archived, offers neither (§6.5).
+
+The fold is shared and normative, unlike a file's projection (§10):
+`@estiva-app/conversation`'s `resolutionOf` is one implementation and C51 its
+check.
+
 ### 6.5 Deletion and archiving
 
 These have genuinely different reach and MUST NOT be offered as two styles of
@@ -1378,8 +1421,8 @@ its owners and admins (§3.3).
   archived, itself or up its parent chain, a writer SHOULD NOT offer a new
   `kind:1111` rooted at it (replies included), a `kind:7` on it or on its
   comments, a `kind:40003` or `kind:5` on its comments, a `kind:5` taking back
-  a reaction on it or on its comments, a new child under it, or a change to
-  its list of files (`lists:<d>`, §6.14). Its own Archive and Unarchive, Delete, and a move out of an archived
+  a reaction on it or on its comments, a `kind:9101` on its comments, a new
+  child under it, or a change to its list of files (`lists:<d>`, §6.14). Its own Archive and Unarchive, Delete, and a move out of an archived
   parent stay offered, except a topic's move into or out of an archived team, which
   the relay refuses (below). A reader MUST show such events whatever their
   `created_at`: an older app, an outside client or an agent can still write
@@ -1464,9 +1507,14 @@ D3, which stands):
   the comment was, under that note, as Peek does. A reader says a comment was
   deleted only when the relay returns a `kind:5` naming it by its author:
   replies whose comment the read did not return may only be outside that read.
-  The thread then takes no new replies and offers no Resolve; each reply's
-  author can still edit or delete their own. On a document, the thread keeps
-  its place from its replies (§13.6).
+  The thread then takes no new replies and offers neither Resolve nor Reopen;
+  each reply's author can still edit or delete their own. It shows the state
+  its last resolve or reopen gave it (§6.4, "Resolving a thread"), and a reader
+  folds every `9101` on it, whatever its time. On a document, the thread keeps
+  its place from its replies (§13.6). A reader therefore holds a thread's
+  top-level message in one of three states: **present**; **deleted**, its
+  author's `kind:5` returned; or **not returned**, when only its replies were
+  read, which is drawn as their thread without saying it was deleted.
 - **It does not remove the changes.** *Added 2026-10-14 (Leaf 1; Miky,
   2026-10-13).* A `kind:5` naming a file's address hides the root, and every
   `kind:1851` aimed at it stays readable to its team — for a bare file, a
@@ -3618,6 +3666,7 @@ staged field, or writes one, also conforms to these.
 | C48 | **A level on a place is its person's own** (*added 2026-11-02*, §11.8). A `follow:<P>` with `all` or `important` signed by `P` sets `P`'s level; one signed by anybody else, or with `P` not the signer's lowercase hex, is refused by the relay and ignored by a reader; any other value than `all`, `important` or empty is refused by the relay and sets nothing. `P`'s own `member:<P>`=`false` ends every level and join before it, from any app; a level, join or Add after it puts `P` back in. An Add puts `P` in at Important and never sets a level. A `follow:<P>`'s `p` places `P` on nothing |
 | C49 | **A team's default** (*added 2026-11-02*, §11.8). A member of a team is in its chat and spaces at Important, a follower (by `estiva:teams:v1`) in its spaces, nobody in the topics it leads, and nobody in any place of an archived team by any way, a chosen level included; a place in `off` is not reached. Nothing before the later of the person's join (the earliest `kind:9000`/`9021` since their last leave, or the `kind:9007` for its maker) or follow `since` and the space's marking `add` or `move` (the earliest since it was last unmarked or removed) is unread. Important lights a new conversation, a reply in a conversation the person wrote in or is mentioned in, and a mention; All also every reply and the conversations on the files the place lists; a list entry lights nothing |
 | C50 | **A space, a topic's one team, and a move** (*added 2026-11-02*, §3.3, §6.5). A `kind:1852` `add` carrying `["a", <addr>, "", "space"]` (or the `o` form) marks the entry a space, and an `add` without the role unmarks it; a role a reader does not know leaves the entry listed. The relay refuses an `add` or `set` that lists a topic another team's `kind:30890` lists, a `remove` of a topic no other team lists unless its author archived it or it is deleted, and an `add` of a topic no team lists anywhere but its home. A `move` from team A to team B changes both lists in one write; the same move sent again is a duplicate; one from a team that does not list the topic, or into or out of an archived team, is refused and changes neither list. In an archived team an `add` naming a topic is refused and one naming a project lands. A topic found on two teams' lists is drawn in the one whose `add` or `move` naming it is newest. A move's entry keeps the role only when it carries it |
+| C51 | **Resolving a thread** (*added 2026-11-04*, §6.4, §6.5). A thread's state is its newest `kind:9101` with `t=resolution` in §6.3's order, whoever wrote it: a resolve and a reopen in the same second fold by `ts`, then the higher `id`. A `9101` whose `h` is not its target's team, one whose target is a reply, and one whose `action` is neither `resolved` nor `reopened` change nothing; a `support` outside the thread is dropped and the resolve stands. A deleted top-level message keeps the state its last `9101` gave it, and its thread offers neither Resolve nor Reopen; a top-level message the read did not return is drawn as its replies' thread, not as deleted |
 
 ### 9.1 Reference checks
 
@@ -3711,10 +3760,15 @@ install. The reasoning behind packaging it — and behind the layer split that
 keeps interpretation out — is recorded in this repository's decision records
 0001 §8 and 0002, which are internal while the protocol settles.
 
-**What is still separate is the part that matters.** How an app folds events into
-current truth is where apps are *supposed* to differ, and the package deliberately
-contains none of it: Ship's `foldFolder`, Peek's `foldResolution` and its
-projection all stay in their apps, and each app keeps its own conformance fixture.
+**What is still separate is the part that matters.** How an app projects a
+team's events into its own screens is where apps are *supposed* to differ, and
+`@estiva-app/protocol` deliberately contains none of it: Ship's `foldFolder` and
+each app's projection stay in their apps. *Amended 2026-11-04 (ONE-2):* the
+**conversation fold is not one of them.** A thread, its replies, a deleted
+top-level message and its resolution read the same in every app and in an
+outside one, so that fold is normative (§6.3–§6.8, "Resolving a thread" in
+§6.4) and shared in `@estiva-app/conversation`; an app that writes its own
+checks it against §9's C10–C16, C20 and C51.
 The test for what belongs in the package is not "both apps need it" — it is
 **"would the relay notice if the two apps disagreed?"**
 
