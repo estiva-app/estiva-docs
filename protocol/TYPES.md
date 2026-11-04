@@ -75,10 +75,10 @@ four stages of [SPEC §7.4](SPEC.md). Ship's defaults:
 | `completed` | Completed | `done` |
 | `cancelled` | Cancelled | `dropped` |
 
-A project is placed by `buzz-channel` and listed in a Folder by that Folder's
-`kind:30890`; one in no other Folder names the workspace's Company Folder
-([SPEC §3.4](SPEC.md)), as does a new one made with no Folder. Its changes carry
-that Folder as their `h`.
+A project is placed by `buzz-channel` and listed in a team by that team's
+`kind:30890`; one in no other team names the workspace's Company team
+([SPEC §3.4](SPEC.md)), as does a new one made with no team. Its changes carry
+that team as their `h`.
 
 ## Why projects and issues are not git's
 
@@ -93,7 +93,7 @@ rejected alternatives):
   everyone working on them, field by field, all their life.
 - **A NIP-34 issue needs a repository.** It names the git repository it is
   about, and is read by whoever reads that repository. Osnova's issues live in
-  a Folder, and the Folder's members are who reads them
+  a team, and the team's members are who reads them
   ([SPEC §3.1](SPEC.md)); most work a company tracks has no repository.
 - **A NIP-MP project is replaced whole, by its author.** A `kind:30621` is
   addressable, so only the person who wrote it can change it, and every change
