@@ -230,7 +230,7 @@ produce the same events in the same order.
 
 - **Delete is for an empty team.** The relay refuses a `kind:9008` while the
   team holds a file by containment or by placement, with a reason naming the
-  count ("folder holds N file(s) … remove them first"), and a consumer shows
+  count ("team holds N file(s) … remove them first"), and a consumer shows
   that reason. An accepted delete still hides **every** event under the `h` —
   the team's conversation, and any comment, change or other app's kind filed
   there — because only the file kinds are counted. **A deleted file counts**
