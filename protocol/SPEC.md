@@ -114,7 +114,7 @@ history; this section is the rule.*
 [a-team-is-the-folder-and-is-called-a-team](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-team-is-the-folder-and-is-called-a-team.md),
 [a-team-has-members-and-followers-and-a-place-is-followed-at-a-level](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-team-has-members-and-followers-and-a-place-is-followed-at-a-level.md),
 [a-team-holds-three-kinds-of-place-and-add-puts-you-in-one](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-team-holds-three-kinds-of-place-and-add-puts-you-in-one.md)).
-**A team is what was called a team**: the same group, id and listing, with
+**A team is what was called a Folder**: the same group, id and listing, with
 nothing moved. Every app, this specification and the `noun` a consumer shows
 (§3.2) renamed it on the same day (TEA-8); code, flags, tool names and the
 `folder:` read-state id (§11.1) keep the old word. A team has:
