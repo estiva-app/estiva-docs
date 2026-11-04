@@ -1,0 +1,321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One Copy, Three Apps</title>
+<style>
+:root {
+  --bg: #fbfaf7; --ink: #1d1d1b; --muted: #5f5d57; --line: #8a877f; --box: #ffffff;
+  --box2: #eef3f8; --warn: #fbeee6; --warn-line: #c0703f; --ok: #e8f3ea; --ok-line: #4c8a5a;
+  --rule: #dedbd3; --accent: #2f5f8a;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #17181a; --ink: #ebe9e4; --muted: #a9a69e; --line: #8d8a83; --box: #222427;
+    --box2: #1f2a35; --warn: #3a2a20; --warn-line: #d98a57; --ok: #1f3024; --ok-line: #6fb07e;
+    --rule: #34363a; --accent: #8db8e0;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 2.2em 0 0.5em; padding-top: 0.6em; border-top: 1px solid var(--rule); }
+h3 { font-size: 1rem; margin: 1.4em 0 0.3em; }
+p, li { margin: 0.4em 0; }
+ul { padding-left: 1.2em; }
+.sub { color: var(--muted); margin: 0 0 1.2em; font-size: 0.95rem; }
+.question { font-size: 1.1rem; font-weight: 600; background: var(--box2); border-left: 4px solid var(--accent); padding: 12px 14px; border-radius: 4px; }
+.door { background: var(--warn); border-left: 4px solid var(--warn-line); padding: 10px 14px; border-radius: 4px; }
+.pick { background: var(--ok); border-left: 4px solid var(--ok-line); padding: 10px 14px; border-radius: 4px; }
+.muted { color: var(--muted); }
+figure { margin: 1.2em 0; }
+figcaption { font-size: 0.9rem; color: var(--muted); margin-top: 6px; }
+.scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.scroll svg { min-width: 600px; width: 100%; height: auto; display: block; }
+svg text { fill: var(--ink); font-size: 13px; font-family: inherit; }
+svg .sm { font-size: 12px; fill: var(--muted); }
+svg .b { font-weight: 600; }
+svg .bx { fill: var(--box); stroke: var(--line); stroke-width: 1.2; }
+svg .relay { fill: var(--box2); stroke: var(--line); stroke-width: 1.2; }
+svg .dev { fill: none; stroke: var(--ink); stroke-width: 1.4; stroke-dasharray: 6 4; }
+svg .risk { fill: var(--warn); stroke: var(--warn-line); stroke-width: 1.2; }
+svg .safe { fill: var(--ok); stroke: var(--ok-line); stroke-width: 1.2; }
+svg .ar { stroke: var(--ink); stroke-width: 1.5; fill: none; }
+svg .ah { fill: var(--ink); }
+.opt { border: 1px solid var(--rule); border-radius: 6px; padding: 4px 14px 10px; margin: 1em 0; background: var(--box); }
+.opt h3 { margin-top: 0.8em; }
+.opt dt { font-weight: 600; margin-top: 0.6em; }
+.opt dd { margin: 0.1em 0 0 0; }
+.tbl { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 0.88rem; }
+th, td { border: 1px solid var(--rule); padding: 6px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box2); }
+code { font-size: 0.86em; background: var(--box2); padding: 0 3px; border-radius: 3px; overflow-wrap: anywhere; }
+.record li { font-size: 0.9rem; }
+</style>
+</head>
+<body>
+<main>
+<h1>One copy on the device, for all three apps</h1>
+<p class="sub">Research for Miky · 4 Nov 2026 · from your comment on the Initiative, on “A full sync engine like Linear’s” under Not in scope. A brainstorm: trade-offs first, nothing to decide yet.</p>
+
+<p class="question">Could Peek, Ship and Leaf keep one shared copy of your workspace on the device, so a file one app already fetched is never fetched again by another? And does it make sense?</p>
+
+<p><strong>Short answer: yes, it is feasible, and it makes sense — but your idea is two ideas, and only one of them stops the download.</strong></p>
+<ul>
+<li><strong>One copy shared by the apps</strong> (the “global” part). This makes the second app <em>show</em> things at once. It is browser plumbing, nothing on the wire.</li>
+<li><strong>Catching up by asking “what changed since I last looked?”</strong> (the “sync engine” part, what Linear does). Only this stops the app from <em>downloading</em> the same data again. It needs the relay to answer that question, which it cannot today.</li>
+</ul>
+<p>With only the first, Peek would draw Ship’s issue instantly from the shared copy and then still ask the relay for it again, because that second ask is how the copy finds out about edits, deletes and lost access.</p>
+
+<h2>Today</h2>
+<ul>
+<li><strong>Three separate homes.</strong> Peek, Ship and Leaf each live on their own address (<code>peek.</code>, <code>ship.</code>, <code>leaf.estiva.app</code>). A browser gives each address its own storage, so no app can read another’s.</li>
+<li><strong>Only Peek keeps a copy.</strong> Since 13 Oct Peek keeps the signed events it has read in the browser and draws from them at once. The copy is already built in the shared package, and the plan has Ship and then Leaf adopt it, <em>each its own copy</em>.</li>
+<li><strong>Peek re-asks every time.</strong> It draws from the copy, then sends the relay the same question again; the answer both refreshes and corrects the copy (an event missing from the answer was deleted, or you lost access). The relay has no “changes since” to offer — that is the sentence on the Initiative page.</li>
+<li><strong>A Ship card in Peek is fetched by Peek itself</strong> from the relay, never from Ship.</li>
+<li><strong>Three sign-ins, three connections.</strong> Each app signs in through Estiva ID separately and opens its own connection to the relay. All three share <em>one</em> allowance per person: 50 requests every 5 seconds. Peek keeps 42 for itself and leaves 8 for everything else you have open.</li>
+</ul>
+
+<figure>
+<div class="scroll">
+<svg viewBox="0 0 720 250" role="img" aria-labelledby="t0">
+<title id="t0">Today: three apps on three addresses, each with its own storage, sign-in and connection to the relay</title>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+<rect class="dev" x="6" y="6" width="450" height="236" rx="10"/>
+<text x="18" y="26" class="sm">Your browser</text>
+<rect class="bx" x="20" y="40" width="130" height="70" rx="8"/><text x="85" y="66" text-anchor="middle" class="b">Peek</text><text x="85" y="86" text-anchor="middle" class="sm">own sign-in</text>
+<rect class="bx" x="165" y="40" width="130" height="70" rx="8"/><text x="230" y="66" text-anchor="middle" class="b">Ship</text><text x="230" y="86" text-anchor="middle" class="sm">own sign-in</text>
+<rect class="bx" x="310" y="40" width="130" height="70" rx="8"/><text x="375" y="66" text-anchor="middle" class="b">Leaf</text><text x="375" y="86" text-anchor="middle" class="sm">own sign-in</text>
+<rect class="safe" x="20" y="150" width="130" height="60" rx="8"/><text x="85" y="176" text-anchor="middle">Peek’s copy</text><text x="85" y="194" text-anchor="middle" class="sm">since 13 Oct</text>
+<rect class="risk" x="165" y="150" width="130" height="60" rx="8"/><text x="230" y="176" text-anchor="middle">no copy yet</text><text x="230" y="194" text-anchor="middle" class="sm">planned: its own</text>
+<rect class="risk" x="310" y="150" width="130" height="60" rx="8"/><text x="375" y="176" text-anchor="middle">no copy yet</text><text x="375" y="194" text-anchor="middle" class="sm">planned: its own</text>
+<line class="ar" x1="85" y1="110" x2="85" y2="148" marker-end="url(#ah)"/>
+<rect class="relay" x="560" y="60" width="150" height="130" rx="8"/><text x="635" y="92" text-anchor="middle" class="b">Relay</text><text x="635" y="114" text-anchor="middle" class="sm">current versions,</text><text x="635" y="130" text-anchor="middle" class="sm">no “changes since”</text><text x="635" y="152" text-anchor="middle" class="sm">50 asks / 5 s</text><text x="635" y="168" text-anchor="middle" class="sm">per person, shared</text>
+<path class="ar" d="M150 60 C 380 0, 480 40, 558 90" marker-end="url(#ah)"/>
+<path class="ar" d="M295 75 C 420 70, 480 90, 558 110" marker-end="url(#ah)"/>
+<path class="ar" d="M440 90 C 500 100, 520 120, 558 130" marker-end="url(#ah)"/>
+<text x="500" y="230" text-anchor="middle" class="sm">three connections, each asks the same things</text>
+</svg>
+</div>
+<figcaption>Today. Ship and Leaf are about to get copies of their own — the moment to decide whether they get one shared one instead.</figcaption>
+</figure>
+
+<h2>Why it reaches beyond this ticket</h2>
+<ul>
+<li><strong>It decides what the next two device projects build.</strong> “Ship opens instantly” and “Leaf opens instantly” each plan a copy of their own. Decided after, the copy is built three times and merged later.</li>
+<li><strong>The shared copy is ours; the catch-up is the protocol’s.</strong> How Estiva’s apps share storage is invisible to an outside company — their apps live on their own addresses and cannot join it. A “what changed since” answer from the relay is the opposite: every client of every company gets it, so it is the part to shape for outsiders.</li>
+<li><strong>Doors.</strong> The copy is a cache: it can be wiped and rebuilt by any release — <em>two-way</em>. Moving the apps to one address changes every link people have pasted — <em>one-way</em> in practice (old links must redirect forever). A catch-up answer on the relay is additive, but once outside clients rely on it it stays.</li>
+</ul>
+
+<h2>Part 1 — how the apps could share one copy</h2>
+<p>A browser shares storage only within one address. There are three ways around that.</p>
+
+<figure>
+<div class="scroll">
+<svg viewBox="0 0 720 230" role="img" aria-labelledby="t1">
+<title id="t1">Option A: all three apps under one address with one copy and one connection. Option B: each app on its own address embeds a hidden shared piece that holds the copy and the connection.</title>
+<defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+<text x="10" y="18" class="b">A · One address</text>
+<rect class="dev" x="6" y="28" width="340" height="190" rx="10"/>
+<text x="16" y="46" class="sm">estiva.app — /peek · /ship · /leaf</text>
+<rect class="bx" x="20" y="60" width="96" height="44" rx="8"/><text x="68" y="87" text-anchor="middle">Peek</text>
+<rect class="bx" x="128" y="60" width="96" height="44" rx="8"/><text x="176" y="87" text-anchor="middle">Ship</text>
+<rect class="bx" x="236" y="60" width="96" height="44" rx="8"/><text x="284" y="87" text-anchor="middle">Leaf</text>
+<rect class="safe" x="60" y="140" width="232" height="56" rx="8"/><text x="176" y="164" text-anchor="middle">one copy · one sign-in</text><text x="176" y="182" text-anchor="middle" class="sm">one connection for all tabs</text>
+<line class="ar" x1="68" y1="104" x2="120" y2="138" marker-end="url(#ah2)"/><line class="ar" x1="176" y1="104" x2="176" y2="138" marker-end="url(#ah2)"/><line class="ar" x1="284" y1="104" x2="232" y2="138" marker-end="url(#ah2)"/>
+<text x="380" y="18" class="b">B · A shared piece inside each app</text>
+<rect class="dev" x="376" y="28" width="338" height="190" rx="10"/>
+<text x="386" y="46" class="sm">apps keep their own addresses</text>
+<rect class="bx" x="390" y="60" width="96" height="44" rx="8"/><text x="438" y="87" text-anchor="middle">Peek</text>
+<rect class="bx" x="498" y="60" width="96" height="44" rx="8"/><text x="546" y="87" text-anchor="middle">Ship</text>
+<rect class="bx" x="606" y="60" width="96" height="44" rx="8"/><text x="654" y="87" text-anchor="middle">Leaf</text>
+<rect class="risk" x="430" y="140" width="232" height="56" rx="8"/><text x="546" y="164" text-anchor="middle">hidden “data.estiva.app” piece</text><text x="546" y="182" text-anchor="middle" class="sm">one copy · one connection — if the browser allows</text>
+<line class="ar" x1="438" y1="104" x2="490" y2="138" marker-end="url(#ah2)"/><line class="ar" x1="546" y1="104" x2="546" y2="138" marker-end="url(#ah2)"/><line class="ar" x1="654" y1="104" x2="602" y2="138" marker-end="url(#ah2)"/>
+</svg>
+</div>
+<figcaption>Green holds in every browser. Orange depends on how each browser treats storage inside an embedded page.</figcaption>
+</figure>
+
+<div class="opt">
+<h3>A · Move the three apps to one address</h3>
+<dl>
+<dt>What you see</dt><dd>Open Ship after Peek and the topics and issues you saw in Peek are already there; one sign-in for all three; a second tab no longer opens another connection.</dd>
+<dt>What an outside company gets</dt><dd>Nothing changes for them.</dd>
+<dt>What could go wrong</dt><dd>Every pasted link to <code>ship.estiva.app/…</code> must redirect forever, including links inside signed messages. A bug in one app can reach all three apps’ stored data (it is your own data either way). One app can no longer be deployed on a separate server without care.</dd>
+</dl>
+</div>
+
+<div class="opt">
+<h3>B · Keep the addresses; share through a hidden piece</h3>
+<dl>
+<dt>What you see</dt><dd>The same as A — where the browser allows it.</dd>
+<dt>What could go wrong</dt><dd>Browsers fence off storage inside embedded pages to stop tracking. <strong>Tested 4 Nov (below): Chrome and Firefox share, Safari’s engine does not.</strong> On an iPhone or a Mac with Safari each app quietly gets its own copy — the same as option C there, never worse. The hidden piece must also refuse any page not ours, or another site could embed it and read your copy.</dd>
+</dl>
+</div>
+
+<div class="opt">
+<h3>C · Do less: each app its own copy (today’s plan)</h3>
+<dl>
+<dt>What you see</dt><dd>Each app is instant on its second open, never on its first. Switching from Ship to Peek shows Peek’s own older copy of the issue and refreshes it.</dd>
+<dt>What could go wrong</dt><dd>Three copies of the same data on one device, three connections spending one allowance — the 8 requests Peek leaves for the others is already a thin margin.</dd>
+</dl>
+</div>
+
+<h3>The test (4 Nov)</h3>
+<p>Two pages on sister addresses (standing in for Peek and Ship) each embed one hidden piece on a third address. The first page’s piece writes a value; the second page’s piece looks for it. A page on an unrelated site is the control: it must <em>not</em> find the value, or the browser isn’t fencing at all. Run in Playwright’s browsers with each browser’s shipping fences switched back on.</p>
+<div class="tbl">
+<table>
+<tr><th>Browser engine</th><th>Second app finds the first app’s copy?</th><th>Unrelated site fenced off?</th><th>What it means for B</th></tr>
+<tr><td>Chrome (and Edge)</td><td>Yes</td><td>Yes</td><td>Works</td></tr>
+<tr><td>Firefox</td><td>Yes</td><td>Yes</td><td>Works</td></tr>
+<tr><td>WebKit (Safari’s engine)</td><td><strong>No</strong> — the copy is kept, but filed under the exact address of the page around it, so Peek’s and Ship’s pieces each get their own</td><td>Yes, for the copy</td><td>Each app its own copy, as today</td></tr>
+</table>
+</div>
+<p class="pick"><strong>Miky, 4 Nov:</strong> Safari falling back to one copy per app is fine. So option A (one address) is not needed for Safari’s sake.</p>
+<p class="muted">WebKit here is Playwright’s Linux build, not the Safari app; it matches the WebKit bug report about sister addresses, but the Safari app on a Mac or iPhone was not run — that needs an Apple device. Safari also offers a “let this piece use its own storage” prompt that was not tried; it would mean asking people to click.</p>
+
+<h2>Part 2 — how a copy catches up</h2>
+<p>This is the part that saves the download, and the part that touches the protocol.</p>
+
+<div class="opt">
+<h3>1 · Re-ask and correct (today)</h3>
+<p>The copy draws first, then asks the relay the whole question again. Simple, and it catches deletes and lost access by absence. It downloads everything on screen again on every open.</p>
+</div>
+<div class="opt">
+<h3>2 · “Changes since my bookmark” — Linear’s way</h3>
+<p>The relay numbers everything in the order it arrives. A copy remembers the last number it saw and asks only for what came after. Downloads only what is new. But a deleted file or a Folder you lost must now be <em>told</em> to the copy, because absence no longer says it — the relay would have to send “this left your view”. A rule our relay invents; an outside company’s relay would have to copy it.</p>
+</div>
+<div class="opt">
+<h3>3 · “Here is what I have, send me the difference” — Nostr’s own way</h3>
+<p>An upstream Nostr standard (negentropy, NIP-77): the copy sends a compact fingerprint of the events it holds for a question; the relay answers with only the ones it is missing and the ones it no longer shows. Deletes and lost access come back as differences, so the honesty of option 1 stays. Common open-source relays already speak it; ours does not yet. Costs a little more work per question than option 2.</p>
+</div>
+
+<p class="pick"><strong>Miky, 4 Nov:</strong> don’t invent the wheel — if NIP-77 is proven and fits our use, use it (option 3).</p>
+
+<h3>Is NIP-77 proven, and does it fit? (checked 4 Nov)</h3>
+<ul>
+<li><strong>Status:</strong> an official Nostr NIP, marked <em>draft, optional</em>. It comes from the author of strfry, one of the most used Nostr relays, which runs it in production, mostly relay-to-relay. The main Rust Nostr library (rust-nostr) speaks it as a client. Proven as a technique; less proven as “every browser app catches up this way”.</li>
+<li><strong>Buzz (our relay and Block’s upstream):</strong> does not do it, and I found no plan for it. Block’s code pulls in the negentropy library only through a client for its LLM mesh feature, not in the relay. Its own apps catch up the way Peek does: ask the history again (at most 500 events per question) and keep a live subscription open. No open issue or PR mentions NIP-77, negentropy or a “changes since” feed. So we would add it to our relay and offer it to Block, like the other proposals.</li>
+<li><strong>Fit, the good:</strong> it answers “what do I have that you no longer show me?” as well as “what am I missing?” — so a deleted file or a Folder you left drops out of the copy, exactly as re-asking does today. It works on the same questions the apps already ask.</li>
+<li><strong>Fit, what to check while building:</strong> (1) the relay must apply who-can-read inside the reconciliation, or it would reveal that private events exist; (2) it tells the copy <em>which</em> events differ, then a second ask fetches them — two round trips, so for a tiny question re-asking may stay cheaper; (3) Buzz caps a history answer at 500 events, and reconciliation must cover the whole set or it can’t tell “gone” from “past the cap”.</li>
+</ul>
+
+<h2>Question 1 — is the copy the person’s, or each app’s?</h2>
+<p>This is about Chrome, Edge and Firefox; in Safari both options look the same (a copy per app). It needs an answer before “Ship opens instantly” builds Ship’s copy.</p>
+
+<figure>
+<div class="scroll">
+<svg viewBox="0 0 720 210" role="img" aria-labelledby="t3">
+<title id="t3">Per app: three copies and three connections. Per person: one hidden piece holds one copy and one connection that all three apps use.</title>
+<defs><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ah" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+<text x="10" y="18" class="b">Each app’s copy</text>
+<rect class="bx" x="10" y="32" width="96" height="40" rx="8"/><text x="58" y="57" text-anchor="middle">Peek</text>
+<rect class="bx" x="118" y="32" width="96" height="40" rx="8"/><text x="166" y="57" text-anchor="middle">Ship</text>
+<rect class="bx" x="226" y="32" width="96" height="40" rx="8"/><text x="274" y="57" text-anchor="middle">Leaf</text>
+<rect class="safe" x="10" y="100" width="96" height="40" rx="8"/><text x="58" y="125" text-anchor="middle" class="sm">copy</text>
+<rect class="safe" x="118" y="100" width="96" height="40" rx="8"/><text x="166" y="125" text-anchor="middle" class="sm">copy</text>
+<rect class="safe" x="226" y="100" width="96" height="40" rx="8"/><text x="274" y="125" text-anchor="middle" class="sm">copy</text>
+<line class="ar" x1="58" y1="72" x2="58" y2="98" marker-end="url(#ah3)"/><line class="ar" x1="166" y1="72" x2="166" y2="98" marker-end="url(#ah3)"/><line class="ar" x1="274" y1="72" x2="274" y2="98" marker-end="url(#ah3)"/>
+<rect class="relay" x="90" y="168" width="150" height="34" rx="8"/><text x="165" y="190" text-anchor="middle">Relay · 3 connections</text>
+<line class="ar" x1="58" y1="140" x2="120" y2="166" marker-end="url(#ah3)"/><line class="ar" x1="166" y1="140" x2="166" y2="166" marker-end="url(#ah3)"/><line class="ar" x1="274" y1="140" x2="212" y2="166" marker-end="url(#ah3)"/>
+<text x="380" y="18" class="b">The person’s copy</text>
+<rect class="bx" x="380" y="32" width="96" height="40" rx="8"/><text x="428" y="57" text-anchor="middle">Peek</text>
+<rect class="bx" x="488" y="32" width="96" height="40" rx="8"/><text x="536" y="57" text-anchor="middle">Ship</text>
+<rect class="bx" x="596" y="32" width="96" height="40" rx="8"/><text x="644" y="57" text-anchor="middle">Leaf</text>
+<rect class="safe" x="420" y="100" width="232" height="40" rx="8"/><text x="536" y="125" text-anchor="middle">hidden piece: one copy, one connection</text>
+<line class="ar" x1="428" y1="72" x2="476" y2="98" marker-end="url(#ah3)"/><line class="ar" x1="536" y1="72" x2="536" y2="98" marker-end="url(#ah3)"/><line class="ar" x1="644" y1="72" x2="596" y2="98" marker-end="url(#ah3)"/>
+<rect class="relay" x="461" y="168" width="150" height="34" rx="8"/><text x="536" y="190" text-anchor="middle">Relay · 1 connection</text>
+<line class="ar" x1="536" y1="140" x2="536" y2="166" marker-end="url(#ah3)"/>
+</svg>
+</div>
+</figure>
+
+<div class="opt">
+<h3>Each app’s copy (today’s plan — do less)</h3>
+<dl>
+<dt>What you see</dt><dd>Each app is instant from its second open. Switch from Ship to Peek and Peek shows <em>its own</em> last copy of the issue, maybe minutes old, then refreshes it. A comment you make in Ship reaches Peek only through the relay.</dd>
+<dt>What could go wrong</dt><dd>Three copies of the same workspace on the device. Three connections share one allowance of 50 requests per 5 seconds; with Ship and Leaf now opening at once too, apps can starve each other and get refused. Each app can be at a different moment in time — Peek says an issue is open while Ship already says done.</dd>
+<dt>Engineering</dt><dd>Simplest. Each app ships alone; a broken release breaks one app.</dd>
+</dl>
+</div>
+
+<div class="opt">
+<h3>The person’s copy, in a hidden shared piece</h3>
+<dl>
+<dt>What you see</dt><dd>Open Ship after Peek and your topics’ issues are already there. A change you make in one app shows in the others at once, without the relay round trip — the “live across apps” goal comes almost for free. All three apps agree on what an issue says.</dd>
+<dt>Also on offer</dt><dd>The piece could hold one sign-in for all three apps — sign in once, not three times. That is a separate decision; it changes what “sign out” means (out of all three).</dd>
+<dt>What could go wrong</dt><dd><strong>One piece, three apps:</strong> a bug in it breaks all three at once, and a change to how it stores things must work with a Peek tab updated this morning and a Ship tab open since yesterday. <strong>Two ways of running:</strong> Safari keeps a copy per app, so both paths must keep working and be tested. <strong>Wiping:</strong> today a different person signing in wipes Peek’s copy; with one copy, that sign-in in any app wipes it for all three. <strong>Speed:</strong> each read crosses from the app into the piece — a few milliseconds; Peek’s Desk shows 13–20 ms after the page today and must stay there. <strong>Safety:</strong> the piece must answer only our three apps, or any website could embed it and read your copy.</dd>
+<dt>Engineering</dt><dd>A new small address to host the piece; the stores already in the shared package move behind it; a versioned way for apps to talk to it.</dd>
+</dl>
+</div>
+
+<p class="pick"><strong>Miky, 4 Nov:</strong> the person’s copy, directionally — “go with your plan”. He added that it saves only part of a first open: Peek mostly holds conversations and the few projects embedded in them, so Ship still fetches the rest (with NIP-77, only the rest). Whether Ship shows the projects it already has while it waits for the others is left to practice: “we will need to see in practice how it works.”</p>
+
+<div class="tbl">
+<table>
+<tr><th></th><th>Protocol shape</th><th>What Miky and Katerina see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td>Each app’s copy</td><td>None</td><td>Instant on second open; apps can disagree for a moment; three sign-ins</td><td>Unaffected</td><td>—</td><td>Lowest; already planned</td></tr>
+<tr><td>The person’s copy</td><td>None</td><td>Second app instant; apps always agree; changes cross apps at once; one sign-in possible</td><td>Unaffected (it is our apps’ plumbing; theirs live elsewhere)</td><td>Low — it is a cache; the piece can be dropped and apps fall back to their own</td><td>Medium: hosting, versioning, two paths for Safari</td></tr>
+</table>
+</div>
+
+<h2>Trade-offs (Part 1 and 2)</h2>
+<div class="tbl">
+<table>
+<tr><th>Option</th><th>Protocol shape</th><th>What Miky and Katerina see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td>A · one address</td><td>None</td><td>Second app instant; one sign-in</td><td>Unaffected</td><td>High — links redirect forever</td><td>Medium: routing, sign-in, redirects</td></tr>
+<tr><td>B · shared piece</td><td>None</td><td>Same as A, but maybe not in Safari</td><td>Unaffected</td><td>Low — drop the piece</td><td>Medium, plus a browser probe first</td></tr>
+<tr><td>C · own copies</td><td>None</td><td>Instant only on an app’s second open</td><td>Unaffected</td><td>None</td><td>Lowest (already planned)</td></tr>
+<tr><td>1 · re-ask</td><td>Today’s</td><td>Same data downloaded each open</td><td>Nothing to build</td><td>—</td><td>None</td></tr>
+<tr><td>2 · changes since</td><td>Our own rule</td><td>Only new data downloads</td><td>Must copy a rule only we have</td><td>Stays once clients use it</td><td>Relay sequence + “left your view” notices</td></tr>
+<tr><td>3 · send the difference</td><td>Upstream standard</td><td>Only new data downloads; deletes still caught</td><td>Already exists in Nostr libraries</td><td>Stays, but it is standard</td><td>Teach our relay NIP-77</td></tr>
+</table>
+</div>
+
+<h2>How others do it</h2>
+<ul>
+<li><strong>Linear</strong> — one app at one address: loads the workspace into the browser once, then follows a numbered stream of changes (option 2). Its server owns every change; ours is an open relay others run.</li>
+<li><strong>Notion</strong> — one address; keeps a database in the browser, and one tab does the work for all tabs so they don’t fight over it.</li>
+<li><strong>Google Workspace</strong> — Docs, Gmail and Drive live on separate addresses and keep separate stores; they never share one. The same wall we have.</li>
+<li><strong>Slack</strong> — one app, so the question never arises.</li>
+</ul>
+
+<h2>Where I lean</h2>
+<div class="pick">
+<p><strong>Yes to the idea, in this shape: one copy per person, not per app, catching up the Nostr way (3).</strong></p>
+<ul>
+<li>The copy should be the person’s, not the app’s, before Ship adopts it — so it is built once. The test says B shares in Chrome, Edge and Firefox and falls back to one copy per app in Safari. So the real choice is: <strong>B</strong> if Safari people getting today’s behaviour is acceptable (no links break), or <strong>A</strong> if Safari must share too — and A deserves its own brief because of the links.</li>
+<li>Question 1: <strong>the person’s copy</strong>. The real gain is less the saved download than the apps agreeing with each other and a change crossing apps at once — the “live across apps” goal. Its risks (one piece for three apps, versioning, two paths) are engineering we control, and it can be undone.</li>
+<li>For catching up, option 3 (decided, if it fits — it does, with the three checks above). It keeps today’s honesty about deletes and lost access, and an outside company gets it from a standard instead of from us — which fits “Nostr for interoperability”.</li>
+<li>So the Not in scope line would change from “a full sync engine like Linear’s” to something like “a Linear-style numbered change stream” — the sync part comes in, the Estiva-only part stays out.</li>
+</ul>
+<p class="muted">Not measured: how much of what Ship downloads Peek would have shown anyway. Before building, the speed kit should measure the overlap on your workspace, so the gain is a number.</p>
+</div>
+
+<h2>Checked</h2>
+<ul>
+<li>Three addresses, each its own server image — Peek, Ship and Leaf deploy files.</li>
+<li>Peek’s copy keeps signed events and re-asks the relay to correct itself; “the relay has no change feed to replay” — shared package, the device copy’s own notes. Ship and Leaf keep no copy today.</li>
+<li>Peek’s Ship and Leaf cards are fetched by Peek from the relay, not from the other apps.</li>
+<li>Separate sign-ins, sessions kept per address; one allowance of 50 requests per 5 s per person, Peek keeping 42 — Peek’s connection code.</li>
+<li>Our relay has no NIP-77 and no numbered changes — searched its code and docs.</li>
+<li>The Accepted record “Peek keeps a plain copy on the device until sign-out” covers Peek only and says nothing on sharing across apps.</li>
+<li>Sharing through an embedded piece across sister addresses: tested 4 Nov in Playwright’s Chrome, Firefox and WebKit, with an unrelated-site control (table in Part 1).</li>
+<li><strong>Not verified:</strong> the Safari app itself on a Mac or iPhone, and Safari’s storage-access prompt. Playwright’s WebKit is the same engine but not the same app.</li>
+</ul>
+
+<h2>For the record</h2>
+<ul class="record">
+<li><code>estiva-foundation/packages/platform/src/event-snapshot.ts</code> (copy engine; lines 31–39 “no change feed”); <code>peek-app/src/nostr/deviceCopy.ts</code>; <code>peek-app/src/nostr/socketFrames.ts</code> (50 frames / 5 s, Peek 42).</li>
+<li><code>peek-app/src/nostr/foreign.ts</code> (<code>resolveObjectAsViewer</code>, <code>resolveObjectFromCopy</code>).</li>
+<li>Record <code>decisions/peek-keeps-a-plain-copy-on-the-device-until-sign-out.md</code> (Accepted).</li>
+<li>Option B = cross-origin iframe + SharedWorker on a <code>data.estiva.app</code> origin, partitioned by top-level site (Chrome, Firefox); WebKit bugs 225297, 231879.</li>
+<li>Option 3 = NIP-77 negentropy; option 2 = relay-assigned sequence (Linear’s <code>lastSyncId</code>).</li>
+</ul>
+</main>
+</body>
+</html>
