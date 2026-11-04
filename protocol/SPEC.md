@@ -67,7 +67,7 @@ the same workspace, in every app.
 
 Objects are **discovered, not indexed**: an app asks the relay for a kind with
 no `#h` filter and lets access control decide what comes back. An object in a
-Folder you are not a member of is simply not in the response.
+team you are not a member of is simply not in the response.
 
 ### When the relay cannot answer
 
@@ -106,7 +106,7 @@ that cut it off.
 
 ## 3. The team
 
-*Rewritten 2026-10-02 (MAN-3). Folders belong to no app: every app gets them
+*Rewritten 2026-10-02 (MAN-3). Teams belong to no app: every app gets them
 from this section, and no app's `kind:31990` declares them. RFC 0.4 §4 is the
 history; this section is the rule.*
 
@@ -114,10 +114,10 @@ history; this section is the rule.*
 [a-team-is-the-folder-and-is-called-a-team](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-team-is-the-folder-and-is-called-a-team.md),
 [a-team-has-members-and-followers-and-a-place-is-followed-at-a-level](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-team-has-members-and-followers-and-a-place-is-followed-at-a-level.md),
 [a-team-holds-three-kinds-of-place-and-add-puts-you-in-one](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-team-holds-three-kinds-of-place-and-add-puts-you-in-one.md)).
-**A team is the Folder**: the same group, id and listing, with nothing moved.
-What this section and the rest of this specification call a Folder is a team,
-and the older word stays in the text until the rename that also changes the
-`noun` a consumer shows (§3.2). A team has:
+**A team is what was called a team**: the same group, id and listing, with
+nothing moved. Every app, this specification and the `noun` a consumer shows
+(§3.2) renamed it on the same day (TEA-8); code, flags, tool names and the
+`folder:` read-state id (§11.1) keep the old word. A team has:
 
 - **members**, the people on its roster (`kind:39002`), who join, leave and are
   added as §3.3 says;
@@ -128,56 +128,56 @@ and the older word stays in the text until the rename that also changes the
   (§3.3); and the **topics it leads**, every other topic it lists. How each is
   followed, and by whom by default, is §11.8's.
 
-The Folder is the single container. It is a NIP-29 group (a `kind:9007`
+The team is the single container. It is a NIP-29 group (a `kind:9007`
 channel) **whose relay keeps a listing for it**: a relay-signed `kind:30890`
-state naming what the Folder holds.
+state naming what the team holds.
 
-- A Folder id MUST be a **lowercase UUID v4**. The relay advertises
+- A team id MUST be a **lowercase UUID v4**. The relay advertises
   `"h_grammar": "uuid-v4-lowercase"` in its NIP-11 document and parses the tag
   with a strict UUID parser. **A malformed id yields no channel rather than an
   error**, surfacing much later as a membership failure — so an app MUST
   validate the id before publishing.
-- Every object event MUST carry the Folder it was filed in, in an `h` tag. An
+- Every object event MUST carry the team it was filed in, in an `h` tag. An
   event cannot change its own `h`.
-- **A group without a `kind:30890` is not a Folder.** DMs, a Ship project's
+- **A group without a `kind:30890` is not a team.** DMs, a Ship project's
   record channel and a legacy Peek topic channel are NIP-29 groups too; they
-  are conversation spaces. A consumer MUST NOT draw one in Folder navigation,
+  are conversation spaces. A consumer MUST NOT draw one in team navigation,
   and MUST NOT run §3.3's operations on one — a command against a group with no
   state emits state listing only what that command named, and everything filed
   there by `h` stops being listed on every surface (peek#192). §7.3's `listed`
   rule still applies to objects filed in such a group.
-- **There is exactly one level.** A Folder MUST NOT be listed in another
-  Folder: a `kind:30890` names files, never a `39000:` address. A writer MUST
+- **There is exactly one level.** A team MUST NOT be listed in another
+  team: a `kind:30890` names files, never a `39000:` address. A writer MUST
   NOT send a `kind:1852` naming one, and a reader that finds one ignores that
-  row and draws the named Folder at the top, as every Folder is.
+  row and draws the named team at the top, as every team is.
 
 ### 3.1 A listing is not access
 
-What a Folder **lists** is its `kind:30890`; who may **read** a file is the
+What a team **lists** is its `kind:30890`; who may **read** a file is the
 membership of the channel its `h` names (RFC 0.4 §4.2, §4.4). The two are
 independent, and a listing never grants, widens or narrows access. A file
-listed in Folder B while its `h` names Folder A is readable by A's members and
+listed in team B while its `h` names team A is readable by A's members and
 by nobody else, wherever it is drawn. A root placed with `buzz-channel` instead
 of `h` (§7.3, a Ship project record) is stored globally and readable by every
-member of the workspace, whichever Folder lists it.
+member of the workspace, whichever team lists it.
 
 **The listing itself is public.** The relay publishes every `kind:30890`
-globally, not under the Folder's `h`, so any member of the workspace can read
-what any Folder lists — the kind, author and `d` of each file, though not the
-file. That is why a Folder command never carries a name (§3.3). Hiding a
-private Folder's listing from non-members is a relay change and a prerequisite
-of private Folders (FOL-10); until it ships, a Folder is not offered as private
+globally, not under the team's `h`, so any member of the workspace can read
+what any team lists — the kind, author and `d` of each file, though not the
+file. That is why a team command never carries a name (§3.3). Hiding a
+private team's listing from non-members is a relay change and a prerequisite
+of private teams (FOL-10); until it ships, a team is not offered as private
 (Miky, 2026-10-03).
 
 So **filing is not an operation, and neither is pairing.** An app that wants its
-object to live beside another app's object creates it in that Folder and lists
-it there (§3.3). Which Folder a thread belongs to is never a question: a thread
-is about what it is anchored at (§6.4), and the Folder it was filed in is only
+object to live beside another app's object creates it in that team and lists
+it there (§3.3). Which team a thread belongs to is never a question: a thread
+is about what it is anchored at (§6.4), and the team it was filed in is only
 where it is stored.
 
-### 3.2 What a Folder is, to a consumer
+### 3.2 What a team is, to a consumer
 
-A Folder is a built-in object, like the bare file (§6.7): owned by no app,
+A team is a built-in object, like the bare file (§6.7): owned by no app,
 described here, and answered by `@estiva-app/interop` before NIP-89 is
 consulted. **A consumer MUST NOT let a `kind:31990` claim `39000`.**
 
@@ -185,16 +185,16 @@ consulted. **A consumer MUST NOT let a `kind:31990` claim `39000`.**
 | --- | --- |
 | address | `39000:<relay pubkey>:<id>` — the channel record |
 | `title` | the `name` of its `kind:39000`, and only that. The relay lets only the channel's owners and admins change it (`kind:9002`), while any member may send a `kind:1852`; so a `name` in the state is never shown (Miky, 2026-10-03) |
-| `subtitle` | the `about` of its `kind:39000` (NIP-29), changed as the name is, by owners and admins with `kind:9002`. It is the Folder's one-liner, a file's summary (§6.12) is not: a reader ignores a `summary` change aimed at a `39000`. A consumer cuts it at 120 characters, as `@estiva-app/interop` does. *Added 2026-10-15* |
-| `noun` | `folder` (§7.9), the protocol's own word as a comment's is (§7.8), so a consumer labels one "Folder" and never by the app that opens it. *Added 2026-10-16*. It becomes `team` with the rename (§3), on the same day in every app; until then a consumer keeps `folder` |
+| `subtitle` | the `about` of its `kind:39000` (NIP-29), changed as the name is, by owners and admins with `kind:9002`. It is the team's one-liner, a file's summary (§6.12) is not: a reader ignores a `summary` change aimed at a `39000`. A consumer cuts it at 120 characters, as `@estiva-app/interop` does. *Added 2026-10-15* |
+| `noun` | `team` (§7.9), the protocol's own word as a comment's is (§7.8), so a consumer labels one "team" and never by the app that opens it. *Added 2026-10-16*, as `folder`; `team` since the rename (§3), made on the same day in every app and in `@estiva-app/interop` 0.82.0 |
 | members | the people its `kind:39002` roster names, with the roles its `kind:39001` gives the owners and admins among them. Anyone who can read the team can read who is in it. Agents are members like anyone. *Added 2026-11-02* |
 | followers | not on the relay as a list: each person keeps the teams they follow in their own private list (§11.8), so a consumer never shows who follows a team. *Added 2026-11-02* |
 | spaces | the list's entries carrying the `space` role (§3.3), in the list's order. Every other topic the list names is one the team leads. Until private teams exist, every space is public. *Added 2026-11-02* |
-| list | the addresses its `kind:30890` names, and the files it names by id in `o` tags (§3.3), in the order it names them, folded with each file's own projection; an address the reader cannot resolve is not drawn, because the count is the disclosure. Never `kind:9` messages: they are the conversation, below. With no `kind:30890` the group has no list, not an empty one. A Folder referenced in a sentence draws its name only, with no list, and its consumer does not read the list for it: reading it costs a Folder page's read (Miky, 2026-10-16) |
-| conversation | `kind:9` messages carrying the Folder's `h` — the Folder's own conversation, the **team's chat**, §6.4's chat, §11.1's general stream. An `a` on one is a mention (§6.4) and does not take it out of the Folder's conversation. Threads and replies follow §6.4. A team's members follow its chat at Important by default; everyone else is told only of a message that names them (§11.8). Until private teams exist, anyone in the company may read and write it, as every Folder's conversation now; only members are told about it |
-| `archived` | the `archived` field of `kind:1851` changes on its address (§6.2), counting only a change carrying the Folder's own `h` whose author the relay lists as the Folder's owner or admin (`kind:39001`) — the same people who may rename it (Miky, 2026-10-03). While a team is archived, nobody is in any of its places by any way, a level someone chose included (§11.8; Miky, 2026-11-02) |
-| open in | the `naddr` `web` template of the generic app declaring the `conversation` aspect (§7.8), as for a bare file; with no such app the Folder still draws, with nowhere to open |
-| actions | built in, declared by this section and by no manifest: `create-file` — §3.3's **place** for a bare file: a `kind:30840` with a `title`, an optional `summary` (§6.12) and this Folder's `h` (§6.7, never `buzz-channel`), then the `kind:1852` `add` (`emits.listed`, §7.3). Its `declaredBy` is `spec:3.2`; another app's manifest declaring a `30840` creation on a Folder is not offered beside it (and no manifest may claim `39000` to offer one as its owner). A consumer offers it only on a `39000` whose relay-signed `kind:30890` it has read — one without state is a conversation space, not a Folder (§7.3) — and only if it may sign `30840` and `1852`, and calls it by the opener's `fileNoun` (§7.8) — Peek's "Create topic" (INT-12, 2026-10-12). It makes a bare file and never a document: an app owning documents (§6.11) leaves it out of its own interface and offers its own creation instead (Miky, 2026-10-14). `start-a-conversation` — §3.3's **start a conversation**: a `kind:9` whose `content` is the message, carrying this Folder's `h` and no `a` naming the `39000` (an `a` is a mention, §6.4). Same `declaredBy`, same gate — a relay-signed `kind:30890` read, and only if the consumer may sign `kind:9` — and a manifest's own creation of a `kind:9` on a Folder is not offered beside it. A Folder holds a conversation; a DM or another conversation space is written to by its app's own composer, not through this action. *Added 2026-10-16; until then Peek's manifest declared it* |
+| list | the addresses its `kind:30890` names, and the files it names by id in `o` tags (§3.3), in the order it names them, folded with each file's own projection; an address the reader cannot resolve is not drawn, because the count is the disclosure. Never `kind:9` messages: they are the conversation, below. With no `kind:30890` the group has no list, not an empty one. A team referenced in a sentence draws its name only, with no list, and its consumer does not read the list for it: reading it costs a team page's read (Miky, 2026-10-16) |
+| conversation | `kind:9` messages carrying the team's `h` — the team's own conversation, its **chat**, §6.4's chat, §11.1's general stream. An `a` on one is a mention (§6.4) and does not take it out of the team's conversation. Threads and replies follow §6.4. A team's members follow its chat at Important by default; everyone else is told only of a message that names them (§11.8). Until private teams exist, anyone in the company may read and write it, as every team's conversation now; only members are told about it |
+| `archived` | the `archived` field of `kind:1851` changes on its address (§6.2), counting only a change carrying the team's own `h` whose author the relay lists as the team's owner or admin (`kind:39001`) — the same people who may rename it (Miky, 2026-10-03). While a team is archived, nobody is in any of its places by any way, a level someone chose included (§11.8; Miky, 2026-11-02) |
+| open in | the `naddr` `web` template of the generic app declaring the `conversation` aspect (§7.8), as for a bare file; with no such app the team still draws, with nowhere to open |
+| actions | built in, declared by this section and by no manifest: `create-file` — §3.3's **place** for a bare file: a `kind:30840` with a `title`, an optional `summary` (§6.12) and this team's `h` (§6.7, never `buzz-channel`), then the `kind:1852` `add` (`emits.listed`, §7.3). Its `declaredBy` is `spec:3.2`; another app's manifest declaring a `30840` creation on a team is not offered beside it (and no manifest may claim `39000` to offer one as its owner). A consumer offers it only on a `39000` whose relay-signed `kind:30890` it has read — one without state is a conversation space, not a team (§7.3) — and only if it may sign `30840` and `1852`, and calls it by the opener's `fileNoun` (§7.8) — Peek's "Create topic" (INT-12, 2026-10-12). It makes a bare file and never a document: an app owning documents (§6.11) leaves it out of its own interface and offers its own creation instead (Miky, 2026-10-14). `start-a-conversation` — §3.3's **start a conversation**: a `kind:9` whose `content` is the message, carrying this team's `h` and no `a` naming the `39000` (an `a` is a mention, §6.4). Same `declaredBy`, same gate — a relay-signed `kind:30890` read, and only if the consumer may sign `kind:9` — and a manifest's own creation of a `kind:9` on a team is not offered beside it. A team holds a conversation; a DM or another conversation space is written to by its app's own composer, not through this action. *Added 2026-10-16; until then Peek's manifest declared it* |
 
 Both the `kind:30890` and the `kind:39000` are signed by the relay. A consumer
 MUST keep either only when its signer is the relay's own key — the
@@ -213,14 +213,14 @@ produce the same events in the same order.
 
 | operation | events, in order | refused when |
 | --- | --- | --- |
-| **create** | `kind:9007` with a new id and its `name`; then `kind:1852` `add` with no addresses and no `name`, so the Folder has state from birth | — |
+| **create** | `kind:9007` with a new id and its `name`; then `kind:1852` `add` with no addresses and no `name`, so the team has state from birth | — |
 | **rename** | `kind:9002` with the new `name`. Nothing else: a `kind:1852` never carries a name | by the relay, to anybody but the channel's owners and admins |
-| **archive** / **restore** | `kind:1851` on the Folder's address, `field` `archived`, `value` `true` (or empty to restore), `h` the Folder itself; `content` MAY carry what the person said about it | by the consumer, to anybody but the Folder's owners and admins; a reader ignores one from anybody else (§3.2). By the relay, an archive of the Company Folder, for good (§3.4) |
-| **delete** | `kind:9008` with the Folder's `h` | by the relay, while the Folder holds a file — a first record (`30840`, `30842`, `30850`, `30851` or `30852`) under its `h`, deleted ones included (§6.5), or anything its listing names — and for good on the Company Folder (§3.4), and to anybody but the channel's owner, the person who owns an owner-role agent in the channel, or an owner or admin of the workspace on the relay's roster |
-| **place** a new file | the file's root, with this Folder's `h` (or the tag its owner's `placement` names, §7.3) — under a parent, the parent's own Folder instead (§6.7); then `kind:1852` `add` naming its address | — |
-| **unlist** a deleted file | the `kind:5`; then `kind:1852` `remove` naming its address, in each Folder whose state names it (§7.3) | by the relay, the `remove` of a team's space from somebody who is not a member of that team: the entry stays listed until a member removes it, and a reader skips it as deleted |
-| **move** a file to another Folder | one `kind:1852` `move` for each Folder that lists the file: `h` the target, `["from", <source>]`, and an entry for the file and for each file nested beneath it (§6.7 Nesting), so a subtree moves whole; never the files a topic lists (§6.14). The file's `h` does not change. A topic's `space` role does not travel: the target's entry carries it only when the person ticks "Keep it a space in <team>", which a consumer offers ticked when the topic was a space and the person may mark the target's spaces. Moving a space out of a team takes its mark off, so a consumer offers it only to a member of the source team | by the consumer, when the target is private and the file's `h` names any other channel (§3.1: the move would look private and not be), and a space's move by somebody who is not a member of its team. By the relay, the whole command, changing neither list: when either Folder holds no listing, the source is the target, the source does not list a topic the command names or lists none of its entries, the mover may not write in the source, the mover takes a space out of the source or marks one in the target without being a member of that team, or the command moves a topic into or out of an archived team (§6.5) |
-| **start a conversation** | `kind:9` with the Folder's `h` (§6.4) | — |
+| **archive** / **restore** | `kind:1851` on the team's address, `field` `archived`, `value` `true` (or empty to restore), `h` the team itself; `content` MAY carry what the person said about it | by the consumer, to anybody but the team's owners and admins; a reader ignores one from anybody else (§3.2). By the relay, an archive of the Company team, for good (§3.4) |
+| **delete** | `kind:9008` with the team's `h` | by the relay, while the team holds a file — a first record (`30840`, `30842`, `30850`, `30851` or `30852`) under its `h`, deleted ones included (§6.5), or anything its listing names — and for good on the Company team (§3.4), and to anybody but the channel's owner, the person who owns an owner-role agent in the channel, or an owner or admin of the workspace on the relay's roster |
+| **place** a new file | the file's root, with this team's `h` (or the tag its owner's `placement` names, §7.3) — under a parent, the parent's own team instead (§6.7); then `kind:1852` `add` naming its address | — |
+| **unlist** a deleted file | the `kind:5`; then `kind:1852` `remove` naming its address, in each team whose state names it (§7.3) | by the relay, the `remove` of a team's space from somebody who is not a member of that team: the entry stays listed until a member removes it, and a reader skips it as deleted |
+| **move** a file to another team | one `kind:1852` `move` for each team that lists the file: `h` the target, `["from", <source>]`, and an entry for the file and for each file nested beneath it (§6.7 Nesting), so a subtree moves whole; never the files a topic lists (§6.14). The file's `h` does not change. A topic's `space` role does not travel: the target's entry carries it only when the person ticks "Keep it a space in <team>", which a consumer offers ticked when the topic was a space and the person may mark the target's spaces. Moving a space out of a team takes its mark off, so a consumer offers it only to a member of the source team | by the consumer, when the target is private and the file's `h` names any other channel (§3.1: the move would look private and not be), and a space's move by somebody who is not a member of its team. By the relay, the whole command, changing neither list: when either team holds no listing, the source is the target, the source does not list a topic the command names or lists none of its entries, the mover may not write in the source, the mover takes a space out of the source or marks one in the target without being a member of that team, or the command moves a topic into or out of an archived team (§6.5) |
+| **start a conversation** | `kind:9` with the team's `h` (§6.4) | — |
 | **join** a team | `kind:9021` with the team's `h`, signed by the person joining | by the relay, on a team that is not open (private teams are a later stage) |
 | **leave** a team | `kind:9022` with the team's `h`, signed by the person leaving | by the relay, on the Company team (§3.4); and NIP-29's own rule for a sole owner |
 | **add** someone to a team | `kind:9000` with the team's `h` and `["p", <pubkey>]` | by the relay, adding someone else, to anybody who is not a member of the team (a person naming only themselves joins, as with `kind:9021`); a `kind:9000` granting or changing a role (owner, admin) to anybody but the team's owners and admins; and any `kind:9000` into a DM or any other group that is not a team — one holding no relay-signed `kind:30890` (Miky, 2026-11-02). Several people in one `kind:9000` are decided one by one, in tag order: a person refused does not refuse the others, the event is answered accepted while anyone in it is added (refused only when nobody is), and the sender learns who was added from the team's `kind:39002` (Miky, 2026-11-03) |
@@ -228,27 +228,27 @@ produce the same events in the same order.
 | **mark** a space, or **unmark** it | `kind:1852` `add` naming the topic with the `space` role (below), or naming it without the role | by the relay, to anybody who is not a member of the team: any `kind:1852` — `add`, `remove` or `set`, a move's included — that gives an entry a role, or changes or removes an entry carrying one |
 | **follow** a team, or stop | no public event: the person's own `estiva:teams:v1` list (§11.8) | — |
 
-- **Delete is for an empty Folder.** The relay refuses a `kind:9008` while the
-  Folder holds a file by containment or by placement, with a reason naming the
+- **Delete is for an empty team.** The relay refuses a `kind:9008` while the
+  team holds a file by containment or by placement, with a reason naming the
   count ("folder holds N file(s) … remove them first"), and a consumer shows
   that reason. An accepted delete still hides **every** event under the `h` —
-  the Folder's conversation, and any comment, change or other app's kind filed
+  the team's conversation, and any comment, change or other app's kind filed
   there — because only the file kinds are counted. **A deleted file counts**
   (*added 2026-10-30*, §6.5): one deleted as a field can be restored, and a
-  Folder delete would hide it for good, which only an admin may do. A project
+  team delete would hide it for good, which only an admin may do. A project
   counts where its listing or its `buzz-channel` puts it. The reason then ends
-  "a deleted file counts until an admin removes it for good". A relay that does not refuse a Folder with files hides
+  "a deleted file counts until an admin removes it for good". A relay that does not refuse a team with files hides
   those too — what happened to the `Folders` Folder on 2026-09-14 — so the
   refusal is a conformance requirement of the relay, not a courtesy. **Archive** is the
-  reversible way to put a Folder away: its state, contents and channel are
+  reversible way to put a team away: its state, contents and channel are
   untouched.
 - **A file can be listed by its id** (*added 2026-10-30*, §6.4). Place,
   unlist and move may name it as `["o", <d>]` in the `kind:1852` where an
   address would be, and the relay-signed `kind:30890` lists it as
   `["o", <d>]`. A move changes only where it is listed, as above; its changes
-  stay in the Folder its first record names (§6.2). Checked on production
-  2026-10-30: a `1852` `add` by `o` listed a project in the QA Folder and in a
-  second Folder, the listing was found by `#o`, and a `remove` by `o` took it
+  stay in the team its first record names (§6.2). Checked on production
+  2026-10-30: a `1852` `add` by `o` listed a project in the QA team and in a
+  second team, the listing was found by `#o`, and a `remove` by `o` took it
   off.
 - **One entry per file, in either form** (*added 2026-11-02*, ALO-4). A file's
   address and its id are one entry: an `add` naming a file already listed in
@@ -265,19 +265,19 @@ produce the same events in the same order.
   entries alike, and draws a file named twice once, at its first entry, only
   when the `a` is that full address; when it cannot tell, it draws both. While an app reading only `a` entries
   remains, an app lists a file by its address; it lists by `o` once every app
-  reading the Folder reads both (for projects, once every app reading
+  reading the team reads both (for projects, once every app reading
   projects reads `o`: §6.4, "Apps move to the pair type by type").
 - **A move is one command** (*changed 2026-11-03*; record
   [a-topic-always-has-a-team-and-moves-in-one-action](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-topic-always-has-a-team-and-moves-in-one-action.md)).
   The relay changes the source's and the target's `kind:30890` in one write,
-  under both Folders' locks, together with the stored `kind:1852`, or stores
+  under both teams' locks, together with the stored `kind:1852`, or stores
   nothing and answers `invalid:` with the reason; a failure never leaves a file
   on neither list or on both. An entry the source does not list and that is
   not a topic (an issue, listed by being inside its project) is only added to
   the target. A move sent again is a `duplicate:`. Only `move` takes a
   `from`, exactly one, and the relay refuses a `from` on any other op. A file
-  listed by several Folders leaves each with its own move, published in order
-  and stopped at the first refusal; the consumer then names the Folders that
+  listed by several teams leaves each with its own move, published in order
+  and stopped at the first refusal; the consumer then names the teams that
   still list it. The reference planners are interop's `planMoveFile` and
   `planMoveFromFolders`. A refusal starts with a short reason code after
   NIP-01's `invalid:` prefix, so a consumer says it in its own words (record
@@ -329,7 +329,7 @@ produce the same events in the same order.
   topic on two teams' lists, as one listed before the relay refused it can
   be, draws it in the one whose `kind:1852` `add` or `move` naming it (read by
   `#a` and `#o`) is the newest that a current `kind:30890` still reflects. Other files are unaffected:
-  a project or an issue may still be listed in more than one Folder.
+  a project or an issue may still be listed in more than one team.
 - **Membership** — adding people (`kind:9000`, `9001`), joining and leaving
   (`9021`, `9022`) — is NIP-29's events with this suite's rules, which differ
   from upstream NIP-29 on purpose (*changed 2026-11-02*; record
@@ -352,30 +352,30 @@ produce the same events in the same order.
   section, and each gap has an issue in *Manifests: every app declares its
   actions*: interop has no delete planner and moves a single address, not a
   subtree, and does not refuse a private move; Peek, Ship and interop still
-  read a Folder listed in a Folder (one on production, under Estiva HQ) and
+  read a team listed in a team (one on production, under Estiva HQ) and
   still show groups with no listing. Until those land, a difference
   from this section is a known gap, not a regression.
 - **The kinds an app signs** to offer all of the above: `9007`, `9002`, `9008`,
   `1852`, `1851`, `9`, and for a team's people `9021`, `9022`, `9000` and
   `9001`. (Unlisting follows a `kind:5`, which is the file's
-  own deletion and not a Folder operation.) Never `30890` or `39000`; those
+  own deletion and not a team operation.) Never `30890` or `39000`; those
   are the relay's. A signing service MAY grant an app fewer, and that app then
   offers fewer operations — it MUST NOT offer one it cannot sign.
 
-### 3.4 The Company Folder
+### 3.4 The Company team
 
 *Added 2026-10-30.* Record
 [every-workspace-has-one-company-folder-the-relay-marks-and-keeps](https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-workspace-has-one-company-folder-the-relay-marks-and-keeps.md).
 
-- **Every workspace has exactly one Company Folder.** The relay marks it as the
+- **Every workspace has exactly one Company team.** The relay marks it as the
   company's in the `kind:39000` metadata it signs, with a bare `["company"]`
   tag beside NIP-29's `["private"]` and `["closed"]`, and makes it when the
-  workspace is set up: an open Folder owned by the workspace's owner, born
-  with its state (`kind:30890`) like any Folder (§3.3). Its name is the
+  workspace is set up: an open team owned by the workspace's owner, born
+  with its state (`kind:30890`) like any team (§3.3). Its name is the
   relay's to choose and its owners' to change (the reference relay names it
   Company). Estiva's is Estiva HQ.
 - **A workspace set up before its relay had the mark** gets one when the relay
-  is upgraded: its operator names an existing open Folder with its state,
+  is upgraded: its operator names an existing open team with its state,
   once, and the mark never moves after that. A relay serving such a workspace
   unmarked does not conform to this section, and an app is never asked to
   handle a workspace without one. (On the reference relay,
@@ -386,17 +386,17 @@ produce the same events in the same order.
   `archived` to anything but empty on its address, as `field`/`value` or as a
   `set`; or a `kind:9002` `archived`), make it private (`kind:9002`
   `visibility` `private`), give it a `ttl`, which would archive it when it ran
-  out, or take the mark off it, with a reason naming the Company Folder.
+  out, or take the mark off it, with a reason naming the Company team.
   Restoring it (an empty `archived`) lands. Every member of the workspace reads
   it (Miky, 2026-10-29).
 - **Only the relay sets the mark.** A client event carrying a `company` tag
-  (a `kind:9007` or `kind:9002`) is refused, so no second Folder can be marked.
+  (a `kind:9007` or `kind:9002`) is refused, so no second team can be marked.
 - **An app finds it by the mark**, never by its name or id, and trusts only the
   mark its own workspace's relay signed (§3.2: the signer is the relay's key
-  from NIP-11). A Folder shared from a partner company's relay never counts as
+  from NIP-11). A team shared from a partner company's relay never counts as
   this workspace's.
-- **What lives there**: a project filed in no other Folder (its `buzz-channel`
-  names the Company Folder, and its changes carry that `h`, §6.2), and the
+- **What lives there**: a project filed in no other team (its `buzz-channel`
+  names the Company team, and its changes carry that `h`, §6.2), and the
   company's statuses (§7.4).
 - **It is the Company team, and everyone in the company is a member**
   (*added 2026-11-02*; record
@@ -411,7 +411,7 @@ produce the same events in the same order.
   it quieter sets it to Not following, as any place (§11.8).
 
 *Built 2026-11-02* (estiva-app/buzz, ticket 84e39a13): the mark, its
-refusals, and a new workspace's Company Folder. A relay that predates it has no
+refusals, and a new workspace's Company team. A relay that predates it has no
 mark to read, and an app on it cannot find one.
 
 ---
@@ -579,7 +579,7 @@ signature per read.
 ### 5.2 Search
 
 A filter's NIP-50 `search` finds objects by the name a person types, so that a
-picker can reach a file in a Folder the client has not loaded (*decided
+picker can reach a file in a team the client has not loaded (*decided
 2026-10-03, CON-33*). A relay SHOULD index:
 
 | Event | What the search matches |
@@ -665,7 +665,7 @@ hit's current title (above) uses the same rule, so it never drops a hit the
 rule finds; it drops one that a relay returned beyond the rule.
 
 Access does not change. A hit is returned only if a plain read would return the
-event, so a title in a Folder the reader cannot read is not found. An object
+event, so a title in a team the reader cannot read is not found. An object
 with no `h` is channel-less, readable and therefore findable by every member of
 the workspace.
 
@@ -693,7 +693,7 @@ An object is a **root event** plus a stream of **change events**.
 
 *Rewritten 2026-10-30.* **A file is its fields** (record
 [a-file-is-its-fields-each-kept-in-order-by-the-relay](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-file-is-its-fields-each-kept-in-order-by-the-relay.md)).
-Its root is its **first record**: its type, its id, its Folder and each field's
+Its root is its **first record**: its type, its id, its team and each field's
 first value, written once. Every later change sets one or more fields, each
 naming the change it follows for that field, and the relay keeps each field's
 changes in one line (§6.2). Different fields never clash. The text is one
@@ -734,7 +734,7 @@ it is a type that will join the base or an app's own:
 | --- | --- |
 | `d` | the file's id, a lowercase UUID |
 | `k` | the file's type, such as `acme.invoice` ([TYPES.md](TYPES.md)); exactly one |
-| `h` | the Folder it is filed in, always; never `buzz-channel` |
+| `h` | the team it is filed in, always; never `buzz-channel` |
 | `set` | `["set", <field>, <value>]`, one per field the creation gives a value, as that field's first value (§6.2) |
 
 `content` is empty: a text given at creation is the `description` field's first
@@ -761,7 +761,7 @@ types to the relay.
 [a-files-id-is-unique-across-every-kind](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-files-id-is-unique-across-every-kind.md)).
 The relay refuses a first record whose `d` another file already holds, by any
 author and under any of the five kinds, deleted ones included, and one whose
-`d` a channel holds (a Folder, a DM or a conversation space); and it refuses a
+`d` a channel holds (a team, a DM or a conversation space); and it refuses a
 new channel whose id a file already holds, deleted ones included. An app that
 is refused makes a new id and tries again without telling the person.
 
@@ -815,7 +815,7 @@ not match the pattern rather than dropping it, and does not number from it.
 The relay does not check keys (*decided 2026-10-13, SHI-4*).
 
 **Two claims on one key or one ref.** A writer can still collide, with a
-project or issue in a Folder it cannot read, or with another client at the same
+project or issue in a team it cannot read, or with another client at the same
 moment. The earlier claim keeps the value: a claim's time is the `created_at`
 of the event that set it (the root's, or the winning `kind:1851`'s), and on a
 tie the lower address keeps it. Only the client that made the later claim moves
@@ -892,7 +892,7 @@ and
 
 **What the relay refuses.** It keeps, per file and per field, the change that
 is current: the newest by §6.3's order of the changes a reader folds, so never
-one filed in another Folder than its file's, one whose `a` and `O` disagree, or
+one filed in another team than its file's, one whose `a` and `O` disagree, or
 a `member:<P>`=`false` not signed by `P` (§11.8). It refuses, with an `OK`
 false whose message starts `conflict:`:
 
@@ -937,33 +937,33 @@ The id the relay accepted is the next `prev`; an app keeps it rather than
 reading a list back for it, which may still answer the change before it for a
 moment.
 
-**The `h` names the target's Folder.** *Added 2026-10-14 (Leaf 1; Miky,
-2026-10-13).* A change's `h` MUST name the Folder its target is filed in: the
+**The `h` names the target's team.** *Added 2026-10-14 (Leaf 1; Miky,
+2026-10-13).* A change's `h` MUST name the team its target is filed in: the
 target root's `h`, or its §7.3 placement tag (`buzz-channel`) where the root
-carries that instead, or the Folder itself when the target is a `kind:39000`
+carries that instead, or the team itself when the target is a `kind:39000`
 (§3.3). **A reader MUST ignore any other change**, including one with no `h` —
-for every field and every kind. A change's Folder is its first `h` tag with a
+for every field and every kind. A change's team is its first `h` tag with a
 value, which is the one the relay checks the signer's membership against; a
 `buzz-channel` on a change, or an empty `["h"]`, names nothing.
 
 The relay checks a change only against its own `h`: the signer must be a member
-of *that* Folder (§3.1). Nothing on the relay ties it to the target's Folder, so
-a member of any Folder can sign a change aimed at a file in a Folder they cannot
+of *that* team (§3.1). Nothing on the relay ties it to the target's team, so
+a member of any team can sign a change aimed at a file in a team they cannot
 read, and the relay accepts it (probed on production 2026-10-13: a
-`description` change to a page, signed with another Folder's `h`, was
-accepted). Without this rule every reader who is in both Folders would fold it
+`description` change to a page, signed with another team's `h`, was
+accepted). Without this rule every reader who is in both teams would fold it
 in — a rename, a move, an archive or a rewritten text from outside. Measured
 before it was written: of 2,790 changes on production whose roots were
-readable, none was in another Folder but two duplicated project changes and
-four Folder archives §3.3 already ignored. One case cannot apply it and folds
-as before: a root that names no Folder at all (a bare file published before
+readable, none was in another team but two duplicated project changes and
+four team archives §3.3 already ignored. One case cannot apply it and folds
+as before: a root that names no team at all (a bare file published before
 its `h` was required, §6.7). A parent's archive is read with its root too
 (§6.5): an ancestor read by address alone is no longer an exception. A reader
 that holds several versions of a root checks against the newest.
 
-**The relay refuses a change filed in another Folder than its file's** from the
-switch (§6.13): its `h` must be the Folder the first record names (its `h`, or
-for a project its `buzz-channel`, which names the Company Folder when the
+**The relay refuses a change filed in another team than its file's** from the
+switch (§6.13): its `h` must be the team the first record names (its `h`, or
+for a project its `buzz-channel`, which names the Company team when the
 project is in no other, §3.4, and the `h` of a project written before §7.3's
 `placement`, §6.1). A reader ignores one either way.
 
@@ -1113,7 +1113,7 @@ middle.
 | `a` tag | on a `kind:9`, the object the thread is about — or, since RIC-11, an address the body names; the rule below tells them apart |
 | uppercase `A`/`E`/`K`/`P` (on a `1111`) | the thread **root** — the object being commented on |
 | lowercase `a`/`e`/`k`/`p` (on a `1111`) | the immediate **parent** — the comment being replied to |
-| `h` tag | the Folder the thread lives in, which is what gates who reads it |
+| `h` tag | the team the thread lives in, which is what gates who reads it |
 | `nostr:naddr…` in the body | the object, as a person types it |
 | `O` / `o` | any file, by its id: `O` the file an event is about, `o` another file it points at — below, with `K` / `k` its type |
 
@@ -1129,13 +1129,13 @@ remain:
   with `["k", <type>]`, as NIP-22's parent equals its root; a reply's lowercase
   tags name the comment it answers, as above.
 - Anything that mentions or lists the file carries `["o", <d>]`: a message
-  beside the link in its text, a Folder's listing (§3.3), a list entry
+  beside the link in its text, a team's listing (§3.3), a list entry
   (§6.14), and block links and cards (§13.6.1–§13.6.2). Who is on the file is
   a change about it, by `O` (§11.8).
 - A reader asks by `#O` for the comments about a file and by `#o` for
   everything that names it, as for any single-letter tag (checked on
   production over `/query` 2026-10-30: a comment found by `#O`, the comment and
-  a message by `#o`, the Folder's listing by `#o`).
+  a message by `#o`, the team's listing by `#o`).
 
 **Changes too** (*added 2026-10-30*; record
 [a-change-is-about-its-file-as-a-comment-is](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-change-is-about-its-file-as-a-comment-is.md)):
@@ -1178,18 +1178,18 @@ A thread belongs to whatever anyone in it referenced, at any point. A thread
 that mentions an object halfway through is from then on about that object, and
 the **whole** thread attaches, not only the message carrying the reference.
 
-**Which Folder a new comment goes into** (*added 2026-10-19*, LTX; *corrected
+**Which team a new comment goes into** (*added 2026-10-19*, LTX; *corrected
 the same day*; record
 [what-belongs-to-a-file-is-stored-with-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/what-belongs-to-a-file-is-stored-with-it.md)).
 The same rule for every kind, and for every app writing it, the file's owner
-or not: a new `kind:1111` on a file takes as `h` the file's own Folder, read
-from its root's `h`, or `buzz-channel` on a record that names its Folder that
-way (§7.3) — never the Folder whose listing it was opened from. A comment
+or not: a new `kind:1111` on a file takes as `h` the file's own team, read
+from its root's `h`, or `buzz-channel` on a record that names its team that
+way (§7.3) — never the team whose listing it was opened from. A comment
 written this way therefore has the file's readers, wherever the file is drawn
 (§3.1). A
 reply copies its comment's `h` (C16). A reader reads a file's conversation by
-its address, whatever Folder each comment was filed in: comments written
-before the correction may sit in a Folder that lists the file.
+its address, whatever team each comment was filed in: comments written
+before the correction may sit in a team that lists the file.
 
 **That rule is only defensible because attachment has two strengths, and an app
 MUST present them separately** (added 2026-08-31):
@@ -1294,7 +1294,7 @@ not a subtle bug.
 | `e` | the id of the thread's **top-level comment**, never of another reply |
 | `k` | that comment's kind, `1111` |
 | `p` | that comment's author |
-| `h` | the same Folder as the comment |
+| `h` | the same team as the comment |
 | `a` | only an address the body names (the rule above), never the object's own |
 | `ts` | as §6.2 |
 
@@ -1352,19 +1352,19 @@ These have genuinely different reach and MUST NOT be offered as two styles of
 the same control.
 
 **Archive** is a change event on an `archived` field. Reversible, attributable,
-and available to anyone in the file's Folder; a Folder's own archive, only to
+and available to anyone in the file's team; a team's own archive, only to
 its owners and admins (§3.3).
 
 *Added 2026-09-30 (FOL-46), as shipped in interop 0.37–0.38, Ship and Peek:*
 
 - **One concept for every kind.** A project, an issue, a topic, a bare file and
-  a Folder are all archived the same way: `archived` set to `true` on the
-  file's address, and an empty value to restore it. A Folder is archived on its
-  channel's address, with `h` the Folder itself (§3.3, and §6.2's `h` rule).
+  a team are all archived the same way: `archived` set to `true` on the
+  file's address, and an empty value to restore it. A team is archived on its
+  channel's address, with `h` the team itself (§3.3, and §6.2's `h` rule).
 - **An archived file hides its subtree, computed when reading.** A project's
-  issues, a file's sub-files and a Folder's contents leave every list with it,
+  issues, a file's sub-files and a team's contents leave every list with it,
   and nothing is written to them, so unarchiving the parent restores exactly
-  what was there. A file another, unarchived Folder also lists stays visible
+  what was there. A file another, unarchived team also lists stays visible
   there. Before archiving, an app SHOULD say what would be hidden, counted.
 - **The resolution is the change's `content`**, optional, and a reader shows it
   first when the archived file is opened. A link still opens an archived file;
@@ -1417,9 +1417,9 @@ its owners and admins (§3.3).
   (2026-11-03):* the reference relay still takes the flag, and then refuses
   every write in that team; the refusal is built in the TEA issue "When the
   server says no, every app knows why".
-- **Not covered yet.** Whether a file counts as archived because every Folder
+- **Not covered yet.** Whether a file counts as archived because every team
   listing it is archived, and whether a `kind:9` may be sent in an archived
-  Folder, wait for the Folders-as-labels rework; until then each app keeps
+  team, wait for the teams-as-labels rework; until then each app keeps
   what it does today.
 
 **Delete is a field** (*rewritten 2026-10-30*; records
@@ -1430,7 +1430,7 @@ D3, which stands):
 
 - **Delete** is a change setting `deleted` to `true`, and **restore** one
   setting it to the empty value, each naming its `prev` like any field, by
-  anyone who may write in the file's Folder — not only its author. The signer
+  anyone who may write in the file's team — not only its author. The signer
   of the delete is who deleted it, shown with it. A deleted file leaves lists
   (§6.13) and keeps its id, its first record and every change, so a restore
   brings it back whole and nothing is written again. It stays readable by its
@@ -1441,7 +1441,7 @@ D3, which stands):
   work". On a type not yet kept in order, a reader still honours a `kind:5`
   as below, and a writer SHOULD write the field.
 - **Only an admin removes a change for good**, for a pasted password: a
-  `kind:9005` from the Folder's owners or admins, or an owner or admin of the
+  `kind:9005` from the team's owners or admins, or an owner or admin of the
   workspace on the relay's roster; the relay refuses one from anybody else, the
   change's own author included. The text is saved whole, so a password is in
   each `description` change after it until it is taken out: the admin first
@@ -1458,7 +1458,7 @@ D3, which stands):
 - It is **author-scoped, and the author is not only the signing pubkey** — see
   the correction below.
 - It removes the **record**, not the work. Children are separate events with
-  their own authors; they remain in the Folder.
+  their own authors; they remain in the team.
 - **A deleted comment's replies stay, under "This comment was deleted."**
   *Added 2026-10-19 (COMM-5; Miky, 2026-10-16).* Every app draws them where
   the comment was, under that note, as Peek does. A reader says a comment was
@@ -1469,7 +1469,7 @@ D3, which stands):
   its place from its replies (§13.6).
 - **It does not remove the changes.** *Added 2026-10-14 (Leaf 1; Miky,
   2026-10-13).* A `kind:5` naming a file's address hides the root, and every
-  `kind:1851` aimed at it stays readable to its Folder — for a bare file, a
+  `kind:1851` aimed at it stays readable to its team — for a bare file, a
   document or an issue, the full text at every save (§6.10). Deleting a file
   therefore does not
   delete what was written in it. A relay hiding the changes to a deleted
@@ -1479,13 +1479,13 @@ D3, which stands):
   2026-10-28 (LED-4; Miky, 2026-10-28).* After the relay accepts the
   `kind:5`, the app that deleted the file MAY write a §6.2 change on `parent`
   for each bare file or document nested directly under it (§6.7), in that
-  file's own Folder. The value is the deleted file's own parent, or `''` for
-  the Folder's top when it had none. Any member may sign these changes (§6.2).
-  "Directly under" is read from the Folder's whole listing, archived files
+  file's own team. The value is the deleted file's own parent, or `''` for
+  the team's top when it had none. Any member may sign these changes (§6.2).
+  "Directly under" is read from the team's whole listing, archived files
   included: files archived with the deleted file come back, live, and are not
   archived on the way. An app that moves them says how many, and where, before
   the delete. An app that only deletes leaves them where every reader already
-  draws a file whose parent is absent: at the Folder's top (§6.7). A file
+  draws a file whose parent is absent: at the team's top (§6.7). A file
   related to the deleted one by another field (an issue's `project`, §7.2) is
   not moved by this rule.
 
@@ -1792,7 +1792,7 @@ writer emits them; a reader finds each by name (§6.1):
 | --- | --- | --- |
 | `d` | REQUIRED | an opaque uuid (RFC 0.4 §4.3), never a slug |
 | `title` | REQUIRED | seeds the `title` field; a rename is a change event |
-| `h` | REQUIRED | the Folder it was filed in (§3). The relay says SHOULD; **this document says MUST**, for the reason the relay already gives for issues — several apps write these, and one forgetting the `h` puts an unreachable object in the shared space that nobody can unpublish |
+| `h` | REQUIRED | the team it was filed in (§3). The relay says SHOULD; **this document says MUST**, for the reason the relay already gives for issues — several apps write these, and one forgetting the `h` puts an unreachable object in the shared space that nobody can unpublish |
 | `a` | at most one | the address of the file this one sits under, of any kind. Seeds the `parent` field; a move is a change event |
 | `summary` | at most one | seeds the `summary` field, its one-line summary (§6.12) |
 
@@ -1804,19 +1804,19 @@ gives it one, never a topic that grows one: a file's type is part of its
 address. Until 2026-10-19 this section gave the bare file a text; none of the
 32 topics on the relay had one when it was taken out.
 
-**Conversation.** `kind:1111` anchored at the file's address, in the Folder
+**Conversation.** `kind:1111` anchored at the file's address, in the team
 §6.4 names (usually the file's own) — the shape an issue's comments already have. Threads are NIP-22
 replies (§6.4). Reactions, edits, deletions and drafts follow §6.5, §6.6 and
-§6.8 unchanged. A Folder's own conversation stays `kind:9` in the
+§6.8 unchanged. A team's own conversation stays `kind:9` in the
 channel (§3.2): chat is talking *in* a room, a comment is talking *about* a file, and
 the line between them is the kind.
 
 **Changes.** `kind:1851` under §6.2, targeted by `a` at the file, in the file's
-own Folder (§6.2's `h` rule). The fields: `title` and `parent`, each seeded by
+own team (§6.2's `h` rule). The fields: `title` and `parent`, each seeded by
 the root tag of the same name and overridden by the change stream — the way an
 issue's `project` field works; `summary`, seeded by its root tag (§6.12);
 `archived` (§6.5); `member:<p>` (§11.8); and `lists:<d>`, the topic's list of
-files from any Folder (§6.14). A consumer MUST read `parent` before the `a`
+files from any team (§6.14). A consumer MUST read `parent` before the `a`
 tag. There is no `description`: a reader ignores a `description` change aimed
 at a `30840`.
 
@@ -1846,34 +1846,34 @@ an app owns names its own parent this way when its list declares `anyParent`
 (§7.2), as the document's does (§6.11); the bare file's built-in projection
 behaves as if it declared it.
 Nesting organises and never grants access (§3.1): a bare file's readers are
-its Folder's, at any depth.
+its team's, at any depth.
 
 *Added 2026-09-23 (FOL-4):*
 
-- **Same Folder.** A sub-file's `h` is its parent's: a consumer creating a
-  file under any file MUST give it its parent's own Folder (§6.4's rule: the
-  root's `h`, or `buzz-channel`), never the Folder whose listing it was offered
+- **Same team.** A sub-file's `h` is its parent's: a consumer creating a
+  file under any file MUST give it its parent's own team (§6.4's rule: the
+  root's `h`, or `buzz-channel`), never the team whose listing it was offered
   from (*corrected 2026-10-19*, record
   [what-belongs-to-a-file-is-stored-with-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/what-belongs-to-a-file-is-stored-with-it.md)).
   A move changes `parent` and never `h`, so a consumer MUST offer as targets
-  only files in the same Folder's listing whose own Folder is the moving
+  only files in the same team's listing whose own team is the moving
   file's. There is therefore no permission question
-  at any depth, and nothing to check. Moving a file to another *Folder* is
+  at any depth, and nothing to check. Moving a file to another *team* is
   §3.3's move, and takes its subtree with it.
 - **A move** is a `parent` change whose `value` is the new parent's address, or
-  empty for the top of the Folder. An empty value is a move, not an absence: a
+  empty for the top of the team. An empty value is a move, not an absence: a
   consumer MUST NOT fall back to the root `a` tag when the change stream holds
   one. The bare file's projection declares it as the `move` action.
-- **Read nesting from the Folder's listing, not from a tag query.** A relay
+- **Read nesting from the team's listing, not from a tag query.** A relay
   indexes a change's `a` (the file moved) and not its `value` (where to), so
   `#a: [X]` answers "what was *created* under X" — it still returns what has
   moved away and never what has moved in. The listing folds every change
   against every file it holds, so it is the one read that answers "what is under
   X". It also makes a breadcrumb free: every ancestor of a file is in the same
-  Folder, so the chain is walked in memory rather than one request per level. A
-  parent absent from the listing is in another Folder or unreadable, and is not
+  team, so the chain is walked in memory rather than one request per level. A
+  parent absent from the listing is in another team or unreadable, and is not
   drawn — not even as "unavailable", because the count is the disclosure (the
-  rule a Folder listing already follows); the file is drawn at the top.
+  rule a team listing already follows); the file is drawn at the top.
 - **Cycles.** Nothing on the wire can stop A naming B and B naming A. A reader
   MUST still draw every file in the listing, so a file on a cycle is drawn at
   the top with its parent link ignored; a file merely under a cycle keeps its
@@ -1890,7 +1890,7 @@ its Folder's, at any depth.
 
 **No migration.** An existing Peek topic is a channel and stays one: a
 conversation space (§3), its `kind:9` messages that space's conversation. New
-topics are bare files inside a Folder. Both shapes coexist permanently in every
+topics are bare files inside a team. Both shapes coexist permanently in every
 consumer, which is the same rule §6.4 already states for comments.
 
 ### 6.8 Edits
@@ -1990,7 +1990,7 @@ repair a non-replaceable message in place is the one that already targets it.
   ([early-shapes-are-migrated-or-deleted](../decisions/early-shapes-are-migrated-or-deleted.md));
   nothing marks the old meaning on the wire.
 - Taking a file off only hides it: the message and every earlier edit stay on
-  the relay, and so does the file, readable to the Folder.
+  the relay, and so does the file, readable to the team.
 
 **What a reader shows.** An app that renders an edited message MUST show the
 current text and MUST mark it as edited. The mark is about the **body**. An
@@ -2064,12 +2064,12 @@ text (§6.7, 2026-10-19).
 The owning app, and the document app (§7.8) wherever the owner shares the text
 by declaring a `describe` action (§7.3's sharing test). An owner that does not
 declare one keeps its text to itself in every conforming app. The sharing is
-advisory, not access: the rule below lets any Folder member write the text
+advisory, not access: the rule below lets any team member write the text
 through any app that signs `1851`, and a reader folds every such change.
 
-Anyone who may write in the file's Folder changes it with a `kind:1851` whose
+Anyone who may write in the file's team changes it with a `kind:1851` whose
 tags are, in order: `a` (the file), `["field", "description"]`, `value` (the
-whole §13.3 document), `h` (the file's own Folder, §6.2 — never the Folder an
+whole §13.3 document), `h` (the file's own team, §6.2 — never the team an
 app opened it from), `["content-format", "estiva-blocks-1"]`, `ts`, `prev`
 (the text change it follows, §6.2), then one `imeta` per attachment block
 (§13.4); `O` goes after `a` as §6.2 orders it. A value written before block documents
@@ -2118,7 +2118,7 @@ existing subsections for the reason §7.5 gives; it belongs beside §6.7.*
 file's shape and none of its ownerlessness: an app claims the kind with a
 `kind:31990` `k` tag, as Ship claims `30850` and `30851`, and that app decides
 how it is drawn, what it is called and where it opens. Owning the kind grants
-no write: anyone in the document's Folder may change it through any app that
+no write: anyone in the document's team may change it through any app that
 signs `1851` (§6.10). Leaf is the first owner, with protocol 0.34.0's
 `buildDocument` and interop 0.56.0 as the reference. The kind is not Leaf's:
 any app MAY claim it the same way.
@@ -2153,19 +2153,19 @@ writer emits them; a reader finds each by name (§6.1):
 | --- | --- | --- |
 | `d` | REQUIRED | an opaque uuid (RFC 0.4 §4.3), never a slug |
 | `title` | REQUIRED | seeds the `title` field; a rename is a change event |
-| `h` | REQUIRED | the Folder it is filed in (§3). MUST, and the relay refuses a `30842` without one at ingest ([KINDS §4](KINDS.md)) |
+| `h` | REQUIRED | the team it is filed in (§3). MUST, and the relay refuses a `30842` without one at ingest ([KINDS §4](KINDS.md)) |
 | `a` | at most one | the address of the file this one sits under, of any kind. Seeds the `parent` field; a move is a change event |
 | `summary` | at most one | seeds the `summary` field, its one-line summary (§6.12) |
 
 `content` is a §13.3 block document, or empty: the first version of the text,
 which the `description` fold overrides (§6.10).
 
-**Conversation.** `kind:1111` anchored at the document's address, in the Folder
+**Conversation.** `kind:1111` anchored at the document's address, in the team
 §6.4 names, as on a bare file. Deletions, reactions and edits follow §6.5,
 §6.6 and §6.8. A comment MAY anchor to one block of the text (§13.6),
 unchanged: the block is looked up in the current `description` fold.
 
-**Changes.** `kind:1851` under §6.2, in the document's own Folder. The fields:
+**Changes.** `kind:1851` under §6.2, in the document's own team. The fields:
 `title` and `parent`, each seeded by the root tag of the same name;
 `description`, the text (§6.10); `summary` (§6.12); `archived` (§6.5); and
 `member:<p>` (§11.8). They are the bare file's (§6.7) plus `description`, which
@@ -2198,14 +2198,14 @@ that manifest's `web` template — "Open in Leaf". §7.8's opener and its
 **Nesting.** A document may sit under a file of any kind, by its `a` tag and
 its `parent` field, as a bare file does; a bare file or another document may
 sit under it. Its owner says so with `anyParent` (§7.2). Every rule under
-§6.7's Nesting — same Folder, the move, reading from the Folder's listing,
+§6.7's Nesting — same team, the move, reading from the team's listing,
 cycles, depth — applies unchanged.
 
 **Placement.** A document is created as any listed file is (§3.3 **place**):
-its root with the Folder's `h` (under a parent, the parent's own Folder,
-§6.7), then the Folder's `kind:1852` `add` naming its address. §3.2's built-in `create-file` makes a bare file, not a document; an
+its root with the team's `h` (under a parent, the parent's own team,
+§6.7), then the team's `kind:1852` `add` naming its address. §3.2's built-in `create-file` makes a bare file, not a document; an
 app owning documents leaves it out of its own interface and offers its own
-creation. A Folder holding a document cannot be deleted (§3.3).
+creation. A team holding a document cannot be deleted (§3.3).
 
 ### 6.12 A file's summary
 
@@ -2224,13 +2224,13 @@ NIP-99's.
 - **The seed.** A root MAY carry `["summary", <text>]`, which seeds the
   `summary` field as the `title` tag seeds `title` (§6.1). The reference
   writers put it last; a reader finds it by name.
-- **The change.** Anyone who may write in the file's Folder changes it with a
+- **The change.** Anyone who may write in the file's team changes it with a
   `kind:1851` whose tags are, in order: `a` (the file), `["field", "summary"]`,
-  `value`, `h`, `ts` (§6.2). The `h` is the Folder the root names — its `h`,
+  `value`, `h`, `ts` (§6.2). The `h` is the team the root names — its `h`,
   or a project's `buzz-channel` value, written as `h`; never a `buzz-channel`
-  tag on the change. A reader ignores one in any other Folder (§6.2), and,
+  tag on the change. A reader ignores one in any other team (§6.2), and,
   unlike §6.2's older fields, **also one it cannot check**: a change aimed at a
-  root that names no Folder, or at a root the reader does not hold. No summary
+  root that names no team, or at a root the reader does not hold. No summary
   change predates this rule, so neither of §6.2's two exceptions applies.
 - **Last write wins** (§6.3). The author changes it this way too, never by
   republishing the root: a republished seed loses to any older change, as
@@ -2248,11 +2248,11 @@ NIP-99's.
   MUST NOT rely on it.
 - **A project's seed is readable workspace-wide.** A `30850` placed by
   `buzz-channel` (§7.3) is stored for the whole workspace, so the summary it
-  was created with is read by people outside its Folder, and goes stale for
+  was created with is read by people outside its team, and goes stale for
   them after a change they cannot read — as a project's name already does
   (decided by Miky 2026-10-15). Who may read a project's record is a question
   of its own, not settled here.
-- **Not a Folder's.** A Folder's one-liner is the `about` of its `kind:39000`
+- **Not a team's.** A team's one-liner is the `about` of its `kind:39000`
   (§3.2). A reader ignores a `summary` change aimed at a `39000`.
 - **Drawn as `subtitle`.** Every file kind's projection draws its summary in
   the `subtitle` slot, by default and without its owner declaring it (§7.2).
@@ -2301,13 +2301,13 @@ field of that file, the current change (§6.2: the newest a reader folds),
 - **Who is on a file** (`member:<P>`) is read as §11.8 says, by `#O`, not from
   this read.
 
-**How files are picked.** A Folder's issues, documents and topics by `#h`, and
+**How files are picked.** A team's issues, documents and topics by `#h`, and
 a named type's by `"kinds": [30852]` with `#k` (§6.1). Projects are stored
 workspace-wide (§3.1) and placed by `buzz-channel`, which no filter can ask
-for, so a Folder's projects are the ones its `kind:30890` lists, asked for by
+for, so a team's projects are the ones its `kind:30890` lists, asked for by
 `#d`, and those whose `buzz-channel` names it, read from
-`{"fields": "newest", "kinds": [30850]}`; a project in no other Folder names
-the Company Folder (§3.4).
+`{"fields": "newest", "kinds": [30850]}`; a project in no other team names
+the Company team (§3.4).
 
 **Opening a file reads its current text too** (*added 2026-11-02*, record
 [opening-a-file-reads-its-current-text-not-its-history](https://github.com/estiva-app/estiva-docs/blob/main/decisions/opening-a-file-reads-its-current-text-not-its-history.md)).
@@ -2362,7 +2362,7 @@ the same, at the old cost.
   removed change are never found. Removing a pasted password follows §6.5:
   once the text is saved without it, nothing finds it. A value is "current"
   only as §6.2's fold takes it: from a change whose `h` is the file's home, so
-  a change filed in another Folder adds no words.
+  a change filed in another team adds no words.
 - **Only for readers of the file's home**: its first record's `h`, else its
   `buzz-channel`. That is narrower than "a plain read would return it", since a
   project stored workspace-wide is readable by everyone while its text is not.
@@ -2408,7 +2408,7 @@ the same, at the old cost.
 
 `#h` keeps its meaning above, and `#d` narrows the search to the files named.
 A search cannot be narrowed to the projects whose `buzz-channel` names a
-Folder, since no filter asks for `buzz-channel`.
+team, since no filter asks for `buzz-channel`.
 
 **NIP-11.** A relay whose `/query` answers `"fields": "newest"` advertises it
 on its own key, whether or not it keeps any type in order (*added 2026-11-02*,
@@ -2432,7 +2432,7 @@ A relay that keeps files in order advertises
 
 `files` is the switch and only the switch: it says what the relay refuses,
 never whether the list read exists. From the moment it does — **the switch** — it writes no first record twice
-(§6.1), refuses a change filed in another Folder than its file's, and one whose
+(§6.1), refuses a change filed in another team than its file's, and one whose
 `a` and `O` disagree. A change whose `prev` is present and not its field's
 current change is refused before the switch too, on every type (§6.2). A type in `requires_prev`, and every `30852` type, is
 **kept in order**: a change with no `prev` is refused (a `member:<P>` change
@@ -2469,8 +2469,8 @@ no app writes `set`. Projects are the first type kept in order.
 
 *Added 2026-10-30*; record
 [a-topic-keeps-its-own-list-of-files](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-topic-keeps-its-own-list-of-files.md).
-A file may keep a list of other files from any Folder, one entry per file,
-naming each by its id. Each listed file stays in its own Folder and its own
+A file may keep a list of other files from any team, one entry per file,
+naming each by its id. Each listed file stays in its own team and its own
 tree, and one file may be on many lists. A topic (`kind:30840`, §6.7) is the
 reference: Estiva's apps read only topics' lists (Miky, 2026-10-30). Any other
 type may carry one under the same rules, an outside company's own type
@@ -2485,7 +2485,7 @@ whoever adds or removes the listed file, with its tags in this order:
 | `O` | the topic's `d`: the file the change is about (§6.2) |
 | `field` | `lists:<d>`, where `<d>` is the listed file's id |
 | `value` | `true` lists the file; `false` takes it off |
-| `h` | the topic's Folder (§6.2's `h` rule) |
+| `h` | the topic's team (§6.2's `h` rule) |
 | `ts` | §6.2 |
 | `o` | `<d>` again: the file the change points at (§6.4) |
 
@@ -2512,13 +2512,13 @@ A reader skips a change, and folds nothing from it, when:
 - `<d>` is the list's own `d`: a file is not on its own list;
 - it fails §6.2's `h` rule against the list's root, or that root is deleted
   (§6.5, a `kind:5` today) or not one the reader can read. A list whose root
-  names no Folder takes no entry: §6.2's exception for such roots does not
+  names no team takes no entry: §6.2's exception for such roots does not
   apply.
 
-The Folder check comes before the fold: an entry filed in another Folder is
+The team check comes before the fold: an entry filed in another team is
 never the newest, so it cannot hide the entry before it.
 
-An entry is read by everyone who reads the topic's Folder, as a Folder's own
+An entry is read by everyone who reads the topic's team, as a team's own
 listing is (§3.2): it tells them the listed id, who listed it and when,
 whether or not they can read the file.
 
@@ -2530,7 +2530,7 @@ whether or not they can read the file.
   that only lists it.
 - **A listed id resolves** by `#d` over the file kinds the reader knows
   (`30840`, `30842`, `30850` and `30851` for Estiva's apps, and any type whose
-  manifest it read, §7), never a bare `#d`: a Folder's `kind:39000` shares its
+  manifest it read, §7), never a bare `#d`: a team's `kind:39000` shares its
   uuid (§11.1), and an id held only by one resolves to nothing. An id that no
   file the reader can read holds, or that two files hold (record
   [a-files-id-is-unique-across-every-kind](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-files-id-is-unique-across-every-kind.md)),
@@ -2545,16 +2545,16 @@ whether or not they can read the file.
   design says.
 
 **A topic is a flat lens.** Its files are its list, wherever each sits in its
-Folder's tree and however deep. A file nested under the topic by `parent`
+team's tree and however deep. A file nested under the topic by `parent`
 (§6.7 Nesting) is on the list only once it is listed. Nesting stays in the
 tree.
 
 **A listing grants nothing and moves nothing.** Who reads the listed file is
-its own Folder's rule (§3.1). A listing is not:
+its own team's rule (§3.1). A listing is not:
 
-- **a Folder's listing.** The listing §3.3 counts, when the relay refuses to
-  delete a Folder that holds a file, is the Folder's `kind:30890`; an entry
-  filed in a Folder adds nothing to it. A §3.3 move carries the files nested
+- **a team's listing.** The listing §3.3 counts, when the relay refuses to
+  delete a team that holds a file, is the team's `kind:30890`; an entry
+  filed in a team adds nothing to it. A §3.3 move carries the files nested
   under the moved file, never the files it lists.
 - **a parent.** The §6.5 archive chain never walks a list.
 - **a membership.** An entry carries no `p` and is not a message in a stream,
@@ -2564,10 +2564,10 @@ its own Folder's rule (§3.1). A listing is not:
   those kinds, so an entry never shows as one.
 
 Checked on production 2026-10-30, as QA-1 and QA-2: QA-1's entries listing a
-QA project and a document filed in another Folder were accepted; QA-2 found
+QA project and a document filed in another team were accepted; QA-2 found
 each by `#o` and both by the topic's `#O`; the project's own changes by `#O`
 and by `#a` held no entry; after QA-1's `false` entry the document's topics
-folded to none while the project stayed listed. An entry filed in a Folder
+folded to none while the project stayed listed. An entry filed in a team
 QA-2 cannot read was returned to QA-1 by `#o` and not to QA-2. Conformance:
 C31 (§9).
 
@@ -2586,15 +2586,15 @@ An app that publishes objects other apps should render MUST publish a
 `kind:31990` handler information event whose `content` is a JSON document with
 `projections`, and with `records` **if and only if it has change events**.
 
-`31989` / `31990` MUST be global — not scoped to any Folder. Discovery has to
+`31989` / `31990` MUST be global — not scoped to any team. Discovery has to
 work before you are a member of anything.
 
 **Some kinds have no handler, by design, and it is not an error.** The bare
-file (§6.7), the Folder (§3.2), the comment (`kind:1111`, §6.4) and the chat
+file (§6.7), the team (§3.2), the comment (`kind:1111`, §6.4) and the chat
 message (`kind:9`, §6.4) are owned by no app; each one's projection is written
 in this document and a consumer MUST resolve it from here rather than from the
 relay, ignoring any `31990` that lists the kind. A consumer that treats "no
-handler found" as "cannot render" will render a Folder's topics, the Folder
+handler found" as "cannot render" will render a team's topics, the team
 itself and every linked message as nothing. Each of them opens in the generic
 app declaring the `conversation` aspect (§7.8).
 
@@ -2713,16 +2713,16 @@ and folds it as it folds a child found by `#via`:
   *next* parent, so a change found by `#A` may be stale. A consumer MUST keep a
   child found this way only while its folded `movedBy` names this parent.
 - **Uppercase, because `a` is the target.** A reader takes a change's first
-  `a` as what it changes, and a Folder listing matches a change against *every*
+  `a` as what it changes, and a team listing matches a change against *every*
   `a` it carries — a second `a` would fold the move into the parent itself.
   `A` is NIP-22's root scope on a comment; on a change it means only this, and
   a consumer MUST NOT query `#A` without a `kinds` filter.
 - **Moves written before this carry no `A`.** Such a child is still found only
-  by a read that folds every change in the Folder — the Folder's listing — or
+  by a read that folds every change in the team — the team's listing — or
   once it is moved again.
 
 > **The reference implementation meets this in both reads since interop
-> 0.38.0** (MAN-7, 2026-09-30). The Folder listing has folded `movedBy` since
+> 0.38.0** (MAN-7, 2026-09-30). The team listing has folded `movedBy` since
 > 0.36.0. A card's inline `list` (`resolveForeignObject`'s children) now folds
 > each addressable child from one more read of the children's changes, made
 > only when the app declares `records`, and drops a child whose folded
@@ -2736,7 +2736,7 @@ and folds it as it folds a child found by `#via`:
 applies to the child kind (§7.3). Its value is an address, so a consumer SHOULD
 draw it as a choice among objects of the declaring kind rather than a text box
 asking a person to type `30850:<hex>:<uuid>`. A move changes the parent and
-never the child's Folder, which is its own placement (§7.3).
+never the child's team, which is its own placement (§7.3).
 
 The bare file declares `movedBy: "parent"` on its own list, naming the field
 §6.7 defines; §6.7's rule that a bare file's parent may be of *any* kind is
@@ -2762,11 +2762,11 @@ manifest cannot change where another app's files sit.
 
 A parent of another kind declares nothing, so its own list never names these
 children; a list of the same kind (a document's list of documents) still
-names its own. A consumer drawing what is under a file reads it from the Folder's
+names its own. A consumer drawing what is under a file reads it from the team's
 listing (§6.7), which folds every child whatever its kind; a consumer reading
 by tag asks for each child kind whose list declares `anyParent`, by `#via` and
 `#A` as above. A move's target is a choice among §6.7's targets (files in the
-same Folder's listing with the moving file's own Folder), not among objects of
+same team's listing with the moving file's own team), not among objects of
 one kind. Absent `anyParent`, nothing
 above changes.
 
@@ -2811,7 +2811,7 @@ need not declare it, and **MUST NOT point it at any other source**; a consumer
 ignores a `subtitle` declared otherwise on such a kind and uses the default. A
 value empty after trimming whitespace is no subtitle, and a consumer draws none
 (§6.12) — not an empty line. A consumer draws it as literal text with line
-breaks folded to spaces, and clamps it, with no §13 model applied. A Folder's
+breaks folded to spaces, and clamps it, with no §13 model applied. A team's
 `subtitle` is its `about` (§3.2), whatever its owner's manifest says. A regular
 event (a message, a comment) keeps whatever its manifest declares.
 
@@ -2900,7 +2900,7 @@ An action is one of four shapes, decided in this order:
 | shape | declared by | the event |
 | --- | --- | --- |
 | **deletion** | `emits.kind: 5` | NIP-09: `a` naming the object, `k` its kind; no `h`; takes no value |
-| **creation** | `input.type: "object"` with `properties` | a new root of `emits.kind`: a fresh `d` if addressable, one tag per property, the Folder tag, `[setTag, <object's address>]` when `toAddressOf` is `"self"`, and one `["p", <key>]` per distinct person a `pubkey` property names |
+| **creation** | `input.type: "object"` with `properties` | a new root of `emits.kind`: a fresh `d` if addressable, one tag per property, the team tag, `[setTag, <object's address>]` when `toAddressOf` is `"self"`, and one `["p", <key>]` per distinct person a `pubkey` property names |
 | **change** | `emits.field` | `emits.kind` carrying the fold rule's target, field and value tags (§7.1), `h`, `ts` when the rule orders by it, and `["p", <value>]` when the input is `pubkey` and the value is not empty |
 | **comment** | `emits.scope: "address"` | NIP-22 `kind:1111` naming the object (§6.4) |
 
@@ -2936,48 +2936,48 @@ later event assumes the earlier ones were accepted.
 
 #### `placement` and `listed` — where a new object lives, and the command that follows (MAN-1)
 
-A Ship project is not filed in its Folder the way an issue is. Its record
+A Ship project is not filed in its team the way an issue is. Its record
 carries `buzz-channel` instead of `h`, so the relay stores it globally and
 anybody can discover the project without being admitted to its channel (RFC 0.3
-§4.2). And it is then **named** in its Folder with a `kind:1852`, because a
-Folder with state (`kind:30890`) lists only what its state names and filing
+§4.2). And it is then **named** in its team with a `kind:1852`, because a
+team with state (`kind:30890`) lists only what its state names and filing
 never updates it. Neither could be declared, so `add-project` could not be.
 
 ```jsonc
 "emits": { "kind": 30850, "placement": "buzz-channel", "listed": true }
 ```
 
-**`placement`** — on a creation only — is the tag the new root names its Folder
+**`placement`** — on a creation only — is the tag the new root names its team
 with: `"h"`, the default, or `"buzz-channel"`. Those are the two tags a relay
-indexes for a Folder's containment read and the two a consumer reads an
-object's Folder from (`h` first), and a consumer MUST refuse any other value: a
-root naming its Folder in a tag nothing reads belongs to no Folder. `buzz-channel` changes where the *record* lives and nothing else: the
+indexes for a team's containment read and the two a consumer reads an
+object's team from (`h` first), and a consumer MUST refuse any other value: a
+root naming its team in a tag nothing reads belongs to no team. `buzz-channel` changes where the *record* lives and nothing else: the
 changes, comments and children of that object still carry `h`, naming the
-Folder the root's `buzz-channel` names.
+team the root's `buzz-channel` names.
 
 **`listed: true`** says objects of this action's kind are named in their
-Folder's state, so writing one is followed by a Folder command (RFC 0.4 §4):
+team's state, so writing one is followed by a team command (RFC 0.4 §4):
 
-- **On a creation**: publish the root, then — **only if the Folder has state** —
-  a `kind:1852` with `op: add` naming the new address, in the Folder the root
-  was placed in. A Folder without state lists by containment and already shows
+- **On a creation**: publish the root, then — **only if the team has state** —
+  a `kind:1852` with `op: add` naming the new address, in the team the root
+  was placed in. A team without state lists by containment and already shows
   the root; a command against it would emit state listing only this one object
   and hide everything else filed there.
 - **On a deletion**: publish the `kind:5`, then one `kind:1852` with
-  `op: remove` naming the address in **each Folder whose state names it**. A
-  Folder with state lists what it names, deleted or not, so without it the row
+  `op: remove` naming the address in **each team whose state names it**. A
+  team with state lists what it names, deleted or not, so without it the row
   stays pointing at nothing (FOL-48). The deletion goes first, so a refused
   `remove` leaves a stale row rather than unlisting an object the relay kept.
 
-Whether a Folder has state, and which Folders name an object, MUST come from a
+Whether a team has state, and which teams name an object, MUST come from a
 read of `kind:30890` and never from a guess — a wrong guess is silent loss. A
 consumer that cannot read them MUST NOT offer a `listed` action; publishing the
-root alone creates an object its Folder does not show, and reports success.
+root alone creates an object its team does not show, and reports success.
 
 Measured on production 2026-09-29: 24 of 34 `kind:30850` carry `buzz-channel`
 and 10 carry `h` (older records, which never move); 0 of 452 `kind:30851` carry
 `buzz-channel`. Of the 24, 20 are named by an `op: add` and 4 by none — objects
-in no Folder's listing, the failure `listed` is for. Of 5 `kind:5` naming a
+in no team's listing, the failure `listed` is for. Of 5 `kind:5` naming a
 `kind:30850`, 4 were followed by an `op: remove`.
 
 #### `format` — a field whose value is prose (MAN-1, RIC-13)
@@ -3050,7 +3050,7 @@ A consumer finds each action by `emits.field`, never by its `id`. An owner
 keeps a field to itself by not declaring its action. The document app (§7.8)
 offers exactly the shared fields, and an owner's other fields (a Ship issue's
 status, assignee or project), its archive and its delete stay with the owner.
-The sharing is advisory: §6.10 lets any Folder member write any field through
+The sharing is advisory: §6.10 lets any team member write any field through
 any app that signs `1851`, and a reader folds every change whoever wrote it.
 What the test settles is which apps *offer* the editor.
 
@@ -3092,7 +3092,7 @@ company's shows the id (§6.2). **Renaming an option keeps its id**, so a
 rename changes no file.
 
 **The tracker** is the app whose manifest publishes the kind's staged
-vocabulary, and **its listing** is that manifest (§7), not a Folder's listing
+vocabulary, and **its listing** is that manifest (§7), not a team's listing
 (§3.1). Once a relay knows which apps a workspace added (record
 [an-app-counts-only-once-the-workspace-adds-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/an-app-counts-only-once-the-workspace-adds-it.md)),
 it is the first such app the workspace added. Until then a reader and a
@@ -3183,7 +3183,7 @@ A card under a message follows its `embed` tag (`detailed` draws the closed
 `card`, and an old `compact` the closed `row`, §13.6.2), and a reference alone
 on its line in a message draws the closed `row` in place, not the manifest's
 `widget`. The manifest's `widget` still applies everywhere else a file is
-drawn, such as a Folder listing.
+drawn, such as a team listing.
 
 ---
 
@@ -3258,7 +3258,7 @@ and the reasoning; this section is the manifest surface.
 only to the app serving it, and a consumer has never heard of "issue". An app
 MAY omit it, in which case a consumer falls back to the kinds the manifest
 declares it handles; that is sound only because a `d` is a v4 uuid that one
-file's kinds do not share — except a Folder, whose `39000` and `30890` carry one
+file's kinds do not share — except a team, whose `39000` and `30890` carry one
 uuid (§3.2), which is why a lookup always names its kinds. Naming the kind is
 cheaper and clearer.
 
@@ -3352,7 +3352,7 @@ the app *serving* a path:
 4. **The type word is checked, not trusted.** A word no manifest declares falls
    back to `{kinds: [<every kind a manifest declares a <d> shape for>], "#d":
    ["<d>"]}`, leaving out the kinds no manifest may claim (§3.2), and never a
-   bare `#d`, which would cross a Folder's two kinds. A file reached by a stale slug, an
+   bare `#d`, which would cross a team's two kinds. A file reached by a stale slug, an
    undeclared word or its `naddr` form is drawn at its own word and its current
    slug; when its own app declares no `<d>` shape for the kind, the address it
    was reached at stays.
@@ -3397,7 +3397,7 @@ conversation, the document app writes every file's text. A manifest declaring
   stay the owner's manifest's;
 - lists no bare file, since a bare file has no text (§6.7);
 - writes each change (§6.10) and each comment (§6.4) into the file's own
-  Folder, and offers no change on an archived file (§6.5).
+  team, and offers no change on an archived file (§6.5).
 
 "Open in" on a file still goes to its owner.
 
@@ -3413,17 +3413,17 @@ the manifest declaring `conversation` — newest first, among manifests that
 carry a `web` template — and derives the file's open URL from it; with no such
 manifest published, the file still resolves and simply has nowhere to open.
 `@estiva-app/interop` 0.20.0 does exactly that, and Peek publishes the field.
-**A Folder (§3.2) takes an `naddr` template the same way, and a comment and a
+**A team (§3.2) takes an `naddr` template the same way, and a comment and a
 chat message an `nevent` template** (§7.6) — newest first, among manifests
 declaring `conversation` that carry one: none of them is any app's, and the app
 showing every file's conversation is the one that can show them. So a manifest
 declaring `conversation` MUST publish both `web` templates, `naddr` and
 `nevent`, whatever kinds it owns: with only the first, every linked message and
-comment draws with nowhere to open. *Messages and the Folder added 2026-10-16.*
+comment draws with nowhere to open. *Messages and the team added 2026-10-16.*
 
 The opener is not yet verified, for all four: any workspace member can publish
 a newer manifest declaring `conversation`, and with it every bare file's,
-Folder's, comment's and message's "Open in" link and app name, as §6.11 says of
+team's, comment's and message's "Open in" link and app name, as §6.11 says of
 a document's claim. The fix is the workspace naming the apps it trusts (the
 roster role `app`, decided 2026-10-03 and not yet built); until then a consumer
 SHOULD prefer a manifest from a key the workspace has named, where it can tell.
@@ -3467,7 +3467,7 @@ here — `widget` `["message", "card"]`, the author's `pubkey` as the title (the
 text carries structure and is no title), the `content` as the body, untruncated
 — and its noun is `"message"`. It has no actions (§7.6). A `31990` with a `k`
 tag naming `9` is ignored, as one naming `30840` is. *Added 2026-10-16;
-until then Peek's manifest claimed it.* A Folder's noun is `"folder"` (§3.2).
+until then Peek's manifest claimed it.* A team's noun is `"team"` (§3.2).
 
 ### 7.9 `noun` — what one of these is called
 
@@ -3574,30 +3574,30 @@ throwaway relay or a fake query.
 | C14 | **Deletion left to the relay.** After the author's `kind:5`, the next read no longer holds the message, and the app shows nothing for it from local state. A non-author's `kind:5` is refused and the refusal is shown in the relay's words. Edit and Delete are offered only on the viewer's own message — not on another person's or an agent's (§6.5, 2026-10-06) |
 | C15 | **Attachment fold.** An edit carrying `imeta` replaces the message's set. A later edit with none leaves the message with no files. An edit carrying one file on a message with two leaves one (§6.8) |
 | C16 | **Reply shape.** A reply to a comment is a `kind:1111` with the comment's `A`/`K`/`P`, `e`/`k`/`p` naming the top-level comment, the comment's `h`, and no lowercase `a` for the object. A reply to a comment carrying a `block` copies its `block` and `quote` verbatim, before the `h` (§13.6). A reply read back threads under that comment in every conforming app (§6.4) |
-| C17 | **Membership fold.** The file's author is a member from its first record (the earliest version, for a root written twice before the switch, §6.1); a membership change targeted by `O` counts as one by `a`, and one whose `h` is not the file's Folder is ignored (§11.8). A `member:<P>` change with no `prev` is accepted on every type. Writing in the stream, a body mention, an assignee change carrying `["p", P]`, and `member:<P>`=`true` by anyone each make the person a member. A comment's `p` tag alone does not, nor an assignee change without a `p`, nor an unassign, nor a `kind:9` with an `a`. An edit of the root after the author left does not re-join them. A `member:<P>`=`false` signed by someone else is ignored. One signed by `P` ends membership until a later trigger, and member-since is then that trigger's second. Two changes inside one second order by `ts` (§11.8). On a topic or space, writing in the stream and a mention in a message put the person only in that conversation, not the place, a name in its summary places nobody, and its author is in it at Important (§11.8, *Places and following*; *added 2026-11-02*) |
+| C17 | **Membership fold.** The file's author is a member from its first record (the earliest version, for a root written twice before the switch, §6.1); a membership change targeted by `O` counts as one by `a`, and one whose `h` is not the file's team is ignored (§11.8). A `member:<P>` change with no `prev` is accepted on every type. Writing in the stream, a body mention, an assignee change carrying `["p", P]`, and `member:<P>`=`true` by anyone each make the person a member. A comment's `p` tag alone does not, nor an assignee change without a `p`, nor an unassign, nor a `kind:9` with an `a`. An edit of the root after the author left does not re-join them. A `member:<P>`=`false` signed by someone else is ignored. One signed by `P` ends membership until a later trigger, and member-since is then that trigger's second. Two changes inside one second order by `ts` (§11.8). On a topic or space, writing in the stream and a mention in a message put the person only in that conversation, not the place, a name in its summary places nobody, and its author is in it at Important (§11.8, *Places and following*; *added 2026-11-02*) |
 | C18 | **Unread for a member.** Someone mentioned for the first time on a year-old file has one unread message, the mention. The person's own messages are never unread. A reply is read once its thread's marker or the reply floor passes it, or the file's marker passes it and it is at or before T0; the channel's marker never reads a file. A muted file shows only the messages that mention the person (§11.3, §11.8) |
 | C19 | **Urgent mention.** A message urgent for `P` carries `["urgent", P]` and `["p", P]` and names `P` in its body as published as an ordinary reference. It is urgent for `P` and for nobody else it names. An `urgent` tag for a person the body does not name is not urgent. An app that does not draw urgency renders it as an ordinary mention (§13.1) |
 | C20 | **Card fold.** A message with `["embed", V, "compact"]` whose body names `V` draws `V`'s row under it, and one with `detailed` its card. An edit with `["embed", V, "none"]` removes it and, with a byte-identical body, does not mark the message edited. A later edit with no `embed` leaves it removed. An `embed` for a value the folded body does not name draws nothing, and one for a value first named in an edit draws, with no `a` on the edit. With a `part` and an `embed` on the same address, the part wins. An unknown layout draws as `compact`. A reader that does not know `embed` draws the reference (§6.8, §13.6.2) |
-| C21 | **Where a link sits.** A message with no `embed` whose body is only `nostr:naddr1…` for a file `V`, or only an app URL that names `V` by §7.7, or a bullet item that is only either, with `["a", V]`, draws `V`'s row in place and no card. A body that names `V` in a sentence, in a quote line, in a heading, inside `**…**` or beside a second reference on its line draws `V`'s chip and no card. A link on words to `V` draws its words as a link and no card. A line that is only a person's or a Folder's reference draws its chip. A line that is only an app URL that resolves to nothing, or to an object the reader cannot read, draws the URL; a line that is only a `nostr:` reference to an object the reader cannot read draws the unreadable row. A link to one block of `V` (`…#block-<id>`, §7.7) with no `part` draws as a link to `V` does: `V`'s row alone on its line, `V`'s chip in a sentence, each opening the URL as written (§13.2, §13.6.2) |
-| C22 | **A document's lone link.** In a block document, a paragraph, a list item or a checklist item whose line is only a `reference` mark for a file `V` draws `V`'s row in place; with `attrs.embed` `detailed`, `V`'s card in its place and no row; with no `embed`, `none`, `compact`, an unknown value or a non-string, the row. A second line of the same paragraph, after a hard break, that is only `V`'s reference draws its row too. The same reference beside other words, inside `**…**`, in a heading, a quote, a callout or a table cell draws `V`'s chip and no card, `detailed` included. A person or a Folder alone on its line draws its chip. A reader that does not know `embed` draws the row. Inside a card's `body`, the same lone reference draws its chip: no row, no card (§13.3) |
+| C21 | **Where a link sits.** A message with no `embed` whose body is only `nostr:naddr1…` for a file `V`, or only an app URL that names `V` by §7.7, or a bullet item that is only either, with `["a", V]`, draws `V`'s row in place and no card. A body that names `V` in a sentence, in a quote line, in a heading, inside `**…**` or beside a second reference on its line draws `V`'s chip and no card. A link on words to `V` draws its words as a link and no card. A line that is only a person's or a team's reference draws its chip. A line that is only an app URL that resolves to nothing, or to an object the reader cannot read, draws the URL; a line that is only a `nostr:` reference to an object the reader cannot read draws the unreadable row. A link to one block of `V` (`…#block-<id>`, §7.7) with no `part` draws as a link to `V` does: `V`'s row alone on its line, `V`'s chip in a sentence, each opening the URL as written (§13.2, §13.6.2) |
+| C22 | **A document's lone link.** In a block document, a paragraph, a list item or a checklist item whose line is only a `reference` mark for a file `V` draws `V`'s row in place; with `attrs.embed` `detailed`, `V`'s card in its place and no row; with no `embed`, `none`, `compact`, an unknown value or a non-string, the row. A second line of the same paragraph, after a hard break, that is only `V`'s reference draws its row too. The same reference beside other words, inside `**…**`, in a heading, a quote, a callout or a table cell draws `V`'s chip and no card, `detailed` included. A person or a team alone on its line draws its chip. A reader that does not know `embed` draws the row. Inside a card's `body`, the same lone reference draws its chip: no row, no card (§13.3) |
 | C23 | **An editor keeps the card.** A document with a `reference` mark carrying `embed` and a key the editor does not know, opened in the editor and saved after an edit to another block, comes back with both keys on the mark and the block's id unchanged (§13.3) |
 | C24 | **A document's URL, and a link on words.** A block document whose paragraph is only an app URL that names `V` by §7.7, as plain text, draws `V`'s row in place. The same run marked `{"type":"link","attrs":{"href":<the URL>,"embed":"detailed"}}` — its text exactly its `href` — draws `V`'s card in the row's place; an editor that opens it and saves after an edit to another block writes the same run back, and one whose Row removes the card writes the URL as plain text — never a `nostr:` reference. A link to one block of `V` alone on its line draws `V`'s row, which opens that URL. A URL no app claims, or one naming what the reader cannot read, stays a link. A run `the plan` marked `{"type":"link","attrs":{"href":<the URL>,"embed":"detailed"}}` draws the words `the plan` as a link, alone on its line too: no chip, no row, no card; an editor that opens it and saves after an edit to another block writes the same run back, link and `embed` included (§13.3) |
 | C25 | **A message's URL.** A message written with an app URL that names `V` by §7.7 — pasted alone, mid-sentence or typed — has that URL in its body as written, never a `nostr:` reference, and carries `["a", V]` (for a message's URL, `["q", <id>]`); on `V`'s conversation itself it carries no second `a`. A reader draws `V` by where the URL sits (C21), and `V` lists the message as a mention (C11). A URL over chosen words is written `[words](url)`, draws as a link, and carries the `a` (or `q`) its target earns. A link to one block carries its `part`, and a URL no app claims, or whose identity two authors hold, carries no tag and stays a link (§13.1, §6.4) |
 | C26 | **The card replaces the row.** A message whose body is only `V`'s reference, with `["embed", V, "detailed"]`, draws `V`'s card under it and nothing in its body; with `compact` or an unknown layout, `V`'s row under it and nothing in its body; with a `part` for `V`, the part and nothing in its body. A body that is only a link to one block of `V`, with its `part` and no `embed`, draws the part and nothing in its body; `see <that link> here` with the same tags draws `V`'s chip in the sentence, the part, and no card. A body with `V` alone on one line and in a sentence on another, with `detailed`, draws the chip in the sentence, nothing on the lone line, and the card. An edit with `["embed", V, "none"]` and the same body draws `V`'s row in place and no card. An old message with `compact` for `V` and `W`, edited with `["embed", V, "none"], ["embed", W, "compact"]`, draws `W`'s row under it and no card for `V`. A body `the plan is [these words](U)`, where `U` names `V`, with `["a", V]` and `["embed", V, "detailed"]`, draws the words as a link and `V`'s card; `[U](https://example.com)` with an `embed` for `V` draws no card (§13.6.2) |
-| C27 | **The default card.** A writer that adds the default writes `["embed", V, "detailed"]` for a body naming one file `V`, also beside a Folder, a person or a message reference; none for a body naming two files, or a file and a block link (whose `part` it writes, with no `embed`); none for `V` on `V`'s own conversation, where `V` does not count, so `V` and one other file `W` there give `W` the default; never `compact` for a value it adds. An edit that adds the first file to a body adds its default and carries the whole folded set; an edit that changes a word of a body whose card was removed before sending writes no `embed`; an edit that puts `V` back into a body it was taken out of adds its default when the edit's body names no other file, also over an earlier `["embed", V, "none"]`. A link on words counts by its target: a body naming `V` only as `[words](U)` gets `V`'s default; with a second file, on words or bare, none; with a URL no app claims beside it, `V`'s (§13.6.2) |
+| C27 | **The default card.** A writer that adds the default writes `["embed", V, "detailed"]` for a body naming one file `V`, also beside a team, a person or a message reference; none for a body naming two files, or a file and a block link (whose `part` it writes, with no `embed`); none for `V` on `V`'s own conversation, where `V` does not count, so `V` and one other file `W` there give `W` the default; never `compact` for a value it adds. An edit that adds the first file to a body adds its default and carries the whole folded set; an edit that changes a word of a body whose card was removed before sending writes no `embed`; an edit that puts `V` back into a body it was taken out of adds its default when the edit's body names no other file, also over an earlier `["embed", V, "none"]`. A link on words counts by its target: a body naming `V` only as `[words](U)` gets `V`'s default; with a second file, on words or bare, none; with a URL no app claims beside it, `V`'s (§13.6.2) |
 | C28 | **A mention in a file's text.** A save of a file's block document (a `description` change, §6.10) that names `P` with a `reference`, edited from a version that did not, is written with a separate `member:<P>`=`true` change on the file, with no `prev`, signed by the writer and carrying `["p", P]`, and the save carries no `p` for `P` and never sets `member:<P>` in a `set`; `P` is a member, and with no message in the file's stream nothing is unread for `P`. A creation naming `P` writes the same change; a save naming only the writer writes none. `P` leaves; a save that changes another word and still names `P` writes no change, and `P` stays out. A save that drops `P`, then one that names `P` again, writes the change again: `P` is a member again (§11.8, §13.1) |
 | C29 | **A host-swapped address.** With kept shapes `https://a.example/issue/<slug>-<d>` (30851) and `https://a.example/#/issue/<d>` from a manifest on `a.example`, and only `https://b.example/document/<slug>-<d>` from one on `b.example`: a message written with `https://b.example/issue/<any>-<d of V>` keeps that URL in its body, carries `["a", V]`, draws as C21 places it, opens that URL, and `V` lists it as a mention. `https://c.example/issue/<any>-<d of V>`, with no kept shape on `c.example`; `http://b.example/issue/…` and `https://b.example:8443/issue/…`; and `https://b.example/#/issue/<d of V>` carry no tag and stay links. A manifest whose `web` is on `c.example` and that declares `urls` on `a.example` adds no shape and no origin. A manifest on `c.example` that declares `https://c.example/issue/<slug>-<d>` for kind `K`: on `b.example`, a `d` held under both `30851` and `K` names nothing and carries no tag; on `a.example`, the link is `V` (§7.7, §13.1) |
 | C30 | *Retired 2026-10-30*, with the artifact shape it tested: a list now returns signed events (§6.13), so there is no row to build a change from |
-| C31 | **A topic's list** (*added 2026-10-30*, §6.14). An entry the app writes carries `a`, `O` (the topic's `d`), `field` `lists:<d>`, `value`, `h` (the topic root's), `ts`, `["o", <d>]`, in that order, and no `p`. Of two entries for one topic and file inside one second, the later by `ts` counts; a file is listed only by `true`, and `"1"` or an empty value lists nothing. Ignored, without hiding an older good entry: one whose `o` is not the field's `<d>` (with `o` naming it second, it counts); one whose `O` is not its `a`'s `d`; one listing the topic's own `d`; one whose `h` is not the topic root's. Which topics list a file names the topic for `#o`; a file's own changes by `#O` hold no entry listing it. A listed id held by two files, or only by a Folder's `39000`, is not drawn and not counted |
+| C31 | **A topic's list** (*added 2026-10-30*, §6.14). An entry the app writes carries `a`, `O` (the topic's `d`), `field` `lists:<d>`, `value`, `h` (the topic root's), `ts`, `["o", <d>]`, in that order, and no `p`. Of two entries for one topic and file inside one second, the later by `ts` counts; a file is listed only by `true`, and `"1"` or an empty value lists nothing. Ignored, without hiding an older good entry: one whose `o` is not the field's `<d>` (with `o` naming it second, it counts); one whose `O` is not its `a`'s `d`; one listing the topic's own `d`; one whose `h` is not the topic root's. Which topics list a file names the topic for `#o`; a file's own changes by `#O` hold no entry listing it. A listed id held by two files, or only by a team's `39000`, is not drawn and not counted |
 | C35 | **A change names the one it follows** (*added 2026-10-30*, §6.2). On a relay advertising `files`, a project's `status` change with `prev` its current `status` change is accepted; the same change with no `prev` is refused; a `title` change on an issue (not in `requires_prev`) with no `prev` is accepted. A `30852` change with no `prev` is refused, and a `member:<P>` change with none, on a project or a `30852`, is accepted |
 | C36 | **A field's first change** (§6.2). The first `status` change on a new project names the first record's event id as `prev` and is accepted; one naming the project's `d` instead is refused. A second first record at the same address, by its author, is refused; the identical event sent again is a `duplicate:` (§6.1) |
 | C37 | **A several-field change** (§6.2, §6.3). A change with `["set", "title", T, p1]` and `["set", "status", "done", p2]`, `O`, `a`, `h` and `["stage", "status", "done"]`, where `p1` and `p2` are current, is accepted, and every conforming reader folds both fields at its time and counts it `done`. One also carrying `field`, or naming `title` twice, is refused. A reader that does not know `set` shows the older title and status, never a mix |
 | C38 | **A stale `prev`** (§6.2). Two apps read a project's `status` at change S; the first sets `started` naming S and is accepted, the second sets `done` naming S and is refused with `conflict:`; it sends `done` again naming the first's id and is accepted, and nobody is asked. A several-field change whose `status` names S and whose `title` is current is refused whole: its title is not changed. Two `description` saves naming the same change: the second is refused, and its app merges and sends again, never overwriting |
-| C39 | **A change that sorts before its `prev`** (§6.2, §6.3). A change whose `created_at` is a second before its `prev`'s is refused; stamped 1 ms after its `prev`, with `ts` and `created_at` agreeing to the second, it is accepted and folds after it. A change whose `h` is not its file's Folder, or whose `a` is not the address of the file its `O` names, is refused (§6.2) |
-| C40 | **Opening a file reads one text** (*added 2026-11-02*, §6.13). A project with 40 text saves, read with `{"fields": "newest", "kinds": [30850], "#d": [d], "text": true}`, returns its first record, one change per field and exactly one `description` change, the current one, whose id names it as the next save's `prev`. The same filter without `#d` is refused. A member who cannot read the project's home Folder, sending the same filter, gets no `description` change. A project whose text was never changed returns no `description` change, and its text is the first record's seed. NIP-11 lists `file_list` whether or not it lists `files` |
+| C39 | **A change that sorts before its `prev`** (§6.2, §6.3). A change whose `created_at` is a second before its `prev`'s is refused; stamped 1 ms after its `prev`, with `ts` and `created_at` agreeing to the second, it is accepted and folds after it. A change whose `h` is not its file's team, or whose `a` is not the address of the file its `O` names, is refused (§6.2) |
+| C40 | **Opening a file reads one text** (*added 2026-11-02*, §6.13). A project with 40 text saves, read with `{"fields": "newest", "kinds": [30850], "#d": [d], "text": true}`, returns its first record, one change per field and exactly one `description` change, the current one, whose id names it as the next save's `prev`. The same filter without `#d` is refused. A member who cannot read the project's home team, sending the same filter, gets no `description` change. A project whose text was never changed returns no `description` change, and its text is the first record's seed. NIP-11 lists `file_list` whether or not it lists `files` |
 | C41 | **A merge that asks nothing** (§13.3). Base is b1, b2, b3, b4; theirs is b1, b2′, b3, n1, b4; mine is b2, b3, m1, b1, b4′ (b1 moved, m1 added, b4 rewritten). The merge is b2′, b3, n1, m1, b1, b4′ in that order, nothing asks, and the save names theirs as `prev` |
 | C42 | **A merge that asks** (§13.3). Base has b1–b3; theirs deletes b2 and rewrites b3; mine rewrites b2 and b3 differently, and sets `status` in the same change. b2 asks (edited against deleted) and b3 asks (changed by both); nothing of mine is saved, the status included. A marker text changed by both asks as one block |
-| C43 | **One listing entry per file** (*added 2026-11-02*, §3.3). A Folder lists project P as `["a", addr]`; an `add` naming `["o", d]` leaves one entry, `a`, in its place; a `remove` by `["o", d]` takes it off. A reader given a `30890` with `["a", addr]` and `["o", d]` for one file draws it once, at the first entry. An `add` of `["a", "30851:<P's author>:d"]` or `["a", "30850:<another author>:d"]` is a separate entry: P stays listed and drawn, and a `remove` by `["o", d]` takes P's entry off and leaves that one (*added 2026-11-03*) |
+| C43 | **One listing entry per file** (*added 2026-11-02*, §3.3). A team lists project P as `["a", addr]`; an `add` naming `["o", d]` leaves one entry, `a`, in its place; a `remove` by `["o", d]` takes it off. A reader given a `30890` with `["a", addr]` and `["o", d]` for one file draws it once, at the first entry. An `add` of `["a", "30851:<P's author>:d"]` or `["a", "30850:<another author>:d"]` is a separate entry: P stays listed and drawn, and a `remove` by `["o", d]` takes P's entry off and leaves that one (*added 2026-11-03*) |
 | C44 | **A comment in both forms** (§6.4). A top-level comment on P carries `A`, `K` `30850`, `P`, `O` d, `K` `osnova.project`, `a`, `k` `30850`, `o` d, `k` `osnova.project`, in that order; it is found by `#A` and by `#O`, and a reader takes kind 30850 and type `osnova.project`. Its reply carries `A`, `K`, `P`, `O`, `K` `osnova.project`, `e`, `["k","1111"]`, `p`. A comment whose `O` is not its `A`'s `d` is not drawn under either file, nor is one whose `A` has P's `d` with another kind or another author, one with two `O`s or two `A`s, or one with no `A` whose `a` is not P's full address (*added 2026-11-03*) |
 | C45 | **A file's marker in two keys** (§11.3, §11.6). Read state with `30850:pk:d` at T1 and `file:d` at T2 > T1 marks P's comments at or before T2 read; with only the address key, P has a marker. A read written by an app writes `file:d` |
 | C46 | **One card per file** (§13.6.1, §13.6.2). A message with `["embed", addr, "detailed"]` whose edit carries `["embed", d, "detailed"]` draws one card; an edit with `["embed", d, "none"]` removes the card the address drew. Two `part` tags, one by the address and one by the id, draw the first |
@@ -3808,7 +3808,7 @@ when it also carries `A`. A key beginning `file:` whose remainder is not a
 lowercase UUID is not a file context. The Estiva relay refuses an id that any
 file or channel already holds (§6.1), so a link means one file, but this rule
 does not depend on that refusal: upstream Buzz does not make it, and a
-partner's relay in a shared Folder cannot be checked. `file:` is offered
+partner's relay in a shared team cannot be checked. `file:` is offered
 upstream as an optional NIP-RS well-known scheme beside `thread:` and `msg:`;
 if NIP-RS refuses it, Estiva keeps it as its own rule.
 
@@ -3817,7 +3817,7 @@ if NIP-RS refuses it, Estiva keeps it as its own rule.
 A channel's messages divide into **streams**, and a message answers to exactly
 the marker of the stream it is in:
 
-- a `kind:9` root — the Folder's own conversation, the team's chat (§3.2),
+- a `kind:9` root — the team's own conversation, its chat (§3.2),
   whether or not it carries an `a`, which on a `kind:9` is a mention (§6.4) —
   is in the **general stream**, whose marker is the channel uuid;
 - a root whose root-level `a` tag names a file — a `kind:1111` about that
@@ -3836,7 +3836,7 @@ name-drops an issue halfway through stays in the general stream: mention is
 what a reader is shown alongside a file, not what the file's unread counts.
 
 This is why the channel uuid alone stopped being enough. It was one topic per
-channel, so "I have read this channel" named exactly one conversation. A Folder
+channel, so "I have read this channel" named exactly one conversation. A team
 holds its own conversation *and* several files' conversations in one channel,
 and a Ship project has always held its issues that way; a per-file marker is
 what says which of them you have read.
@@ -3849,7 +3849,7 @@ An app advances **exactly the streams it is showing**, and nothing beside them:
   NOT advance the channel, any other file, or the folder.
 - Opening a channel's general conversation MUST advance only the channel uuid.
   It MUST NOT advance any file in it.
-- A screen that shows both — Ship's project page draws the Folder's `kind:9`
+- A screen that shows both — Ship's project page draws the team's `kind:9`
   chat and the project's own comments as one feed — advances both.
 - Marking a thread read MUST advance only `thread:<root>`.
 - A screen that draws a thread's replies — a thread opened in a side panel, or
@@ -3915,18 +3915,18 @@ not say which stream a `thread:` key belongs to, so a client treats every
 
 **The channel's marker does not propagate into a file's stream.** That is the
 one place the hierarchy stops, and it is the whole point of the file grain:
-reading the Folder's chat says nothing about which of its topics you have
+reading the team's chat says nothing about which of its topics you have
 read. The reserved `folder:` grain (§11.5) is the only key that would ever reach
-every stream in a Folder, and it is not specified.
+every stream in a team, and it is not specified.
 
 The hierarchy is applied **at read time**, never by writing extra keys.
 
-#### An indicator over a Folder
+#### An indicator over a team
 
-Whether an app draws one indicator for a whole Folder is the app's choice, not
-the protocol's. An aggregate indicator over a Folder, if an app draws one, is
+Whether an app draws one indicator for a whole team is the app's choice, not
+the protocol's. An aggregate indicator over a team, if an app draws one, is
 **computed at read time from the markers above** — over the streams in the
-Folder, each judged for the person's membership of it (§11.8) — and **writes
+team, each judged for the person's membership of it (§11.8) — and **writes
 nothing**: no key is needed for it, and it does not consume the reserved
 `folder:` grain (§11.5).
 
@@ -3958,17 +3958,17 @@ Reserving it costs a line; discovering the need later means either colliding wit
 an identifier an app chose in the meantime, or migrating published blobs — and
 NIP-RS blobs are grow-only, so a bad context id is effectively permanent.
 
-The file grain (§11.1) does not take its place, and a Folder is not a special
-case of it. A Folder is a file, so a comment anchored at the Folder's *address*
-answers to that bare address like any other file's would; the Folder's *general*
+The file grain (§11.1) does not take its place, and a team is not a special
+case of it. A team is a file, so a comment anchored at the team's *address*
+answers to that bare address like any other file's would; the team's *general*
 conversation answers to its channel uuid; and `folder:<address>` remains the
 name for the third thing, "everything under it at once". An indicator over a
-Folder (§11.3), where an app draws one, is computed from the first two and
+team (§11.3), where an app draws one, is computed from the first two and
 needs no third.
 
-When comments name files by id (§6.4's `O`), a comment about a Folder as a
+When comments name files by id (§6.4's `O`), a comment about a team as a
 file names it by its channel uuid and is kept under `file:<channel-uuid>`,
-apart from the Folder's chat, which keeps the bare uuid (*added 2026-10-30*,
+apart from the team's chat, which keeps the bare uuid (*added 2026-10-30*,
 record
 [a-files-unread-state-is-keyed-file-and-its-id](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-files-unread-state-is-keyed-file-and-its-id.md)).
 
@@ -4080,7 +4080,7 @@ grain:
 
 | grain | a member is | decided by |
 | --- | --- | --- |
-| a team (a Folder) | a person on its channel's roster — in an open team, a reader who has not joined is not one | the relay roster, `kind:39002` (RFC 0.4 §5), changed only by §3.3's join, leave, add and remove |
+| a team | a person on its channel's roster — in an open team, a reader who has not joined is not one | the relay roster, `kind:39002` (RFC 0.4 §5), changed only by §3.3's join, leave, add and remove |
 | a file | a person involved in it | the fold below |
 | a place — a team's chat, a space or a topic | a person who is **in** it, at a level | *Places and following*, below |
 
@@ -4088,8 +4088,8 @@ A topic or space is a file too, and keeps a file's membership; on a place,
 being in it is what decides what is unread for a person (*Places and
 following*). Every other file is unchanged.
 
-**Membership of a file grants nothing.** Access is the Folder's (§3). A person
-who is a member of a file in a Folder they cannot read has nothing to be told,
+**Membership of a file grants nothing.** Access is the team's (§3). A person
+who is a member of a file in a team they cannot read has nothing to be told,
 and a reader cannot see the events that would make them a member anyway.
 
 #### What makes a person a member of a file
@@ -4153,7 +4153,7 @@ file they were added to with one `#p` filter, as they already find what they
 were assigned to. An app that does not know the field folds it like any other
 (§6.3).
 
-Measured on production 2026-09-30, as the agent in the QA Folder: the relay
+Measured on production 2026-09-30, as the agent in the QA team: the relay
 accepted a `member:<P>` change on an issue, and both `#p` and `#a` returned it.
 
 **Who is on a file stays beside it** (*rewritten 2026-10-30*; record
@@ -4161,15 +4161,15 @@ accepted a `member:<P>` change on an issue, and both `#p` and `#a` returned it.
 D2, which stands): the change carries `["O", <d>]` beside its `a` (§6.2;
 record
 [a-change-is-about-its-file-as-a-comment-is](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-change-is-about-its-file-as-a-comment-is.md)),
-with the file's Folder as its `h`. **It needs no `prev` and is never in a
+with the file's team as its `h`. **It needs no `prev` and is never in a
 `set`**, on every type, the ones kept in order included (§6.2): two people
 joining never clash, and adding a person never edits the file's own fields. A
 leave is never a change to anything but the leaver's own `member:<P>`.
 **Created it** is the author of the file's first record, joining at its
 `created_at`; from the switch a first record is written once (§6.1). A reader
 finds the membership changes by `#O` or `#a`, and ignores one whose first `h`
-is not the file's Folder, as §6.2 has a reader ignore a change filed in another
-Folder.
+is not the file's team, as §6.2 has a reader ignore a change filed in another
+team.
 
 **An Add after the person left names what it follows** (*added 2026-11-02*). A
 `member:<P>` = `true` signed by anybody but `P`, written while the latest
@@ -4193,7 +4193,7 @@ writes:**
 
 - A writer that saves a file's text naming `P`, when the version it edited
   from did not name `P`, MUST also sign the change setting `member:<P>` to
-  `true` on the file, in the file's Folder. A creation whose text names `P`
+  `true` on the file, in the file's team. A creation whose text names `P`
   counts as edited from nothing. The writer compares the two versions it holds,
   the one it loaded and the one it saves; nothing is kept between edits. It
   writes none for its own pubkey.
@@ -4266,7 +4266,7 @@ for `P`; only the messages in the file's stream do, by the rules above. What is 
 person in a file's text belongs to a document's own read state, which this
 specification does not define yet.
 
-A Folder's general stream is not judged by file membership. For a team's
+A team's general stream is not judged by file membership. For a team's
 members it is the team's chat, a place they follow at Important by default,
 judged as *Places and following* says (*changed 2026-11-02*; record
 [a-teams-chat-is-followed-like-a-space](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-teams-chat-is-followed-like-a-space.md)).
@@ -4484,7 +4484,7 @@ new events and a new list. The old private per-file list stays retired:
 `estiva:followed:v1` (RFC 0.4 §4.6) is read once more and not written again. Its
 file keys are **not** published: the list was private, so a client MUST NOT
 sign a membership change for one without the person choosing to join. Its
-`muted` keys become this list. Its Folder keys are dropped, and are not the
+`muted` keys become this list. Its team keys are dropped, and are not the
 teams a person follows: they were written by old Peek, without the person
 choosing to follow a team. Nothing else is migrated, because everything
 following implied is a trigger above.
@@ -4982,7 +4982,7 @@ it draws:
 - **In a sentence**, a reference draws as its chip (§13.1).
 - **Alone on its line**, a reference to a file draws the file's closed `row`
   (§7.5) in place, and a reference to a message draws that message as a quote
-  cut to one line. A person or a Folder alone on its line draws its chip. A link
+  cut to one line. A person or a team alone on its line draws its chip. A link
   to one block of a file draws that file's row, as in a message (C21). A lone
   link that does not resolve stays as written, as §13.6.2 says: an app URL that
   names nothing, or an object the reader cannot read, stays the URL; a `nostr:`
@@ -5502,7 +5502,7 @@ tags:    ["h", <folder>], ["a", "30851:<pubkey>:<d>"],
 - **Pointer, never copy.** A reader resolves the block against the object as it
   is now, and MUST NOT write the resolved content into the message, a draft, a
   notification or any store that outlives the view. A copy goes stale and keeps
-  showing text to someone who has since lost access to the object's Folder.
+  showing text to someone who has since lost access to the object's team.
 - One `part` per file: its address and its id are one file (*added
   2026-11-02*, ALO-4). A reader takes the first and ignores the rest. Its
   ids from index 2 are a run (§13.3, "A run of blocks"): one id is one block,
@@ -5530,7 +5530,7 @@ tags:    ["h", <folder>], ["a", "30851:<pubkey>:<d>"],
 
 To tell the last two apart, a reader that gets nothing for
 `{kinds:[k], authors:[pubkey], "#d":[d]}` asks for `{kinds:[5], "#a":[address]}`.
-A Folder the reader cannot read is skipped silently, so an empty answer cannot
+A team the reader cannot read is skipped silently, so an empty answer cannot
 say why. A deletion can (42 of 52 file deletions on production carry no `h`).
 
 A deletion counts only when the reader can trust it:
@@ -5583,7 +5583,7 @@ In a message, where a reference sits decides how it draws:
 - **In a sentence**, it draws as its chip (§13.1).
 - **Alone on its line** (§13.2), a reference to a file draws the file's closed
   `row` (§7.5) in place, as a block of the message, and a reference to a message
-  draws that message as a quote cut to one line. A person or a Folder alone on
+  draws that message as a quote cut to one line. A person or a team alone on
   its line draws its chip, as in a sentence. This is a reading rule: no tag asks
   for it, and a message from any client draws the same way.
 - **Under the message**, a card draws when the message carries an `embed` tag
@@ -5692,14 +5692,14 @@ it as it sends, and Estiva's apps do, showing the card under the message box
 with a ✕ that removes it before sending (no tag is written). What counts:
 
 - a file named by a `nostr:` reference or by an app URL that resolves to it
-  (§7.7), written bare or as a link's target, except a Folder (a `39000`
+  (§7.7), written bare or as a link's target, except a team (a `39000`
   address). Files are counted, not links: a link that names no file adds
   nothing and takes nothing away;
 - a `part` (§13.6.1), which draws its block under the message. It counts, but
   takes no `embed`: the part wins, and a writer MUST NOT write both;
 - not a person, and not a message (`q`).
 
-So a message linking an issue and a Folder gets the issue's card; one linking an
+So a message linking an issue and a team gets the issue's card; one linking an
 issue and a block of a page gets no card, and shows the part. The object whose
 conversation the message is in does not count and takes no default, so on an
 issue's conversation a message linking that issue and one other file gives the

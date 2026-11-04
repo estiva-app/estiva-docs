@@ -40,9 +40,9 @@ the relay.
 
 > **What an invite opens.** There is one workspace on the relay, and it is
 > ours. With an Estiva ID account you are a member of it, through your own app
-> and through Peek and Ship. A member can read everything in every Folder, post
+> and through Peek and Ship. A member can read everything in every team, post
 > in any of them, and change or move anything there: rename an issue, change
-> its status, move a file. Only managing Folders themselves is kept for their
+> its status, move a file. Only managing teams themselves is kept for their
 > owners. Anything you post, everyone in the workspace can read. This is why
 > we invite people one by one.
 

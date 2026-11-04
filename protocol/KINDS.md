@@ -61,16 +61,16 @@ nobody held the whole list.
 | `45010` | Artifact save | **Buzz's own uses (agent and team settings), not files** (2026-10-30, record [a-file-is-its-fields-each-kept-in-order-by-the-relay](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-file-is-its-fields-each-kept-in-order-by-the-relay.md)). Upstream Buzz NIP-AR; the relay keeps the saves of one `d` in order. No Estiva app writes one, and a file is never kept as one (SPEC §6.13) |
 | `45011` | Artifact removal | **Relay-signed**, never an app's. Buzz's own, with `45010` |
 
-### Teams (Folders) — written by every app, owned by none ([SPEC §3](SPEC.md))
+### Teams — written by every app, owned by none ([SPEC §3](SPEC.md))
 
 | Kind | Name | Notes |
 | --- | --- | --- |
-| `9007` | Folder create (NIP-29 create group) | The container. Followed by a `1852` so the Folder has state from birth. See §3 |
-| `9002` | Folder rename (NIP-29 edit metadata) | The only rename: owners and admins only (relay). The Folder's title is the `39000` name; a `1852` never carries one. Refused by the relay when it carries a `company` tag, and on the Company Folder when it archives it, makes it private or sets a `ttl` (SPEC §3.4). NIP-29's `archived` flag is refused on any team: a team is archived by its `1851` `archived` field only (SPEC §6.5) |
-| `9008` | Folder delete (NIP-29 delete group) | **Refused by the relay while the Folder holds a file** (a `30840`/`30842`/`30850`/`30851`/`30852` first record under its `h` — deleted ones included, a file deleted as a field counting — or anything its listing names), and always for the Company Folder (SPEC §3.4); channel owner, the owner of its owner-role agent, or a workspace owner/admin. An accepted one hides every event under the `h` |
-| `1852` | Folder command | `add` / `remove` / `set` addresses, or a file by its id in an `o` tag, or `move` them with one `["from", <source>]`, changing both Folders' lists in one write or neither (SPEC §3.3); any member may send one, so it carries no name. Never names a `39000:` address — Folders do not nest. An entry's fourth element is its role, after an empty third: `["a", <addr>, "", "space"]` marks a team's space, and an `add` without it unmarks; only the team's members may give, change or remove an entry carrying a role, by `add`, `remove` or `set` (relay). A topic is on one team's list: it is listed first at its home, leaves only by a `move` (or once archived or deleted), and an archived team's topics stay (relay) — SPEC §3.3, §6.5 |
-| `30890` | Folder state | **Relay-signed**, never an app's. What a Folder lists: addresses in `a` tags, files by id in `o` tags. A NIP-29 group without one is a conversation space, not a Folder. An entry carries the role its `1852` gave it as the fourth element (`space`: one of the team's spaces) — SPEC §3.2, §3.3 |
-| `39000` | Group metadata | Relay-signed, NIP-29. The Folder's address; no `kind:31990` may claim it. A bare `["company"]` marks the workspace's Company Folder, on one Folder only (SPEC §3.4) |
+| `9007` | Team create (NIP-29 create group) | The container. Followed by a `1852` so the team has state from birth. See §3 |
+| `9002` | Team rename (NIP-29 edit metadata) | The only rename: owners and admins only (relay). The team's title is the `39000` name; a `1852` never carries one. Refused by the relay when it carries a `company` tag, and on the Company team when it archives it, makes it private or sets a `ttl` (SPEC §3.4). NIP-29's `archived` flag is refused on any team: a team is archived by its `1851` `archived` field only (SPEC §6.5) |
+| `9008` | Team delete (NIP-29 delete group) | **Refused by the relay while the team holds a file** (a `30840`/`30842`/`30850`/`30851`/`30852` first record under its `h` — deleted ones included, a file deleted as a field counting — or anything its listing names), and always for the Company team (SPEC §3.4); channel owner, the owner of its owner-role agent, or a workspace owner/admin. An accepted one hides every event under the `h` |
+| `1852` | Team command | `add` / `remove` / `set` addresses, or a file by its id in an `o` tag, or `move` them with one `["from", <source>]`, changing both teams' lists in one write or neither (SPEC §3.3); any member may send one, so it carries no name. Never names a `39000:` address — teams do not nest. An entry's fourth element is its role, after an empty third: `["a", <addr>, "", "space"]` marks a team's space, and an `add` without it unmarks; only the team's members may give, change or remove an entry carrying a role, by `add`, `remove` or `set` (relay). A topic is on one team's list: it is listed first at its home, leaves only by a `move` (or once archived or deleted), and an archived team's topics stay (relay) — SPEC §3.3, §6.5 |
+| `30890` | Team state | **Relay-signed**, never an app's. What a team lists: addresses in `a` tags, files by id in `o` tags. A NIP-29 group without one is a conversation space, not a team. An entry carries the role its `1852` gave it as the fourth element (`space`: one of the team's spaces) — SPEC §3.2, §3.3 |
+| `39000` | Group metadata | Relay-signed, NIP-29. The team's address; no `kind:31990` may claim it. A bare `["company"]` marks the workspace's Company team, on one team only (SPEC §3.4) |
 | `9000` / `9001` | Add / remove member | NIP-29's events with the suite's rules: **any member** of a team may add someone (upstream: admins only), but only owners and admins may grant or change a role; removing someone else stays with owners and admins, or an agent's owner who is a member of the team. A `9000` goes into a team only: the relay refuses one into a DM or any group holding no `30890`. On the Company team the relay adds everyone in the company and refuses a removal — SPEC §3.3, §3.4 |
 | `9021` / `9022` | Join / leave a team | NIP-29, signed by the person: anyone in the company may join an open team. The relay refuses a leave from the Company team. A `39002` keeps no time per person, so a team default's start is read from the stored join or add — SPEC §3.3, §11.8 |
 
@@ -78,9 +78,9 @@ nobody held the whole list.
 
 | Kind | Name | Notes |
 | --- | --- | --- |
-| `9` | Chat message | NIP-29 group message. A Folder's conversation, a DM, and a Ship project conversation are all this. Drawn from SPEC §7.8, noun "message"; no `kind:31990` may claim it. A Folder's built-in "Start a conversation" writes one with only the Folder's `h` (SPEC §3.2) |
+| `9` | Chat message | NIP-29 group message. A team's conversation, a DM, and a Ship project conversation are all this. Drawn from SPEC §7.8, noun "message"; no `kind:31990` may claim it. A team's built-in "Start a conversation" writes one with only the team's `h` (SPEC §3.2) |
 | `1111` | Comment | NIP-22. Drawn from SPEC §7.8, noun "comment"; written by every app on any file it can read (SPEC §6.4). A reply to a comment on part of a document copies its `block` and `quote` (SPEC §13.6) |
-| `40003` | Edit | Buzz's message edit, on a message or a comment; Peek, Ship and Leaf write it on their own. `e` names the target, `content` is the new body, its `imeta` tags are the message's whole file set (none means no files), its `a` and `q` tags are what its new words link (since 2026-10-27; never `p`, `urgent` or `part`), and it carries no `block` or `quote`, so a comment never moves (SPEC §6.8). `h` required: the target's Folder. The relay accepts it only from the target's author or their NIP-OA owner (`validate_edit_ownership`) |
+| `40003` | Edit | Buzz's message edit, on a message or a comment; Peek, Ship and Leaf write it on their own. `e` names the target, `content` is the new body, its `imeta` tags are the message's whole file set (none means no files), its `a` and `q` tags are what its new words link (since 2026-10-27; never `p`, `urgent` or `part`), and it carries no `block` or `quote`, so a comment never moves (SPEC §6.8). `h` required: the target's team. The relay accepts it only from the target's author or their NIP-OA owner (`validate_edit_ownership`) |
 | `7` | Reaction | NIP-25, on a message or a comment; Peek, Ship and Leaf write it, and take their own back with a `5`. Emoji capped at 64 chars (`build_reaction`). The relay files it under its target's channel (`derive_reaction_channel`). Counted under the reaction horizon (SPEC §6.6) |
 
 ---
@@ -108,20 +108,20 @@ Two live consequences:
 
 ---
 
-## 3. The Folder is a `kind:9007`, and `h` points at it
+## 3. The team is a `kind:9007`, and `h` points at it
 
-The single structural rule of this protocol. A Folder is a NIP-29 group with a
+The single structural rule of this protocol. A team is a NIP-29 group with a
 relay-signed `kind:30890` listing ([SPEC §3](SPEC.md)). Every object filed in it
-carries that Folder's id in an `h` tag; what it *lists* is its `30890`, and a
+carries that team's id in an `h` tag; what it *lists* is its `30890`, and a
 listing never changes who can read a file.
 
 | Event | `h` |
 | --- | --- |
-| `30850` Project | the Folder it was filed in (or `buzz-channel`, SPEC §7.3) |
-| `30851` Issue | the Folder it was filed in |
-| `30840` Bare file / `30842` Document | the Folder it was filed in |
-| `1851` change | the Folder of the object it changes |
-| `1111` comment / `9` message | the Folder it was filed in |
+| `30850` Project | the team it was filed in (or `buzz-channel`, SPEC §7.3) |
+| `30851` Issue | the team it was filed in |
+| `30840` Bare file / `30842` Document | the team it was filed in |
+| `1851` change | the team of the object it changes |
+| `1111` comment / `9` message | the team it was filed in |
 
 **There is no workspace object, deliberately.** Buzz resolves a *community*
 from the request host before a connection is authenticated, so **the relay URL
@@ -130,7 +130,7 @@ workspace, in every app. An index object invented by one app would be a second,
 app-private notion of the same thing — invisible to the others.
 
 This is why a Peek topic and a Ship project are never "linked": an object
-lives beside another by being filed and listed in the same Folder.
+lives beside another by being filed and listed in the same team.
 
 ---
 
@@ -155,16 +155,16 @@ only. A client's `45011` is refused: only the relay writes one. `30852` is
 `MessagesWrite` on `1851` is doing real work: it is what lets one member set a
 field on another member's object, which is the normal case in a tracker.
 
-`30842` / `30851` / `1851` / `40003` **require `h` at ingest.** The Folder is not
+`30842` / `30851` / `1851` / `40003` **require `h` at ingest.** The team is not
 optional — several apps write these kinds, and one of them forgetting would put
 an unreachable object into the shared space that nobody can unpublish.
 
 A `30850` does not: its `h` is optional at ingest. A project carrying one is
-filed in that Folder, as every record written before SPEC §7.3's `placement`
+filed in that team, as every record written before SPEC §7.3's `placement`
 is; one carrying `buzz-channel` instead is stored for the whole workspace, so
 anybody can discover it, and its name and its seeded summary (SPEC §6.12) are
-readable outside its Folder. Its changes, comments and issues still carry `h`,
-naming the Folder its `buzz-channel` names.
+readable outside its team. Its changes, comments and issues still carry `h`,
+naming the team its `buzz-channel` names.
 
 What a NIP-50 `search` matches, per kind ([SPEC §5.2](SPEC.md); buzz
 migrations 0035 and 0036). Every typed word matches the start of a word, `"…"`
@@ -219,11 +219,11 @@ credential holds `9005`, so no app or agent removes a change for good (SPEC
 *Copied from `seed.ts` on origin/main, 2026-10-03 (MAN-3); Leaf's row
 2026-10-14 (Leaf 1), its `9101` 2026-10-16 (LEAF-5: resolving a comment's
 thread, as Peek does), and its `7` 2026-10-17 (COMM-4: reacting to a comment,
-as Peek and Ship do).* Against SPEC §3.3's Folder set (`9007, 9002, 9008, 1852,
+as Peek and Ship do).* Against SPEC §3.3's team set (`9007, 9002, 9008, 1852,
 1851, 9, 5`): Peek holds all of it; Ship all but `9008`, so Ship does not offer
-deleting a Folder ("deleting a Folder stays Peek's", the seed's own note); Leaf
-only `1852, 1851, 5`, enough to place a document in a Folder and change it, not
-to make, rename or delete a Folder. Leaf does not sign `30840`: it offers no
+deleting a team ("deleting a Folder stays Peek's", the seed's own note); Leaf
+only `1852, 1851, 5`, enough to place a document in a team and change it, not
+to make, rename or delete a team. Leaf does not sign `30840`: it offers no
 bare-file creation (SPEC §3.2), and its `31990` (claiming `30842`) is signed by
 a dedicated manifest key the relay admits as a member (`9030`), not here.
 
@@ -235,7 +235,7 @@ Two things this table teaches:
   cross-app action needs the same treatment: the list is the union of what an
   app writes for itself and what the apps it acts on declare.
 - **The list says what an app may *sign*, not what a kind *means*.** `9007`
-  creates a NIP-29 group for every app; it is a Folder only once the group has
+  creates a NIP-29 group for every app; it is a team only once the group has
   a listing (SPEC §3), and a Peek huddle or DM is the same kind without one.
 
 Read the live values rather than trusting this page, because a seed change only
@@ -259,7 +259,7 @@ One that was registered *for* NfB, went unused, and now has a use:
 
 | Kind | Name | Status |
 | --- | --- | --- |
-| `30840` | **Bare file** | **The file no app owns — SPEC §6.7, decided 2026-09-11.** A Peek topic is one. Registered on `nfb-demo-kinds` as `KIND_FILE`, `MessagesWrite`; `h` is SHOULD at ingest and MUST in SPEC. Granted to `estiva-peek` (estiva-id#66). Built by `buildBareFile` in `@estiva-app/protocol` 0.20.0; resolved without a manifest by `@estiva-app/interop` 0.19.0. **Its text is the `1851` `description` fold, seeded from `content`** (SPEC §6.10, 2026-10-14): anyone in its Folder saves it, the author included, with interop 0.55's `describe` action; last save wins; a change whose `h` is not the file's Folder is ignored (§6.2) |
+| `30840` | **Bare file** | **The file no app owns — SPEC §6.7, decided 2026-09-11.** A Peek topic is one. Registered on `nfb-demo-kinds` as `KIND_FILE`, `MessagesWrite`; `h` is SHOULD at ingest and MUST in SPEC. Granted to `estiva-peek` (estiva-id#66). Built by `buildBareFile` in `@estiva-app/protocol` 0.20.0; resolved without a manifest by `@estiva-app/interop` 0.19.0. **Its text is the `1851` `description` fold, seeded from `content`** (SPEC §6.10, 2026-10-14): anyone in its team saves it, the author included, with interop 0.55's `describe` action; last save wins; a change whose `h` is not the file's team is ignored (§6.2) |
 
 ### Retired numbers
 
