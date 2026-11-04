@@ -23,15 +23,15 @@ objects must be **discovered** by querying a kind with no `#h` and letting
 access control filter, rather than enumerated from a list. That is a real cost,
 and it is the right one to pay.
 
-## Why the Folder is a NIP-29 group
+## Why the team is a NIP-29 group
 
 It needed to be something the relay already enforces membership on. NIP-29
 groups are that, and Buzz's access control is built around them — including a
 formally verified admission fence.
 
-Inventing a Folder kind would have meant inventing its access control too.
+Inventing a team kind would have meant inventing its access control too.
 
-## Why a Peek topic and a Ship project are one Folder, not two linked objects
+## Why a Peek topic and a Ship project are one team, not two linked objects
 
 Linking is a state that can be wrong. Two objects with a pointer between them
 can be created out of order, can point at a deleted target, and need a
@@ -44,7 +44,7 @@ integration, and it needed no new protocol.
 
 The residue is that an event cannot change its own `h`. Re-pointing an existing
 object therefore needs an explicit override field, and readers must take the
-union of every Folder it has pointed at, or already-filed children vanish.
+union of every team it has pointed at, or already-filed children vanish.
 
 ## Why status is not on the issue
 

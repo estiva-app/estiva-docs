@@ -1419,8 +1419,8 @@ its owners and admins (§3.3).
   server says no, every app knows why".
 - **Not covered yet.** Whether a file counts as archived because every team
   listing it is archived, and whether a `kind:9` may be sent in an archived
-  team, wait for the teams-as-labels rework; until then each app keeps
-  what it does today.
+  team, are not settled yet; until then each app keeps what it does
+  today.
 
 **Delete is a field** (*rewritten 2026-10-30*; records
 [a-file-is-its-fields-each-kept-in-order-by-the-relay](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-file-is-its-fields-each-kept-in-order-by-the-relay.md)
@@ -3953,7 +3953,7 @@ once".
 everything in this team" is a different frontier from "I have read this
 conversation", and it will want a scheme.
 
-It is reserved rather than specified because the team model is still a draft.
+It is reserved rather than specified because what reading everything under a team means is not settled yet.
 Reserving it costs a line; discovering the need later means either colliding with
 an identifier an app chose in the meantime, or migrating published blobs — and
 NIP-RS blobs are grow-only, so a bad context id is effectively permanent.
