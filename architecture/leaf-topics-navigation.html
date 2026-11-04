@@ -70,7 +70,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <main>
 
 <h1>Leaf's Topics navigation</h1>
-<p class="sub"><span class="state">Shaped, 2026-11-04</span> · Goal: Leaf's sidebar shows your topics, Home, then Topics, then the teams, and a topic opens as its own page in Leaf</p>
+<p class="sub"><span class="state">As built, 2026-11-04</span> · shaped the same day · Goal: Leaf's sidebar shows your topics, Home, then Topics, then the teams, and a topic opens as its own page in Leaf</p>
 
 <p>Leaf learns to browse by topic, as Ship did on 4 Nov. Its sidebar gets a Topics section between Home and the Folders tree, and each topic gets its own page in Leaf. Both draw from the <strong>one read</strong> of every topic that Ship and Add to topic already share. Nothing new is written to the relay.</p>
 
@@ -102,10 +102,10 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <rect class="ok" x="255" y="20" width="210" height="86" rx="8"/><text x="271" y="42" class="h">A topic's page</text><text x="271" y="60" class="m">what it lists, each opening</text><text x="271" y="76" class="m">in Leaf; archived behind a</text><text x="271" y="92" class="m">link · Conversation in Peek</text><text x="431" y="42" class="tag">M3</text>
 <rect class="b" x="490" y="20" width="210" height="60" rx="8"/><text x="506" y="44" class="h">Peek</text><text x="506" y="62" class="m">a topic's conversation</text>
 <rect class="b" x="20" y="136" width="190" height="86" rx="8"/><text x="32" y="158" class="h">Decided, 4 Nov</text><text x="32" y="176" class="m">pages, projects, issues</text><text x="32" y="192" class="m">your last five · More</text><text x="32" y="208" class="m">a space link opens Peek</text>
-<rect class="ok" x="255" y="136" width="210" height="70" rx="8"/><text x="271" y="158" class="h">Every topic link</text><text x="271" y="176" class="m">a file's Topics chip, a link</text><text x="271" y="192" class="m">in a page's text</text><text x="431" y="158" class="tag">M3</text>
+<rect class="ok" x="255" y="136" width="210" height="70" rx="8"/><text x="271" y="158" class="h">Every topic link</text><text x="271" y="176" class="m">a file's Topics chip; a link</text><text x="271" y="192" class="m">or card in a page or comment</text><text x="431" y="158" class="tag">M3</text>
 <g class="f"><rect class="b" x="490" y="136" width="210" height="70" rx="8"/><text x="506" y="158" class="h">Ship</text><text x="506" y="176" class="m">reads the same list</text><text x="506" y="192" class="m">for its Topics pages</text></g>
 <rect class="b" x="160" y="246" width="330" height="62" rx="8"/><text x="176" y="268" class="h">One read of every topic</text><text x="176" y="286" class="m">shared package · unchanged, but now</text><text x="176" y="300" class="m">on every cold open of Leaf</text>
-<rect class="ok" x="510" y="246" width="190" height="62" rx="8"/><text x="526" y="268" class="h">Your changes</text><text x="526" y="286" class="m">Home's Recent read, also</text><text x="526" y="300" class="m">orders your topics</text><text x="666" y="268" class="tag">M2</text>
+<rect class="ok" x="510" y="246" width="190" height="62" rx="8"/><text x="526" y="268" class="h">Your last edits</text><text x="526" y="286" class="m">one read: your last save or</text><text x="526" y="300" class="m">comment on each file shown</text><text x="666" y="268" class="tag">M2</text>
 <rect class="b" x="160" y="340" width="540" height="50" rx="8"/><text x="176" y="362" class="h">Relay</text><text x="176" y="380" class="m">unchanged: nothing new is written</text>
 <g class="f"><rect class="b" x="20" y="340" width="120" height="50" rx="8"/><text x="32" y="362" class="h">Prototype</text><text x="32" y="380" class="m">estiva-ui · M1</text></g>
 <path class="an" d="M222,246 L222,110"/><text x="228" y="230" class="m">your topics, their lists</text>
@@ -114,7 +114,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <path class="an" d="M465,50 L486,50"/>
 <path class="a" d="M325,308 L325,336"/>
 <path class="a" d="M600,308 L600,336"/></svg>
-<figcaption>The sidebar and the topic page both draw from the read Ship already shares, so Leaf, Ship and Add to topic agree on which topics are yours. The cost is that the read now runs on every cold open of Leaf. The five topics are the ones whose files you changed last, read the way Home's Recent reads your changes; whether that read carries it cheaply is measured at milestone 2's kickoff, and if it cannot, the order comes back to Miky.</figcaption>
+<figcaption>The sidebar and the topic page both draw from the read Ship already shares, so Leaf, Ship and Add to topic agree on which topics are yours. The cost is that the read now runs on every cold open of Leaf. As built: the five topics are the ones whose files you saved or commented on last, read in one batched read of your last save and last comment on each file shown (about 0.37 MB on Miky's workspace), not through Home's Recent. Listed files outside the Folders tree are resolved in one batched read. All of it adds about 2 MB to Miky's open of Leaf, which he accepted.</figcaption>
 </figure>
 
 <p>There is no Objects, Flow or Access view. No object changes what it is. Who can read or change a topic or its list stays as "Topics group files" left it. The only move between apps is the one link from a topic's page to its conversation in Peek.</p>
@@ -129,6 +129,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <li>Production, read as QA-1 on 4 Nov (<code>leafdocs.mjs</code>): 47 topics, 15 list a file, 25 files listed, 7 of them Leaf pages. Five real topics list a page, one each.</li>
 <li>The shared read's cost on Miky's workspace, measured as him on 2 Nov: roots 17 KB and lists 41 KB, one request each (Ship's Topics navigation).</li>
 <li>Not verified: how a topic link inside a page's text opens today. It is assumed to go to Peek through the same manifest. QA-1's count may also miss topics in a Folder QA-1 is not in.</li>
+<li><b>As built, 2026-11-04</b>, against leaf <code>origin/main</code> (c0090a7) and production. Sidebar: <code>src/topics/TopicsSection.tsx</code> and <code>sidebarTopics.ts</code> (leaf#103, #104), ordered by one batched read of your last <code>1851</code> and <code>1111</code> on each file shown. A topic's page: <code>src/pages/TopicPage.tsx</code> at <code>/topic/&lt;ref&gt;</code>, and every topic link, chip and card in Leaf opens it through <code>src/topics/topicLinks.ts</code> (leaf#108); a link to one message or to a space still opens Peek. The topics read asks for membership once since protocol 0.53.1 (leaf#105). Checked on production as Miky (sidebar, order, More, fold, topic page, chips, links) and as QA-2 (her topics, not Miky's). Miky's open of Leaf: 70.2 MB without Topics, 72.7 MB with them; his cold open of a topic page, 52 requests before and after.</li>
 </ul>
 
 </main>
