@@ -66,8 +66,10 @@ another app, reaches its own app.
 
 - In Ship: a written topic link opens Ship's topic page (SHIPS-4), and a Ship
   issue or project written with Leaf's address opens Ship's page, no longer
-  Leaf. Peek and Leaf are unchanged: Peek opens topics itself, Leaf has no page
-  made for issues or topics.
+  Leaf. Peek is unchanged: it opens topics itself. Leaf has no page made for
+  issues; since LTN-3 (4 Nov) it has one for topics, so a topic link inside
+  Leaf opens Leaf's topic page, and a space and a link to one message still
+  open Peek (Miky, LTN-3 shaping, D4).
 - SPEC §13.6.2's click rule carries the exception. An outside app asks itself
   one more question ("do I have a page made for this kind?"); an app that
   wrongly says yes keeps people from the file's own app.
