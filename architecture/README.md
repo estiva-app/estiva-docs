@@ -16,6 +16,13 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [Leaf's Topics navigation](leaf-topics-navigation.html) — Shaped,
+  2026-11-04. Leaf's sidebar gains a Topics section between Home and the
+  Folders tree (your five topics you worked in last, each folding to the
+  pages, projects and issues it lists), and a topic gets its own page in Leaf;
+  both draw from the topics read Ship already shares, and nothing new is
+  written to the relay. Read at
+  `https://docs.estiva.app/architecture/leaf-topics-navigation.html`.
 - [Ship's Topics navigation](ship-topics-navigation.html) — Shaped,
   2026-11-02. Ship gains a new sidebar (Home, Topics, Projects, Issues, then
   each Folder's own Topics, Projects and Issues), a Topics page with your topics first and a page per
