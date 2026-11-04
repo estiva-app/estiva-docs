@@ -232,6 +232,8 @@ properties and its history.
 
 ## Devices & sessions
 
+- [The copy on the device is the person's, shared by Peek, Ship and Leaf, so what one app fetched the others already have](the-copy-on-the-device-is-the-persons-shared-by-every-estiva-app.md) — Accepted, 2026-11-04
+- [A copy on the device catches up with Nostr's own set reconciliation (NIP-77), so it downloads only what it is missing or no longer may hold](a-copy-on-the-device-catches-up-with-nip-77.md) — Accepted, 2026-11-04
 - [Signing in to Estiva ID is plain OAuth 2.0 with PKCE, and Estiva's own request format is retired](sign-in-is-plain-oauth.md) — Accepted, 2026-10-16
 - [Peek keeps a plain copy of what it read on the device, until you sign out](peek-keeps-a-plain-copy-on-the-device-until-sign-out.md) — Accepted, 2026-10-14
 - [Peek keeps no copy of what it read once the page reloads](peek-keeps-nothing-after-a-reload.md) — Superseded by the one above, 2026-10-07
