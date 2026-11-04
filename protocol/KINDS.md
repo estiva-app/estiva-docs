@@ -31,7 +31,7 @@ nobody held the whole list.
 | Kind | Name | Notes |
 | --- | --- | --- |
 | `5` | Deletion | NIP-09. A *request* — relays may decline. Accepted from the author **or** the author's NIP-OA owner, which no client can evaluate ([SPEC §6.5](SPEC.md)) |
-| `9101` | **Estiva assertion** | A statement *about* something in the channel rather than a message in it. `resolution` is the first and currently only subtype, named by the `t` tag: it resolves or reopens a thread, `h` its top-level message's Folder, and the newest counts (SPEC §6.4, "Resolving a thread"). Estiva-specific |
+| `9101` | **Estiva assertion** | A statement *about* something in the channel rather than a message in it. `resolution` is the first and currently only subtype, named by the `t` tag: it resolves or reopens a thread, `h` its top-level message's team, and the newest counts (SPEC §6.4, "Resolving a thread"). Estiva-specific |
 
 ### Issue tracking — written by Estiva Ship
 
