@@ -3846,7 +3846,7 @@ what says which of them you have read.
 An app advances **exactly the streams it is showing**, and nothing beside them:
 
 - Opening a file's conversation MUST advance only that file's address. It MUST
-  NOT advance the channel, any other file, or the folder.
+  NOT advance the channel, any other file, or the team.
 - Opening a channel's general conversation MUST advance only the channel uuid.
   It MUST NOT advance any file in it.
 - A screen that shows both — Ship's project page draws the team's `kind:9`
@@ -3950,10 +3950,10 @@ own identifier. `folder:<address>` stays reserved for "everything under it at
 once".
 
 `folder:<folder-address>` is **reserved and unspecified.** "I have read
-everything in this folder" is a different frontier from "I have read this
+everything in this team" is a different frontier from "I have read this
 conversation", and it will want a scheme.
 
-It is reserved rather than specified because the folder model is still a draft.
+It is reserved rather than specified because the team model is still a draft.
 Reserving it costs a line; discovering the need later means either colliding with
 an identifier an app chose in the meantime, or migrating published blobs — and
 NIP-RS blobs are grow-only, so a bad context id is effectively permanent.
