@@ -50,6 +50,13 @@ including `["o",<d>]`. Then:
 - files with no place follow the placed ones, oldest listed first, and a
   reader that knows neither field shows that order;
 - a missing look draws the manifest's widget;
+- **the order is kept everywhere, the look is a hint** (Miky, same session,
+  asked as "Ship's order"): every app that lists a topic's files keeps this
+  order, and an app that groups them, by kind say, keeps it inside each
+  group. An app draws the look where it shows files as widgets (Peek's
+  Overview, Leaf); an app that lists them as its own rows (Ship's topic page,
+  laid out like its Projects page) keeps its rows. As §7 puts it, the owner
+  says what matters and the reading app decides how it looks;
 - an archived topic takes no arrangement (§6.5);
 - the ordering rule replaces "No order is promised" in §6.14.
 
