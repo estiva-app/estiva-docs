@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Topics level-up</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
+.legend .lgone::before { background: var(--warn-bg); border-color: var(--warn); }
+.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
+.legend .lf::before { opacity: .45; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+/* Below 560px a diagram scrolls inside its figure instead of shrinking its text. */
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); stroke-width: 1.5; }
+svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .f { opacity: .45; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
+svg .aq { stroke: var(--accent); fill: none; stroke-width: 1.6; stroke-dasharray: 5 4; marker-end: url(#arr-q); }
+svg .life { stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 3 4; }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+</style>
+</head>
+<body>
+<!-- Arrowheads, shared by every diagram on the page. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+    <marker id="arr-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<main>
+
+<h1>Topics: level up the topic experience</h1>
+<p class="sub"><span class="state">Shaped, 2026-11-06</span> · Goal: your topics are easy to find and arrange in Peek, Ship and Leaf. They come in the order things happen, any topic (archived ones too) is one click away, and a topic's files sit the way the team arranged them.</p>
+
+<p>Two things change under the screens. First, every app orders your topics by <strong>one shared rule</strong>, where anything last moved: the newest message in the topic's conversation, a file added to it, or a change or comment on a file it lists (issues under a listed project too, the agent's writes included). Arranging, row or card, a rename and joining do not count. The order is worked out from what is already on the relay. Second, a topic's list of files gains <strong>an order and a look per file</strong>, kept on the topic and the same for everyone. Everything else is how each app draws topics: Peek flat, Ship and Leaf five topics folded, and Explore topics in all three.</p>
+
+<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lf">untouched, for orientation</span></div>
+
+<h2>Map</h2>
+
+<h3>Today</h3>
+<figure>
+<svg viewBox="0 0 720 330" role="img">
+<title>Today: Peek lists every topic you are in A to Z, each folding to its files, with Other topics and Archived sections, and a topic's Overview shows its files with a remove cross; Ship's sidebar has Topics, Projects and Issues but no topic rows, its Topics page is A to Z, and a topic's page shows progress bars, document titles and a link to Peek; Leaf shows five topics ordered by your own edits, each folding to its files, then More; all three read every topic and its list from one shared read, which has no order rule; the relay keeps a topic's files in the order they were added</title>
+<rect class="b" x="20" y="20" width="220" height="110" rx="8"/><text x="36" y="42" class="h">Peek</text><text x="36" y="62" class="m">Topics: every one, A–Z,</text><text x="36" y="78" class="m">each folds to its files;</text><text x="36" y="94" class="m">Other topics · Archived</text><text x="36" y="110" class="m">Overview: files, ✕ to remove</text>
+<rect class="b" x="250" y="20" width="220" height="110" rx="8"/><text x="266" y="42" class="h">Ship</text><text x="266" y="62" class="m">sidebar: no topic rows</text><text x="266" y="78" class="m">Topics page: A–Z, four tabs</text><text x="266" y="94" class="m">a topic's page: bars, titles,</text><text x="266" y="110" class="m">"Conversation in Peek" link</text>
+<rect class="b" x="480" y="20" width="220" height="110" rx="8"/><text x="496" y="42" class="h">Leaf</text><text x="496" y="62" class="m">sidebar: five topics,</text><text x="496" y="78" class="m">ordered by your own edits,</text><text x="496" y="94" class="m">each folds to its files · More</text><text x="496" y="110" class="m">no page of every topic</text>
+<rect class="b" x="120" y="170" width="480" height="60" rx="8"/><text x="136" y="192" class="h">Shared package: one read of every topic</text><text x="136" y="212" class="m">each topic's list of files · no order rule: each app sorts its own way</text>
+<rect class="b" x="120" y="260" width="480" height="56" rx="8"/><text x="136" y="282" class="h">Relay</text><text x="136" y="302" class="m">topics · a topic's files, in the order added · messages · changes</text>
+<path class="a" d="M200,170 L140,134"/><path class="a" d="M360,170 L360,134"/><path class="a" d="M520,170 L580,134"/>
+<path class="a" d="M360,260 L360,234"/>
+</svg>
+<figcaption>All three apps already share one read of your topics and what each lists. The order is what differs: Peek and Ship sort A–Z, and Leaf sorts by your own last edit, so one topic sits in three different places.</figcaption>
+</figure>
+
+<h3>After</h3>
+<figure>
+<svg viewBox="0 0 720 420" role="img">
+<title>After: Peek lists every topic you are in as one flat list, newest activity first, with Explore topics, a short menu and an Open work shortcut, and its Overview lets anyone who may write in the topic's team arrange its files as rows or cards, with archived files at the end (M2 to M4); Ship's sidebar shows your five newest topics folded, then Explore topics, and its topic page draws projects like the Projects page, documents with their last edit and the topic's conversation (M2, M5); Leaf shows the five newest in the same order, then an Explore topics page (M2); the shared package gains one order rule and reads a topic's files in their order and look (M2, M3); the relay stores nothing new for the order, and each file on a topic gets a place and a look, notes of their own beside its list entry (M3); the prototype comes first (M1)</title>
+<rect class="ok" x="20" y="20" width="220" height="126" rx="8"/><text x="36" y="42" class="h">Peek</text><text x="170" y="42" class="tag">M2–M4</text><text x="36" y="62" class="m">every topic you're in, flat,</text><text x="36" y="78" class="m">newest activity first</text><text x="36" y="94" class="m">Explore topics · menu · Open work</text><text x="36" y="110" class="m">Overview: arrange files,</text><text x="36" y="126" class="m">archived at the end</text>
+<rect class="ok" x="250" y="20" width="220" height="126" rx="8"/><text x="266" y="42" class="h">Ship</text><text x="410" y="42" class="tag">M2, M5</text><text x="266" y="62" class="m">five newest, folded</text><text x="266" y="78" class="m">Explore = the Topics page</text><text x="266" y="94" class="m">a topic's page: Projects-page</text><text x="266" y="110" class="m">rows, documents' last edit,</text><text x="266" y="126" class="m">the topic's conversation</text>
+<rect class="ok" x="480" y="20" width="220" height="126" rx="8"/><text x="496" y="42" class="h">Leaf</text><text x="670" y="42" class="tag">M2</text><text x="496" y="62" class="m">five newest, same order,</text><text x="496" y="78" class="m">folded</text><text x="496" y="94" class="m">Explore topics page</text><text x="496" y="110" class="m">(More goes)</text><text x="496" y="126" class="m">files in the topic's order</text>
+<rect class="ok" x="120" y="186" width="480" height="70" rx="8"/><text x="136" y="208" class="h">Shared package</text><text x="540" y="208" class="tag">M2, M3</text><text x="136" y="228" class="m">one order: newest message, file added, or change on a listed file</text><text x="136" y="244" class="m">a topic's files in the order and look the team gave them</text>
+<rect class="b" x="130" y="296" width="570" height="104" rx="8"/><text x="146" y="318" class="h">Relay</text><text x="146" y="338" class="m">nothing new is written for the order: messages and changes are there</text>
+<rect class="ok" x="146" y="350" width="420" height="40" rx="6"/><text x="160" y="368" class="m">each file on a topic gets a place and a row or card look,</text><text x="160" y="384" class="m">notes of their own beside its entry · decided 6 Nov</text><text x="540" y="368" class="tag">M3</text>
+<g class="f"><rect class="b" x="20" y="296" width="96" height="104" rx="8"/><text x="32" y="318" class="h">Prototype</text><text x="32" y="338" class="m">Storybook</text><text x="32" y="354" class="m">M1</text></g>
+<path class="an" d="M200,186 L140,150"/><path class="an" d="M360,186 L360,150"/><path class="an" d="M520,186 L580,150"/>
+<path class="a" d="M360,296 L360,260"/></svg>
+<figcaption>The order needs no new data, only one rule that all three apps share: the newest message in the topic's conversation, a file added, or a change or comment on a listed file, issues under a listed project and the agent's writes included. Arranging, row or card, a rename and joining do not move a topic. Peek reorders as it happens; Ship and Leaf on the next open or when you come back to the tab. Arranging a topic's files is the one new kind of data written; Ship's replies in a topic's conversation are ordinary messages, as Peek already writes. Main and All, in Peek only, is a separate project ("Topics: Main and All").</figcaption>
+</figure>
+
+<h2>Objects</h2>
+<figure>
+<svg viewBox="0 0 720 250" role="img">
+<title>A topic keeps one entry per listed file, saying whether it is on the list; after, each listed file also has a place and a row or card look, each a note of its own signed by whoever arranged it, so two people arranging at once do not overwrite each other; every app keeps that order (Ship within each kind) and draws the look where files are widgets; a file with no place falls back to the order added</title>
+<rect class="b" x="20" y="50" width="170" height="64" rx="8"/><text x="36" y="74" class="h">A topic</text><text x="36" y="94" class="m">lives in one team</text>
+<rect class="ok" x="260" y="20" width="230" height="124" rx="8"/><text x="276" y="42" class="h">Per listed file</text><text x="276" y="62" class="m">entry: on the list, or off it</text><text x="276" y="80" class="m" style="fill:var(--ok)">+ its place, a note (new)</text><text x="276" y="98" class="m" style="fill:var(--ok)">+ row or card, a note (new)</text><text x="276" y="118" class="m">each a change of its own, signed</text><text x="276" y="134" class="m">by whoever adds or arranges</text>
+<rect class="b" x="550" y="50" width="150" height="64" rx="8"/><text x="566" y="74" class="h">A file</text><text x="566" y="94" class="m">any app's, any team</text>
+<path class="a" d="M190,82 L256,82"/><text x="200" y="74" class="m">keeps</text>
+<path class="a" d="M490,82 L546,82"/><text x="498" y="74" class="m">names</text>
+<rect class="b" x="260" y="180" width="230" height="56" rx="8"/><text x="276" y="202" class="h">Peek, Ship and Leaf</text><text x="276" y="222" class="m">keep the order; look where widgets</text>
+<path class="an" d="M375,144 L375,176"/>
+</svg>
+<figcaption>Miky's call of 6 Nov (record each-file-on-a-topic-keeps-its-own-place-and-look): each file's place and look are notes of their own, beside the entry that lists it, as being on the list already is (SPEC §6.14). Anyone who may write in the topic's team can arrange, so a move touches only the moved file, and two people arranging at once both keep their change. Every app keeps the order, and an app that groups by kind (Ship) keeps it inside each group; the row or card is drawn where files are widgets (Peek's Overview, Leaf). Turned down: the place on the entry itself, and one arrangement for the whole topic. Who can arrange is who can already add a file, so the Access picture does not change and is not drawn. Choosing what a widget shows, such as only open issues, would be one more note per file, the same way. That is out of scope here.</figcaption>
+</figure>
+
+<h2>Flow</h2>
+<figure>
+<svg viewBox="0 0 720 300" role="img">
+<title>Miky replies in a topic's conversation from Ship's topic page (M5), or comments on an issue under a project the topic lists; Ship asks Estiva ID to sign it and sends it to the relay, which stores it and pushes it live; Peek shows the reply in the topic and moves the topic to the top of everyone's list at once; Ship and Leaf move it to the top on the next open or when you come back to the tab (M2)</title>
+<rect class="ok" x="20" y="40" width="200" height="100" rx="8"/><text x="36" y="62" class="h">Ship, as Miky</text><text x="160" y="62" class="tag">M5</text><text x="36" y="82" class="m">replies in the topic's</text><text x="36" y="98" class="m">conversation, or comments</text><text x="36" y="114" class="m">on an issue under a listed</text><text x="36" y="130" class="m">project</text>
+<rect class="b" x="270" y="40" width="180" height="100" rx="8"/><text x="286" y="62" class="h">Relay</text><text x="286" y="82" class="m">checks who signed it,</text><text x="286" y="98" class="m">stores it, pushes it live</text><text x="286" y="114" class="m">(an ordinary message</text><text x="286" y="130" class="m">or comment)</text>
+<rect class="ok" x="500" y="20" width="200" height="90" rx="8"/><text x="516" y="42" class="h">Peek, as QA-2</text><text x="660" y="42" class="tag">M2</text><text x="516" y="62" class="m">at once: the reply shows</text><text x="516" y="78" class="m">in the topic, and the topic</text><text x="516" y="94" class="m">moves to the top</text>
+<rect class="ok" x="500" y="140" width="200" height="90" rx="8"/><text x="516" y="162" class="h">Ship and Leaf</text><text x="660" y="162" class="tag">M2</text><text x="516" y="182" class="m">on the next open, or when</text><text x="516" y="198" class="m">you come back to the tab:</text><text x="516" y="214" class="m">the topic is at the top</text>
+<path class="an" d="M220,90 L266,90"/><text x="228" y="82" class="m">1</text>
+<path class="an" d="M450,80 L496,66"/><text x="466" y="62" class="m">2</text>
+<path class="an" d="M450,110 L496,170"/><text x="476" y="128" class="m">3</text>
+<g class="f"><rect class="b" x="20" y="200" width="200" height="56" rx="8"/><text x="36" y="222" class="h">Not news</text><text x="36" y="242" class="m">arranging, row or card, rename</text></g>
+</svg>
+<figcaption>The Done-when's own moment: Miky replies from Ship and QA-2 sees it in Peek. (1) Ship writes what Peek already writes, a message in the topic's conversation (record a-conversation-is-one-shared-thing-and-only-its-colours-are-the-apps), or a comment on a file. (2) Peek is live: the reply and the new order arrive at once. (3) Ship and Leaf reorder on the next open or when you come back to the tab. Arranging a topic's files, switching row or card, or renaming it travels the same way but moves no topic.</figcaption>
+</figure>
+
+<p>There is no Access view, because who can read or arrange a topic's list stays as "Topics group files" left it.</p>
+
+<h2>Checked</h2>
+<ul>
+<li>Peek's Topics column is A–Z (<code>byTitle</code>, <code>src/api/useTopicsColumn.ts:200</code>). It has no cap, each topic folds to its files (<code>TopicsColumn.tsx:185-218</code>), and Other topics and Archived are <code>NavTreeSection</code>s (<code>:221-248</code>). Read on peek-app <code>origin/main</code> (26d5d376).</li>
+<li>Peek's Overview draws a topic's files with the kit's corner ✕ (<code>TopicFiles.tsx</code>, <code>MessageLinks.tsx:137-144</code>), with no reorder and no layout choice.</li>
+<li>Ship's sidebar has Topics, Projects and Issues and no topic rows (<code>ShipSidebar.tsx:99-129</code>). Its Topics page is A–Z with four tabs (<code>src/lib/topics.ts:33</code>, <code>TopicsView.tsx</code>). A topic's page shows a progress bar per project, document titles with "Leaf ↗", and a "Conversation in Peek" link (<code>TopicView.tsx</code>, <code>TopicWorkRow.tsx</code>). Read on estiva-ship (1ef00b2).</li>
+<li>Leaf's sidebar shows five topics ordered by your own last save or comment on a listed file (<code>sidebarTopics.ts:85-102</code>, <code>TopicsSection.tsx:11</code>). Read on leaf (c0090a7).</li>
+<li>One shared read of every topic is <code>readTopics</code> in estiva-foundation <code>packages/interop/src/topics.ts</code> (0d1593d). <code>listsOf</code> returns entries in event order, "in no promised order", and no function there computes a topic's newest activity.</li>
+<li>A list entry is one <code>kind:1851</code> per file with <code>field</code> <code>lists:&lt;d&gt;</code>, <code>true</code> or <code>false</code>. SPEC §6.14 (estiva-docs <code>origin/main</code>) promises no order.</li>
+<li>Two changes to one field: the later wins (SPEC §6.3), and an app told it is out of date re-sends any field but the text (§6.2): why each file's place is its own note. <code>row</code> and <code>card</code> are closed widgets every app draws (§7.5).</li>
+<li>Not verified at shaping: how much reading everyone's newest activity for every topic Miky is in costs. Milestone 2's kickoff measures it on his workspace.</li>
+</ul>
+
+</main>
+</body>
+</html>

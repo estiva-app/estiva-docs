@@ -16,6 +16,12 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [Topics: level up the topic experience](topics-level-up-the-topic-experience.html)
+  — Shaped, 2026-11-06. Peek, Ship and Leaf order your topics by one shared
+  rule, where anything last moved in the topic or its files, and each file on a topic
+  gets a place and a row or card look of its own, kept on the topic and the
+  same for everyone. Read at
+  `https://docs.estiva.app/architecture/topics-level-up-the-topic-experience.html`.
 - [Topics: Main and All](topics-main-and-all.html) — Shaped, 2026-11-06.
   In Peek, a topic followed at All reads the conversations of every file it
   lists through one new read in the shared package, and the shared
