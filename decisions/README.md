@@ -260,6 +260,7 @@ properties and its history.
 - [A copy of an app holds one workspace, which the sign-in picks and a company's own address picks for you; a sign-in is good for that one workspace, and a person has one name and picture in all of them](the-sign-in-picks-the-workspace.md) — Accepted, 2026-10-26
 - [A relay too busy to answer says it is busy, at every door; a host it does not know still gets the same answer as before](a-busy-relay-says-it-is-busy.md) — Accepted, 2026-10-27
 - [When the server refuses a change, it says why with a short code every app reads, before its sentence](a-refusal-starts-with-a-reason-code-every-app-reads.md) — Accepted, 2026-11-03
+- [A request kept open hears every new event that asking again would return](a-request-kept-open-hears-what-asking-again-would-return.md) — Accepted, 2026-11-06
 
 # Research
 
