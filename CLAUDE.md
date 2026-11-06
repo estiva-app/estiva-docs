@@ -4,6 +4,8 @@ The specification, guides and working documents of the Estiva suite. This
 repository is public; `docs.estiva.app` publishes only what `site/nav.mjs` lists
 in `NAV` and the `Dockerfile` copies.
 
+Say team to people; tool names and flags still say folder.
+
 - **Read `decisions/` before proposing a shape.** It holds why things are the
   way they are, including ideas that were turned down: a Rejected record means
   do not rebuild it without new facts. A Proposed record binds nobody and is
