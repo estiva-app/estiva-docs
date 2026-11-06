@@ -1514,8 +1514,11 @@ D3, which stands):
   its place from its replies (§13.6). A reader therefore holds a thread's
   top-level message in one of three states: **present**; **deleted**, its
   author's `kind:5` returned; or **not returned**, when only its replies were
-  read and no deletion by its author is known, which is drawn as their thread
-  without saying it was deleted. A comment the read did not return is in the
+  read and no deletion by its author is known. A not-returned comment is never
+  said to be deleted: its place reads "This comment can't be shown.", its
+  replies stay under it, and like a deleted comment's thread it takes no new
+  replies and offers neither Resolve nor Reopen (*added 2026-11-06*, ONE-9;
+  Miky, 2026-11-06). A comment the read did not return is in the
   team most of its replies were filed in (none on a tie), and only those
   replies speak for it: its author is the signer of a returned `kind:5` that
   every one of their lowercase `p` tags names (§6.4, *Replies*). A thread of
