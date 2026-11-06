@@ -16,6 +16,12 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [Topics: Main and All](topics-main-and-all.html) — Shaped, 2026-11-06.
+  In Peek, a topic followed at All reads the conversations of every file it
+  lists through one new read in the shared package, and the shared
+  conversation draws each thread under its file's name; a reply goes on the
+  file it is about, and nothing new is written to the relay. Read at
+  `https://docs.estiva.app/architecture/topics-main-and-all.html`.
 - [Leaf's Topics navigation](leaf-topics-navigation.html) — Shaped,
   2026-11-04. Leaf's sidebar gains a Topics section between Home and the
   Folders tree (your five topics you worked in last, each folding to the

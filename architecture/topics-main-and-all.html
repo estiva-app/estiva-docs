@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Topics: Main and All</title>
+<!--
+  Template for a project's architecture page (process/ARCHITECTURE.md).
+  Copy to architecture/<project-slug>.html, then redraw every example below:
+  the drawings here show the visual language, not any real project.
+  Classes: .b box · .w card · .ok new · .bad goes away · .q undecided (dashed)
+  · .f untouched (faint) · .a arrow · .an new arrow · .aq undecided arrow
+  · .m muted second line · .h bold label · .tag milestone tag.
+-->
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.example { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
+.legend .lgone::before { background: var(--warn-bg); border-color: var(--warn); }
+.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
+.legend .lf::before { opacity: .45; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+/* Below 560px a diagram scrolls inside its figure instead of shrinking its text. */
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); stroke-width: 1.5; }
+svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .f { opacity: .45; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
+svg .aq { stroke: var(--accent); fill: none; stroke-width: 1.6; stroke-dasharray: 5 4; marker-end: url(#arr-q); }
+svg .life { stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 3 4; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 560px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+tr.new td { background: var(--ok-bg); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+</style>
+</head>
+<body>
+<!-- Arrowheads, shared by every diagram on the page. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+    <marker id="arr-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<main>
+
+<h1>Topics: Main and All</h1>
+<p class="sub"><span class="state">Shaped, 2026-11-06</span> · <a href="https://ship.estiva.app/#/project/84febb43-12af-4b50-985e-2e6f9e1a0643">Ship project</a> ·Goal: in Peek, a topic you follow at All shows what is said on every file it lists, each thread under its file's name.</p>
+
+<p>Nothing new goes on the relay. Peek already reads a topic's list of files and a topic's own conversation. This project adds one read in the shared package, the conversations of every listed file, and a file's name above each of its threads in the shared conversation. Your level on the topic decides which you see. Look first at the Flow: a comment written in Leaf reaches the topic in Peek, and a reply from Peek lands back on the page.</p>
+
+<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lf">untouched, for orientation</span></div>
+
+<h2>Map</h2>
+
+<h3>Today</h3>
+<figure>
+<svg viewBox="0 0 720 300" role="img">
+<title>Today: Peek shows a topic's own conversation and its list of files; each file's conversation is read only on that file, in Ship or Leaf</title>
+<rect class="b" x="20" y="20" width="200" height="70" rx="8"/><text x="36" y="44" class="h">Peek · a topic</text><text x="36" y="62" class="m">its own conversation</text><text x="36" y="78" class="m">its files, in the side panel</text>
+<rect class="b" x="260" y="20" width="200" height="70" rx="8"/><text x="276" y="44" class="h">Ship · a project or issue</text><text x="276" y="62" class="m">its own conversation</text>
+<rect class="b" x="500" y="20" width="200" height="70" rx="8"/><text x="516" y="44" class="h">Leaf · a page</text><text x="516" y="62" class="m">its own conversation</text>
+<rect class="b" x="20" y="130" width="330" height="54" rx="8"/><text x="36" y="154" class="h">Shared package</text><text x="36" y="172" class="m">a topic's list · one file's conversation</text>
+<g class="f"><rect class="b" x="380" y="130" width="320" height="54" rx="8"/><text x="396" y="154" class="h">Shared conversation</text><text x="396" y="172" class="m">one file's threads, the same in every app</text></g>
+<rect class="b" x="20" y="226" width="680" height="54" rx="8"/><text x="36" y="250" class="h">Relay</text><text x="36" y="268" class="m">the topic's list · comments on the topic and on each file, each in its file's team</text>
+<path class="a" d="M120,90 L120,126"/>
+<path class="a" d="M185,184 L185,222"/>
+<path class="a" d="M360,90 L360,222"/>
+<path class="a" d="M600,90 L600,222"/>
+</svg>
+<figcaption>A topic in Peek lists its files, but what is said on them is read only on each file. Ship and Leaf are untouched by this project.</figcaption>
+</figure>
+
+<h3>After</h3>
+<figure>
+<svg viewBox="0 0 720 320" role="img">
+<title>After: at All, Peek's topic reads the conversations of every listed file through a new read in the shared package, and draws each thread under its file's name</title>
+<rect class="ok" x="20" y="20" width="200" height="86" rx="8"/><text x="36" y="44" class="h">Peek · a topic</text><text x="36" y="62" class="m">Important: its own (Main)</text><text x="36" y="78" class="m">All: plus every listed</text><text x="36" y="94" class="m">file's threads</text>
+<g class="f"><rect class="b" x="260" y="20" width="200" height="70" rx="8"/><text x="276" y="44" class="h">Ship · a project or issue</text><text x="276" y="62" class="m">its own conversation</text></g>
+<g class="f"><rect class="b" x="500" y="20" width="200" height="70" rx="8"/><text x="516" y="44" class="h">Leaf · a page</text><text x="516" y="62" class="m">its own conversation</text></g>
+<rect class="ok" x="20" y="146" width="330" height="54" rx="8"/><text x="36" y="170" class="h">Shared package</text><text x="36" y="188" class="m">new: every listed file's conversation, live</text>
+<rect class="ok" x="380" y="146" width="320" height="54" rx="8"/><text x="396" y="170" class="h">Shared conversation</text><text x="396" y="188" class="m">new: the file's name above its threads</text>
+<rect class="b" x="20" y="246" width="680" height="54" rx="8"/><text x="36" y="270" class="h">Relay</text><text x="36" y="288" class="m">unchanged · the same comments, now also read from the topic</text>
+<path class="an" d="M120,106 L120,142"/><text x="128" y="128" class="tag">M1</text>
+<path class="an" d="M220,80 L540,80 L540,142"/><text x="548" y="128" class="tag">M1</text>
+<path class="an" d="M185,200 L185,242"/><text x="193" y="226" class="tag">M1 · one read across teams</text>
+<g class="f"><path class="a" d="M360,90 L360,142"/><path class="a" d="M600,90 L600,142"/></g>
+</svg>
+<figcaption>All three changes are milestone 1. Ship and Leaf keep a file's own conversation, with no Main or All (Miky, 6 Nov). The follow icon that sets the level comes from "Teams and following" and is not drawn.</figcaption>
+</figure>
+
+<h2>Flow</h2>
+<figure>
+<svg viewBox="0 0 720 330" role="img">
+<title>Miky comments on the Navigation page in Leaf; the relay stores it in the page's team; Peek, showing the topic at All, reads it and draws it under the page's name; Miky replies from Peek and the reply is a comment on the page, which Leaf shows</title>
+<text x="60" y="24" class="h">Leaf</text><text x="250" y="24" class="h">Relay</text><text x="440" y="24" class="h">Peek · topic at All</text><text x="620" y="24" class="h">Leaf, later</text>
+<line class="life" x1="75" y1="34" x2="75" y2="320"/><line class="life" x1="265" y1="34" x2="265" y2="320"/><line class="life" x1="475" y1="34" x2="475" y2="320"/><line class="life" x1="650" y1="34" x2="650" y2="320"/>
+<path class="a" d="M75,64 L261,64"/><text x="86" y="56" class="m">Miky comments on "Navigation"</text>
+<rect class="b" x="200" y="76" width="130" height="34" rx="6"/><text x="210" y="98" class="m">kept in the page's team</text>
+<path class="an" d="M265,136 L471,136"/><text x="276" y="128" class="m">sent live to the topic</text><text x="430" y="152" class="tag">M1</text>
+<rect class="ok" x="400" y="160" width="150" height="50" rx="6"/><text x="410" y="182" class="m">under "Navigation"</text><text x="410" y="198" class="m">among the topic's own</text>
+<path class="an" d="M475,240 L269,240"/><text x="290" y="232" class="m">reply: a comment on the page</text>
+<path class="a" d="M265,284 L646,284"/><text x="420" y="276" class="m">the reply shows on the page</text>
+<text x="86" y="314" class="m">Read in Peek = read in Leaf: one marker per file</text>
+</svg>
+<figcaption>The reply is written to the page, not to the topic, so it lives with the page's readers. A new message written in the topic, outside any thread, goes to the topic.</figcaption>
+</figure>
+
+<h2>Objects and access</h2>
+<p>Unchanged. A topic lists files by id. A comment belongs to its file and a new one is kept in that file's team, so the relay lets only that team's readers read it; an older comment may sit in a team that lists the file (SPEC §6.4). Following at All grants nothing and makes nobody a member of a listed file. Nothing is private today; what All shows for a file you cannot open is decided with private teams.</p>
+
+<h2>Checked</h2>
+<ul>
+<li>A topic's own conversation is <code>kind:1111</code> by <code>#A</code> on the topic: Peek <code>src/nostr/fileConversation.ts:387</code>; on production, 74 comments on "Planning and sequencing".</li>
+<li>Peek reads a topic's list with interop <code>topicList</code> (<code>src/nostr/foreign.ts:848</code>); nothing reads full comments of many files (<code>conversationsOf</code> returns metadata, <code>projection.ts:385</code>).</li>
+<li>Ship and Leaf topic pages link out to Peek with no conversation (<code>estiva-ship src/views/TopicView.tsx:54</code>, <code>leaf src/pages/TopicPage.tsx:54</code>).</li>
+<li>A comment's team is its file's team, and a reader reads by address whatever the team: SPEC §6.4. Unread at All answers to the file's own marker: SPEC §11.</li>
+<li>Listed files and their comments on production, 6 Nov, as QA-2: 46 topics, at most 8 files listed, at most 18 comments on a real topic's files.</li>
+<li>Not checked: that a live watch over several teams delivers each team's comments to Peek (milestone 1 checks it).</li>
+</ul>
+
+</main>
+</body>
+</html>
