@@ -1240,8 +1240,11 @@ for any event that arrived by `#a`. None has ever existed on production — 0 of
 CON-5). A reader listing an object's comments MUST NOT list an event that
 carries a reply `e` — a `kind:9` with any `e`, a `kind:1111` with a lowercase
 `e` that differs from its `E` — as a comment of its own, whatever `a` it
-carries. (A top-level comment on an *event* root carries `E` and `e` naming the
-same event, and is a comment. On an address root it carries no `e` at all.) The last row of the
+carries, except that a `kind:1111` with an `a` equal to its `A` is a top-level
+comment (*Replies* below; *amended 2026-11-06*). (A top-level comment on an
+*event* root carries `E` and `e` naming the same event, and is a comment. On an
+address root it carries no `e`, or, in NIP-22's own shape, `a` equal to its `A`
+and `e` with the file's version id.) The last row of the
 table above says a reply's tags decide nothing, and a per-event test for `a`
 contradicts it the day a reply carries one: interop's `isCommentOn` is applied
 per event, so a `kind:9` reply carrying `a` would be listed as a second
@@ -1310,7 +1313,12 @@ read, and is found by `#e` on the comments that read returned.
 first lowercase `e` that is non-empty, not marked `mention` in its fourth
 position, and differs from that root compared as a string. A comment with such
 an `e` is a reply to that parent; one without is top-level (a top-level
-comment on an event carries `E` and `e` naming the same event). Every reader
+comment on an event carries `E` and `e` naming the same event). A comment with
+an `a` equal to its first `A` names its file as its parent and is top-level
+whatever its `e` says: NIP-22's own example adds `e` with the file's version id
+(*decided 2026-11-06*, Miky). A reply never carries the object's `a` (the
+table above), so this tells the two apart on every comment on production
+(2026-11-06: 0 of 713 replies carry it). Every reader
 and the relay use this one test (`parentOf` in `@estiva-app/conversation`).
 The relay accepts a reply only when its parent is a `kind:1111` the relay holds
 and has not deleted, that its writer can read, and whose first non-empty `h`
@@ -3645,7 +3653,7 @@ throwaway relay or a fake query.
 | # | Check |
 | --- | --- |
 | C10 | **Both kinds.** A thread rooted in a `kind:1111` on an object lists under that object, and a channel's `kind:9` chat lists under no object, whatever `a` it carries (§6.4) |
-| C11 | **Two strengths.** On one object: a `1111` whose `A` is the object is a comment; a `1111` whose `A` is another file but whose `a` names this one is a mention; a `kind:9` whose body names the object is a mention; a `1111` with no `A` is a comment on each of its `a`. Mentions are presented apart from comments. A reply carrying the object's `a` lists as neither (§6.4) |
+| C11 | **Two strengths.** On one object: a `1111` whose `A` is the object is a comment; a `1111` whose `A` is another file but whose `a` names this one is a mention; a `kind:9` whose body names the object is a mention; a `1111` with no `A` is a comment on each of its `a`. Mentions are presented apart from comments. A `kind:9` reply carrying the object's `a` lists as neither; a `1111` whose `a` equals its `A` is a top-level comment whatever its `e` says (§6.4) |
 | C12 | **Edit fold.** Three edits to one message inside one second, carrying `ts`, fold to the last by `ts`. One whose `ts` is off by a second folds by `created_at`. An edit whose first `e` is marked and names another message is applied to that message and never to the second `e`. An edit byte-identical to the body does not mark the message edited. The message is marked edited, and shows the current text (§6.2, §6.8) |
 | C13 | **Reaction horizon and count.** With 101 targets, reactions are asked for the newest 100 and the omission of 1 is reported. `+`, empty and a duplicate from one pubkey count as one `+`. A reaction with two `e` counts against the last (§6.6) |
 | C14 | **Deletion left to the relay.** After the author's `kind:5`, the next read no longer holds the message, and the app shows nothing for it from local state. A non-author's `kind:5` is refused and the refusal is shown in the relay's words. Edit and Delete are offered only on the viewer's own message — not on another person's or an agent's (§6.5, 2026-10-06) |
