@@ -1240,8 +1240,11 @@ for any event that arrived by `#a`. None has ever existed on production — 0 of
 CON-5). A reader listing an object's comments MUST NOT list an event that
 carries a reply `e` — a `kind:9` with any `e`, a `kind:1111` with a lowercase
 `e` that differs from its `E` — as a comment of its own, whatever `a` it
-carries. (A top-level comment on an *event* root carries `E` and `e` naming the
-same event, and is a comment. On an address root it carries no `e` at all.) The last row of the
+carries, except that a `kind:1111` with an `a` equal to its `A` is a top-level
+comment (*Replies* below; *amended 2026-11-06*). (A top-level comment on an
+*event* root carries `E` and `e` naming the same event, and is a comment. On an
+address root it carries no `e`, or, in NIP-22's own shape, `a` equal to its `A`
+and `e` with the file's version id.) The last row of the
 table above says a reply's tags decide nothing, and a per-event test for `a`
 contradicts it the day a reply carries one: interop's `isCommentOn` is applied
 per event, so a `kind:9` reply carrying `a` would be listed as a second
@@ -1304,6 +1307,30 @@ A reply's lowercase `a` is left out because NIP-22 would read it as the
 parent, so a copy of the object's address there would claim the reply is a
 top-level comment. It follows that a reply is absent from an object's `#a`
 read, and is found by `#e` on the comments that read returned.
+
+**Which comment is a reply, and the relay keeps it in its comment's team**
+(*added 2026-11-06*). A `kind:1111`'s root is its first `E`. Its parent is its
+first lowercase `e` that is non-empty, not marked `mention` in its fourth
+position, and differs from that root compared as a string. A comment with such
+an `e` is a reply to that parent; one without is top-level (a top-level
+comment on an event carries `E` and `e` naming the same event). A comment with
+an `a` equal to its first `A` names its file as its parent and is top-level
+whatever its `e` says: NIP-22's own example adds `e` with the file's version id
+(*decided 2026-11-06*, Miky). A reply never carries the object's `a` (the
+table above), so this tells the two apart on every comment on production
+(2026-11-06: 0 of 713 replies carry it). Every reader
+and the relay use this one test (`parentOf` in `@estiva-app/conversation`).
+The relay accepts a reply only when its parent is a `kind:1111` the relay holds
+and has not deleted, that its writer can read, and whose first non-empty `h`
+equals the reply's, compared as written (two with none are the same). A reply
+whose parent is missing, deleted, unreadable to its writer, of another kind,
+in another team, or not 64 hex is refused with one text,
+`invalid: reply parent not found in this team`, so a refusal never says
+whether, or where, a comment exists. A top-level comment is not checked.
+A thread whose comment is gone therefore still has one team, the one each of
+its replies was filed in (§6.5). Replies already on the relay were not
+re-checked: on 2026-11-06 all 713 passed this test at the time they were
+written.
 
 A file the reply's *body* names (a `[` pick or a pasted `naddr`) still earns
 `["a", addr]`, not `q`: `q` points at a message, and the strengths table reads
@@ -1518,12 +1545,13 @@ D3, which stands):
   said to be deleted: its place reads "This comment can't be shown.", its
   replies stay under it, and like a deleted comment's thread it takes no new
   replies and offers neither Resolve nor Reopen (*added 2026-11-06*, ONE-9;
-  Miky, 2026-11-06). A comment the read did not return is in the
-  team most of its replies were filed in (none on a tie), and only those
-  replies speak for it: its author is the signer of a returned `kind:5` that
-  every one of their lowercase `p` tags names (§6.4, *Replies*). A thread of
-  channel `kind:9` replies names no author, and is never read as deleted. A
-  thread with no team takes no `9101`.
+  Miky, 2026-11-06). A comment the read did not return is in its
+  replies' team when every returned reply names the same `h`, and in none
+  otherwise (the relay files a reply only in its comment's team, §6.4,
+  *Replies*). Its replies speak for it: its author is the signer of a
+  returned `kind:5` that every one of their lowercase `p` tags names. A thread
+  of channel `kind:9` replies names no author, and is never read as deleted. A
+  thread with no team takes no `9101` and is never read as deleted.
 - **It does not remove the changes.** *Added 2026-10-14 (Leaf 1; Miky,
   2026-10-13).* A `kind:5` naming a file's address hides the root, and every
   `kind:1851` aimed at it stays readable to its team — for a bare file, a
@@ -3625,12 +3653,12 @@ throwaway relay or a fake query.
 | # | Check |
 | --- | --- |
 | C10 | **Both kinds.** A thread rooted in a `kind:1111` on an object lists under that object, and a channel's `kind:9` chat lists under no object, whatever `a` it carries (§6.4) |
-| C11 | **Two strengths.** On one object: a `1111` whose `A` is the object is a comment; a `1111` whose `A` is another file but whose `a` names this one is a mention; a `kind:9` whose body names the object is a mention; a `1111` with no `A` is a comment on each of its `a`. Mentions are presented apart from comments. A reply carrying the object's `a` lists as neither (§6.4) |
+| C11 | **Two strengths.** On one object: a `1111` whose `A` is the object is a comment; a `1111` whose `A` is another file but whose `a` names this one is a mention; a `kind:9` whose body names the object is a mention; a `1111` with no `A` is a comment on each of its `a`. Mentions are presented apart from comments. A `kind:9` reply carrying the object's `a` lists as neither; a `1111` whose `a` equals its `A` is a top-level comment whatever its `e` says (§6.4) |
 | C12 | **Edit fold.** Three edits to one message inside one second, carrying `ts`, fold to the last by `ts`. One whose `ts` is off by a second folds by `created_at`. An edit whose first `e` is marked and names another message is applied to that message and never to the second `e`. An edit byte-identical to the body does not mark the message edited. The message is marked edited, and shows the current text (§6.2, §6.8) |
 | C13 | **Reaction horizon and count.** With 101 targets, reactions are asked for the newest 100 and the omission of 1 is reported. `+`, empty and a duplicate from one pubkey count as one `+`. A reaction with two `e` counts against the last (§6.6) |
 | C14 | **Deletion left to the relay.** After the author's `kind:5`, the next read no longer holds the message, and the app shows nothing for it from local state. A non-author's `kind:5` is refused and the refusal is shown in the relay's words. Edit and Delete are offered only on the viewer's own message — not on another person's or an agent's (§6.5, 2026-10-06) |
 | C15 | **Attachment fold.** An edit carrying `imeta` replaces the message's set. A later edit with none leaves the message with no files. An edit carrying one file on a message with two leaves one (§6.8) |
-| C16 | **Reply shape.** A reply to a comment is a `kind:1111` with the comment's `A`/`K`/`P`, `e`/`k`/`p` naming the top-level comment, the comment's `h`, and no lowercase `a` for the object. A reply to a comment carrying a `block` copies its `block` and `quote` verbatim, before the `h` (§13.6). A reply read back threads under that comment in every conforming app (§6.4) |
+| C16 | **Reply shape.** A reply to a comment is a `kind:1111` with the comment's `A`/`K`/`P`, `e`/`k`/`p` naming the top-level comment, the comment's `h`, and no lowercase `a` for the object. A reply to a comment carrying a `block` copies its `block` and `quote` verbatim, before the `h` (§13.6). A reply read back threads under that comment in every conforming app (§6.4). The relay refuses a reply whose parent is missing, deleted, unreadable to its writer, not a `kind:1111`, or in another team with `invalid: reply parent not found in this team`, and accepts a top-level comment without that check (§6.4, *Replies*; *2026-11-06*) |
 | C17 | **Membership fold.** The file's author is a member from its first record (the earliest version, for a root written twice before the switch, §6.1); a membership change targeted by `O` counts as one by `a`, and one whose `h` is not the file's team is ignored (§11.8). A `member:<P>` change with no `prev` is accepted on every type. Writing in the stream, a body mention, an assignee change carrying `["p", P]`, and `member:<P>`=`true` by anyone each make the person a member. A comment's `p` tag alone does not, nor an assignee change without a `p`, nor an unassign, nor a `kind:9` with an `a`. An edit of the root after the author left does not re-join them. A `member:<P>`=`false` signed by someone else is ignored. One signed by `P` ends membership until a later trigger, and member-since is then that trigger's second. Two changes inside one second order by `ts` (§11.8). On a topic or space, writing in the stream and a mention in a message put the person only in that conversation, not the place, a name in its summary places nobody, and its author is in it at Important (§11.8, *Places and following*; *added 2026-11-02*) |
 | C18 | **Unread for a member.** Someone mentioned for the first time on a year-old file has one unread message, the mention. The person's own messages are never unread. A reply is read once its thread's marker or the reply floor passes it, or the file's marker passes it and it is at or before T0; the channel's marker never reads a file. A muted file shows only the messages that mention the person (§11.3, §11.8) |
 | C19 | **Urgent mention.** A message urgent for `P` carries `["urgent", P]` and `["p", P]` and names `P` in its body as published as an ordinary reference. It is urgent for `P` and for nobody else it names. An `urgent` tag for a person the body does not name is not urgent. An app that does not draw urgency renders it as an ordinary mention (§13.1) |
@@ -3675,7 +3703,7 @@ staged field, or writes one, also conforms to these.
 | C48 | **A level on a place is its person's own** (*added 2026-11-02*, §11.8). A `follow:<P>` with `all` or `important` signed by `P` sets `P`'s level; one signed by anybody else, or with `P` not the signer's lowercase hex, is refused by the relay and ignored by a reader; any other value than `all`, `important` or empty is refused by the relay and sets nothing. `P`'s own `member:<P>`=`false` ends every level and join before it, from any app; a level, join or Add after it puts `P` back in. An Add puts `P` in at Important and never sets a level. A `follow:<P>`'s `p` places `P` on nothing |
 | C49 | **A team's default** (*added 2026-11-02*, §11.8). A member of a team is in its chat and spaces at Important, a follower (by `estiva:teams:v1`) in its spaces, nobody in the topics it leads, and nobody in any place of an archived team by any way, a chosen level included; a place in `off` is not reached. Nothing before the later of the person's join (the earliest `kind:9000`/`9021` since their last leave, or the `kind:9007` for its maker) or follow `since` and the space's marking `add` or `move` (the earliest since it was last unmarked or removed) is unread. Important lights a new conversation, a reply in a conversation the person wrote in or is mentioned in, and a mention; All also every reply and the conversations on the files the place lists, not the files nested under them (§6.7 Nesting) nor a listed project's issues (*2026-11-06*); a list entry lights nothing |
 | C50 | **A space, a topic's one team, and a move** (*added 2026-11-02*, §3.3, §6.5). A `kind:1852` `add` carrying `["a", <addr>, "", "space"]` (or the `o` form) marks the entry a space, and an `add` without the role unmarks it; a role a reader does not know leaves the entry listed. The relay refuses an `add` or `set` that lists a topic another team's `kind:30890` lists, a `remove` of a topic no other team lists unless its author archived it or it is deleted, and an `add` of a topic no team lists anywhere but its home. A `move` from team A to team B changes both lists in one write; the same move sent again is a duplicate; one from a team that does not list the topic, or into or out of an archived team, is refused and changes neither list. In an archived team an `add` naming a topic is refused and one naming a project lands. A topic found on two teams' lists is drawn in the one whose `add` or `move` naming it is newest. A move's entry keeps the role only when it carries it |
-| C51 | **Resolving a thread** (*added 2026-11-04*, §6.4, §6.5). A thread's state is its newest `kind:9101` with `t=resolution` in §6.3's order, whoever wrote it: a resolve and a reopen in the same second fold by `ts`, then the higher `id`. A `9101` whose `h` is not its target's team, one whose target is a reply, and one whose `action` is neither `resolved` nor `reopened` change nothing; a `support` outside the thread is dropped and the resolve stands. A deleted top-level message keeps the state its last `9101` gave it, and its thread offers neither Resolve nor Reopen. A top-level message the read did not return is in the team most of its replies were filed in, and is deleted only when a returned `kind:5` is signed by the key every one of those replies names in its lowercase `p`; otherwise it is not returned: never said to be deleted, its place reads "This comment can't be shown." above its replies, and its thread takes no new replies and offers neither Resolve nor Reopen (*2026-11-06*). A reply filed in another team neither deletes it nor clears its deletion |
+| C51 | **Resolving a thread** (*added 2026-11-04*, §6.4, §6.5). A thread's state is its newest `kind:9101` with `t=resolution` in §6.3's order, whoever wrote it: a resolve and a reopen in the same second fold by `ts`, then the higher `id`. A `9101` whose `h` is not its target's team, one whose target is a reply, and one whose `action` is neither `resolved` nor `reopened` change nothing; a `support` outside the thread is dropped and the resolve stands. A deleted top-level message keeps the state its last `9101` gave it, and its thread offers neither Resolve nor Reopen. A top-level message the read did not return is in its replies' team when every returned reply names the same `h`, and in none otherwise, and is deleted only when a returned `kind:5` is signed by the key every one of those replies names in its lowercase `p`; otherwise it is not returned: never said to be deleted, its place reads "This comment can't be shown." above its replies, and its thread takes no new replies and offers neither Resolve nor Reopen (*2026-11-06*). It is deleted only when it has a team: replies that disagree on the team, as a reply filed in another team before the relay refused one would, leave it not returned, never deleted |
 
 ### 9.1 Reference checks
 
