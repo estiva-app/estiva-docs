@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arranging a topic's files</title>
+<style>
+:root {
+  --bg: #fbfaf7; --ink: #1d1d1f; --muted: #5d5d66; --line: #8e8e98; --rule: #dcdad3;
+  --box: #efeee9; --card: #ffffff; --fold: #f3f1ea; --gate: #e6edfb; --team: #eaf4ec;
+  --accent: #2457c5; --warn: #b3401f; --ok: #2a7a46; --chip: #dfe6f6; --pick: #f2f6ff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17171a; --ink: #ececef; --muted: #a8a8b2; --line: #74747f; --rule: #34343b;
+    --box: #26262b; --card: #1f1f23; --fold: #222226; --gate: #1d2a45; --team: #1d3324;
+    --accent: #93b2ff; --warn: #ff9e80; --ok: #82d69e; --chip: #2b3553; --pick: #1c2338;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17171a; --ink: #ececef; --muted: #a8a8b2; --line: #74747f; --rule: #34343b;
+  --box: #26262b; --card: #1f1f23; --fold: #222226; --gate: #1d2a45; --team: #1d3324;
+  --accent: #93b2ff; --warn: #ff9e80; --ok: #82d69e; --chip: #2b3553; --pick: #1c2338;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0 auto; max-width: 760px; padding: 24px 16px 64px;
+  background: var(--bg); color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+h1 { font-size: 28px; line-height: 1.2; margin: 4px 0 4px; }
+h2 { font-size: 20px; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--rule); }
+h3 { font-size: 17px; margin: 22px 0 6px; }
+p, li { max-width: 70ch; }
+ul { padding-left: 20px; }
+li { margin: 3px 0; }
+.kicker { color: var(--muted); font-size: 14px; margin: 0; }
+.question { font-size: 19px; line-height: 1.45; font-weight: 600; }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+.door { background: var(--box); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.note { background: var(--box); border-left: 4px solid var(--line); padding: 10px 14px; border-radius: 6px; }
+.pick { background: var(--pick); border-left: 4px solid var(--accent); padding: 10px 14px; border-radius: 6px; }
+.opt { border: 1px solid var(--rule); border-radius: 10px; padding: 4px 16px 10px; margin: 14px 0; background: var(--card); }
+.opt h3 { margin-top: 12px; }
+.opt.rec { border-color: var(--accent); }
+.tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); vertical-align: 2px; margin-left: 6px; }
+.tablewrap { overflow-x: auto; margin: 10px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.4; min-width: 560px; }
+th, td { text-align: left; vertical-align: top; padding: 7px 8px; border-bottom: 1px solid var(--rule); }
+th { font-size: 13px; color: var(--muted); font-weight: 600; }
+td:first-child { font-weight: 600; min-width: 7.5em; }
+figure { margin: 18px 0 24px; overflow-x: auto; }
+figure svg { width: 100%; min-width: 600px; height: auto; display: block; }
+figcaption { font-size: 14px; color: var(--muted); margin-top: 6px; }
+figcaption b { color: var(--ink); }
+code { font-size: 13px; background: var(--box); padding: 0 4px; border-radius: 4px; }
+.gate { fill: var(--gate); stroke: var(--accent); stroke-width: 1.5; }
+.team { fill: var(--team); stroke: var(--ok); stroke-width: 1.3; }
+.fold { fill: var(--fold); stroke: var(--line); stroke-width: 1.2; }
+.file { fill: var(--card); stroke: var(--line); stroke-width: 1.2; }
+.bad { fill: var(--card); stroke: var(--warn); stroke-width: 1.5; }
+.dash { stroke-dasharray: 6 4; }
+.t { fill: var(--ink); font-size: 13px; }
+.b { font-weight: 700; }
+.ts { fill: var(--muted); font-size: 12px; }
+.ta { fill: var(--accent); font-size: 12px; font-weight: 600; }
+.tw { fill: var(--warn); font-size: 12px; font-weight: 600; }
+.tok { fill: var(--ok); font-size: 12px; font-weight: 600; }
+.arrow { fill: none; stroke: var(--ink); stroke-width: 1.3; }
+.head { fill: var(--ink); }
+</style>
+</head>
+<body>
+<p class="kicker">Decision brief · Topics: level up the topic experience · 6 Nov 2026</p>
+<h1>Arranging a topic's files</h1>
+<p class="kicker">For Miky. This writes a new kind of thing to the relay, so on your answer it becomes a decision record in estiva-docs, and your merge accepts it.</p>
+
+<p class="question">When someone drags a file to a new place in a topic, or switches it between a row and a card, what does the topic keep, and what happens when two people arrange the same topic at the same moment?</p>
+
+<p>Settled already, by you on 6 Nov: a topic's files keep <b>one order and one look</b> (row or card), <b>kept on the topic, the same for everyone</b>, and <b>anyone who can add a file to the topic can arrange it</b>. This brief is only about how that is kept.</p>
+
+<h2>Today</h2>
+<p>A topic keeps its list of files as one small entry per file: "Testing Widgets is on this topic", "Widgets 2 is on this topic", each signed by whoever added it (your call of 30 Oct, a topic keeps its own list). Nobody can arrange the files. The protocol says plainly that <b>no order is promised</b>: each app sorts them however its design says, and nothing records a row or a card.</p>
+<figure>
+<svg viewBox="0 0 720 190" role="img" aria-labelledby="t0">
+<title id="t0">Today: the topic keeps one entry per file; no order, no look; each app sorts its own way.</title>
+<rect class="file" x="10" y="20" width="300" height="130" rx="10"/>
+<text class="t b" x="24" y="44">Topic · Widgets</text>
+<text class="ts" x="24" y="66">entry · Widgets 2 is on the list (Miky)</text>
+<text class="ts" x="24" y="84">entry · Testing Widgets is on the list (Katerina)</text>
+<text class="ts" x="24" y="102">entry · Roadmap is on the list (Miky)</text>
+<text class="tw" x="24" y="132">no order, no row or card</text>
+<path class="arrow" d="M312 85 H372"/><path class="head" d="M372 80 l8 5 -8 5z"/>
+<rect class="fold" x="384" y="20" width="326" height="130" rx="10"/>
+<text class="t b" x="398" y="44">Peek, Ship, Leaf</text>
+<text class="ts" x="398" y="66">each sorts the files its own way</text>
+<text class="ts" x="398" y="84">each draws each file its own way</text>
+<text class="ts" x="398" y="112">nobody can move a file up,</text>
+<text class="ts" x="398" y="128">or make one a card</text>
+</svg>
+<figcaption><b>Today.</b> The list says what is on the topic, not where or how.</figcaption>
+</figure>
+
+<h2>Why it reaches beyond this project</h2>
+<ul>
+  <li><b>It is the first order a person sets by hand anywhere in the protocol.</b> Every list so far is sorted by time or title. Whatever we choose here is what the next hand-ordered list copies: a team's pinned files, an initiative's projects, an outside company's own collection.</li>
+  <li><b>Anyone in the team arranges, not one owner.</b> So two people moving files at once is the normal case, not an odd one. The rule for it is the rule every outside app has to follow.</li>
+  <li><b>A row or a card becomes something the topic says, not something each app decides.</b> Every app that draws a topic's files learns to read it.</li>
+</ul>
+<div class="door"><b>Mostly a two-way door.</b> Nothing is arranged today, so nothing migrates. An arrangement is a preference: if we switch shape later, apps fall back to "order added" and someone drags again. What is harder to undo is the rule outside apps have learned, and, for option B, history lines that stay on the relay forever.</div>
+
+<h2>The options</h2>
+<p>All three use the same example: on the Widgets topic, in the same minute, <b>you drag Widgets 2 to the top</b> while <b>Katerina makes Testing Widgets a card</b>.</p>
+
+<div class="opt rec">
+<h3>A. Each file's place and look are their own small notes on the topic <span class="tag">recommended</span></h3>
+<p>The topic keeps, per file, a "place" note and a "look" note, beside the entry that lists it. A move writes one note for the file that moved, saying "between these two". Changing the look writes one note for that file. Nothing else is touched.</p>
+<figure>
+<svg viewBox="0 0 720 210" role="img" aria-labelledby="ta">
+<title id="ta">Option A: your move and Katerina's look are separate notes; both stand.</title>
+<rect class="team" x="10" y="20" width="180" height="60" rx="10"/>
+<text class="t b" x="22" y="44">You</text>
+<text class="ts" x="22" y="64">drag Widgets 2 to the top</text>
+<rect class="team" x="10" y="110" width="180" height="60" rx="10"/>
+<text class="t b" x="22" y="134">Katerina</text>
+<text class="ts" x="22" y="154">make Testing Widgets a card</text>
+<path class="arrow" d="M192 50 H236"/><path class="head" d="M236 45 l8 5 -8 5z"/>
+<path class="arrow" d="M192 140 H236"/><path class="head" d="M236 135 l8 5 -8 5z"/>
+<rect class="file" x="248" y="10" width="240" height="190" rx="10"/>
+<text class="t b" x="262" y="34">Topic · Widgets</text>
+<text class="ts" x="262" y="56">3 entries, unchanged</text>
+<text class="ta" x="262" y="84">new · place of Widgets 2:</text>
+<text class="ta" x="262" y="100">  before everything</text>
+<text class="ta" x="262" y="130">new · look of Testing Widgets:</text>
+<text class="ta" x="262" y="146">  card</text>
+<text class="ts" x="262" y="180">two notes, about two files</text>
+<path class="arrow" d="M490 105 H520"/><path class="head" d="M520 100 l8 5 -8 5z"/>
+<rect class="fold" x="532" y="10" width="178" height="190" rx="10"/>
+<text class="t b" x="544" y="34">Everyone sees</text>
+<text class="ts" x="544" y="60">1 Widgets 2 · row</text>
+<text class="ts" x="544" y="80">2 Testing Widgets · card</text>
+<text class="ts" x="544" y="100">3 Roadmap · row</text>
+<text class="tok" x="544" y="140">both changes stand</text>
+<text class="ts" x="544" y="160">nobody is asked</text>
+</svg>
+<figcaption><b>A.</b> Each change touches only the file it is about.</figcaption>
+</figure>
+<p><b>What you and Katerina see.</b> Both changes stand, in every app, with no warning. If you both move <i>the same</i> file, the later move wins, as for any other field today. History can say "Miky moved Widgets 2" apart from "Miky added Widgets 2".</p>
+<p><b>What an outside company gets.</b> Two more notes per file, read like the list entry it already reads. An app that does not know them shows files in the order they were added, which is today's behaviour.</p>
+<p><b>What could go wrong.</b></p>
+<ul>
+  <li>A file taken off and put back comes back at the end, not where it was: a place older than the file's latest "added" is ignored. That is on purpose, but someone may expect the old place.</li>
+  <li>Two people dropping two different files into the same gap at once both stand, and the two land side by side in a fixed order. Neither is lost.</li>
+  <li>A topic with files you cannot read: their places exist but are skipped, so you see the rest in the right order. Nothing new is revealed, since the list entry already names the file.</li>
+</ul>
+</div>
+
+<div class="opt">
+<h3>B. The place and look are written on the file's list entry</h3>
+<p>No new notes. Moving a file, or changing its look, writes the file's list entry again, now saying "on this topic, first, as a card".</p>
+<figure>
+<svg viewBox="0 0 720 210" role="img" aria-labelledby="tb">
+<title id="tb">Option B: each move rewrites the list entry, so history shows the file added again, and a stale move can put back a removed file.</title>
+<rect class="team" x="10" y="20" width="180" height="60" rx="10"/>
+<text class="t b" x="22" y="44">You</text>
+<text class="ts" x="22" y="64">drag Widgets 2 to the top</text>
+<rect class="team" x="10" y="110" width="180" height="60" rx="10"/>
+<text class="t b" x="22" y="134">Katerina</text>
+<text class="ts" x="22" y="154">make Testing Widgets a card</text>
+<path class="arrow" d="M192 50 H236"/><path class="head" d="M236 45 l8 5 -8 5z"/>
+<path class="arrow" d="M192 140 H236"/><path class="head" d="M236 135 l8 5 -8 5z"/>
+<rect class="file" x="248" y="10" width="240" height="190" rx="10"/>
+<text class="t b" x="262" y="34">Topic · Widgets</text>
+<text class="ta" x="262" y="62">entry again · Widgets 2 is on</text>
+<text class="ta" x="262" y="78">  the list, first</text>
+<text class="ta" x="262" y="108">entry again · Testing Widgets</text>
+<text class="ta" x="262" y="124">  is on the list, card</text>
+<text class="tw" x="262" y="160">history: "added" twice each</text>
+<text class="ts" x="262" y="180">the entry now means three things</text>
+<path class="arrow" d="M490 105 H520"/><path class="head" d="M520 100 l8 5 -8 5z"/>
+<rect class="fold" x="532" y="10" width="178" height="190" rx="10"/>
+<text class="t b" x="544" y="34">Everyone sees</text>
+<text class="ts" x="544" y="60">1 Widgets 2 · row</text>
+<text class="ts" x="544" y="80">2 Testing Widgets · card</text>
+<text class="ts" x="544" y="100">3 Roadmap · row</text>
+<text class="tok" x="544" y="140">both changes stand</text>
+<text class="tw" x="544" y="160">but see the stale tab</text>
+</svg>
+<figcaption><b>B.</b> Arranging and adding become the same act.</figcaption>
+</figure>
+<p><b>What you and Katerina see.</b> The same result as A in this example. But every drag looks like "added to Widgets" to anything that reads entries: history, and "which topics is this file in".</p>
+<p><b>What an outside company gets.</b> Nothing new to read, but the list entry, which today means only "on" or "off", now also carries a place and a look, and an app has to tell a move from an add.</p>
+<p><b>What could go wrong.</b></p>
+<ul>
+  <li><b>A stale tab puts a removed file back.</b> You take Roadmap off the topic. Katerina, in a tab that has not caught up, drags Roadmap one place down. Her app is told it is out of date and, by today's rule for any field but the text, sends her change again. Her change says "Roadmap is on the list", so Roadmap is back. Avoiding it needs a special case in every app.</li>
+  <li>History and Activity fill with "added" lines for files that were only moved, and those stay on the relay.</li>
+</ul>
+</div>
+
+<div class="opt">
+<h3>C. One arrangement for the whole topic <span class="tag">do less</span></h3>
+<p>The topic keeps one note: the whole order, with each file's look. Every drag saves the whole arrangement again. This is the simplest to build and to read.</p>
+<figure>
+<svg viewBox="0 0 720 210" role="img" aria-labelledby="tc">
+<title id="tc">Option C: both save the whole arrangement; the later save wins and silently drops the other person's change.</title>
+<rect class="team" x="10" y="20" width="180" height="60" rx="10"/>
+<text class="t b" x="22" y="44">You</text>
+<text class="ts" x="22" y="64">drag Widgets 2 to the top</text>
+<rect class="team" x="10" y="110" width="180" height="60" rx="10"/>
+<text class="t b" x="22" y="134">Katerina</text>
+<text class="ts" x="22" y="154">make Testing Widgets a card</text>
+<path class="arrow" d="M192 50 H236"/><path class="head" d="M236 45 l8 5 -8 5z"/>
+<path class="arrow" d="M192 140 H236"/><path class="head" d="M236 135 l8 5 -8 5z"/>
+<rect class="bad" x="248" y="10" width="240" height="190" rx="10"/>
+<text class="t b" x="262" y="34">Topic · Widgets</text>
+<text class="ts" x="262" y="56">one arrangement note</text>
+<text class="ta" x="262" y="84">yours: Widgets 2, Testing</text>
+<text class="ta" x="262" y="100">  Widgets (row), Roadmap</text>
+<text class="tw" x="262" y="130">hers, sent again over yours:</text>
+<text class="tw" x="262" y="146">  Testing Widgets (card),</text>
+<text class="tw" x="262" y="162">  Widgets 2, Roadmap</text>
+<path class="arrow" d="M490 105 H520"/><path class="head" d="M520 100 l8 5 -8 5z"/>
+<rect class="fold" x="532" y="10" width="178" height="190" rx="10"/>
+<text class="t b" x="544" y="34">Everyone sees</text>
+<text class="ts" x="544" y="60">1 Testing Widgets · card</text>
+<text class="ts" x="544" y="80">2 Widgets 2 · row</text>
+<text class="ts" x="544" y="100">3 Roadmap · row</text>
+<text class="tw" x="544" y="140">your move is gone</text>
+<text class="ts" x="544" y="160">nobody is told</text>
+</svg>
+<figcaption><b>C.</b> The whole order is one value, so the later save replaces the earlier one.</figcaption>
+</figure>
+<p><b>What you and Katerina see.</b> Arranging alone works. Arranging together, the later save wins whole: your move disappears and nobody is told. Keeping both would need a new merge rule, like the one the text has, for every app.</p>
+<p><b>What an outside company gets.</b> One value to read, a list. To write it safely it must merge someone else's arrangement into its own, or lose theirs.</p>
+<p><b>What could go wrong.</b> Beside the lost move: the arrangement goes stale. A file added after the last arrange is not in it and falls to the end; a file taken off stays in it until someone arranges again. It is the same reason the topic's list itself was made one entry per file and not one list, on 30 Oct.</p>
+</div>
+
+<h2>Trade-offs</h2>
+<div class="tablewrap">
+<table>
+<tr><th>Option</th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td>A. Own notes per file</td><td>Two new notes per file, beside the entry; each change touches one file. Same pattern as the list entry.</td><td>Both people's changes stand. History tells "moved" from "added".</td><td>Reads two notes like the entry it knows; without them, order added.</td><td>Low: notes are ignored if dropped.</td><td>Medium: a "between these two" key, and one rule for files with no place.</td></tr>
+<tr><td>B. On the entry</td><td>The entry means on/off, place and look at once.</td><td>Both stand, but every move reads as "added"; a stale tab can put back a removed file.</td><td>Must tell a move from an add on every entry.</td><td>Medium: the "added" lines stay on the relay.</td><td>Medium, plus a special case in every app for the stale tab.</td></tr>
+<tr><td>C. One arrangement</td><td>One value for the whole topic.</td><td>Alone it works; together, the later save silently drops the other's change.</td><td>Must merge others' arrangements, or lose them.</td><td>Low.</td><td>Smallest, unless a merge rule is added.</td></tr>
+</table>
+</div>
+
+<h2>How others do it</h2>
+<ul>
+  <li><b>Trello and Linear</b>: each card or issue keeps its own position number; moving one writes only that one. This is A.</li>
+  <li><b>Figma</b>: each layer keeps a key "between its neighbours", so two people reordering different layers never collide. The same key A uses.</li>
+  <li><b>Notion</b>: a page keeps its children as one ordered list, and Notion's own server merges two people's edits. On an open relay there is no server to merge for us, which is C's problem.</li>
+  <li><b>Nostr lists (NIP-51)</b>: one author's whole list, saved whole. That fits one owner, not a team, and is why a topic's list is one entry per file.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<div class="pick"><b>A: each file's place and look are their own notes on the topic.</b> You decided anyone who can add a file can arrange, so two people arranging at once is normal, and each person's change must touch only what they changed. A carries the reasoning behind the topic's list one step further, keeps "added" and "moved" as different acts in history, and can never put back a file someone took off. An outside app learns two more notes of a kind it already reads. C is the "do less", and loses a person's change without telling anyone; B looks smaller but makes the list entry mean three things.</div>
+<p class="small muted">Asked separately, with the product questions: whether arranging counts as "something happened" and moves the topic up in Recent, and whether Ship, which groups a topic's files by kind, follows the order inside each group.</p>
+
+<h2>Checked</h2>
+<ul class="small">
+  <li>The topic's list is one entry per file, and "no order is promised": SPEC §6.14, estiva-docs <code>origin/main</code> 7ca5ae5, read 6 Nov.</li>
+  <li>The reason for one entry per file (anyone in the team writes the list, so a whole-list save overwrites others'): §6.14, and the Accepted record <code>a-topic-keeps-its-own-list-of-files</code>.</li>
+  <li>Two changes to one field: the later wins (§6.3). When an app is told it is out of date on any field but the text, it sends its value again and "the later stands, and no one is asked" (§6.2, your call of 30 Oct). This is what drops your move in C and puts the file back in B.</li>
+  <li>Row and card are drawn by every app (§7.5, closed widgets).</li>
+  <li>Your 6 Nov answer (one order and look, on the topic, for everyone; anyone who can add can arrange): this shaping session's notes.</li>
+  <li>Nothing is arranged today, so nothing migrates: §6.14 records no order or look.</li>
+  <li><b>Not re-checked today:</b> that Leaf already keeps a link's Row or Card inside a document for every reader (from the 6 Nov code survey). It supports the idea that a look belongs to the container, not to each app.</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="small muted">A: <code>kind:1851</code> changes on the topic (<code>kind:30840</code>) with fields <code>order:&lt;d&gt;</code> (a fractional sort key) and <code>look:&lt;d&gt;</code> (<code>row</code>|<code>card</code>), carrying §6.14's skip rules and <code>["o",&lt;d&gt;]</code>; <code>#o</code> "which topics list a file" folds only <code>lists:</code>; a place older than the file's newest <code>lists:&lt;d&gt;</code>=true is ignored; unplaced files follow placed ones, oldest first; no arrangement on an archived topic (§6.5); a missing look draws the manifest's widget. B: <code>place</code> and <code>look</code> on the <code>lists:&lt;d&gt;</code> entry. C: one <code>arrangement</code> field. SPEC §6.14, §6.7 Changes, §6.5, §9 C31, KINDS row for 1851; interop release and <code>PROTOCOL_VERSION</code> bump. Extends record <code>a-topic-keeps-its-own-list-of-files</code>. From prereview-protocol, 6 Nov. Project "Topics: level up the topic experience", milestone 3.</p>
+</body>
+</html>

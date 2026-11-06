@@ -1,7 +1,8 @@
 # Each file on a topic keeps its own place and look, as notes of their own beside its list entry, so two people arranging at once both keep their change
 
 - Date: 2026-11-06
-- Status: Proposed
+- Status: Accepted
+- Decided by: Miky, in the shaping session for "Topics: level up the topic experience" (2026-11-06), on the brief "Arranging a topic's files" ([page](briefs/arranging-a-topics-files.html)): A, as recommended, after asking whether C was good enough for how rarely a topic is arranged
 - Area: Files
 
 ## Who it affects
@@ -35,7 +36,7 @@ arrange it. This record is about how that is kept.
 
 ## Decision
 
-Proposed: option A of the brief "Arranging a topic's files".
+Option A of the brief "Arranging a topic's files".
 
 The topic keeps, per listed file, two fields of its own, beside the entry that
 lists it: `order:<d>`, a sort key that places the file between its neighbours
@@ -58,8 +59,6 @@ KINDS row for `1851`, an interop release and a `PROTOCOL_VERSION` bump.
 
 ## Rejected alternatives
 
-None yet: Proposed. The brief's other options:
-
 - **B. The place and look on the file's list entry.** Every move writes the
   entry again, so history and "which topics list this file" read each move as
   an add, and those lines stay on the relay. A stale tab's move, re-sent after
@@ -70,6 +69,14 @@ None yet: Proposed. The brief's other options:
   the other's change and nobody is told, unless every app learns a new merge
   rule. Files added after the last arrange, or taken off since, leave it
   stale. It is the shape §6.14 turned down for the list itself.
+- **C with the move replayed.** Asked when Miky questioned whether C was good
+  enough, since a topic is arranged only now and then: on an out-of-date
+  refusal the app re-applies its one move or look change to the newest
+  arrangement and saves again. Nothing is lost in practice, and going to A
+  later would cost reading the old arrangement once. It lost because the
+  safety would be a rule every app and every outside company must remember,
+  where A has it in the shape, for about a day's more build. "At once" here
+  means "since my tab last caught up", which can be hours on an open tab.
 
 ## Consequences
 
