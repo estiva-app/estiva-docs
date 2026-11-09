@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Whose agent is it</title>
+<style>
+:root{--bg:#fbfaf7;--ink:#1d1d1b;--muted:#5f5d57;--box:#ffffff;--line:#c9c5bb;--accent:#2f6fdb;--good:#2e8b57;--bad:#c0392b;--soft:#eef2fb;}
+@media (prefers-color-scheme: dark){:root{--bg:#18181a;--ink:#ecebe7;--muted:#a6a39b;--box:#232327;--line:#4a4944;--accent:#7aa7ff;--good:#5fc48a;--bad:#ff7b6b;--soft:#22293a;}}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif;margin:0}
+main{max-width:760px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:1.5rem;margin:.2em 0 .6em}
+h2{font-size:1.1rem;margin:2em 0 .5em;border-top:1px solid var(--line);padding-top:1em}
+h3{font-size:1rem;margin:1.4em 0 .3em}
+p,li{color:var(--ink)}
+.muted{color:var(--muted);font-size:.92rem}
+.q{background:var(--soft);border-left:4px solid var(--accent);padding:12px 14px;border-radius:6px;font-size:1.05rem}
+.rec{border-left:4px solid var(--good);padding:10px 14px;background:var(--box);border-radius:6px}
+svg{width:100%;height:auto;display:block;margin:10px 0}
+svg text{fill:var(--ink);font:13px system-ui,sans-serif}
+svg .m{fill:var(--muted);font-size:12px}
+svg .bx{fill:var(--box);stroke:var(--line);stroke-width:1.5}
+svg .hl{fill:var(--soft);stroke:var(--accent);stroke-width:2}
+svg .ar{stroke:var(--ink);stroke-width:1.5;fill:none;marker-end:url(#a)}
+svg .no{stroke:var(--bad);stroke-width:1.5;fill:none;stroke-dasharray:5 4}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:560px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--soft)}
+code{font-size:.88em}
+</style>
+</head>
+<body>
+<main>
+<h1>Whose agent is it?</h1>
+
+<p class="q"><strong>The question:</strong> where should it say, in a way every app can check, that “Claude (steered by Katerina)” is Katerina's — so that Peek can leave her own Claude's messages out of her Screener, as you decided on 4 Nov?</p>
+
+<h2>Today</h2>
+<p>Katerina's Claude posted an update on a Ship issue she is a member of. Her Screener showed it as news from someone else. On 4 Nov you answered: <em>your own Claude's messages skip your Screener, like your own messages do.</em></p>
+<p>Building that, the premise breaks: <strong>no app can tell whose agent wrote a message.</strong> Estiva ID already signs a small proof, “this agent belongs to Katerina”, with her key. But the agent hands that proof only to the relay, in a side channel, when it connects. The relay stores it privately and uses it for one thing: letting an owner delete their agent's messages. Nothing an app reads carries it. The name “steered by Katerina” is self-chosen, and the record on bots says apps never decide anything from a name.</p>
+
+<svg viewBox="0 0 720 210" role="img"><title>Today: the owner proof stops at the relay</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker></defs>
+<rect class="bx" x="10" y="20" width="150" height="56" rx="8"/><text x="24" y="44">Estiva ID</text><text class="m" x="24" y="62">signs “Katerina's”</text>
+<rect class="bx" x="210" y="20" width="150" height="56" rx="8"/><text x="224" y="44">Her Claude</text><text class="m" x="224" y="62">holds the proof</text>
+<rect class="bx" x="410" y="20" width="150" height="56" rx="8"/><text x="424" y="44">Relay</text><text class="m" x="424" y="62">keeps it, privately</text>
+<rect class="bx" x="410" y="130" width="300" height="56" rx="8"/><text x="424" y="154">Peek · Ship · Leaf</text><text class="m" x="424" y="172">see a message by “someone”</text>
+<path class="ar" d="M160 48H205"/><path class="ar" d="M360 48H405"/>
+<text class="m" x="250" y="102">proof travels beside the message,</text><text class="m" x="250" y="118">not in it</text>
+<path class="no" d="M485 76V126"/><text class="m" x="495" y="108" style="fill:var(--bad)">nothing to read</text>
+</svg>
+
+<h2>Why it reaches beyond this ticket</h2>
+<p>This sets how any app, ours or an outside company's, tells <strong>“my agent”</strong> from <strong>“a colleague's agent”</strong>. The Screener is the first use. The same fact would decide whether an owner gets Edit and Delete on their agent's messages (today nobody does, by the record of 6 Oct, which names this exact change as what would reopen it), and whether a person's page can list their agents.</p>
+<p><strong>Door:</strong> mostly two-way. Saying whose agent it is publicly is not a secret today (the name says it). Options B and C can be withdrawn by Estiva ID republishing; option A leaves the proof on every past message for good, which is harmless but permanent.</p>
+
+<h2>Options</h2>
+
+<h3>B · The agent's profile says whose it is <span class="muted">(recommended)</span></h3>
+<p>Estiva ID adds the owner's signed proof to the agent's profile, where it already puts the “I am a bot” marker. Every app already reads profiles to draw names and avatars; it checks the signature and knows “this is Katerina's Claude”.</p>
+<svg viewBox="0 0 720 150" role="img"><title>Option B: the proof sits on the agent's profile</title>
+<rect class="bx" x="10" y="20" width="150" height="56" rx="8"/><text x="24" y="44">Estiva ID</text><text class="m" x="24" y="62">publishes profile</text>
+<rect class="hl" x="210" y="20" width="220" height="56" rx="8"/><text x="224" y="44">Agent's profile</text><text class="m" x="224" y="62">bot · owner: Katerina (signed)</text>
+<rect class="bx" x="480" y="20" width="230" height="56" rx="8"/><text x="494" y="44">Peek · Ship · Leaf</text><text class="m" x="494" y="62">check signature once per agent</text>
+<path class="ar" d="M160 48H205"/><path class="ar" d="M430 48H475"/>
+<text class="m" x="210" y="110">Covers every message the agent ever wrote, old ones included.</text>
+</svg>
+<ul>
+<li><strong>Katerina sees:</strong> her Claude's update makes no Screener row and no unread dot for her, in every app, including the ~1,200 agent messages already on the relay. Miky still sees it, as now.</li>
+<li><strong>Outside company:</strong> reads one standard tag on a profile and checks one signature with any Nostr library; no list from Estiva.</li>
+<li><strong>Could go wrong:</strong> in a folder shared with another company, their relay may not hold our agent's profile; their apps then treat it as anyone's agent (today's behaviour). If an agent ever changed owner, the new owner would “own” its old messages too (agents here are one per person, so this does not arise today).</li>
+</ul>
+
+<h3>A · Every message the agent writes carries the proof</h3>
+<p>The agent stamps the signed proof onto each message, the way upstream Buzz's own command-line client already does.</p>
+<svg viewBox="0 0 720 120" role="img"><title>Option A: the proof rides on every message</title>
+<rect class="bx" x="10" y="20" width="150" height="56" rx="8"/><text x="24" y="44">Her Claude</text><text class="m" x="24" y="62">stamps each message</text>
+<rect class="hl" x="210" y="20" width="220" height="56" rx="8"/><text x="224" y="44">Message</text><text class="m" x="224" y="62">text · owner: Katerina (signed)</text>
+<rect class="bx" x="480" y="20" width="230" height="56" rx="8"/><text x="494" y="44">Any app, any relay</text><text class="m" x="494" y="62">checks it on the message</text>
+<path class="ar" d="M160 48H205"/><path class="ar" d="M430 48H475"/>
+</svg>
+<ul>
+<li><strong>Katerina sees:</strong> the same, but only for messages written from now on; the old ones still light her Screener until read.</li>
+<li><strong>Outside company:</strong> the proof travels with the message, so it works in a shared folder on another company's relay with no profile lookup.</li>
+<li><strong>Could go wrong:</strong> about 200 bytes more on every agent message (half of all messages are agents'); the proof cannot be taken back off old messages.</li>
+</ul>
+
+<h3>C · Do less: leave it as it is</h3>
+<p>No app learns whose agent it is. Her own Claude's messages keep showing in her Screener like anyone's. PEE-79 closes as “works as designed”, against your 4 Nov answer.</p>
+<ul>
+<li><strong>Katerina sees:</strong> her Claude's updates as news, every time; she reads or dismisses them.</li>
+<li><strong>Variant considered and not offered:</strong> hide <em>every</em> agent's message from everyone's Screener. Then you would also stop seeing Katerina's Claude's updates, which is a different product than the one you chose.</li>
+</ul>
+
+<h2>Trade-offs</h2>
+<div class="tw"><table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td><strong>B · profile</strong></td><td>One fact about the agent, on the agent; standard tag, signed by the owner</td><td>Own agent quiet for you, old messages too</td><td>One signature per agent; needs the profile on its relay</td><td>Low: republish profiles without it</td><td>Small: ID, shared unread check, SPEC</td></tr>
+<tr><td><strong>A · each message</strong></td><td>Proof repeated on every message</td><td>Same, new messages only</td><td>Works across relays with no lookup</td><td>Permanent on old messages (harmless)</td><td>Small: agent, shared unread check, SPEC</td></tr>
+<tr><td><strong>C · as is</strong></td><td>No change</td><td>Own agent shows as news</td><td>Nothing to adopt</td><td>None</td><td>None</td></tr>
+</table></div>
+
+<h2>How others do it</h2>
+<ul>
+<li><strong>Slack:</strong> an app's messages say “sent using X”, and a user's own app acts as them; the server knows, every client is told. We have no server that tells clients, so the fact must be on something they read.</li>
+<li><strong>Upstream Nostr (NIP-OA, owner attestation):</strong> an owner-signed tag naming the agent's key; upstream Buzz puts it on every event (option A). Putting the same tag on the profile (B) is the same standard in a different place.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<p class="rec"><strong>B — the agent's profile says whose it is.</strong> Ownership is a fact about the agent, not about each message, so it belongs on the agent, next to the bot marker Estiva ID already publishes there. It covers the history Katerina already sees, and it is what the 6 Oct record named as the way to give owners their Edit and Delete back later. A shared folder on another company's relay is the one place A does better; if that turns out to matter, A can be added on top without undoing B.</p>
+<p>Then the rule everywhere: <em>a message by an agent you own counts as your own</em> — no Screener row and no unread dot for you, in Peek, Ship and Leaf. (Edit and Delete for owners stays as it is; that is its own call.)</p>
+
+<h2>Checked</h2>
+<ul>
+<li>Estiva ID signs the owner proof — <code>estiva-id src/nostr/nip-oa.ts</code>, test <code>owner-attestation.test.ts</code>.</li>
+<li>The agent sends it only as a request header to the relay, never on an event — <code>estiva-agent lib/agent/credentials.ts</code> (<code>x-auth-tag</code>), <code>scripts/owner-attestation.test.ts</code>.</li>
+<li>The relay keeps the owner server-side only; “no client can evaluate this” — SPEC §6.5, and the record on Edit and Delete (Accepted, 6 Oct).</li>
+<li>Apps must not decide from the name — record “An agent says it is an agent in its own profile” (Accepted, 24 Sep).</li>
+<li>Peek already reads every author's profile for names and the bot marker — <code>peek src/api/screener.ts</code>, <code>people.ts</code>; so B adds no new read in Peek.</li>
+<li>The Screener and the unread dot share one rule by design — <code>peek src/api/internal/screenerFold.ts</code>.</li>
+<li>Not checked: whether a shared folder on a second company's relay copies our agents' profiles (that feature is not built).</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="muted">PEE-79 (Peek: Feedback &amp; Bugs). NIP-OA <code>["auth", owner, conditions, sig]</code>; NIP-24 <code>bot</code> on <code>kind:0</code>. Records: <code>edit-and-delete-are-offered-only-on-your-own-message</code>, <code>an-agent-says-it-is-a-bot-in-its-profile</code>, <code>membership-replaces-following</code>. Build: Estiva ID profile publish; <code>@estiva-app/conversation</code> <code>streamHasUnread</code> viewer check; Peek <code>screenerFold.ts</code>; SPEC §6.5 and §11.8. Upstream: buzz-cli <code>client.rs</code> injects the auth tag per event.</p>
+</main>
+</body>
+</html>
