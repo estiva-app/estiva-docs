@@ -575,9 +575,10 @@ its reader may read, as soon as they are written. The relay checks each event
 against the reader's stored-read scope when it sends it: the teams the reader
 can read, narrowed by a team-scoped sign-in, plus any team a stored read includes
 only when the filter names it by `#h` (an open team the relay leaves out of its
-lists). Someone removed from a team, and a reader outside a team that turns
-private, stop hearing it at once. The rule holds on every server of a relay that
-runs several.
+lists). A reader who loses read access to a team (removed from the company, or
+from a private team, or outside a team that turns private) stops hearing it,
+as a stored read would stop returning it. A new event reaches such requests on
+every server of a relay that runs several.
 
 A relay that keeps this rule lists `buzz-live-as-stored` in its NIP-11
 `supported_extensions`. An app MAY stop naming teams (`#h`) in its live requests
