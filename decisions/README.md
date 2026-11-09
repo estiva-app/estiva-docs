@@ -228,6 +228,7 @@ properties and its history.
 - [An app may offer another app's "New …", and the app that owns that kind makes the file](another-apps-new-file-is-made-by-that-app.md) — Accepted, 2026-10-16; its part "the app that owns that kind makes the file" superseded by "A file's type is a shared meaning", 2026-10-26
 - [An app that owns a "New …" declares a create link in its manifest, and a launcher opens it](an-app-declares-a-create-link-for-its-new-action.md) — Accepted, 2026-10-19
 - [An agent says it is an agent in its own profile (NIP-24 `bot`), and Estiva ID publishes it](an-agent-says-it-is-a-bot-in-its-profile.md) — Accepted, 2026-09-24
+- [An agent's profile says, signed by its owner, whose agent it is, and a message by your own agent counts as your own](an-agents-profile-says-whose-it-is.md) — Accepted, 2026-11-09
 - [Removing an agent from a Folder keeps it out, even while the person it works for is in](removing-an-agent-from-a-folder-keeps-it-out.md) — Accepted, 2026-10-27
 - [The person an agent works for can end that at once, and the relay cuts the agent off](an-agents-owner-ends-its-access-at-once.md) — Accepted, 2026-10-27
 - [An app defines the files it needs, and the workspace's owner or admin decides which apps are installed, so every Estiva app may start a file of a named type](an-app-defines-the-files-it-needs-and-the-owner-installs-it.md) — Accepted, 2026-11-02
