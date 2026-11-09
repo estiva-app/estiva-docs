@@ -10,10 +10,12 @@
 > only its open question "whether Resolve and the Highlights are offered in
 > every app", which this record answers. The rest of that record stands.
 
-> Superseded in part, 2026-11-09: "a resolved thread collapses in place" is
-> replaced by
-> [a-resolved-thread-stays-in-place-in-a-chat-and-moves-to-a-resolved-section-beside-a-page](a-resolved-thread-stays-in-place-in-a-chat-and-moves-to-a-resolved-section-beside-a-page.md).
-> The rest of this record stands.
+> Superseded in part, 2026-11-09, by
+> [a-resolved-thread-stays-in-place-in-a-chat-and-moves-to-a-resolved-section-beside-a-page](a-resolved-thread-stays-in-place-in-a-chat-and-moves-to-a-resolved-section-beside-a-page.md):
+> "a resolved thread collapses in place" no longer holds, and the rejected
+> alternative "a resolved thread moves to a Resolved section" is now what Ship
+> and Leaf do; Peek keeps its threads in place, which meets the objection
+> below. The rest of this record stands.
 
 ## Who it affects
 
