@@ -21,7 +21,8 @@ nobody held the whole list.
 | Kind | Name | Notes |
 | --- | --- | --- |
 | `0` | Profile | **Estiva ID is the sole publisher.** `/sign` refuses kind:0 for every app, checked *before* the per-app allowlist so it cannot be granted by editing a database row |
-| `9030` | Add member (admission) | NIP-43 relay admin command. Enrolment admits a pubkey |
+| `9030` | Add member (admission) | NIP-43 relay admin command. Enrolment admits a pubkey. A bare `["service"]` admits a key that only does a job, such as an app's listing key or an operator's: it may write, and is on no team (SPEC §3.4) |
+| `13534` | Workspace roster | NIP-43 list the relay signs: one `["member", <pubkey>, <role>]` per admitted key, with a fourth element `"service"` on a service key (SPEC §3.4). Read-only to apps |
 | `9031` | Remove member | Offboarding revokes admission. This is the door, and it is separate from the key |
 | `24242` | Blossom auth | BUD-11. Signs avatar uploads to the relay's media store |
 | `27235` | NIP-98 HTTP auth | Authenticates every write to the relay's HTTP bridge. Constrained by URL prefix |
