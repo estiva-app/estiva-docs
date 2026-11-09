@@ -6,6 +6,11 @@
 - Supersedes: where-a-link-sits-and-which-file-gets-the-card.md
 - Area: Links & widgets
 
+> Superseded in part, 2026-11-09, by
+> [a-comment-draws-no-line-for-the-file-it-is-on](a-comment-draws-no-line-for-the-file-it-is-on.md):
+> in a comment, a line that is only a link to the file the comment is on
+> draws nothing, not its row. The rest of this record stands.
+
 ## Who it affects
 
 When Miky or Katerina write `the plan is [these words](<an issue's URL>) for
