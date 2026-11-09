@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Who is in the company</title>
+<style>
+:root {
+  --bg: #fbfaf7; --ink: #1d1d1f; --muted: #5d5d66; --line: #8e8e98; --rule: #dcdad3;
+  --box: #efeee9; --card: #ffffff; --team: #eaf4ec; --gate: #e6edfb;
+  --accent: #2457c5; --warn: #b3401f; --ok: #2a7a46; --chip: #dfe6f6; --pick: #f2f6ff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17171a; --ink: #ececef; --muted: #a8a8b2; --line: #74747f; --rule: #34343b;
+    --box: #26262b; --card: #1f1f23; --team: #1d3324; --gate: #1d2a45;
+    --accent: #93b2ff; --warn: #ff9e80; --ok: #82d69e; --chip: #2b3553; --pick: #1c2338;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17171a; --ink: #ececef; --muted: #a8a8b2; --line: #74747f; --rule: #34343b;
+  --box: #26262b; --card: #1f1f23; --team: #1d3324; --gate: #1d2a45;
+  --accent: #93b2ff; --warn: #ff9e80; --ok: #82d69e; --chip: #2b3553; --pick: #1c2338;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body { margin: 0 auto; max-width: 760px; padding: 24px 16px 64px; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+h1 { font-size: 28px; line-height: 1.2; margin: 4px 0; }
+h2 { font-size: 20px; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--rule); }
+h3 { font-size: 17px; margin: 12px 0 6px; }
+p, li { max-width: 70ch; }
+ul { padding-left: 20px; } li { margin: 3px 0; }
+.kicker { color: var(--muted); font-size: 14px; margin: 0; }
+.question { font-size: 19px; line-height: 1.45; font-weight: 600; }
+.muted { color: var(--muted); } .small { font-size: 14px; }
+.door { background: var(--box); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.pick { background: var(--pick); border-left: 4px solid var(--accent); padding: 10px 14px; border-radius: 6px; }
+.opt { border: 1px solid var(--rule); border-radius: 10px; padding: 4px 16px 10px; margin: 14px 0; background: var(--card); }
+.opt.rec { border-color: var(--accent); }
+.tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); vertical-align: 2px; margin-left: 6px; }
+.tablewrap { overflow-x: auto; margin: 10px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.4; min-width: 560px; }
+th, td { text-align: left; vertical-align: top; padding: 7px 8px; border-bottom: 1px solid var(--rule); }
+th { font-size: 13px; color: var(--muted); font-weight: 600; }
+td:first-child { font-weight: 600; }
+figure { margin: 14px 0 20px; overflow-x: auto; }
+figure svg { width: 100%; min-width: 600px; height: auto; display: block; }
+figcaption { font-size: 14px; color: var(--muted); margin-top: 6px; }
+code { font-size: 13px; background: var(--box); padding: 0 4px; border-radius: 4px; }
+svg text { fill: var(--ink); font: 13px system-ui, sans-serif; }
+svg .m { fill: var(--muted); font-size: 12px; }
+.box { fill: var(--card); stroke: var(--line); stroke-width: 1.2; }
+.team { fill: var(--team); stroke: var(--ok); stroke-width: 1.3; }
+.gate { fill: var(--gate); stroke: var(--accent); stroke-width: 1.4; }
+.bad { fill: var(--card); stroke: var(--warn); stroke-width: 1.4; }
+.ar { stroke: var(--line); stroke-width: 1.4; fill: none; marker-end: url(#a); }
+.ar.no { stroke: var(--warn); stroke-dasharray: 5 4; }
+</style>
+</head>
+<body>
+<p class="kicker">Decision brief · Teams and following · 9 Nov 2026</p>
+<h1>Who is in the company</h1>
+<p class="question">When our server lets a key in, is it one of the company's people, so it sits on the Company team and in everyone's people lists? Or are some keys let in only to do a job, without being part of the company?</p>
+
+<h2>Today</h2>
+<p>Estiva HQ is already marked as the Company team, and nobody can delete or archive it. On 2 Nov you decided that <b>everyone in the company is on its member list, and the server keeps them there</b>: it adds each person it lets in, and nobody can leave. Its chat becomes #general. That decision assumed that everyone the server lets in is a person. On production that is not true.</p>
+<p>The server lets in 14 keys today:</p>
+<ul>
+<li><b>People:</b> Miky, Katerina, QA-1, QA-2, QA-3 and "test". These are accounts someone signs in with, so they count as people under every option below.</li>
+<li><b>Agents:</b> Claude (steered by Miky), Claude (steered by Katerina), PC (steered by Katerina). Agents are members like anyone and show under their own heading.</li>
+<li><b>Five keys that are not anyone:</b> the server's owner key (never used), "Relay Operator" (last active 24 Sep), and three app keys that have each only published their app's listing (Ship's is one). An app key has to be let in, because the server lets only keys it has let in write anything.</li>
+</ul>
+
+<h2>Why it reaches beyond this ticket</h2>
+<p>It decides what "everyone in the company" means: for Estiva HQ's people, for every people picker in Peek, Ship and Leaf, for a later "@company" mention, and for an outside company that runs bots and integrations on its own server.</p>
+<p class="door"><b>Two-way door.</b> The server can later put a key on the list or take it off, and the event history shows it either way. What sticks is how apps handle it: if the list includes keys that are not people, each app starts hiding them its own way, and those filters are hard to take back.</p>
+
+<h2>The picture</h2>
+<figure>
+<svg viewBox="0 0 720 420" role="img">
+<title>Three ways from a key being let in to the Company team's list</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor" style="color: var(--line)"/></marker></defs>
+<!-- A -->
+<text x="8" y="22" style="font-weight:600">A · Every key let in is in the company</text>
+<rect class="box" x="8" y="34" width="170" height="70" rx="8"/><text x="20" y="56">Server lets a key in</text><text class="m" x="20" y="76">person, agent, app key,</text><text class="m" x="20" y="92">server's own keys</text>
+<path class="ar" d="M180 69 H 260"/>
+<rect class="team" x="262" y="34" width="210" height="70" rx="8"/><text x="274" y="56">Company team: all 14</text><text class="m" x="274" y="76">5 keys nobody can name,</text><text class="m" x="274" y="92">beside Miky and Katerina</text>
+<path class="ar" d="M474 69 H 530"/>
+<rect class="bad" x="532" y="34" width="180" height="70" rx="8"/><text x="544" y="56">Each app hides them</text><text class="m" x="544" y="76">"no profile" in Peek,</text><text class="m" x="544" y="92">something else in Ship</text>
+<!-- B -->
+<text x="8" y="158" style="font-weight:600">B · Letting a key in says whether it is someone or a service</text>
+<rect class="box" x="8" y="170" width="170" height="70" rx="8"/><text x="20" y="192">Server lets a key in</text><text class="m" x="20" y="212">and is told: someone,</text><text class="m" x="20" y="228">or a service</text>
+<path class="ar" d="M180 190 H 260"/>
+<rect class="team" x="262" y="170" width="210" height="40" rx="8"/><text x="274" y="195">Company team: 9 (people, agents)</text>
+<path class="ar" d="M180 226 C 220 226 230 250 260 250"/>
+<rect class="gate" x="262" y="232" width="210" height="40" rx="8"/><text x="274" y="257">Services: may write, on no team</text>
+<path class="ar" d="M474 190 H 530"/>
+<rect class="box" x="532" y="170" width="180" height="40" rx="8"/><text x="544" y="195">Apps show the list as is</text>
+<!-- C -->
+<text x="8" y="312" style="font-weight:600">C · Services are not let in at all</text>
+<rect class="box" x="8" y="324" width="170" height="70" rx="8"/><text x="20" y="346">Server lets in only</text><text class="m" x="20" y="366">people and agents</text>
+<path class="ar" d="M180 359 H 260"/>
+<rect class="team" x="262" y="324" width="210" height="40" rx="8"/><text x="274" y="349">Company team: 9</text>
+<rect class="gate" x="262" y="372" width="210" height="40" rx="8"/><text x="274" y="397">App keys: a second door</text>
+<path class="ar no" d="M180 392 H 260"/>
+<text class="m" x="490" y="392">the server's settings, not its member list</text>
+</svg>
+<figcaption>In every option nobody gains or loses anything they can read: everyone the server lets in already reads the Company team. Only the list and what it means change.</figcaption>
+</figure>
+
+<h2>Options</h2>
+<div class="opt">
+<h3>A · Every key the server lets in is in the company <span class="tag">do less</span></h3>
+<p><b>What you see:</b> Katerina opens Estiva HQ and sees Miky, herself and the QA accounts, plus three keys with no name, an unused owner key and "Relay Operator". Ship offers the same keys as assignees.</p>
+<p><b>Outside company:</b> its Company team lists every integration and bot next to its staff.</p>
+<p><b>What could go wrong:</b> each app hides those keys its own way ("no profile" in Peek today), which is the second meaning of member the 2 Nov record turned down. A future app that does not filter shows them all.</p>
+</div>
+<div class="opt rec">
+<h3>B · Letting a key in says whether it is someone or a service <span class="tag">recommended</span></h3>
+<p><b>What you see:</b> Estiva HQ lists Miky, Katerina, the QA accounts and "test", and the three agents under their own heading. App and server keys still work and appear nowhere.</p>
+<p><b>Outside company:</b> one clear idea. A service is let in to write but is not part of the company. Whoever lets a key in already knows which it is, so no app has to guess. The server cannot be asked to add a service to the Company team.</p>
+<p><b>What could go wrong:</b> a key marked the wrong way, such as a person marked as a service, is left out of #general until someone fixes the mark. The five existing keys are marked once, by whoever runs the server, when it is upgraded. That is the same one-time step that named Estiva HQ the Company team.</p>
+</div>
+<div class="opt">
+<h3>C · Services are not let in at all</h3>
+<p><b>What you see:</b> the same as B.</p>
+<p><b>Outside company:</b> it has to give its bots a second way to write, through server settings instead of the member list. That departs from the Nostr standard for member lists, where being on the list is what lets a key write.</p>
+<p><b>What could go wrong:</b> every app's listing key is set up differently from everything else, and the spec's rule "an app's key is let in like a member" is reversed.</p>
+</div>
+
+<h2>Trade-offs</h2>
+<div class="tablewrap"><table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td>A · every key</td><td>One list, but "the company" includes machines</td><td>5 unexplained keys on Estiva HQ and in pickers</td><td>Bots on its staff list; each app filters</td><td>Low on the server; app filters stick</td><td>Least</td></tr>
+<tr><td>B · someone or service</td><td>One list of people; services are a named, separate kind of key</td><td>Only people and agents</td><td>One clear rule, set where a key is let in</td><td>Low: a mark can be added or changed</td><td>A mark on the server's member list, Estiva ID passing it, a one-time marking</td></tr>
+<tr><td>C · services not let in</td><td>Two doors to write</td><td>Only people and agents</td><td>Must change how it handles bots</td><td>Medium: keys move between doors</td><td>Most</td></tr>
+</table></div>
+
+<h2>How others do it</h2>
+<ul>
+<li><b>Slack:</b> apps are bot users, not members. #general holds every full member, and a bot is in a channel only if someone adds it.</li>
+<li><b>Google Workspace:</b> service accounts belong to the project, not the directory. They appear in no people list.</li>
+<li><b>Linear:</b> integrations act as app users that are kept out of team members.</li>
+<li><b>Nostr's member-list standard</b> has no such distinction. Every key on the list is equal, which is why A is what falls out by default.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<p class="pick"><b>B.</b> Whether a key is one of the company's people is a fact only the side letting it in knows, so the server should hold it once for every app and every outside company, rather than each app guessing from a missing profile. It keeps your 2 Nov rule, one meaning of member, without stretching "the company" to cover machines. C gets the same list by breaking the standard way keys are let in to write.</p>
+
+<h2>Checked</h2>
+<ul class="small">
+<li>The 14 keys, their roles and what each has published: read on production, 9 Nov (<code>TEA-7-scratch/keys.mts</code>, <code>workspace.mts</code>).</li>
+<li>The server lets only keys on its member list write: relay membership check, <code>buzz-relay/src/api/mod.rs</code>. So an app key cannot simply be removed.</li>
+<li>App keys are let in as members by design: KINDS, Leaf note on its listing key.</li>
+<li>The 2 Nov record says "each <i>person</i> it lets into the workspace", and SPEC §3.4 says the same. Neither says what happens to a key that is not a person.</li>
+<li>Nobody gains read access under any option: every workspace member already reads the Company team (record of 30 Oct).</li>
+<li>Not checked: who owns "test" (f07617c5). It signs in and posts, so it is treated as a person.</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="small muted">Ticket TEA-7 (Teams and following). Records: everyone-in-the-company-is-on-the-company-teams-list-and-the-relay-keeps-it, every-workspace-has-one-company-folder-the-relay-marks-and-keeps. B on the wire: <code>kind:9030</code> carries a bare <code>["service"]</code>; <code>kind:13534</code> member tag gains a 4th element <code>"service"</code>; <code>relay_members.service</code>; the relay signs <code>kind:9000</code> onto the Company team only for non-service keys and refuses a client <code>9000</code> there for a key not in the company. SPEC §3.4, §4.1 admission row, KINDS 9030/13534. Relay: estiva-app/buzz <code>nfb-demo-kinds</code>; the roster is kept at <code>write_nip43_membership_snapshot</code>. Five existing service keys: df1493e1, fd2256a8, 88ac6aae, 0a592986, 9b0ff001.</p>
+</body>
+</html>
