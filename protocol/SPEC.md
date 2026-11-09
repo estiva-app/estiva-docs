@@ -2558,7 +2558,7 @@ readable.
 **A writer from before the switch.** An app reads NIP-11 when it loads, so a tab
 or an agent opened before the switch writes a change with no `prev` and is
 refused: `invalid: a project change names the change it follows in prev`,
-followed by `;` and what to do (reload, or update the agent). An app matches the
+followed by `;` and what to do (reload the page, or restart the agent). An app matches the
 words before `;`, never what follows. On that refusal it reads NIP-11 again
 and, if the type is now in `requires_prev`, opens the file (above) and writes
 the change again, each field's `prev` its current change; a text change is
