@@ -419,9 +419,15 @@ produce the same events in the same order.
   app's listing key (§9) or an operator's. A `kind:9030` admitting a service
   carries a bare `["service"]`, and the relay's roster (`kind:13534`) carries
   `"service"` as a fourth element of that key's `member` tag. A service may
-  write like any admitted key, and is on no team: "everyone in the company"
-  is every admitted key that is not a service. A relay upgraded to this marks
-  its existing services once, as it names its Company team.
+  write like any admitted key, and is on no team: the relay refuses a
+  `kind:9000` that names one on any team, and apps do not offer one as a
+  person. "Everyone in the company" is every admitted key that is not a
+  service; an agent admitted through its owner (§4) counts while its owner
+  does, and is kept on the Company team once someone adds it, though the relay
+  does not add it. Admitting an existing member again with `["service"]`
+  marks it a service (an admin may mark a member; the owner, anyone), and
+  the relay takes it off the Company team. A relay upgraded to this marks its
+  existing services once, as it names its Company team.
 
 *Built 2026-11-02* (estiva-app/buzz, ticket 84e39a13): the mark, its
 refusals, and a new workspace's Company team. A relay that predates it has no
