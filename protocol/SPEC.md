@@ -2551,14 +2551,15 @@ These hold before the switch too, on every type: a change whose `prev` is
 present and not its field's current change is refused (§6.2), and so is one
 whose `a` and `O` name different files.
 
-**A relay with no older files** — a new one, or a new community — advertises
-`files` from its start: it has nothing written without `prev` to keep
-readable.
+**A relay with no older files** — a new one — advertises `files` from its
+start: it has nothing written without `prev` to keep readable. The switch is
+the relay's, for every community it hosts at once.
 
 **A writer from before the switch.** An app reads NIP-11 when it loads, so a tab
 or an agent opened before the switch writes a change with no `prev` and is
 refused: `invalid: a project change names the change it follows in prev`,
-followed by `;` and what to do (reload the page, or restart the agent). An app matches the
+followed by `;` and what to do (the Estiva relay says `; reload the page and
+save again (an agent: restart it)`). An app matches the
 words before `;`, never what follows. On that refusal it reads NIP-11 again
 and, if the type is now in `requires_prev`, opens the file (above) and writes
 the change again, each field's `prev` its current change; a text change is
@@ -2587,7 +2588,8 @@ settings, and is not how a file is kept.
 a named file's current text and its search, and advertises `file_list`
 (`newest`, `text`) and `file_search`. It advertises `files` exactly when its
 `BUZZ_FILES_FENCE` is `all`, from the same list it enforces; it does not yet.
-The agent (estiva-agent 0.28.0 and later) reads projects by the list read,
+The agent (estiva-agent 0.28.0 and later; 0.29.0 is the oldest that may write)
+switches when it reads NIP-11, which a running agent does again on restart; it reads projects by the list read,
 opens one with its current text, and writes each project field with `prev`,
 merging a text change or asking as §13.3 says (ALO-7). Ship, Peek and Leaf
 read and write projects field by field once `files` names `osnova.project`,
