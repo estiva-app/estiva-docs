@@ -74,7 +74,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <main>
 
 <h1>Estiva architecture</h1>
-<p class="sub"><span class="state">As built, 2026-10-23</span> · the whole suite, as it runs today · updated 2026-11-04 for <a href="leaf-topics-navigation.html">Leaf's Topics navigation</a>, which gave Leaf a Topics section in its sidebar and a page per topic (Objects); on 2026-11-04 for <a href="ship-topics-navigation.html">Ship's Topics navigation</a>, which gave Ship a Topics page and a page per topic (Objects); on 2026-11-02 for <a href="topics-group-files.html">Topics group files</a>, which gave a topic its own list of files (Objects); on 2026-10-29 for <a href="leaf-works-for-everyday-documents.html">Leaf works for everyday documents</a>, which changed no box or arrow drawn here</p>
+<p class="sub"><span class="state">As built, 2026-10-23</span> · the whole suite, as it runs today · updated 2026-11-09 for <a href="one-conversation-in-every-app.html">One conversation in every app</a>, which moved the conversation's cards and threads into the UI kit, let Ship resolve a thread, and keeps a reply in its comment's team (What each app builds on, Objects, Flow, Access); on 2026-11-04 for <a href="leaf-topics-navigation.html">Leaf's Topics navigation</a>, which gave Leaf a Topics section in its sidebar and a page per topic (Objects); on 2026-11-04 for <a href="ship-topics-navigation.html">Ship's Topics navigation</a>, which gave Ship a Topics page and a page per topic (Objects); on 2026-11-02 for <a href="topics-group-files.html">Topics group files</a>, which gave a topic its own list of files (Objects); on 2026-10-29 for <a href="leaf-works-for-everyday-documents.html">Leaf works for everyday documents</a>, which changed no box or arrow drawn here</p>
 
 <p>Estiva is a set of apps for one team: Peek for chat, Ship for projects and issues, and Leaf for documents. They share one workspace, which is a single relay. Every app reads and writes the same signed events there, so a file made in one app can be found and discussed in the others.</p>
 <p>Start with the first map, then look at <a href="#objects">Objects</a> to see what a person meets. <a href="#flow">Flow</a> follows one comment from Ship to Peek. Project pages redraw their parts from this page.</p>
@@ -125,7 +125,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <h3>What each app builds on</h3>
 <figure>
 <svg viewBox="0 0 720 340" role="img">
-<title>Peek, Ship and Leaf use all six shared packages. The agent uses four of them and leaves out the live socket and the UI. Estiva ID uses none. The packages are published to public npm.</title>
+<title>Peek, Ship and Leaf use all six shared packages. The agent uses four of them and leaves out the live socket and the UI. Estiva ID uses none. The packages are published to public npm. ui draws the conversation, and conversation gives it one shape for a message and a thread.</title>
 <rect class="b" x="20" y="20" width="330" height="68" rx="8"/><text x="36" y="44" class="h">Peek, Ship, Leaf</text><text x="36" y="63" class="m">browser apps, served as static files</text>
 <rect class="b" x="370" y="20" width="150" height="68" rx="8"/><text x="386" y="44" class="h">Agent</text><text x="386" y="63" class="m">runs on a computer</text>
 <rect class="b" x="540" y="20" width="160" height="68" rx="8"/><text x="556" y="44" class="h">Estiva ID</text><text x="556" y="63" class="m">its own server;</text><text x="556" y="79" class="m">uses none of these</text>
@@ -137,12 +137,12 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <text x="36" y="173" class="h">Shared packages</text><text x="176" y="173" class="m">public npm, @estiva-app/…</text>
 <rect class="b" x="36" y="188" width="204" height="56" rx="8"/><text x="50" y="211" class="h">Events and relay calls</text><text x="50" y="230" class="m">protocol</text>
 <rect class="b" x="258" y="188" width="204" height="56" rx="8"/><text x="272" y="211" class="h">Other apps' files</text><text x="272" y="230" class="m">interop</text>
-<rect class="b" x="480" y="188" width="204" height="56" rx="8"/><text x="494" y="211" class="h">Comments and unread</text><text x="494" y="230" class="m">conversation</text>
+<rect class="b" x="480" y="188" width="204" height="56" rx="8"/><text x="494" y="211" class="h">Comments and unread</text><text x="494" y="230" class="m">conversation · thread shape</text>
 <rect class="b" x="36" y="256" width="204" height="56" rx="8"/><text x="50" y="279" class="h">Sign-in and signing</text><text x="50" y="298" class="m">identity</text>
 <rect class="b" x="258" y="256" width="204" height="56" rx="8"/><text x="272" y="279" class="h">Live socket, re-reads</text><text x="272" y="298" class="m">platform</text>
-<rect class="b" x="480" y="256" width="204" height="56" rx="8"/><text x="494" y="279" class="h">Look and shared parts</text><text x="494" y="298" class="m">ui</text>
+<rect class="b" x="480" y="256" width="204" height="56" rx="8"/><text x="494" y="279" class="h">Look and shared parts</text><text x="494" y="298" class="m">ui · draws the conversation</text>
 </svg>
-<figcaption>Most of how the apps behave alike lives in these packages, not in the apps. "Other apps' files" is how Peek can draw a Ship issue or a Leaf document from that app's manifest (who may publish one: see Access, below). A change to a package reaches an app only when that app moves to the new version.</figcaption>
+<figcaption>Most of how the apps behave alike lives in these packages, not in the apps. "Other apps' files" is how Peek can draw a Ship issue or a Leaf document from that app's manifest (who may publish one: see Access, below). A change to a package reaches an app only when that app moves to the new version. Since <a href="one-conversation-in-every-app.html">One conversation in every app</a>, ui draws a conversation's cards and threads and each app only places them, gives its words and data, and colours them; ui carries its own bundled copy of conversation, so new conversation words reach people only after a ui release and every app's move to it.</figcaption>
 </figure>
 
 <h2 id="production">Map: how it reaches production</h2>
@@ -208,13 +208,16 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <h3>Around a file: the conversation</h3>
 <figure>
 <svg viewBox="0 0 720 310" role="img">
-<title>A comment is about one file and can be written from any app; a reply answers a comment, one level deep. A message lives in a direct message in Peek. A card under a message points at a file. A reaction can be on a comment or a message.</title>
+<title>A comment is about one file and can be written from any app; a reply answers a comment, one level deep, in the comment's team. A resolve or reopen is about a comment's thread, with an optional note. A message lives in a direct message in Peek. A card under a message points at a file. A reaction can be on a comment or a message.</title>
 <rect class="b" x="260" y="20" width="200" height="56" rx="8"/><text x="276" y="44" class="h">A file</text><text x="276" y="63" class="m">any of the four types</text>
 
 <rect class="b" x="20" y="130" width="200" height="72" rx="8"/><text x="36" y="152" class="h">Comment</text><text x="36" y="171" class="m">about the file, from any app</text><text x="36" y="188" class="m">1111</text>
 <path class="a" d="M120,130 L120,48 L256,48"/><text x="128" y="100" class="m">about</text>
-<rect class="b" x="20" y="240" width="200" height="56" rx="8"/><text x="36" y="264" class="h">Reply</text><text x="36" y="283" class="m">to a comment, one level</text>
+<rect class="b" x="20" y="240" width="200" height="56" rx="8"/><text x="36" y="264" class="h">Reply</text><text x="36" y="283" class="m">to a comment, in its team</text>
 <path class="a" d="M120,240 L120,206"/>
+
+<rect class="b" x="260" y="240" width="200" height="56" rx="8"/><text x="276" y="264" class="h">Resolve, reopen</text><text x="276" y="283" class="m">a comment's thread · 9101</text>
+<path class="a" d="M260,262 L242,262 L242,192 L224,192"/>
 
 <rect class="b" x="260" y="140" width="200" height="56" rx="8"/><text x="276" y="164" class="h">Reaction</text><text x="276" y="183" class="m">on a comment or message · 7</text>
 <path class="a" d="M260,168 L224,168"/>
@@ -225,7 +228,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <path class="a" d="M600,240 L600,206"/>
 <path class="a" d="M700,268 L712,268 L712,40 L464,40"/><text x="560" y="34" class="m">points at a file</text>
 </svg>
-<figcaption>A comment carries the file's own Folder, so a file's comments show in every app that shows the file. A card is not copied into the message: the message keeps the link as written, and each reader's app draws the card from the file as it is now. Edits and deletes are left out; each is offered only on your own message or comment.</figcaption>
+<figcaption>A comment carries the file's own team, so a file's comments show in every app that shows the file. A card is not copied into the message: the message keeps the link as written, and each reader's app draws the card from the file as it is now. A reply is written only into its comment's team, and the relay refuses one whose comment is missing, deleted, unreadable to its writer, or in another team. A resolve carries an optional note; anyone who may comment on the file may resolve or reopen, and the newest counts (SPEC "Resolving a thread"). Peek, Ship and Leaf draw comments, replies and resolves with the UI kit's one conversation. Edits and deletes are left out; each is offered only on your own message or comment.</figcaption>
 </figure>
 
 <div class="tw">
@@ -237,7 +240,8 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <tr><td>Topic</td><td>A conversation that is a file of its own, and a list of files from any Folder</td><td>Its author; each list entry by whoever added it</td><td>Peek</td><td>Peek's Topics screen, with its files; Ship's Topics page and its own page in Ship, with its projects and issues; Leaf's sidebar Topics and its own page in Leaf, with its pages, projects and issues; Ship and Leaf name it on each file it lists; Ship's Related, when placed under a project or issue</td></tr>
 <tr><td>Document</td><td>A page of blocks</td><td>Its author</td><td>Leaf</td><td>Leaf; its conversation in Peek</td></tr>
 <tr><td>Title, summary, text</td><td>What a file says about itself</td><td>Whoever changed it</td><td>The file's app</td><td>Every app that lists the file</td></tr>
-<tr><td>Comment</td><td>A remark on a file, or on part of a document</td><td>Its author</td><td>Any app</td><td>Peek, Ship's Activity, Leaf's side column</td></tr>
+<tr><td>Comment</td><td>A remark on a file, or on part of a document</td><td>Its author</td><td>Any app</td><td>Peek, Ship's Activity, Leaf's side column, each drawn by the UI kit's conversation</td></tr>
+<tr><td>Resolve</td><td>A thread marked resolved, with who resolved it and an optional note; reopened the same way</td><td>Its author</td><td>Peek, Ship, Leaf</td><td>Every app: a "Resolved" check by the comment's time, who and the note in the thread's line; in Peek the thread stays in place, in Ship and Leaf it moves into a closed "Resolved" section at the end of the comments</td></tr>
 <tr><td>Message</td><td>A line in a direct message; a Folder's own chat is in the protocol, and no app shows it yet</td><td>Its author</td><td>Peek</td><td>Peek</td></tr>
 <tr><td>Card</td><td>A preview of a file under a message or comment</td><td>(part of the message)</td><td>Any app</td><td>Each reader's app</td></tr>
 </tbody>
@@ -270,9 +274,9 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <path class="al" d="M450,392 L626,392"/><text x="320" y="396">7  pushed live</text>
 
 <text x="706" y="430" text-anchor="end">8  Miky sees it on the issue: at once if it is open,</text>
-<text x="706" y="448" text-anchor="end" class="m">otherwise within a minute, as unread on its Folder</text>
+<text x="706" y="448" text-anchor="end" class="m">otherwise within a minute, as unread on its team</text>
 </svg>
-<figcaption>Signing happens at Estiva ID, not in the browser: Ship never holds Katerina's key. Peek's open tab watches the issue's Folder over one live socket and keeps only what is about this issue; the same comment also shows in Ship's Activity. It counts as read once Miky has had the conversation open for a moment.</figcaption>
+<figcaption>Signing happens at Estiva ID, not in the browser: Ship never holds Katerina's key. Peek's open tab watches the issue's team over one live socket and keeps only what is about this issue; the same comment also shows in Ship's Activity. It counts as read once Miky has had the conversation open for a moment. Both apps draw it with the UI kit's one conversation, and a resolve of its thread takes the same path (<a href="one-conversation-in-every-app.html#flow">One conversation in every app</a>).</figcaption>
 </figure>
 
 <h2 id="access">Access</h2>
@@ -294,8 +298,10 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <tr><td>An issue's or a document's own event</td><td>Whoever can read its Folder</td><td>Its author</td><td>The relay</td></tr>
 <tr><td>A file's title, summary, text and other fields</td><td>Whoever can read the Folder each change is sent to</td><td>Anyone who may write in that Folder</td><td>The relay</td></tr>
 <tr><td>An uploaded file (a picture, an attachment)</td><td>People on the workspace, by its link</td><td>—</td><td>The relay</td></tr>
-<tr><td>A message</td><td>Whoever can read its Folder</td><td>Written by whoever may write there; edited or deleted by its author or the person whose agent wrote it; also removed by the Folder's owners and admins</td><td>The relay</td></tr>
-<tr><td>A comment</td><td>Whoever can read the Folder it is written in</td><td>Edited or deleted by its author or the person whose agent wrote it; also removed by the Folder's owners and admins</td><td>The relay</td></tr>
+<tr><td>A message</td><td>Whoever can read its team</td><td>Written by whoever may write there; edited or deleted by its author or the person whose agent wrote it; also removed by the team's owners and admins</td><td>The relay</td></tr>
+<tr><td>A comment</td><td>Whoever can read the team it is written in</td><td>Edited or deleted by its author or the person whose agent wrote it; also removed by the team's owners and admins</td><td>The relay</td></tr>
+<tr><td>A reply to a comment</td><td>Whoever can read its comment's team</td><td>Written only into its comment's team, while the comment is there; edited or deleted as a comment is</td><td>The relay: it refuses a reply whose comment is missing, deleted, unreadable to its writer, not a comment, or in another team</td></tr>
+<tr><td>Resolving or reopening a thread</td><td>Whoever can read the team</td><td>Anyone who may write in the comment's team, from Peek, Ship or Leaf; the newest counts. Not offered under a deleted comment</td><td>The relay (the sender may write in the team it is sent to); each app, through conversation (it counts only in its comment's team); Estiva ID (which apps may sign it)</td></tr>
 <tr><td>A reaction</td><td>Whoever can read what it reacts to</td><td>Its author, on something that exists</td><td>The relay</td></tr>
 <tr><td>A direct message</td><td>Its participants</td><td>Its participants</td><td>The relay</td></tr>
 <tr><td>Read state (what you have read)</td><td>Only you</td><td>Only you</td><td>The relay</td></tr>
@@ -321,6 +327,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <li><b>A topic's list (2026-11-02).</b> SPEC §6.14; record <code>a-topic-keeps-its-own-list-of-files</code>; estiva-foundation <code>packages/interop/src/topics.ts</code>; read and drawn by Peek (<code>src/components/views/TopicsColumn.tsx</code>, <code>src/components/TopicFiles.tsx</code>), Ship (<code>src/components/FileTopics.tsx</code>) and Leaf (<code>src/pages/FileTopics.tsx</code>). Checked on production as Miky, QA-1 and QA-2; details on <a href="topics-group-files.html#checked">Topics group files</a>.</li>
 <li><b>Ship browses by topic (2026-11-04).</b> One read of every topic, <code>readTopics</code> in estiva-foundation <code>packages/interop/src/topics.ts</code>, feeds Ship's Topics page, a topic's page in Ship and Add to topic in Ship and Leaf; Ship opens on Topics. Checked on production as Miky and QA-2; details on <a href="ship-topics-navigation.html">Ship's Topics navigation</a>.</li>
 <li><b>Leaf browses by topic (2026-11-04).</b> The same <code>readTopics</code> feeds Leaf's sidebar Topics (your five, ordered by your last save or comment on their files) and a topic's page in Leaf at <code>/topic/&lt;ref&gt;</code>, which every topic link in Leaf opens; leaf <code>src/topics/</code>, <code>src/pages/TopicPage.tsx</code>. Checked on production as Miky and QA-2; details on <a href="leaf-topics-navigation.html">Leaf's Topics navigation</a>.</li>
+<li><b>One conversation in every app (2026-11-09).</b> The kit's <code>ConversationLayout</code>, <code>Thread</code>, <code>ConversationCard</code> and <code>ReplyCard</code> (estiva-ui <code>src/index.ts:141-161</code>) draw every app's conversation through small adapters; one thread shape and the refusal words in conversation 0.35.0 (<code>foldThreads</code>, <code>resolutionOf</code>, <code>refusalReason</code>), bundled into ui (<code>build.mjs:33</code>); Ship writes a resolve (<code>estiva-ship:src/nostr/store.ts:1141</code>) and Estiva ID lets it sign one (<code>estiva-id:src/db/seed.ts:387</code>); the relay keeps a reply in its comment's team (<code>buzz:crates/buzz-relay/src/handlers/ingest.rs:1229-1322</code>). Details on <a href="one-conversation-in-every-app.html#checked">One conversation in every app</a>.</li>
 <li><b>Not verified.</b> Apart from those probes, the page shows what the code on the deploying branch says, not what the running images are. The exact shape of a direct message beyond "a message in a group with no file list" is not drawn. Whether Peek's project page also lists its issues' comments was not checked.</li>
 </ul>
 
