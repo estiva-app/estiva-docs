@@ -2532,18 +2532,41 @@ list as soon as `file_list` is advertised**, and an app that finds no
 A relay that keeps files in order advertises
 
 ```json
-"files": {"newest": true, "requires_prev": ["osnova.project"]}
+"files": {"requires_prev": ["osnova.project"]}
 ```
 
 `files` is the switch and only the switch: it says what the relay refuses,
-never whether the list read exists. From the moment it does — **the switch** — it writes no first record twice
-(§6.1), refuses a change filed in another team than its file's, and one whose
-`a` and `O` disagree. A change whose `prev` is present and not its field's
-current change is refused before the switch too, on every type (§6.2). A type in `requires_prev`, and every `30852` type, is
-**kept in order**: a change with no `prev` is refused (a `member:<P>` change
-excepted, §11.8), and so is a `kind:5`
-naming its first record or a change (§6.5). An app reads the list and never
-assumes it.
+never whether the list read exists, which `file_list` says (so `files` carries
+no `newest`; *changed 2026-11-09*, ALO-8). It is advertised for every team at
+once or not at all: a relay keeping only some teams' files in order says
+nothing, since an app that read `files` would switch on every team. From the
+moment it does — **the switch** — it writes no first record twice (§6.1), and
+refuses a change filed in another team than its file's. A type in
+`requires_prev`, and every `30852` type, is **kept in order**: a change with no
+`prev` is refused (a `member:<P>` or `follow:<P>` change excepted, §11.8), and
+so is a `kind:5` naming its first record or a change (§6.5). An app reads the
+list and never assumes it.
+
+These hold before the switch too, on every type: a change whose `prev` is
+present and not its field's current change is refused (§6.2), and so is one
+whose `a` and `O` name different files.
+
+**A relay with no older files** — a new one — advertises `files` from its
+start: it has nothing written without `prev` to keep readable. The switch is
+the relay's, for every community it hosts at once.
+
+**A writer from before the switch.** An app reads NIP-11 when it loads, so a tab
+or an agent opened before the switch writes a change with no `prev` and is
+refused: `invalid: a project change names the change it follows in prev`,
+followed by `;` and what to do (the Estiva relay says `; reload the page and
+save again (an agent: restart it)`). An app matches the
+words before `;`, never what follows. On that refusal it reads NIP-11 again
+and, if the type is now in `requires_prev`, opens the file (above) and writes
+the change again, each field's `prev` its current change; a text change is
+merged onto the text saved since, with the text the tab read as the base
+(§13.3), never written over it. The person sees nothing (*decided 2026-11-09*,
+ALO-8; the rule for every later type's switch). A writer that cannot do this is
+told by the reason, and its words come back to it.
 
 A relay whose read takes `search` advertises it apart from `files`, which is
 the switch, so search can come before the switch:
@@ -2561,14 +2584,17 @@ not its type, falls back to §5.2's search by title.
 relay's NIP-AR support (`kind:45010`) stays for Buzz's own uses, agent and team
 settings, and is not how a file is kept.
 
-**Where it stands (2026-11-02).** The Estiva relay answers the list read,
+**Where it stands (2026-11-09).** The Estiva relay answers the list read,
 a named file's current text and its search, and advertises `file_list`
-(`newest`, `text`) and `file_search`; it does not advertise `files` yet. The
-agent (estiva-agent 0.28.0) reads projects by the list read, opens one with its
-current text, and writes each project field with `prev`, merging a text change
-or asking as §13.3 says (ALO-7); its delete is still a `kind:5` until the
-relay keeps projects in order. Ship, Peek and Leaf write no `prev` yet, and
-no app writes `set`. Projects are the first type kept in order.
+(`newest`, `text`) and `file_search`. It advertises `files` exactly when its
+`BUZZ_FILES_FENCE` is `all`, from the same list it enforces; it does not yet.
+The agent (estiva-agent 0.28.0 and later; 0.29.0 is the oldest that may write)
+switches when it reads NIP-11, which a running agent does again on restart; it reads projects by the list read,
+opens one with its current text, and writes each project field with `prev`,
+merging a text change or asking as §13.3 says (ALO-7). Ship, Peek and Leaf
+read and write projects field by field once `files` names `osnova.project`,
+and a tab opened before writes again in order as above. Projects are the first
+type kept in order.
 
 ### 6.14 A file's list of other files
 
@@ -3725,6 +3751,7 @@ staged field, or writes one, also conforms to these.
 | C50 | **A space, a topic's one team, and a move** (*added 2026-11-02*, §3.3, §6.5). A `kind:1852` `add` carrying `["a", <addr>, "", "space"]` (or the `o` form) marks the entry a space, and an `add` without the role unmarks it; a role a reader does not know leaves the entry listed. The relay refuses an `add` or `set` that lists a topic another team's `kind:30890` lists, a `remove` of a topic no other team lists unless its author archived it or it is deleted, and an `add` of a topic no team lists anywhere but its home. A `move` from team A to team B changes both lists in one write; the same move sent again is a duplicate; one from a team that does not list the topic, or into or out of an archived team, is refused and changes neither list. In an archived team an `add` naming a topic is refused and one naming a project lands. A topic found on two teams' lists is drawn in the one whose `add` or `move` naming it is newest. A move's entry keeps the role only when it carries it |
 | C51 | **Resolving a thread** (*added 2026-11-04*, §6.4, §6.5). A thread's state is its newest `kind:9101` with `t=resolution` in §6.3's order, whoever wrote it: a resolve and a reopen in the same second fold by `ts`, then the higher `id`. A `9101` whose `h` is not its target's team, one whose target is a reply, and one whose `action` is neither `resolved` nor `reopened` change nothing; a `support` outside the thread is dropped and the resolve stands. A deleted top-level message keeps the state its last `9101` gave it, and its thread offers neither Resolve nor Reopen. A top-level message the read did not return is in its replies' team when every returned reply names the same `h`, and in none otherwise, and is deleted only when a returned `kind:5` is signed by the key every one of those replies names in its lowercase `p`; otherwise it is not returned: never said to be deleted, its place reads "This comment can't be shown." above its replies, and its thread takes no new replies and offers neither Resolve nor Reopen (*2026-11-06*). It is deleted only when it has a team: replies that disagree on the team, as a reply filed in another team before the relay refused one would, leave it not returned, never deleted |
 | C52 | **The file a comment is on** (*added 2026-11-09*, §13.6.2). A `kind:1111` with `["A", V]` whose body is `Looks right.\n\nnostr:naddr1…` for `V` draws `Looks right.` and nothing for the second line; the same with an app URL that names `V` by §7.7 instead, or with `["O", <V's id>]` and an `naddr` of the same `d`, draws the same. One whose body is only `nostr:naddr1…` for `V` draws `V` as it would without the rule. A body that names `V` in a sentence draws `V`'s chip. A body whose second line is only a reference to another file `W` draws `W`'s row |
+| C53 | **A tab from before the switch** (*added 2026-11-09*, §6.13). An app loaded while NIP-11 had no `files` sets a project's `status` with no `prev`; the relay, now advertising `{"requires_prev": ["osnova.project"]}`, refuses it with a reason that starts `invalid: a project change names the change it follows in prev`. The app reads NIP-11 again, opens the project and sends the change again with `prev` its current `status` change, and it is accepted; nothing is shown to the person. Its text change sent the same way is merged onto the text saved since, with the text it read as the base. A relay keeping some teams' files in order and not others advertises no `files` |
 
 ### 9.1 Reference checks
 
