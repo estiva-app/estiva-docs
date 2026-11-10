@@ -45,10 +45,13 @@ option.
   workspace's owners and admins on the relay's roster. Admins on the team do
   not change that: they keep their own rights alongside.
 - **They may do what the team's own owners could**: rename it, archive or
-  restore it, start its listing, give and change its roles (themselves
-  included, which is how a team gets an owner again), and remove its
-  members. Doing so does not add them to the team. They could already
-  delete it.
+  restore it, give and change its roles (themselves included, which is how
+  a team gets an owner again), and remove its members, on a private team
+  too. Doing so does not add them to the team. They could already delete
+  it.
+- **Only a team.** A DM or another conversation space (a group with no
+  team listing) is never looked after this way, and its last owner still
+  cannot leave it.
 - **The relay checks it** on each of those commands. **Readers count it** for
   a team's `archived` change (SPEC §3.2). A reader on a team with no owner
   takes the workspace's owners and admins from the relay-signed roster.
