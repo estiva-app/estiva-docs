@@ -3920,6 +3920,7 @@ staged field, or writes one, also conforms to these.
 | C53 | **A tab from before the switch** (*added 2026-11-09*, §6.13). An app loaded while NIP-11 had no `files` sets a project's `status` with no `prev`; the relay, now advertising `{"requires_prev": ["osnova.project"]}`, refuses it with a reason that starts `invalid: a project change names the change it follows in prev`. The app reads NIP-11 again, opens the project and sends the change again with `prev` its current `status` change, and it is accepted; nothing is shown to the person. Its text change sent the same way is merged onto the text saved since, with the text it read as the base. A relay keeping some teams' files in order and not others advertises no `files` |
 | C54 | **What names you on a listed file** (*added 2026-11-10*, §11.8). `P` follows a topic at Important that lists a project, a document and an issue. On the issue: a comment mentioning `P` lights the topic and stays lit under two later comments naming nobody, until `P` reads the issue in any app; a reply to `P`'s comment lights it, and reading that thread clears it; a reply in a conversation `P` is not in, and a new comment naming nobody, do not light it at Important and do at All when made after `P` chose All. On an issue of the listed project, and on a page one level under a listed document, a mention lights it at both levels and a comment naming nobody at neither; on a page two levels under a listed document, nothing does. Muted, only the mention lights; not following, nothing on the files lights the topic |
 | C55 | **A refusal carries its code** (*added 2026-11-10*, §3.3, §3.4, §6.5). A move of a topic into an archived team is refused `invalid: archived: …`; one by somebody who may not write in the source `restricted: not-member: …`; one naming a topic the source no longer lists `invalid: changed: …`; an `add` of a topic no team lists, in a team that is not its home, `invalid: not-home: …`; a `remove` of a live topic no other team lists `invalid: leaves-by-moving: …`; each changes neither list. An `add` naming a topic whose team the signer cannot read, and one naming a topic address the relay holds nothing at, get the same `restricted: not-member: …`; a `remove` of either, while the list does not hold it, is accepted and changes nothing. A `remove`, a `set` leaving it out, or a `move` of a topic the list holds whose team the signer cannot read gets `restricted: not-member: …` too, but a `move` naming a topic the source does not list gets `invalid: changed: …` first. On an archived team, a `set` naming a topic it already lists is refused `invalid: archived: …`, and an `add` of a project lands. A `kind:9002` setting `archived` on a team is refused `invalid: archive-by-field: …`, and a `kind:1851` `archived` on it is accepted. Each sentence after the code is the relay's own. An app shown `invalid: some-new-code: …` says only that nothing changed; shown `invalid: the team …` with no code, it reads the sentence |
+| C56 | **Why a message is unread** (*added 2026-11-10*, §11.8). `P` follows a topic. Unread there: a new comment that mentions `P` is a mention; a new comment naming nobody is a new conversation, at Important and at All alike; a reply mentioning `P` in `P`'s own conversation is a mention; a reply naming nobody in it is a reply in your conversation, held root or not when its lowercase `p` names `P`; in someone else's conversation, a reply before `P` wrote there is a message (it lights only at All) and one after is a reply in your conversation. A reaction to `P`'s message is none of the four |
 
 ### 9.1 Reference checks
 
@@ -4784,8 +4785,35 @@ older topics that are still channels.
 *Where it stands (2026-11-03).* The Estiva relay refuses a `follow:<P>` not
 signed by `P`. The shared fold is `@estiva-app/conversation` 0.28.0, and Peek,
 Ship, Leaf and the agent CLI all read it since 3 Nov, so no app reads a level
-as a placement any more. None of them draws its dots from the fold yet, and
-none writes a level: both come with the following switch.
+as a placement any more. Since 10 Nov Peek draws its dots on topics, spaces and
+a team's chat from the fold (`unreadOnPlace`, `unreadOnListedFile`), and the
+reason each one is lit from it too (`unreadReasons`, below); Ship and Leaf draw
+no place's dot yet.
+
+#### Why a message is unread
+
+(*added 2026-11-10*, ACT-3.) An app that explains a dot (a hover listing what
+lit a topic, a space, a team's chat, a file or a DM) names each unread message
+by what it is to `P`, never by which level let it light, so one message reads
+the same at Important and at All and in every app. The level, the membership
+and the stream's own rule above decide only **whether** a message is unread.
+The reason is the first that holds, in this order:
+
+1. **A mention**: the message names `P` (§13).
+2. **A new conversation**: the message answers nothing (a top-level comment, or
+   a chat message with no root).
+3. **A reply in your conversation**: a reply in a conversation `P` is in (wrote
+   its root or a reply, or was mentioned there, or the reply's lowercase `p`
+   names `P` as the author it answers), said after `P` came in.
+4. **A message**: anything else that lit, such as a reply at All, or a reply in
+   a DM or on a file `P` is a member of.
+
+The second and third can never both hold. These are categories, not words: each
+app says them in its own copy. A reaction is not a message and is none of
+these; a reaction to `P`'s message lights a place in its own colour (record
+[a-reaction-is-seen-once-in-its-conversation](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-reaction-is-seen-once-in-its-conversation.md)).
+A reply to `P`'s agent belongs with the third and lights nothing until a reader
+can tell whose agent it is (§6.5).
 
 #### Muting is private
 
