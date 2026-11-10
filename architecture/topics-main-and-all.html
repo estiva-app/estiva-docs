@@ -127,7 +127,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <path class="an" d="M230,216 L230,258"/><text x="238" y="242" class="tag">M1 · asks by file, names no team</text>
 <g class="f"><path class="a" d="M515,90 L515,142"/><path class="a" d="M645,90 L645,142"/></g>
 </svg>
-<figcaption>All of it is milestone 1. The relay change was not drawn at shaping, which planned a watch naming every listed file's team. Instead the relay now sends a request that names no team whatever its reader may read, checked as a stored read is checked, and apps ask by file alone once the relay says it does. Ship and Leaf keep a file's own conversation, with no Main or All (Miky, 6 Nov). The follow icon that sets the level comes from "Teams and following" and is not drawn.</figcaption>
+<figcaption>Main is what you see at Important and when you do not follow the topic; turning back from All returns you to the level you had. All shows only the files the topic lists, not the files under them: a comment on an issue in a listed project still moves the topic up in the Topics column, but neither lights its dot nor shows at All. An archived listed file's threads are read-only at All. All of it is milestone 1. The relay change was not drawn at shaping, which planned a watch naming every listed file's team. Instead the relay now sends a request that names no team whatever its reader may read, checked as a stored read is checked, and apps ask by file alone once the relay says it does. Ship and Leaf keep a file's own conversation, with no Main or All (Miky, 6 Nov). The follow icon that sets the level comes from "Teams and following" and is not drawn.</figcaption>
 </figure>
 
 <h2>Flow</h2>
@@ -142,7 +142,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <rect class="ok" x="400" y="160" width="150" height="50" rx="6"/><text x="410" y="182" class="m">under "Navigation"</text><text x="410" y="198" class="m">among the topic's own</text>
 <path class="an" d="M475,240 L269,240"/><text x="290" y="232" class="m">reply: a comment on the page</text>
 <path class="a" d="M265,284 L646,284"/><text x="420" y="276" class="m">the reply shows on the page</text>
-<text x="86" y="314" class="m">Read in Peek = read in Leaf: one marker per file</text>
+<text x="86" y="314" class="m">Read in Peek = read in Ship: one marker per file (Leaf keeps none)</text>
 </svg>
 <figcaption>As built: Peek's watch over the listed files asks by file alone, naming no team, and the relay sends it the comment because Miky may read the page's team. The same comment moves the topic up in Peek's Topics column and, at All, lights its dot. The reply is written to the page, not to the topic, so it lives with the page's readers. A new message written in the topic, outside any thread, goes to the topic.</figcaption>
 </figure>
