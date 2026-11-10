@@ -146,6 +146,7 @@ heading here.
 - [A topic or space lists everyone who chose a level, everyone added to it, and its team's members at their default; someone who follows it only through a team they follow shows once they choose](a-place-lists-who-chose-a-level-and-its-teams-members.md) — Accepted, 2026-11-02
 - [A team's chat is followed like a space: its members follow it at Important, so a new conversation lights for them and a reply only for those in that conversation, unless they set the chat to All](a-teams-chat-is-followed-like-a-space.md) — Accepted, 2026-11-02
 - [A team's default starts when it reached you: the later of your joining or following the team and the place coming into it, so nothing older is unread](a-teams-default-starts-when-it-reached-you.md) — Accepted, 2026-11-02
+- [Every add, join or leave on a file names the person it is about, so any app finds a file's members with one small read](a-membership-change-names-the-person-it-is-about.md) — Accepted, 2026-11-10
 
 ## Messages
 

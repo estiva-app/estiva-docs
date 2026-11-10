@@ -4324,10 +4324,10 @@ and already carries what the rule needs:
 | was mentioned in it | a message in `F`'s stream whose content mentions `P` (§13) |
 | was placed on it | a `kind:1851` on `F` carrying `["p", P]`, whose field is not a membership field (`member:<P>` or `follow:<P>`) and whose `value` is not empty — an assignee, a lead |
 | was named on it when it was made | `F`'s root event carrying `["p", P]`, which a creation writes for a `pubkey` property (§7.3) — a lead set on a new project. It joins as `created it` does, at the earliest `created_at` of the root the reader holds. (Decided 2026-10-05.) |
-| was added, or joined | a `kind:1851` on `F` setting `member:<P>` to `true`, by anyone |
+| was added, or joined | a `kind:1851` on `F` setting `member:<P>` to `true`, by anyone, carrying `["p", P]` |
 
 A person **leaves** `F` with one event: a `kind:1851` on `F` setting
-`member:<P>` to `false`, **signed by `P`**. A `false` signed by anybody else is
+`member:<P>` to `false`, **signed by `P`** and carrying `["p", P]`. A `false` signed by anybody else is
 ignored. Membership costs its member only their attention, so only they can
 give it up, and nobody can take away somebody else's view of a file they are
 involved in.
@@ -4372,6 +4372,13 @@ folds last write wins per field: one `member` field would hold one person.
 file they were added to with one `#p` filter, as they already find what they
 were assigned to. An app that does not know the field folds it like any other
 (§6.3).
+
+**A membership change MUST carry `["p", P]`** (*added 2026-11-10*, ALO-19;
+record
+[a-membership-change-names-the-person-it-is-about](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-membership-change-names-the-person-it-is-about.md)).
+Every `kind:1851` setting `member:<P>` or `follow:<P>`, a join, an Add, a leave
+or a level alike, names `P` in a `p` tag, and **the relay refuses one that does
+not**. So the members read below finds every membership change on a file.
 
 Measured on production 2026-09-30, as the agent in the QA team: the relay
 accepted a `member:<P>` change on an issue, and both `#p` and `#a` returned it.
@@ -4447,7 +4454,19 @@ placed, added, or writing in the conversation themselves. Other people talking
 in it does not.
 
 A reader computes one file's membership from that file's own events: its root,
-its stream and its `kind:1851` changes. To find **which** files a person is a
+its stream and its `kind:1851` changes. **To find a file's members**, an app
+reads the file's changes that name anyone with an Estiva profile, with the
+file's root and its stream, and folds them as above (*added 2026-11-10*):
+
+```json
+[{"kinds": [1851], "#a": ["<F>"], "#p": ["<every kind:0 pubkey>"]}]
+```
+
+Every join and leave by a change, and every placement, carries a `p`, so this
+read holds every change the fold needs and none of the file's other changes,
+however many there are. It is the same read in every app.
+
+To find **which** files a person is a
 member of, these filters return every candidate, and each candidate is then
 folded as above:
 
