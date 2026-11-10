@@ -362,7 +362,7 @@ produce the same events in the same order.
   or by an id it holds as a topic) whose team the signer cannot read, a `set`
   leaving one out included (a topic made outside any team is readable by
   everyone in the workspace), and an `add`
-  or `set` naming a topic address it holds nothing at, with the same
+  or `set` naming a topic address, or an id, it holds nothing at, with the same
   `restricted: not-member:` answer, so a refusal never tells a private topic
   from a missing one. A `remove` of an address it holds nothing at is
   accepted, so a list can still be cleaned up. **A topic no team lists has a
