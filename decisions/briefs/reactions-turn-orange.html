@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Reactions turn orange</title>
+<style>
+:root{--bg:#fbfaf7;--ink:#1d1d1b;--muted:#5f5d57;--box:#ffffff;--line:#c9c5bb;--accent:#2f6fdb;--good:#2e8b57;--bad:#c0392b;--soft:#eef2fb;--orange:#e07a10;--osoft:#fdf1e3;--fyi:#f3f1ea;}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#18181a;--ink:#ecebe7;--muted:#a6a39b;--box:#232327;--line:#4a4944;--accent:#7aa7ff;--good:#5fc48a;--bad:#ff7b6b;--soft:#22293a;--orange:#ffa040;--osoft:#3a2a18;--fyi:#26262a;}}
+:root[data-theme="dark"]{--bg:#18181a;--ink:#ecebe7;--muted:#a6a39b;--box:#232327;--line:#4a4944;--accent:#7aa7ff;--good:#5fc48a;--bad:#ff7b6b;--soft:#22293a;--orange:#ffa040;--osoft:#3a2a18;--fyi:#26262a;}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,Segoe UI,sans-serif;margin:0}
+main{max-width:760px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:1.5rem;margin:.2em 0 .4em}
+h2{font-size:1.25rem;margin:2.4em 0 .4em;padding-top:1em;border-top:3px solid var(--ink)}
+h3{font-size:1.05rem;margin:1.8em 0 .4em;border-top:1px solid var(--line);padding-top:.8em}
+h4{font-size:1rem;margin:1.2em 0 .3em}
+.muted{color:var(--muted);font-size:.92rem}
+.q{background:var(--soft);border-left:4px solid var(--accent);padding:12px 14px;border-radius:6px;font-size:1.05rem}
+.rec{border-left:4px solid var(--good);padding:10px 14px;background:var(--box);border-radius:6px}
+.fyi{background:var(--fyi);border:1px solid var(--line);padding:10px 14px;border-radius:6px}
+.dot{display:inline-block;width:.7em;height:.7em;border-radius:50%;vertical-align:.05em}
+.dot.b{background:var(--accent)}.dot.o{background:var(--orange)}
+svg{width:100%;height:auto;display:block;margin:10px 0;color:var(--ink)}
+svg text{fill:var(--ink);font:13px system-ui,sans-serif}
+svg .m{fill:var(--muted);font-size:12px}
+svg .bx{fill:var(--box);stroke:var(--line);stroke-width:1.5}
+svg .hl{fill:var(--soft);stroke:var(--accent);stroke-width:2}
+svg .ob{fill:var(--osoft);stroke:var(--orange);stroke-width:2}
+svg .ar{stroke:var(--ink);stroke-width:1.5;fill:none;marker-end:url(#a)}
+svg .no{stroke:var(--bad);stroke-width:1.5;fill:none;stroke-dasharray:5 4}
+svg .od{fill:var(--orange)}
+svg .gd{fill:var(--muted)}
+svg .bad{fill:var(--bad)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:600px}
+th,td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:var(--soft)}
+code{font-size:.88em}
+ul{padding-left:1.2em}
+</style>
+</head>
+<body>
+<main>
+<h1>Reactions turn orange</h1>
+<p class="muted">Two protocol calls for the project “Activity indicator on each topic and team”. Each stands alone; the second does not depend on the first. About eight minutes.</p>
+
+<p>The project makes a topic's dot <span class="dot o"></span> orange when someone reacts to your message there, or to your comment on a file the topic lists, and lets you hover the dot to see who. Blue <span class="dot b"></span> stays “something to read”; orange is “something to know”, and hovering clears it (your first version, on the Initiative). Today no app does anything with a reaction except show it under the message: a 👍 on your message lights nothing, anywhere.</p>
+
+<!-- ================= CALL 1 ================= -->
+<h2>1 · How does an app find the reactions to your messages?</h2>
+
+<p class="q"><strong>The question:</strong> when Katerina reacts 👍 to your comment, how does Peek, or any other app, find out that someone reacted to <em>you</em>, so it can turn the place orange?</p>
+
+<h4>Today</h4>
+<p>A reaction says only which message it is on. It does not say whose message that is. So the only way to find reactions is the one SPEC writes down: an app collects the messages it is showing and asks “any reactions on these?”, for the newest 100 of them. That works for drawing 👍 under a conversation you have open. It cannot answer “who reacted to me, anywhere?”, because no question to the relay is about you.</p>
+
+<svg viewBox="0 0 720 170" role="img"><title>Today: a reaction points at a message and names nobody</title>
+<defs>
+<marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" fill="currentColor"/></marker>
+</defs>
+<rect class="bx" x="10" y="20" width="170" height="60" rx="8"/><text x="24" y="44">Katerina's app</text><text class="m" x="24" y="64">writes 👍 “on message m”</text>
+<rect class="bx" x="250" y="20" width="190" height="60" rx="8"/><text x="264" y="44">Relay</text><text class="m" x="264" y="64">files it beside message m</text>
+<rect class="bx" x="510" y="20" width="200" height="60" rx="8"/><text x="524" y="44">Your Peek</text><text class="m" x="524" y="64">“who reacted to me?”</text>
+<path class="ar" d="M180 50H245"/>
+<path class="no" d="M505 50H445"/><text class="m" x="455" y="108" style="fill:var(--bad)">no way to ask</text><text class="m" x="455" y="124" style="fill:var(--bad)">by person</text>
+<text class="m" x="10" y="150">The reaction names the message only. Nothing on it says the message is yours.</text>
+</svg>
+
+<h4>Why it reaches beyond this project</h4>
+<p>This sets how every app, ours and an outside company's, answers “who reacted to my messages?”. Orange in Peek is the first use; the same question feeds a Ship or Leaf dot later, and any outside app that wants a “reactions to you” list. <strong>Two-way door.</strong> Option A adds one harmless line to each new reaction; if we ever stop reading it, nothing breaks, and old reactions simply carry a line nobody reads. Option B adds nothing to the wire.</p>
+
+<h4>Options</h4>
+
+<h3>A · A reaction names the person whose message it reacts to <span class="muted">(recommended)</span></h3>
+<p>Every app writes, on each reaction, “this is a reaction to Miky's message”, the way a reply already names the person it replies to. Your Peek then asks the relay one small question: “reactions naming me since the day orange started”. It gets back only reactions to you. Before lighting anything it checks that you really wrote the message, so a reaction that names you falsely lights nothing.</p>
+<svg viewBox="0 0 720 200" role="img"><title>Option A: the reaction names whose message it is, and the reader asks by person</title>
+<rect class="bx" x="10" y="20" width="170" height="60" rx="8"/><text x="24" y="44">Katerina's app</text><text class="m" x="24" y="64">👍 on m · “to Miky”</text>
+<rect class="bx" x="250" y="20" width="190" height="60" rx="8"/><text x="264" y="44">Relay</text><text class="m" x="264" y="64">only teams you may read</text>
+<rect class="hl" x="510" y="20" width="200" height="60" rx="8"/><text x="524" y="44">Your Peek</text><text class="m" x="524" y="64">“reactions naming me”</text>
+<path class="ar" d="M180 50H245"/><path class="ar" d="M505 42H445"/><path class="ar" d="M445 60H505"/>
+<text class="m" x="452" y="98">few, live</text>
+<rect class="bx" x="510" y="120" width="200" height="60" rx="8"/><text x="524" y="144">Check: is m yours?</text><text class="m" x="524" y="164">yes → orange where m is</text>
+<path class="ar" d="M610 80V115"/>
+<text class="m" x="10" y="120">One question about you, the same</text><text class="m" x="10" y="136">on a cold open and while Peek is open.</text><text class="m" x="10" y="160">A false “to Miky” fails the check</text><text class="m" x="10" y="176">and lights nothing.</text>
+</svg>
+<ul>
+<li><strong>You see:</strong> Katerina reacts 👍 to a comment you wrote three months ago on a page your topic lists; the topic turns orange within a second, and its hover says “Katerina reacted 👍 to your message on …”.</li>
+<li><strong>Outside company:</strong> follows the reaction standard as written (it already asks every app to name the person); asks one question, gets a complete answer. Still has to read the reacted messages it does not hold, to learn where each is and to check they are yours.</li>
+<li><strong>Could go wrong:</strong> a reaction written by an app that leaves the name out lights nothing. Upstream Buzz's own apps leave it out today, so a partner on stock Buzz would react without lighting your dot until they add it. Reactions from before the start date carry no name; they never light, which is what we want anyway (no backlog of orange on day one).</li>
+</ul>
+
+<h3>B · Keep finding reactions by the message</h3>
+<p>Nothing on the wire changes. To know who reacted to you, Peek first collects your own messages in every place you follow and every file your topics list, then asks “any reactions on these?”. While Peek is open, it listens to every reaction in the company and, for each, fetches the message to see whether it is yours.</p>
+<svg viewBox="0 0 720 200" role="img"><title>Option B: gather your messages first, then ask by message</title>
+<rect class="bx" x="10" y="20" width="200" height="60" rx="8"/><text x="24" y="44">Every place you follow</text><text class="m" x="24" y="64">and every listed file</text>
+<rect class="hl" x="260" y="20" width="200" height="60" rx="8"/><text x="274" y="44">Your Peek</text><text class="m" x="274" y="64">picks out your messages</text>
+<rect class="bx" x="510" y="20" width="200" height="60" rx="8"/><text x="524" y="44">Relay</text><text class="m" x="524" y="64">“reactions on these?”</text>
+<path class="ar" d="M210 50H255"/><path class="ar" d="M460 50H505"/>
+<rect class="bx" x="260" y="120" width="200" height="60" rx="8"/><text x="274" y="144">Every reaction, live</text><text class="m" x="274" y="164">fetch its message: yours?</text>
+<path class="ar" d="M510 150H465"/><text class="m" x="520" y="146">all the company's</text><text class="m" x="520" y="162">reactions you may read</text>
+<text class="m" x="10" y="120">Cut at the newest 100 messages</text><text class="m" x="10" y="136">per conversation, or a read that</text><text class="m" x="10" y="152">grows with all you ever wrote.</text>
+</svg>
+<ul>
+<li><strong>You see:</strong> the same orange for a reaction to a recent message. A reaction to your comment from three months ago in a busy conversation never lights, if the app keeps SPEC's cut at the newest 100; or the cold open grows with everything you have written, if it does not.</li>
+<li><strong>Outside company:</strong> must rebuild your list of messages across every place before it can answer, and listen to every reaction in the company to stay live.</li>
+<li><strong>Could go wrong:</strong> a load that grows with the company, not with you; two apps that cut in different places disagree about whether you were reacted to.</li>
+</ul>
+
+<h4>Neither leaks</h4>
+<p>Since 9 Nov the relay answers both a question and a kept-open request only with what you may read: a reaction in a team you cannot read never reaches you, by either option.</p>
+
+<h4>Trade-offs</h4>
+<div class="tw"><table>
+<tr><th></th><th>Protocol shape</th><th>What you and Katerina see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td><strong>A · names the person</strong></td><td>“Whose message” sits on the reaction, as the reaction standard asks and as a reply already does</td><td>Every reaction to you lights, old messages included, live</td><td>One question, complete; partners on stock Buzz light nothing until they add the name</td><td>Low: a harmless line on reactions</td><td>Small: the shared reaction builder takes the author and the apps pass it; SPEC states the read</td></tr>
+<tr><td><strong>B · by message</strong></td><td>Nothing new; “reactions to me” is rebuilt by each app</td><td>Recent ones light; older ones miss, or the open grows</td><td>Must gather every message of yours first, hear every reaction live</td><td>None</td><td>Larger: gathering, a live check per reaction</td></tr>
+</table></div>
+
+<h4>How others do it</h4>
+<ul>
+<li><strong>Upstream Nostr (the reaction standard):</strong> a reaction should name the author of the message, so the author can be notified. That is option A. Upstream Buzz, the relay we build on, does not write it yet.</li>
+<li><strong>A reply here:</strong> already names the person it replies to, and SPEC already says a name alone is not a mention, so the line does not turn a reaction into a mention.</li>
+<li><strong>Slack:</strong> the server knows who wrote what and tells you. We have no server that decides for clients, so the fact has to be on the event.</li>
+</ul>
+
+<h4>Recommendation</h4>
+<p class="rec"><strong>A — a reaction names the person whose message it reacts to.</strong> “Someone reacted to you” is a fact about you, and the only complete way to ask about you is by you. Option A puts the fact where the reaction standard and our own replies already put it, so an outside company asks one question and gets the whole answer. Option B makes every app rebuild your history and still miss old messages, which is exactly the person this feature is for: the one whose three-month-old comment just got a 👍.</p>
+
+<h4>Checked</h4>
+<ul>
+<li>Our reactions name only the message, no person — shared builder in estiva-foundation (<code>packages/protocol/src/events.ts</code>, <code>buildReaction</code>, on <code>main</code>), Buzz's (<code>crates/buzz-sdk/src/builders.rs</code>, <code>build_reaction</code>, on the branch the relay deploys from).</li>
+<li>Upstream Buzz's own builder and desktop app name no person either (<code>upstream/main</code>, 4 Nov; <code>desktop/src-tauri/src/events.rs</code>).</li>
+<li>The reaction standard: “There SHOULD be a <code>p</code> tag set to the pubkey of the event being reacted to … the target event pubkey should be last” — NIP-25, local copy of the NIPs (22 Jul).</li>
+<li>Finding reactions by message, the newest 100, is SPEC §6.6 today; a reaction is filed under its message's team by the relay.</li>
+<li>A name alone is not a mention — SPEC §11.8 (“A mention requires the content to name P, not merely a p tag”), and the comment builders already name the parent's author (§6.4, NIP-22).</li>
+<li>Reads are scoped to what you may read, for a question and for a kept-open request — Buzz commit <code>460f3d77</code> (TOPI-12, 9 Nov) and record <em>a-request-kept-open-hears-what-asking-again-would-return</em>. The relay keeps names on any event in an indexed table it already answers “naming me” from (<code>buzz-db</code> <code>event_mentions</code>).</li>
+<li><strong>Not checked:</strong> a “reactions naming me” read against production, and a reaction heard live by a team-less request on production. Both are the first probes of milestone 3, before its build issue.</li>
+</ul>
+
+<p class="muted"><strong>For the record:</strong> <code>kind:7</code> gains <code>["p", &lt;target author&gt;]</code> as its last <code>p</code> (NIP-25); for a message the relay signed on someone's behalf, the author is its effective author (<code>actor</code>/<code>p</code>, §6.5). Read: <code>{kinds:[7], "#p":[P], since}</code>; the reader keeps a reaction only when the last <code>p</code> equals the author of the last-<code>e</code> target. SPEC §6.6 gains this as the one exception to “fetch reactions by target”; KINDS <code>7</code> row updated. Builders: estiva-foundation <code>buildReaction</code> (args gain the target author; callers in Peek <code>fileConversation.ts</code>, Ship <code>store.ts</code>/<code>fileConversation.ts</code>, Leaf <code>comments.ts</code>), Buzz <code>build_reaction</code> and <code>build_custom_emoji_reaction</code>, parity test <code>buzz-parity.test.ts</code>. Record: <code>a-reaction-names-whose-message-it-reacts-to</code> (Proposed).</p>
+
+<!-- ================= CALL 2 ================= -->
+<h2>2 · When you hover an orange dot, what have you “seen”?</h2>
+
+<p class="q"><strong>The question:</strong> when you hover a topic's orange dot and see “Katerina reacted 👍 to your comment on Pricing”, is that reaction now seen only in that topic, or everywhere the Pricing page shows up?</p>
+
+<h4>Today</h4>
+<p>There is no “seen” for reactions. For reading, the rule is <em>read once, everywhere</em>: the unread mark lives on each conversation (a page's comments, a team's chat, a topic's own conversation), not on the topic that lists it, so a page you read is read in every topic, on the Desk and in Ship. You decided on 29 Oct that this mark is kept per file and never per topic.</p>
+
+<h4>Why it reaches beyond this project</h4>
+<p>It sets what every app remembers about you and what each can clear. <strong>One-way door.</strong> What “seen” remembers is written into your own read state, which only ever grows and is merged across all your apps and devices. Once a kind of mark is written, it stays in every copy: changing the shape later means every app reading both shapes for good, or leaving people's orange dots wrong.</p>
+
+<p>The example in all three pictures: the Pricing page is listed in two topics you follow, <em>Launch</em> and <em>Website</em>, and sits on your Desk. Katerina reacts 👍 to your comment on it. You hover <em>Launch</em>.</p>
+
+<h4>Options</h4>
+
+<h3>A · Seen per topic</h3>
+<p>Each topic remembers its own “seen” time. Hovering <em>Launch</em> clears <em>Launch</em> only.</p>
+<svg viewBox="0 0 720 190" role="img"><title>Option A: one seen mark per topic</title>
+<rect class="bx" x="270" y="20" width="180" height="56" rx="8"/><text x="284" y="44">Pricing page</text><text class="m" x="284" y="62">👍 on your comment</text>
+<rect class="hl" x="10" y="120" width="200" height="56" rx="8"/><text x="24" y="144">Launch</text><text class="m" x="24" y="162">hovered · seen here</text>
+<rect class="ob" x="260" y="120" width="200" height="56" rx="8"/><text x="274" y="144">Website</text><text class="m" x="274" y="162">still orange</text><circle class="od" cx="440" cy="138" r="6"/>
+<rect class="bx" x="510" y="120" width="200" height="56" rx="8"/><text x="524" y="144">Desk row</text><text class="m" x="524" y="162">no mark to read</text>
+<path class="ar" d="M310 76L130 115"/><path class="ar" d="M360 76V115"/><path class="no" d="M410 76L590 115"/>
+</svg>
+<ul>
+<li><strong>You see:</strong> the same 👍 again in <em>Website</em>, and you clear it a second time. Next week someone lists an older page into a third topic: its old reactions light that topic orange as if new.</li>
+<li><strong>Outside company:</strong> an app with no topics (a plain issue page, a document) has nothing to read or clear.</li>
+<li><strong>Could go wrong:</strong> the Desk's file rows, which you said carry their own dot, have no mark to draw orange from; neither does Ship's issue page.</li>
+</ul>
+
+<h3>B · Seen per conversation <span class="muted">(recommended)</span></h3>
+<p>The reaction is remembered as seen on the conversation it is in: the Pricing page's comments, a team's chat, or a topic's own conversation, the same place unread is kept. A topic is orange when any conversation it shows you has an unseen reaction. Hovering it marks every conversation its hover listed.</p>
+<svg viewBox="0 0 720 190" role="img"><title>Option B: one seen mark per conversation</title>
+<rect class="hl" x="250" y="20" width="220" height="56" rx="8"/><text x="264" y="44">Pricing page</text><text class="m" x="264" y="62">seen up to Katerina's 👍</text>
+<rect class="bx" x="10" y="120" width="200" height="56" rx="8"/><text x="24" y="144">Launch</text><text class="m" x="24" y="162">hovered → writes the mark</text>
+<rect class="bx" x="260" y="120" width="200" height="56" rx="8"/><text x="274" y="144">Website</text><text class="m" x="274" y="162">clear too</text><circle class="gd" cx="440" cy="138" r="6" fill-opacity=".25"/>
+<rect class="bx" x="510" y="120" width="200" height="56" rx="8"/><text x="524" y="144">Desk row · Ship</text><text class="m" x="524" y="162">clear too</text>
+<path class="ar" d="M120 115L290 80"/><path class="ar" d="M360 80V115"/><path class="ar" d="M430 80L600 115"/>
+</svg>
+<ul>
+<li><strong>You see:</strong> one 👍, seen once. <em>Website</em>, the Desk row and Ship's issue page are clear as soon as you hovered <em>Launch</em>. Listing the page into a new topic lights nothing you already saw.</li>
+<li><strong>Outside company:</strong> one rule, tied to the conversation it already shows: any app that shows the Pricing page can draw its orange and clear it, with or without topics.</li>
+<li><strong>Could go wrong:</strong> one hover writes several marks at once (one per conversation in the hover), so your read state grows faster than in A; when it fills, the oldest marks are trimmed the way reply marks already are, without bringing old orange back.</li>
+</ul>
+
+<h3>C · Do less: no “seen” at all</h3>
+<p>Nothing new is remembered. Orange clears only when you open the conversation the reaction is in, the way blue does.</p>
+<svg viewBox="0 0 720 130" role="img"><title>Option C: orange clears only on opening the conversation</title>
+<rect class="ob" x="10" y="20" width="200" height="56" rx="8"/><text x="24" y="44">Launch</text><text class="m" x="24" y="62">hovered · still orange</text><circle class="od" cx="190" cy="38" r="6"/>
+<rect class="bx" x="260" y="20" width="200" height="56" rx="8"/><text x="274" y="44">Open Pricing page</text><text class="m" x="274" y="62">its comments</text>
+<rect class="bx" x="510" y="20" width="200" height="56" rx="8"/><text x="524" y="44">Everywhere</text><text class="m" x="524" y="62">clear</text>
+<path class="ar" d="M210 48H255"/><path class="ar" d="M460 48H505"/>
+<text class="m" x="10" y="110">Nothing new is written; the reaction is “seen” when you read where it is.</text>
+</svg>
+<ul>
+<li><strong>You see:</strong> hovering tells you who reacted but the orange stays until you open the page. That reverses your first version, “hovering clears an orange dot but not a blue one”, and makes orange behave like blue.</li>
+<li><strong>Outside company:</strong> nothing to adopt.</li>
+<li><strong>Could go wrong:</strong> a 👍 you have no reason to open stays orange until you go and look at it anyway.</li>
+</ul>
+
+<h4>Trade-offs</h4>
+<div class="tw"><table>
+<tr><th></th><th>Protocol shape</th><th>What you and Katerina see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td><strong>A · per topic</strong></td><td>“Seen” on the place, unlike unread</td><td>Same 👍 cleared in each topic; old reactions light again when a page is listed</td><td>App without topics cannot clear or draw it</td><td>High: marks merged into everyone's read state</td><td>Small</td></tr>
+<tr><td><strong>B · per conversation</strong></td><td>“Seen” where unread lives, same key</td><td>Seen once, everywhere, Desk and Ship included</td><td>One rule on what it already shows</td><td>High, as A</td><td>Small–medium: hover writes several marks; trim rule</td></tr>
+<tr><td><strong>C · none</strong></td><td>Nothing new</td><td>Orange stays until you open the page</td><td>Nothing to adopt</td><td>None</td><td>Smallest</td></tr>
+</table></div>
+
+<h4>How others do it</h4>
+<ul>
+<li><strong>Slack:</strong> a reaction to you is one item in Activity, seen once whichever channel you saw it from (B's shape).</li>
+<li><strong>GitHub and Linear:</strong> notifications are per thread or per issue, never per list or project that shows them (B's shape).</li>
+</ul>
+
+<h4>Recommendation</h4>
+<p class="rec"><strong>B — a reaction is seen per conversation.</strong> A reaction lives in one conversation, so seeing it once should be seeing it everywhere, exactly as reading already works and as you decided for unread on 29 Oct. It is the only option where the Desk's own dot and Ship's issue page can show and clear the same orange, and where listing an old page into a new topic does not bring back reactions you already saw. Its one cost, more marks in your read state, is handled the way reply marks already are.</p>
+
+<h4>Checked</h4>
+<ul>
+<li>Unread is kept per conversation: a page's comments, a team's chat, a reply under its root — SPEC §11.1, “Streams: which context a message answers to”.</li>
+<li>Never keyed by a topic's id — record <em>a-files-unread-state-is-keyed-file-and-its-id</em> (Accepted, 29 Oct).</li>
+<li>Read state only grows, is merged across your apps, and a key once written stays in every copy — SPEC §11.4 and §11.6; the same record's Context.</li>
+<li>When read state is full, the oldest marks go and a floor keeps them from coming back — SPEC §11.6 (<code>reply-floor</code>).</li>
+<li>“Hovering clears an orange dot but not a blue one”; “Blue is to read, orange is to know” — the Initiative, “First version of the details” (saved copy of 6 Nov).</li>
+<li>Desk rows carry their own dot, and the Desk has no Activity group — your 31 Oct answers, Navigation project's Decided lines. The exact wording “its own blue or orange dot” is from the project draft; I could not find it in a saved copy.</li>
+</ul>
+
+<p class="muted"><strong>For the record:</strong> key <code>orange:&lt;§11.1 context&gt;</code> (<code>orange:file:&lt;d&gt;</code>, <code>orange:&lt;file address&gt;</code>, <code>orange:&lt;channel uuid&gt;</code>); a reaction on a reply counts in its root's stream. With no key, orange counts from the later of your start in the place and a suite-wide start date; a trimmed key raises <code>orange-floor</code>, like <code>reply-floor</code> (§11.6); hovering writes the newest shown reaction's <code>created_at</code>, never the clock. SPEC §11.1, §11.6, §11.8. Record: <code>a-reaction-is-seen-once-in-its-conversation</code> (Proposed).</p>
+
+<!-- ================= FYI ================= -->
+<h2>For your information</h2>
+<div class="fyi">
+<p><strong>“A reply to your agent” lights nothing in this project.</strong> Your 30 Oct rule includes it, but no app can tell today whose agent wrote or received a message: only the relay knows, and it tells no app (SPEC §6.5, “No client can evaluate this predicate”). It lands when an agent's owner is on the wire, which is its own call, asked separately (“Whose agent is it?”). Nothing to answer here.</p>
+</div>
+
+</main>
+</body>
+</html>
