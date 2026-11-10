@@ -326,6 +326,9 @@ produce the same events in the same order.
   - `service-key` (`invalid:`): a `kind:9000` puts a service key on any team,
     or a service key joins one by `kind:9021` (§3.4). Where both apply,
     `service-key` is the one sent.
+  - `person-not-named` (`invalid:`): a `kind:1851` sets `member:<P>` or
+    `follow:<P>` where `P` is not a lowercase hex key, or without `["p", P]`
+    (§11.8, *added 2026-11-10*).
 
   A `kind:9000` naming several people is refused with a code only when
   everyone in it is refused for that same code; otherwise it is refused
@@ -4465,7 +4468,9 @@ record
 [a-membership-change-names-the-person-it-is-about](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-membership-change-names-the-person-it-is-about.md)).
 Every `kind:1851` setting `member:<P>` or `follow:<P>`, a join, an Add, a leave
 or a level alike, names `P` in a `p` tag, and **the relay refuses one that does
-not**. So the members read below finds every membership change on a file.
+not**, with the code `person-not-named` (§6.2); `P` is a lowercase hex key,
+since a `#p` read matches it exactly. So the members read below finds every
+membership change on a file.
 
 Measured on production 2026-09-30, as the agent in the QA team: the relay
 accepted a `member:<P>` change on an issue, and both `#p` and `#a` returned it.
