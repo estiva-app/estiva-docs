@@ -3833,6 +3833,7 @@ staged field, or writes one, also conforms to these.
 | C51 | **Resolving a thread** (*added 2026-11-04*, §6.4, §6.5). A thread's state is its newest `kind:9101` with `t=resolution` in §6.3's order, whoever wrote it: a resolve and a reopen in the same second fold by `ts`, then the higher `id`. A `9101` whose `h` is not its target's team, one whose target is a reply, and one whose `action` is neither `resolved` nor `reopened` change nothing; a `support` outside the thread is dropped and the resolve stands. A deleted top-level message keeps the state its last `9101` gave it, and its thread offers neither Resolve nor Reopen. A top-level message the read did not return is in its replies' team when every returned reply names the same `h`, and in none otherwise, and is deleted only when a returned `kind:5` is signed by the key every one of those replies names in its lowercase `p`; otherwise it is not returned: never said to be deleted, its place reads "This comment can't be shown." above its replies, and its thread takes no new replies and offers neither Resolve nor Reopen (*2026-11-06*). It is deleted only when it has a team: replies that disagree on the team, as a reply filed in another team before the relay refused one would, leave it not returned, never deleted |
 | C52 | **The file a comment is on** (*added 2026-11-09*, §13.6.2). A `kind:1111` with `["A", V]` whose body is `Looks right.\n\nnostr:naddr1…` for `V` draws `Looks right.` and nothing for the second line; the same with an app URL that names `V` by §7.7 instead, or with `["O", <V's id>]` and an `naddr` of the same `d`, draws the same. One whose body is only `nostr:naddr1…` for `V` draws `V` as it would without the rule. A body that names `V` in a sentence draws `V`'s chip. A body whose second line is only a reference to another file `W` draws `W`'s row |
 | C53 | **A tab from before the switch** (*added 2026-11-09*, §6.13). An app loaded while NIP-11 had no `files` sets a project's `status` with no `prev`; the relay, now advertising `{"requires_prev": ["osnova.project"]}`, refuses it with a reason that starts `invalid: a project change names the change it follows in prev`. The app reads NIP-11 again, opens the project and sends the change again with `prev` its current `status` change, and it is accepted; nothing is shown to the person. Its text change sent the same way is merged onto the text saved since, with the text it read as the base. A relay keeping some teams' files in order and not others advertises no `files` |
+| C54 | **What names you on a listed file** (*added 2026-11-10*, §11.8). `P` follows a topic at Important that lists a project and an issue. On the issue: a comment mentioning `P` lights the topic and stays lit under two later comments naming nobody, until `P` reads the issue in any app; a reply to `P`'s comment lights it, and reading that thread clears it; a new comment naming nobody does not light it at Important and does at All. On an issue of the listed project, a mention lights it at both levels and a comment naming nobody at neither; on a page two levels under a listed document, nothing does. Muted, only the mention lights; not following, nothing on the files lights the topic |
 
 ### 9.1 Reference checks
 
@@ -4538,7 +4539,7 @@ one of two levels, or not in it:
 | level | what is unread for `P` |
 | --- | --- |
 | **All** | everything Important lights, and every message in every conversation on the place, and the conversations on the files the place lists (§6.14), not the files nested under them (§6.7 Nesting) nor a listed project's issues (*2026-11-06*) |
-| **Important** | what is said on the place: each new conversation, the replies in a conversation `P` is in, and every message that mentions `P` |
+| **Important** | what is said on the place: each new conversation, the replies in a conversation `P` is in, and every message that mentions `P`; and what names `P` on the files the place lists and on the files one level under them (a listed project's issues, a listed document's pages): a message that mentions `P` and a reply in a conversation `P` is in. A new conversation on such a file that does not name `P` lights nothing (*2026-11-10*) |
 | not following | only a message that mentions `P`, as anywhere |
 
 **A conversation** on a topic or space is a top-level `kind:1111` about it and
@@ -4641,9 +4642,17 @@ lights it (the table above), and `P` has not muted `X` (an older mute, *Muting
 is private*, which then lights only mentions). On a place this replaces
 conditions 1 and 3 of
 *What membership changes about unread*; a mention of `P` lights as it does
-everywhere. At All, a message on a file the place lists answers to that file's
-own marker (§11.1), so reading it once in any app reads it everywhere, and All
-never makes `P` a member of that file. A list entry (§6.14) is not a message
+everywhere. At either level, a message on a file the place lists, or on a file
+one level under one, answers to that file's own marker, or a reply to its
+thread's (§11.1, §11.3), so reading it once in any app reads it everywhere, and
+neither level makes `P` a member of that file. What it lights is counted from
+`P`'s start on the place, at All too; only All's every-message part counts
+from when `P` chose All. A reply is in a conversation `P` is in also when its
+lowercase `p` names `P` as the author it answers (§6.4). A reply to `P`'s
+agent belongs to what names `P`, and lights nothing until a reader can tell
+whose agent it is (§6.5). When `P` is not in the place, its files light
+nothing on it; a mute keeps only the mentions (*2026-11-10*; record
+at-important-what-names-you-on-a-listed-file-lights-the-topic). A list entry (§6.14) is not a message
 and lights nothing at either level. Being added lights nothing by itself.
 
 **Following grants no access.** A person who cannot read a team's channel
