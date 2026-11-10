@@ -2,7 +2,7 @@
 
 - Date: 2026-11-10
 - Status: Accepted
-- Decided by: Miky, in the read / unread session on his Leaf page "Read / Unread notifications + Activity" (2026-10-30), on "The Important dot, walked through the scenarios": B; and, for hovering, his answer of 2026-11-10 on the brief "Reactions turn orange" ([page](briefs/reactions-turn-orange.html)), call 2: B
+- Decided by: Miky, in the read / unread session on his Leaf page "Read / Unread notifications + Activity" (2026-10-30), on "The Important dot, walked through the scenarios": B; and, for hovering, his answer of 2026-11-10 on the brief "Reactions turn orange" ([page](briefs/reactions-turn-orange.html)), call 2: B; and, for the files under a listed file, his answer at ACT-2's kickoff (2026-11-10): count them, one level down
 - Area: Read state
 
 ## Who it affects
@@ -63,6 +63,15 @@ conversations reach you in the Screener or on the Desk, never on the topic."
   Initiative's "First version of the details": "hovering clears an orange
   dot but not a blue one").
 - SPEC §11's Important row gains the files a place lists, as above.
+- **The files under a listed file count too, one level down** (added
+  2026-11-10, Miky at ACT-2's kickoff). What names you on an issue of a
+  project the topic lists, or on a page under a document it lists, lights the
+  topic, at Important and at All. The rest of their talk still lights
+  nothing: All lights for every conversation only on the files the topic
+  lists directly. Checked that day: Miky's 12 topics at Important list 3
+  projects, 3 documents and 1 single issue, so without this most mentions of
+  him on an issue would miss the topic he works in. Turned down: only the
+  directly listed files, as All has it, one scope for both levels.
 
 ## Rejected alternatives
 

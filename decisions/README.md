@@ -149,7 +149,7 @@ heading here.
 - [Every add, join or leave on a file names the person it is about, so any app finds a file's members with one small read](a-membership-change-names-the-person-it-is-about.md) — Accepted, 2026-11-10
 - [A reaction names the person whose message it reacts to, so any app finds the reactions to your messages by asking for the ones that name you](a-reaction-names-whose-message-it-reacts-to.md) — Accepted, 2026-11-10
 - [A reaction to your message is seen once, in the conversation it is in, so hovering an orange dot clears it in every topic, on the Desk and in every app](a-reaction-is-seen-once-in-its-conversation.md) — Accepted, 2026-11-10
-- [Following a topic at Important, what names you on a file it lists lights the topic: a mention or a reply in your conversation blue, a reaction to your message orange; the file's other conversations never do](at-important-what-names-you-on-a-listed-file-lights-the-topic.md) — Accepted, 2026-11-10
+- [Following a topic at Important, what names you on a file it lists lights the topic: a mention or a reply in your conversation blue, a reaction to your message orange; the file's other conversations never do](at-important-what-names-you-on-a-listed-file-lights-the-topic.md) — Accepted, 2026-11-10; the files under a listed file, one level down, added the same day
 
 ## Messages
 
