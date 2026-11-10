@@ -934,7 +934,9 @@ and
   (§11.8).
 
 **What the relay refuses.** It keeps, per file and per field, the change that
-is current: the newest by §6.3's order of the changes a reader folds, so never
+is current: the newest by §6.3's order of the changes it accepts (a reader's
+own rules for a field, such as §6.14's `o` check, are not the relay's: a change
+a reader skips for them still counts, and is the next change's `prev`), so never
 one filed in another team than its file's, one whose `a` and `O` disagree, or
 a `member:<P>`=`false` not signed by `P` (§11.8). It refuses, with an `OK`
 false whose message starts `conflict:`:
@@ -2413,7 +2415,8 @@ newest value of a field other than the text averages 601 bytes, the newest text
 ```
 
 The relay answers each first record the filter picks, and with it, for each
-field of that file, the current change (§6.2: the newest a reader folds),
+field of that file, the current change (§6.2's: one a reader skips for a
+field's own rules included, §6.14),
 **except the text**:
 
 - **It reads as a `REQ` would.** Every event returned passes the read rules a
