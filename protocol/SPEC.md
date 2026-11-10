@@ -2710,10 +2710,13 @@ Each listed file has two fields of its own on the topic, beside its entry:
 `order:<d>`, its place, and `look:<d>`, `row` or `card`. Each is a
 `kind:1851` with an entry's tags and, after `ts`, `prev` (§6.2), skipped by
 the fold's rules above. Anyone who may write an entry may write them; a move
-writes one change, for the file that moved.
+writes one change, which sets the moved file's place and, only where the
+file must pass files that have none, theirs (Writing a place, below).
 
-- **A place** is a key: non-empty, only `0-9A-Za-z`, never ending in `0`, so
-  a key always exists between two. Any other value is no place. A place older
+- **A place** is a key: 1 to 64 characters, only `0-9A-Za-z`, never ending in
+  `0`, so a key always exists between two. Any other value is no place. A
+  writer whose next key would pass 64 places every placed file afresh, in one
+  change, rather than write a longer one. A place older
   (§6.3) than the file's newest `lists:<d>` = `true` is ignored too: a file
   taken off and put back comes back unplaced, unless its writer places it
   again after listing it, as an Undo does. A re-list never resets the look.
