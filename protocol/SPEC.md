@@ -222,7 +222,7 @@ produce the same events in the same order.
 | **move** a file to another team | one `kind:1852` `move` for each team that lists the file: `h` the target, `["from", <source>]`, and an entry for the file and for each file nested beneath it (§6.7 Nesting), so a subtree moves whole; never the files a topic lists (§6.14). The file's `h` does not change. A topic's `space` role does not travel: the target's entry carries it only when the person ticks "Keep it a space in <team>", which a consumer offers ticked when the topic was a space and the person may mark the target's spaces. Moving a space out of a team takes its mark off, so a consumer offers it only to a member of the source team | by the consumer, when the target is private and the file's `h` names any other channel (§3.1: the move would look private and not be), and a space's move by somebody who is not a member of its team. By the relay, the whole command, changing neither list: when either team holds no listing, the source is the target, the source does not list a topic the command names or lists none of its entries, the mover may not write in the source, the mover takes a space out of the source or marks one in the target without being a member of that team, or the command moves a topic into or out of an archived team (§6.5) |
 | **start a conversation** | `kind:9` with the team's `h` (§6.4) | — |
 | **join** a team | `kind:9021` with the team's `h`, signed by the person joining | by the relay, on a team that is not open (private teams are a later stage); by a service key (`service-key`), and on the Company team by a key not in the company (`not-in-company`), as for an add (§3.4) |
-| **leave** a team | `kind:9022` with the team's `h`, signed by the person leaving | by the relay, on the Company team (§3.4), which keeps its last owner. A team's last owner may leave it (below) |
+| **leave** a team | `kind:9022` with the team's `h`, signed by the person leaving | by the relay, on the Company team (§3.4), and from the last owner of a group that is not a team; each keeps its last owner. A team's last owner may leave it (below) |
 | **add** someone to a team | `kind:9000` with the team's `h` and `["p", <pubkey>]` | by the relay, adding someone else, to anybody who is not a member of the team, except on a team with no owner the workspace's owners and admins (below) (a person naming only themselves joins, as with `kind:9021`); a `kind:9000` granting or changing a role (owner, admin) to anybody but the team's owners and admins and, on a team with no owner, the workspace's owners and admins (below); and any `kind:9000` into a DM or any other group that is not a team — one holding no relay-signed `kind:30890` (Miky, 2026-11-02). Several people in one `kind:9000` are decided one by one, in tag order: a person refused does not refuse the others, the event is answered accepted while anyone in it is added (refused only when nobody is), and the sender learns who was added from the team's `kind:39002` (Miky, 2026-11-03) |
 | **remove** someone from a team | `kind:9001` with the team's `h` and `["p", <pubkey>]` | by the relay, to anybody but the team's owners and admins (`kind:39001`), on a team with no owner the workspace's owners and admins (below), and, for an agent, the person who owns it when they are a member of the team; to anybody but themselves, when it would remove the team's last owner; and on the Company team, for anyone still in the company (§3.4) |
 | **mark** a space, or **unmark** it | `kind:1852` `add` naming the topic with the `space` role (below), or naming it without the role | by the relay, to anybody who is not a member of the team: any `kind:1852` — `add`, `remove` or `set`, a move's included — that gives an entry a role, or changes or removes an entry carrying one |
@@ -238,10 +238,12 @@ team has no owner when its relay-signed `kind:39001` lists no `p` with the role
 owner. On such a team the workspace's owners and admins on the relay's roster
 (`kind:13534`) act as its owners, without being added to it: they rename it and
 change its subtitle (`kind:9002`), archive and restore it (`kind:1851`
-`archived`), start its listing, give and change roles (`kind:9000`, themselves
-included, which is how a team gets an owner again) and remove members
-(`kind:9001`). They could already delete it (the delete row). No new refusal
-code. Record
+`archived`), give and change roles (`kind:9000`, themselves included, which is
+how a team gets an owner again) and remove members (`kind:9001`), a private
+team's too. They could already delete it (the delete row). Only a team — a
+group holding a relay-signed `kind:30890` — is looked after this way: a DM or
+another conversation space never is, and a group that is not a team keeps its
+last owner. No new refusal code. Record
 [a-team-with-no-owner-is-looked-after-by-the-workspaces-admins](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-team-with-no-owner-is-looked-after-by-the-workspaces-admins.md).
 
 - **Delete is for an empty team.** The relay refuses a `kind:9008` while the
