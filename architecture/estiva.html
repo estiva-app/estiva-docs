@@ -74,7 +74,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <main>
 
 <h1>Estiva architecture</h1>
-<p class="sub"><span class="state">As built, 2026-10-23</span> · the whole suite, as it runs today · updated 2026-11-10 for <a href="topics-main-and-all.html">Topics: Main and All</a>, which shows a topic followed at All in Peek every thread on the files it lists, each under its file's name, and lets a live request name no team and still hear what its reader may read (Map, Objects, Access); on 2026-11-09 for <a href="one-conversation-in-every-app.html">One conversation in every app</a>, which moved the conversation's cards and threads into the UI kit, let Ship resolve a thread, and keeps a reply in its comment's team (What each app builds on, Objects, Flow, Access); on 2026-11-04 for <a href="leaf-topics-navigation.html">Leaf's Topics navigation</a>, which gave Leaf a Topics section in its sidebar and a page per topic (Objects); on 2026-11-04 for <a href="ship-topics-navigation.html">Ship's Topics navigation</a>, which gave Ship a Topics page and a page per topic (Objects); on 2026-11-02 for <a href="topics-group-files.html">Topics group files</a>, which gave a topic its own list of files (Objects); on 2026-10-29 for <a href="leaf-works-for-everyday-documents.html">Leaf works for everyday documents</a>, which changed no box or arrow drawn here</p>
+<p class="sub"><span class="state">As built, 2026-10-23</span> · the whole suite, as it runs today · updated 2026-11-10 for <a href="topics-main-and-all.html">Topics: Main and All</a>, which shows a topic followed at All in Peek every thread on the files it lists, each under its file's name, and lets a live request name no team and still hear what its reader may read (Map, Objects, Access); corrected on 2026-11-10 to show that Peek draws each team's chat, as it has since its Teams screen (Objects); on 2026-11-09 for <a href="one-conversation-in-every-app.html">One conversation in every app</a>, which moved the conversation's cards and threads into the UI kit, let Ship resolve a thread, and keeps a reply in its comment's team (What each app builds on, Objects, Flow, Access); on 2026-11-04 for <a href="leaf-topics-navigation.html">Leaf's Topics navigation</a>, which gave Leaf a Topics section in its sidebar and a page per topic (Objects); on 2026-11-04 for <a href="ship-topics-navigation.html">Ship's Topics navigation</a>, which gave Ship a Topics page and a page per topic (Objects); on 2026-11-02 for <a href="topics-group-files.html">Topics group files</a>, which gave a topic its own list of files (Objects); on 2026-10-29 for <a href="leaf-works-for-everyday-documents.html">Leaf works for everyday documents</a>, which changed no box or arrow drawn here</p>
 
 <p>Estiva is a set of apps for one team: Peek for chat, Ship for projects and issues, and Leaf for documents. They share one workspace, which is a single relay. Every app reads and writes the same signed events there, so a file made in one app can be found and discussed in the others.</p>
 <p>Start with the first map, then look at <a href="#objects">Objects</a> to see what a person meets. <a href="#flow">Flow</a> follows one comment from Ship to Peek. Project pages redraw their parts from this page.</p>
@@ -208,7 +208,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <h3>Around a file: the conversation</h3>
 <figure>
 <svg viewBox="0 0 720 310" role="img">
-<title>A comment is about one file and can be written from any app; a reply answers a comment, one level deep, in the comment's team. A resolve or reopen is about a comment's thread, with an optional note. A message lives in a direct message in Peek. A card under a message points at a file. A reaction can be on a comment or a message.</title>
+<title>A comment is about one file and can be written from any app; a reply answers a comment, one level deep, in the comment's team. A resolve or reopen is about a comment's thread, with an optional note. A message lives in a direct message or a team's chat, both shown in Peek. A card under a message points at a file. A reaction can be on a comment or a message.</title>
 <rect class="b" x="260" y="20" width="200" height="56" rx="8"/><text x="276" y="44" class="h">A file</text><text x="276" y="63" class="m">any of the four types</text>
 
 <rect class="b" x="20" y="130" width="200" height="72" rx="8"/><text x="36" y="152" class="h">Comment</text><text x="36" y="171" class="m">about the file, from any app</text><text x="36" y="188" class="m">1111</text>
@@ -223,7 +223,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <path class="a" d="M260,168 L224,168"/>
 <path class="a" d="M460,168 L496,168"/>
 
-<rect class="b" x="500" y="130" width="200" height="72" rx="8"/><text x="516" y="152" class="h">Message</text><text x="516" y="171" class="m">in a direct message</text><text x="516" y="188" class="m">9 · shown in Peek</text>
+<rect class="b" x="500" y="130" width="200" height="72" rx="8"/><text x="516" y="152" class="h">Message</text><text x="516" y="171" class="m">in a DM or a team's chat</text><text x="516" y="188" class="m">9 · shown in Peek</text>
 <rect class="b" x="500" y="240" width="200" height="56" rx="8"/><text x="516" y="264" class="h">Card</text><text x="516" y="283" class="m">drawn under a message</text>
 <path class="a" d="M600,240 L600,206"/>
 <path class="a" d="M700,268 L712,268 L712,40 L464,40"/><text x="560" y="34" class="m">points at a file</text>
@@ -242,7 +242,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <tr><td>Title, summary, text</td><td>What a file says about itself</td><td>Whoever changed it</td><td>The file's app</td><td>Every app that lists the file</td></tr>
 <tr><td>Comment</td><td>A remark on a file, or on part of a document</td><td>Its author</td><td>Any app</td><td>Peek, Ship's Activity, Leaf's side column, each drawn by the UI kit's conversation; also a Peek topic at All that lists its file, under the file's name</td></tr>
 <tr><td>Resolve</td><td>A thread marked resolved, with who resolved it and an optional note; reopened the same way</td><td>Its author</td><td>Peek, Ship, Leaf</td><td>Every app: a "Resolved" check by the comment's time, who and the note in the thread's line; in Peek the thread stays in place, in Ship and Leaf it moves into a closed "Resolved" section at the end of the comments</td></tr>
-<tr><td>Message</td><td>A line in a direct message; a Folder's own chat is in the protocol, and no app shows it yet</td><td>Its author</td><td>Peek</td><td>Peek</td></tr>
+<tr><td>Message</td><td>A line in a direct message, or in a team's own chat</td><td>Its author</td><td>Peek</td><td>Peek: direct messages, and each team's chat under the team in Teams, for its members</td></tr>
 <tr><td>Card</td><td>A preview of a file under a message or comment</td><td>(part of the message)</td><td>Any app</td><td>Each reader's app</td></tr>
 </tbody>
 </table>

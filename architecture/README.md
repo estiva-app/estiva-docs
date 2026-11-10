@@ -16,6 +16,14 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [Activity indicator on each topic and team](activity-indicator-on-each-topic-and-team.html)
+  — Shaped, 2026-11-10. In Peek, the dot on a topic, a space, a team's chat
+  and a DM says why it is lit when you hover it, turns orange when someone
+  reacts to your message there, and each place keeps an Activity list; the
+  rule lives in the shared package so any app can draw it, a reaction names
+  the author of the message it reacts to, and your read state gains one
+  "seen" mark per conversation. Read at
+  `https://docs.estiva.app/architecture/activity-indicator-on-each-topic-and-team.html`.
 - [Topics: level up the topic experience](topics-level-up-the-topic-experience.html)
   — Shaped, 2026-11-06. Peek, Ship and Leaf order your topics by one shared
   rule, where anything last moved in the topic or its files, and each file on a topic
