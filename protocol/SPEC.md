@@ -891,7 +891,7 @@ The bracketed tags and those after `ts` appear only where a rule asks for them:
   parent. It is an index, not a second target: `a` (with `O`, the same file) is
   the only file a change targets.
 - **`o`**, any other file the change points at, by its id (§6.4): the file a
-  list entry lists (§6.14).
+  list entry lists or arranges (§6.14).
 - **`content-format`** `estiva-blocks-1`, on a change whose value is a §13.3
   block document, with one `imeta` per attachment (§13.4).
 - **`p`**, the person a change names, where the relay indexes them (§11.8).
@@ -1492,7 +1492,8 @@ its owners and admins (§3.3).
   `kind:1111` rooted at it (replies included), a `kind:7` on it or on its
   comments, a `kind:40003` or `kind:5` on its comments, a `kind:5` taking back
   a reaction on it or on its comments, a `kind:9101` on its comments, a new
-  child under it, or a change to its list of files (`lists:<d>`, §6.14). Its own Archive and Unarchive, Delete, and a move out of an archived
+  child under it, or a change to its list of files or their arrangement
+  (`lists:<d>`, `order:<d>`, `look:<d>`, §6.14). Its own Archive and Unarchive, Delete, and a move out of an archived
   parent stay offered, except a topic's move into or out of an archived team, which
   the relay refuses (below). A reader MUST show such events whatever their
   `created_at`: an older app, an outside client or an agent can still write
@@ -1943,8 +1944,9 @@ the line between them is the kind.
 own team (§6.2's `h` rule). The fields: `title` and `parent`, each seeded by
 the root tag of the same name and overridden by the change stream — the way an
 issue's `project` field works; `summary`, seeded by its root tag (§6.12);
-`archived` (§6.5); `member:<p>` (§11.8); and `lists:<d>`, the topic's list of
-files from any team (§6.14). A consumer MUST read `parent` before the `a`
+`archived` (§6.5); `member:<p>` (§11.8); `lists:<d>`, the topic's list of
+files from any team; and `order:<d>` and `look:<d>`, each listed file's place
+and look (§6.14, *added 2026-11-10*). A consumer MUST read `parent` before the `a`
 tag. There is no `description`: a reader ignores a `description` change aimed
 at a `30840`.
 
@@ -2659,7 +2661,8 @@ folds last write wins per field.
 and the file is on the list only when that entry's `value` is exactly `true`.
 A reader skips a change, and folds nothing from it, when:
 
-- its field is `lists:<d>` and none of its `o` tags is `<d>`, byte for byte. An
+- its field, or a field it sets, is `lists:<d>`, `order:<d>` or `look:<d>`
+  (below) and none of its `o` tags is `<d>`, byte for byte. An
   `o` that no `lists:` field names is not an entry: a move or another relation
   carries `o` too;
 - its `O` is not its `a`'s `d` (§6.2);
@@ -2678,8 +2681,9 @@ whether or not they can read the file.
 
 **Reading it.**
 
-- **Which topics list a file** is `{"kinds":[1851], "#o":[<d>]}`, folded per
-  list. A file's own changes, its list among them, are `{"kinds":[1851],
+- **Which topics list a file** is `{"kinds":[1851], "#o":[<d>]}`, folding
+  only `lists:` fields per list. It returns the file's `order:` and `look:`
+  changes too, one per move (below), so a reader pages it. A file's own changes, its list among them, are `{"kinds":[1851],
   "#O":[<d>]}` or `#a`, so asking what changed on a file never returns an entry
   that only lists it.
 - **A listed id resolves** by `#d` over the file kinds the reader knows
@@ -2695,8 +2699,56 @@ whether or not they can read the file.
   is still listed: archiving removes no entry, and the reader knows from the
   file that it is archived. How it is drawn, among the files or apart, is each
   app's. An archived topic's list takes no new entry (§6.5).
-- **No order is promised.** The entries' times are there; an app sorts as its
-  design says.
+- **In one order, the list's own** (below).
+
+**The arrangement** (*added 2026-11-10*; record
+[each-file-on-a-topic-keeps-its-own-place-and-look](https://github.com/estiva-app/estiva-docs/blob/main/decisions/each-file-on-a-topic-keeps-its-own-place-and-look.md)).
+Each listed file has two fields of its own on the topic, beside its entry:
+`order:<d>`, its place, and `look:<d>`, `row` or `card`. Each is a
+`kind:1851` with an entry's tags and, after `ts`, `prev` (§6.2), skipped by
+the fold's rules above. Anyone who may write an entry may write them; a move
+writes one change, for the file that moved.
+
+- **A place** is a key: non-empty, only `0-9A-Za-z`, never ending in `0`, so
+  a key always exists between two. Any other value is no place. A place older
+  (§6.3) than the file's newest `lists:<d>` = `true` is ignored too: a file
+  taken off and put back comes back unplaced, unless its writer places it
+  again after listing it, as an Undo does. A re-list never resets the look.
+- **The order.** Placed files first, by key compared byte for byte (never by
+  locale), equal keys by the lower `<d>`, byte for byte; then unplaced files,
+  oldest listed first by their newest `lists:<d>` = `true` entry in §6.3's
+  order. Every app that lists a topic's files MUST keep this order, and one
+  that groups them, by kind say, keeps it inside each group. A reader that
+  knows neither field shows the files in the order listed.
+- **The look is a hint.** An app draws it where it shows files as widgets
+  (§7.5) and may keep its own rows, as Ship's topic page does. A file with no
+  look, or a value other than `row` or `card`, draws its manifest's widget:
+  the exception to §6.3's rule that a value outside the vocabulary is shown.
+- **Writing a place.** Every `order:<d>` change MUST carry `prev`: the field's
+  newest change on the relay, one a reader skips for its `o` included, since
+  the relay chains every change it accepts; or, for the field's first change,
+  the topic's first record. A drop among unplaced files places the unplaced
+  files above it too, in one change of several fields (§6.2): one
+  `["set", "order:<d>", <key>, <prev>]` and one `["o", <d>]` per file, taken
+  whole or refused whole. Refused with `conflict:`, the writer reads the topic
+  again and plans the move again, and never re-sends the places it added for
+  other files. A look, or a move of one file, is re-sent as §6.2 says.
+- **Reading it.** Where the relay offers the list read (§6.13),
+  `{"fields": "newest", "kinds": [30840], "#d": [<topic>]}` returns the
+  arrangement with the list, at most three changes per file. Where a field's
+  newest change is one a reader skips, the good one before it is not in that
+  answer: the reader reads that file's changes on the topic again, by `#O`
+  (the topic) and `#o` (the file).
+- **An archived topic takes no arrangement** (§6.5): a writer does not offer
+  one, as for its entries; the relay does not refuse it.
+
+Checked on production 2026-11-10, as QA-1 and QA-2: QA-2 saw QA-1's move and
+look; their moves of two files at once both stood; a file taken off and put
+back came back unplaced; two files placed in one change of several fields
+folded the same from `#O` and from the list read; a stale `prev` on `order:`
+was refused `conflict: order:<d> follows <id>` and the other move stood; a
+`prev` naming the newest change a reader folds, under a newer one with a wrong
+`o`, was refused; that wrong-`o` change moved nothing. Conformance: C31 (§9).
 
 **A topic is a flat lens.** Its files are its list, wherever each sits in its
 team's tree and however deep. A file nested under the topic by `parent`
@@ -3742,7 +3794,7 @@ throwaway relay or a fake query.
 | C28 | **A mention in a file's text.** A save of a file's block document (a `description` change, §6.10) that names `P` with a `reference`, edited from a version that did not, is written with a separate `member:<P>`=`true` change on the file, with no `prev`, signed by the writer and carrying `["p", P]`, and the save carries no `p` for `P` and never sets `member:<P>` in a `set`; `P` is a member, and with no message in the file's stream nothing is unread for `P`. A creation naming `P` writes the same change; a save naming only the writer writes none. `P` leaves; a save that changes another word and still names `P` writes no change, and `P` stays out. A save that drops `P`, then one that names `P` again, writes the change again: `P` is a member again (§11.8, §13.1) |
 | C29 | **A host-swapped address.** With kept shapes `https://a.example/issue/<slug>-<d>` (30851) and `https://a.example/#/issue/<d>` from a manifest on `a.example`, and only `https://b.example/document/<slug>-<d>` from one on `b.example`: a message written with `https://b.example/issue/<any>-<d of V>` keeps that URL in its body, carries `["a", V]`, draws as C21 places it, opens that URL, and `V` lists it as a mention. `https://c.example/issue/<any>-<d of V>`, with no kept shape on `c.example`; `http://b.example/issue/…` and `https://b.example:8443/issue/…`; and `https://b.example/#/issue/<d of V>` carry no tag and stay links. A manifest whose `web` is on `c.example` and that declares `urls` on `a.example` adds no shape and no origin. A manifest on `c.example` that declares `https://c.example/issue/<slug>-<d>` for kind `K`: on `b.example`, a `d` held under both `30851` and `K` names nothing and carries no tag; on `a.example`, the link is `V` (§7.7, §13.1) |
 | C30 | *Retired 2026-10-30*, with the artifact shape it tested: a list now returns signed events (§6.13), so there is no row to build a change from |
-| C31 | **A topic's list** (*added 2026-10-30*, §6.14). An entry the app writes carries `a`, `O` (the topic's `d`), `field` `lists:<d>`, `value`, `h` (the topic root's), `ts`, `["o", <d>]`, in that order, and no `p`. Of two entries for one topic and file inside one second, the later by `ts` counts; a file is listed only by `true`, and `"1"` or an empty value lists nothing. Ignored, without hiding an older good entry: one whose `o` is not the field's `<d>` (with `o` naming it second, it counts); one whose `O` is not its `a`'s `d`; one listing the topic's own `d`; one whose `h` is not the topic root's. Which topics list a file names the topic for `#o`; a file's own changes by `#O` hold no entry listing it. A listed id held by two files, or only by a team's `39000`, is not drawn and not counted |
+| C31 | **A topic's list** (*added 2026-10-30*, §6.14). An entry the app writes carries `a`, `O` (the topic's `d`), `field` `lists:<d>`, `value`, `h` (the topic root's), `ts`, `["o", <d>]`, in that order, and no `p`. Of two entries for one topic and file inside one second, the later by `ts` counts; a file is listed only by `true`, and `"1"` or an empty value lists nothing. Ignored, without hiding an older good entry: one whose `o` is not the field's `<d>` (with `o` naming it second, it counts); one whose `O` is not its `a`'s `d`; one listing the topic's own `d`; one whose `h` is not the topic root's. Which topics list a file names the topic for `#o`; a file's own changes by `#O` hold no entry listing it. A listed id held by two files, or only by a team's `39000`, is not drawn and not counted. **Its arrangement** (*added 2026-11-10*): placed files come by key compared byte for byte, equal keys by the lower `<d>`, then unplaced files, oldest listed first; a place older than the file's newest `lists:<d>` = `true` is ignored, so a file taken off and put back comes back unplaced; a key that is empty, holds a character outside `0-9A-Za-z` or ends in `0` places nothing; a look other than `row` or `card` draws the manifest's widget. One change setting `order:` for two files, each `set` with its `prev` and each file with its `o`, places both. An `order:` change with a stale `prev` is refused `conflict: order:<d> follows <id>`. An `order:` change whose `o` is not `<d>` neither moves the file nor hides the place before it |
 | C35 | **A change names the one it follows** (*added 2026-10-30*, §6.2). On a relay advertising `files`, a project's `status` change with `prev` its current `status` change is accepted; the same change with no `prev` is refused; a `title` change on an issue (not in `requires_prev`) with no `prev` is accepted. A `30852` change with no `prev` is refused, and a `member:<P>` change with none, on a project or a `30852`, is accepted |
 | C36 | **A field's first change** (§6.2). The first `status` change on a new project names the first record's event id as `prev` and is accepted; one naming the project's `d` instead is refused. A second first record at the same address, by its author, is refused; the identical event sent again is a `duplicate:` (§6.1) |
 | C37 | **A several-field change** (§6.2, §6.3). A change with `["set", "title", T, p1]` and `["set", "status", "done", p2]`, `O`, `a`, `h` and `["stage", "status", "done"]`, where `p1` and `p2` are current, is accepted, and every conforming reader folds both fields at its time and counts it `done`. One also carrying `field`, or naming `title` twice, is refused. A reader that does not know `set` shows the older title and status, never a mix |
