@@ -271,7 +271,7 @@ produce the same events in the same order.
   [a-topic-always-has-a-team-and-moves-in-one-action](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-topic-always-has-a-team-and-moves-in-one-action.md)).
   The relay changes the source's and the target's `kind:30890` in one write,
   under both teams' locks, together with the stored `kind:1852`, or stores
-  nothing and answers `invalid:` with the reason; a failure never leaves a file
+  nothing and answers with a coded reason (below); a failure never leaves a file
   on neither list or on both. An entry the source does not list and that is
   not a topic (an issue, listed by being inside its project) is only added to
   the target. A move sent again is a `duplicate:`. Only `move` takes a
@@ -279,12 +279,53 @@ produce the same events in the same order.
   listed by several teams leaves each with its own move, published in order
   and stopped at the first refusal; the consumer then names the teams that
   still list it. The reference planners are interop's `planMoveFile` and
-  `planMoveFromFolders`. A refusal starts with a short reason code after
-  NIP-01's `invalid:` prefix, so a consumer says it in its own words (record
-  [a-refusal-starts-with-a-reason-code-every-app-reads](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-refusal-starts-with-a-reason-code-every-app-reads.md));
-  *where it stands (2026-11-03):* the codes are listed here when the reference
-  relay sends them, built in the TEA issue "When the server says no, every app
-  knows why", and until then a refusal is its sentence alone.
+  `planMoveFromFolders`.
+- **A refusal starts with a reason code** (*added 2026-11-10*; record
+  [a-refusal-starts-with-a-reason-code-every-app-reads](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-refusal-starts-with-a-reason-code-every-app-reads.md)),
+  so a consumer says it in its own words instead of matching the relay's
+  sentence. The `OK` false or `CLOSED` message is
+  `<prefix>: <code>: <sentence>`: the prefix is NIP-01's, `restricted:` when
+  the signer may not do this and `invalid:` when a rule refuses it; the code
+  is lowercase letters, digits and hyphens, starting with a letter
+  (`[a-z][a-z0-9-]*`); the sentence is the relay's own words, which a client
+  that knows only NIP-01 still shows. Each code means the relay's condition,
+  never its sentence:
+  - `archived` (`invalid:`): the team the change writes to is archived, and
+    the change would alter which topics its list holds or marks (§6.5); or the
+    change is written into a conversation space or DM carrying NIP-29's
+    `archived` flag.
+  - `not-member` (`restricted:`): the signer may not write here. They are not
+    a member of the team, or of a channel only its members post in; they give,
+    change or remove an entry's role without being a member (below); or the
+    command names a topic they may not list (below). Each gets the same
+    answer.
+  - `changed` (`invalid:`): the lists changed since the sender read them. The
+    source no longer lists an entry the move names, or lists none of them; or
+    another team now lists a topic an `add` or `set` lists.
+  - `not-home` (`invalid:`): an `add` or `set` lists a topic no team lists
+    anywhere but its home (below).
+  - `leaves-by-moving` (`invalid:`): a `remove`, or a `set` leaving it out,
+    takes off a topic that is neither deleted nor archived and that no other
+    team lists (below).
+  - `author-lists-first` (`invalid:`): on a workspace with no Company team, a
+    topic whose `h` is not a team and that no team lists is listed first by
+    a key other than its author's, the key in its address (below).
+  - `archive-by-field` (`invalid:`): a `kind:9002` sets NIP-29's `archived`
+    flag on a team (§6.5).
+  - `company-team-kept` (`invalid:`): the change would delete the Company
+    team, archive it, make it private, give it a `ttl`, or take somebody still
+    in the company off it, by a removal or a leave (§3.4).
+  - `not-in-company` (`invalid:`): a `kind:9000` puts on the Company team a key
+    not in the company (§3.4).
+  - `service-key` (`invalid:`): a `kind:9000` puts a service key on any team
+    (§3.4).
+
+  A consumer that meets a code it does not know says only that nothing
+  changed. A relay never sends a refusal without a code whose first word after
+  the prefix is followed by `: `, so a consumer tells a relay that sends no
+  codes, whose sentence it may still read, from a code it does not know. A
+  new refusal a person can meet comes with its own code. `conflict:` (§6.2) is
+  the suite's own prefix and carries no code.
 - **A list entry may carry a role** (*added 2026-11-02*; record
   [a-space-is-the-teams-own-mark-on-a-topic-it-lists](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-space-is-the-teams-own-mark-on-a-topic-it-lists.md)).
   It is the entry tag's **fourth** element, after an empty third:
@@ -315,15 +356,23 @@ produce the same events in the same order.
   as before. **A topic leaves a team only by moving, or by being archived or
   deleted**: the relay refuses a `remove` (or a `set` leaving it out) of a
   topic that is neither deleted nor archived (its author's newest `archived`
-  change, §6.5) while no other team lists it. **A topic no team lists has a
+  change, §6.5) while no other team lists it (`leaves-by-moving`). **A list
+  holds only topics its lister can open** (*added 2026-11-10*; Miky): the
+  relay refuses an `add`, `set` or `remove` naming a topic (by address, or by
+  an id it holds as a topic) whose team the signer cannot read, and an `add`
+  or `set` naming a topic address it holds nothing at, with the same
+  `restricted: not-member:` answer, so a refusal never tells a private topic
+  from a missing one. A `remove` of an address it holds nothing at is
+  accepted, so a list can still be cleaned up. **A topic no team lists has a
   home** (record
   [an-archived-teams-list-is-kept-by-the-server-and-a-topic-made-outside-a-team-is-the-company-teams](https://github.com/estiva-app/estiva-docs/blob/main/decisions/an-archived-teams-list-is-kept-by-the-server-and-a-topic-made-outside-a-team-is-the-company-teams.md)):
   the team its `h` names, or the Company team (§3.4) when its `h` is not a
   team (a topic made inside a Ship project, say). The relay refuses an `add`
-  or `set` listing it anywhere else; once listed at home it moves like any
+  or `set` listing it anywhere else (`not-home`); once listed at home it moves like any
   other. A workspace without a Company team does not conform (§3.4); a relay
   serving one anyway lets only such a topic's author list it first, in any
-  team they may list it in, so none is left with nowhere to go (*added
+  team they may list it in, so none is left with nowhere to go, and refuses
+  anyone else's first listing with `author-lists-first` (*added
   2026-11-03*; record
   [every-server-has-a-company-team-and-without-one-the-first-team-to-list-a-topic-keeps-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-server-has-a-company-team-and-without-one-the-first-team-to-list-a-topic-keeps-it.md)). A reader that finds a
   topic on two teams' lists, as one listed before the relay refused it can
@@ -386,7 +435,9 @@ produce the same events in the same order.
   `archived` to anything but empty on its address, as `field`/`value` or as a
   `set`; or a `kind:9002` `archived`), make it private (`kind:9002`
   `visibility` `private`), give it a `ttl`, which would archive it when it ran
-  out, or take the mark off it, with a reason naming the Company team.
+  out, or take the mark off it, with a reason naming the Company team. Each is
+  coded `company-team-kept` (§3.3), but for a `kind:9002` `archived`, refused
+  `archive-by-field` as on any team (§6.5), and for the mark (below).
   Restoring it (an empty `archived`) lands. Every member of the workspace reads
   it (Miky, 2026-10-29).
 - **Only the relay sets the mark.** A client event carrying a `company` tag
@@ -405,9 +456,9 @@ produce the same events in the same order.
   roster with a `kind:9000` it signs and stores, and the people already in the
   workspace when it is upgraded, and takes them off with a `kind:9001` it
   signs when they leave the company. It refuses a `kind:9022` leave and a
-  `kind:9001` removal there for anyone still in the company, and a `kind:9000`
-  that names a key not in the company, each with a reason naming the Company
-  team. A member is still only a person on the roster (§11.8): no
+  `kind:9001` removal there for anyone still in the company
+  (`company-team-kept`), and a `kind:9000` that names a key not in the company
+  (`not-in-company`), each with a reason naming the Company team. A member is still only a person on the roster (§11.8): no
   app counts someone as a member of the Company team any other way. Its chat
   is the company's general conversation; someone who wants
   it quieter sets it to Not following, as any place (§11.8).
@@ -420,7 +471,7 @@ produce the same events in the same order.
   carries a bare `["service"]`, and the relay's roster (`kind:13534`) carries
   `"service"` as a fourth element of that key's `member` tag. A service may
   write like any admitted key, and is on no team: the relay refuses a
-  `kind:9000` that names one on any team, and apps do not offer one as a
+  `kind:9000` that names one on any team (`service-key`), and apps do not offer one as a
   person. "Everyone in the company" is every admitted key that is not a
   service; an agent admitted through its owner (§4) counts while its owner
   does, and is kept on the Company team once someone adds it, though the relay
@@ -962,7 +1013,11 @@ Every other refusal of a change starts `invalid:`: a missing `prev` where one is
 required, both forms or a field named twice, a wrong `h`, an `a` and `O` that
 disagree, and, on a type kept in order, a change to a file whose first record
 the relay does not hold. Such a change is malformed, and an app does not send
-it again as it is.
+it again as it is. A refusal a person can meet, such as an archive of the
+Company team (§3.4), carries a reason code after the prefix,
+`invalid: <code>: <sentence>`, or `restricted: <code>: <sentence>` when the
+signer may not make the change (§3.3 lists the codes). `conflict:` stays the
+suite's own prefix and carries no code (*added 2026-11-10*).
 
 **What an app does when refused with `conflict:`.** It reads the current change
 of every field it was setting, and then:
@@ -1521,18 +1576,16 @@ its owners and admins (§3.3).
   refuses a `kind:1852` that changes which topics an archived team's
   `kind:30890` lists or marks — an `add`, `remove` or `set` naming a topic,
   and a `move` of a topic into or out of it — with a reason that says the team
-  is archived. A project, an issue or another file is still listed, unlisted
-  and moved there as before (*where it stands, 2026-11-03:* the reference
-  relay still refuses any `move` into or out of an archived team). The relay reads the team's `archived` from its owners' and
+  is archived (`archived`, §3.3). A project, an issue or another file is still
+  listed, unlisted and moved there as before. The relay reads the team's `archived` from its owners' and
   admins' changes (§3.3's archive row), at the gate and again where the
   command is applied; an empty `archived` lifts the refusal. **A team is
   archived only by this field** (*added 2026-11-03*; record
   [a-team-is-archived-only-by-its-field](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-team-is-archived-only-by-its-field.md)):
-  the relay refuses NIP-29's `kind:9002` `archived` on a team, as on the
-  Company team (§3.4), and a `kind:9002` clearing it lands. *Where it stands
-  (2026-11-03):* the reference relay still takes the flag, and then refuses
-  every write in that team; the refusal is built in the TEA issue "When the
-  server says no, every app knows why".
+  the relay refuses NIP-29's `kind:9002` `archived` set to `true` on a team,
+  as on the Company team (§3.4), with `invalid: archive-by-field:` (§3.3), and
+  a `kind:9002` clearing it lands. A team is a group holding a `kind:30890`
+  (§3.2): a conversation space without one, and a DM, keep NIP-29's flag.
 - **Not covered yet.** Whether a file counts as archived because every team
   listing it is archived, and whether a `kind:9` may be sent in an archived
   team, are not settled yet; until then each app keeps what it does
@@ -3834,6 +3887,7 @@ staged field, or writes one, also conforms to these.
 | C52 | **The file a comment is on** (*added 2026-11-09*, §13.6.2). A `kind:1111` with `["A", V]` whose body is `Looks right.\n\nnostr:naddr1…` for `V` draws `Looks right.` and nothing for the second line; the same with an app URL that names `V` by §7.7 instead, or with `["O", <V's id>]` and an `naddr` of the same `d`, draws the same. One whose body is only `nostr:naddr1…` for `V` draws `V` as it would without the rule. A body that names `V` in a sentence draws `V`'s chip. A body whose second line is only a reference to another file `W` draws `W`'s row |
 | C53 | **A tab from before the switch** (*added 2026-11-09*, §6.13). An app loaded while NIP-11 had no `files` sets a project's `status` with no `prev`; the relay, now advertising `{"requires_prev": ["osnova.project"]}`, refuses it with a reason that starts `invalid: a project change names the change it follows in prev`. The app reads NIP-11 again, opens the project and sends the change again with `prev` its current `status` change, and it is accepted; nothing is shown to the person. Its text change sent the same way is merged onto the text saved since, with the text it read as the base. A relay keeping some teams' files in order and not others advertises no `files` |
 | C54 | **What names you on a listed file** (*added 2026-11-10*, §11.8). `P` follows a topic at Important that lists a project, a document and an issue. On the issue: a comment mentioning `P` lights the topic and stays lit under two later comments naming nobody, until `P` reads the issue in any app; a reply to `P`'s comment lights it, and reading that thread clears it; a reply in a conversation `P` is not in, and a new comment naming nobody, do not light it at Important and do at All when made after `P` chose All. On an issue of the listed project, and on a page one level under a listed document, a mention lights it at both levels and a comment naming nobody at neither; on a page two levels under a listed document, nothing does. Muted, only the mention lights; not following, nothing on the files lights the topic |
+| C55 | **A refusal carries its code** (*added 2026-11-10*, §3.3, §3.4, §6.5). A move of a topic into an archived team is refused `invalid: archived: …`; one by somebody who may not write in the source `restricted: not-member: …`; one naming a topic the source no longer lists `invalid: changed: …`; an `add` of a topic no team lists, in a team that is not its home, `invalid: not-home: …`; a `remove` of a live topic no other team lists `invalid: leaves-by-moving: …`; each changes neither list. An `add` naming a topic whose team the signer cannot read, and one naming a topic address the relay holds nothing at, get the same `restricted: not-member: …`, and a `remove` of that address is accepted. A `kind:9002` setting `archived` on a team is refused `invalid: archive-by-field: …`, and a `kind:1851` `archived` on it is accepted. Each sentence after the code is the relay's own. An app shown `invalid: some-new-code: …` says only that nothing changed; shown `invalid: the team …` with no code, it reads the sentence |
 
 ### 9.1 Reference checks
 
