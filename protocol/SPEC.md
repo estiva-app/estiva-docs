@@ -402,13 +402,32 @@ produce the same events in the same order.
   (*added 2026-11-02*; record
   [everyone-in-the-company-is-on-the-company-teams-list-and-the-relay-keeps-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/everyone-in-the-company-is-on-the-company-teams-list-and-the-relay-keeps-it.md)).
   The relay puts each person it lets into the workspace on the Company team's
-  roster with a `kind:9000` it signs, and the people already in the workspace
-  when it is upgraded, and takes them off when they leave the company. It
-  refuses a `kind:9022` leave and a `kind:9001` removal there for anyone still
-  in the company. A member is still only a person on the roster (§11.8): no
+  roster with a `kind:9000` it signs and stores, and the people already in the
+  workspace when it is upgraded, and takes them off with a `kind:9001` it
+  signs when they leave the company. It refuses a `kind:9022` leave and a
+  `kind:9001` removal there for anyone still in the company, and a `kind:9000`
+  that names a key not in the company, each with a reason naming the Company
+  team. A member is still only a person on the roster (§11.8): no
   app counts someone as a member of the Company team any other way. Its chat
   is the company's general conversation; someone who wants
   it quieter sets it to Not following, as any place (§11.8).
+- **A service is let in, and is not in the company** (*added 2026-11-09*;
+  record
+  [a-service-key-is-let-in-but-is-not-in-the-company](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-service-key-is-let-in-but-is-not-in-the-company.md)).
+  Whoever lets a key into the workspace says whether it is someone (a person,
+  or a person's agent) or a service: a key that only does a job, such as an
+  app's listing key (§9) or an operator's. A `kind:9030` admitting a service
+  carries a bare `["service"]`, and the relay's roster (`kind:13534`) carries
+  `"service"` as a fourth element of that key's `member` tag. A service may
+  write like any admitted key, and is on no team: the relay refuses a
+  `kind:9000` that names one on any team, and apps do not offer one as a
+  person. "Everyone in the company" is every admitted key that is not a
+  service; an agent admitted through its owner (§4) counts while its owner
+  does, and is kept on the Company team once someone adds it, though the relay
+  does not add it. Admitting an existing member again with `["service"]`
+  marks it a service (an admin may mark a member; the owner, anyone), and
+  the relay takes it off the Company team. A relay upgraded to this marks its
+  existing services once, as it names its Company team.
 
 *Built 2026-11-02* (estiva-app/buzz, ticket 84e39a13): the mark, its
 refusals, and a new workspace's Company team. A relay that predates it has no
@@ -431,6 +450,10 @@ concerns are kept separate and MUST NOT be collapsed:
 
 Offboarding is therefore two revocations, neither of which requires cooperation
 from the person leaving.
+
+Admission also says whether the key is someone or a service (§3.4). A service,
+such as an app's listing key, is admitted so it can write; it is not one of the
+company's people and is on no team.
 
 ### 4.2 Profiles
 
