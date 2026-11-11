@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ownerless team stewards</title>
+<style>
+:root { --bg:#fbfaf7; --ink:#1d1d1f; --mute:#6b6b70; --box:#ffffff; --line:#c9c6bf; --a:#2f6fdb; --b:#1f9d6b; --c:#b7791f; --warn:#c2412d; --chip:#f0eee8; }
+@media (prefers-color-scheme: dark) { :root { --bg:#17171a; --ink:#ececee; --mute:#a0a0a8; --box:#222227; --line:#44444c; --a:#6ea0ff; --b:#4fd1a0; --c:#e2b052; --warn:#ff7a66; --chip:#2a2a30; } }
+body { background:var(--bg); color:var(--ink); font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif; margin:0; }
+main { max-width:760px; margin:0 auto; padding:24px 16px 64px; }
+h1 { font-size:1.5rem; line-height:1.3; margin:0 0 8px; }
+h2 { font-size:1.1rem; margin:32px 0 8px; }
+p, li { margin:6px 0; }
+.q { font-size:1.15rem; border-left:4px solid var(--a); padding:4px 12px; background:var(--chip); }
+.opt { border:1px solid var(--line); border-radius:8px; padding:10px 14px; margin:12px 0; background:var(--box); }
+.opt h3 { margin:0 0 4px; font-size:1rem; }
+.rec { border:2px solid var(--b); border-radius:8px; padding:10px 14px; background:var(--box); }
+table { border-collapse:collapse; width:100%; font-size:.9rem; }
+th, td { border:1px solid var(--line); padding:6px 8px; vertical-align:top; text-align:left; }
+th { background:var(--chip); }
+.wrap { overflow-x:auto; }
+svg { width:100%; height:auto; display:block; margin:8px 0; }
+svg text { fill:var(--ink); font:13px system-ui,sans-serif; }
+svg .mute { fill:var(--mute); font-size:12px; }
+svg .bx { fill:var(--box); stroke:var(--line); stroke-width:1.5; }
+svg .ar { stroke:var(--ink); stroke-width:1.5; fill:none; marker-end:url(#h); }
+svg .x { stroke:var(--warn); stroke-width:2; }
+small, .mute { color:var(--mute); }
+code { font-size:.85em; }
+</style>
+</head>
+<body>
+<main>
+<h1>Who looks after a team nobody owns?</h1>
+<p class="q">When the last owner leaves a team, who can still rename it, archive it and give people roles in it: the owners of the Company team, or the company's admins?</p>
+
+<h2>Today</h2>
+<p>A team's owners and admins rename it, archive it and give roles. The server refuses to let a team's last owner leave, so Miky, the only owner of Steer, QA, Backlog, Leaf, Ship and Peek, is offered Leave on none of them.</p>
+<p>On 4 Nov you decided, in the TEA-5 review, that a last owner may leave and that <b>the Company team's owners</b> then look after the team ("Company owners take over"). That question was asked inline, with three options: keep Leave hidden, show it greyed, or hand the team to the longest-standing member.</p>
+<p>The question did not mention that the protocol already has a second "company admin": <b>the workspace's owners and admins</b>, the roles on the server's list of who is in the company. They already delete any team, remove a pasted password for good, and are the only people who can change the company's statuses. Peek's Delete on a team already reads that role. Building the 4 Nov answer would give the protocol two different groups of company admins.</p>
+
+<h2>Why it reaches beyond this ticket</h2>
+<p>It decides what "the company's admin" means in the protocol: every app and every outside company uses this group for every team that has no owner. Today it is a <b>two-way door</b>, because no team has been left ownerless and nothing new is written. It gets harder to undo once archives done by one group are stored and the two groups have drifted apart.</p>
+
+<h2>The picture</h2>
+<svg viewBox="0 0 720 300" role="img">
+<title>Two groups of company admins and what each can do to a team</title>
+<defs><marker id="h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+<rect class="bx" x="10" y="20" width="230" height="110" rx="8"/>
+<text x="24" y="44" font-weight="600">Company team's owners</text>
+<text x="24" y="66">set on Estiva HQ's own page</text>
+<text x="24" y="88">today: Miky</text>
+<text class="mute" x="24" y="110">shown in Peek as HQ's owner</text>
+<rect class="bx" x="10" y="170" width="230" height="120" rx="8"/>
+<text x="24" y="194" font-weight="600">Workspace owners and admins</text>
+<text x="24" y="216">set on the server's company list</text>
+<text x="24" y="238">today: Miky, the agent acting</text>
+<text x="24" y="256">for him, two of the server's keys</text>
+<text class="mute" x="24" y="278">no screen lists them</text>
+<rect class="bx" x="470" y="20" width="240" height="270" rx="8"/>
+<text x="484" y="44" font-weight="600">A team with no owner</text>
+<text x="484" y="76">rename</text>
+<text x="484" y="104">archive</text>
+<text x="484" y="132">give someone a role</text>
+<text x="484" y="190">delete (once empty)</text>
+<text x="484" y="218">remove a pasted password</text>
+<text class="mute" x="484" y="262">the company's statuses file</text>
+<text class="mute" x="484" y="280">(not a team, same admins)</text>
+<path class="ar" style="color:var(--a)" stroke="var(--a)" d="M240,70 C350,70 380,100 470,100"/>
+<text x="300" y="62" fill="var(--a)" style="fill:var(--a)">A: as decided 4 Nov</text>
+<path class="ar" style="color:var(--b)" stroke="var(--b)" d="M240,215 C360,215 380,120 470,110"/>
+<text x="300" y="170" style="fill:var(--b)">B: same group as delete</text>
+<path class="ar" style="color:var(--mute)" stroke="var(--mute)" d="M240,230 C360,230 400,200 470,200"/>
+<text x="300" y="250" class="mute">already today</text>
+</svg>
+<p class="mute">Under A the two arrows into a team come from two different groups. Under B both come from one. Option C instead moves the lower arrow to the upper box.</p>
+
+<h2>Options</h2>
+<div class="opt"><h3>A — The Company team's owners, as decided on 4 Nov (do less)</h3>
+<p><b>You see:</b> Miky leaves Backlog, and he can still rename or archive it because he owns Estiva HQ. Whoever is shown as HQ's owner looks after every team nobody owns.</p>
+<p><b>Outside company:</b> learns two kinds of company admin. Team-level jobs go to the owners of the Company team. Deleting, removing a password for good, and the statuses go to the workspace admins.</p>
+<p><b>What could go wrong:</b> when HQ's last owner leaves the company, the server keeps them as HQ's owner so that HQ is never ownerless. But they can no longer write, so nobody can look after any ownerless team. A server that runs without a Company team has nobody at all.</p></div>
+<div class="opt"><h3>B — The workspace's owners and admins</h3>
+<p><b>You see:</b> the same as A today, because Miky is a workspace admin. The agent acting for him could also rename or archive an ownerless team, and so could the server's own admin keys, which can already delete any team.</p>
+<p><b>Outside company:</b> learns one group of company admins. It works like admins in Slack, Notion and Linear (the reason the 4 Nov record gave), and is built on the upstream rule for who is in a server's company.</p>
+<p><b>What could go wrong:</b> no screen lists the workspace admins, so "who can rename this team" is not visible anywhere. The server's own keys are included, as they already are for delete. Leaving them out would be a separate rule.</p></div>
+<div class="opt"><h3>C — The Company team's owners for everything</h3>
+<p><b>You see:</b> HQ's owner is the one company admin. Deleting a team, removing a password and changing the statuses move over to them too.</p>
+<p><b>Outside company:</b> one group, but an Estiva-only one, not upstream's.</p>
+<p><b>What could go wrong:</b> it rewrites three decided rules (delete, removing a password for good, the statuses). It has the same departure gap as A.</p></div>
+
+<h2>Trade-offs</h2>
+<div class="wrap"><table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td>A</td><td>Two admin groups</td><td>HQ's owner, shown in Peek</td><td>Two notions to learn; nobody acts once HQ's owner departs</td><td>Low now, grows</td><td>As sketched</td></tr>
+<tr><td>B</td><td>One admin group, the one SPEC already uses</td><td>Same people today; not shown on a screen</td><td>One notion, upstream-based; the server keys are included</td><td>Low</td><td>Same size; a different list is read</td></tr>
+<tr><td>C</td><td>One admin group, Estiva-only</td><td>HQ's owner, shown</td><td>One notion; same departure gap as A</td><td>Rewrites three decisions</td><td>Largest</td></tr>
+</table></div>
+
+<h2>How others do it</h2>
+<ul>
+<li><b>Slack, Notion, Linear:</b> the workspace's own admins manage any channel or team that has no owner. There is no "owner of the general channel" role.</li>
+<li><b>Upstream Nostr (relay-based groups and relay membership):</b> the relay's own member list with its roles is the authority above a group. A group's own admins sit below it.</li>
+</ul>
+
+<div class="rec"><b>Recommendation: B, the workspace's owners and admins.</b> It makes one company-admin group in the protocol. That is the group that already deletes teams and keeps the statuses, and the one an outside company knows from Slack and from upstream. It still works when the Company team's owner leaves the company, and on a server without a Company team. Its cost is honesty about who is included: the agent acting for Miky, and the server's own admin keys, which can already delete teams.</div>
+
+<h2>Checked</h2>
+<ul>
+<li>On production, 10 Nov: Estiva HQ's only owner is Miky. The workspace list shows Miky as admin, the agent's key as admin, and two service keys as owner and admin (a relay read of the workspace list and HQ's roles).</li>
+<li>No real team has no owner today; the only ownerless group is a DM.</li>
+<li>Deleting a team is open to workspace owners and admins (SPEC §3.3 delete row; the relay's community steward check). The same group removes a change for good (SPEC §6.5) and writes admin-only files (record a-file-can-say-only-admins-write-it…). Peek's team Delete reads that role (<code>folderDeletable.ts</code>).</li>
+<li>When HQ's owners all leave the company, the server keeps the first of them on HQ as owner (TEA-7, <code>sync_company_roster</code>).</li>
+<li>The server already refuses a leave of the Company team (probed on production as QA-1: <code>company-team-kept</code>).</li>
+<li>Not verified: whether any app plans to show the workspace's admins.</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="mute">TEA-10. Reopens record a-teams-last-owner-may-leave-and-the-company-teams-owners-look-after-it (Accepted 2026-11-04, estiva-docs#394); B or C would supersede its second rule, while "a last owner may leave" stands. A = Estiva HQ's <code>kind:39001</code> owner tags; B = the relay roster <code>kind:13534</code> member roles owner/admin (buzz <code>actor_is_community_steward</code>). SPEC §3.2 archived row, §3.3 rename/leave/add/remove/delete rows, §3.4, §6.5.</p>
+</main>
+</body>
+</html>

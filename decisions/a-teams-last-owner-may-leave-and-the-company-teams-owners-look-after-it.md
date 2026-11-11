@@ -5,6 +5,12 @@
 - Decided by: Miky, in the TEA-5 session (2026-11-04), answering the question "When a team's only owner wants to leave, what should happen?" with "Company owners take over", as recommended
 - Area: Folders
 
+> Superseded in part, 2026-11-10: a team with no owner is looked after by the
+> workspace's owners and admins, not by the Company team's owners, in
+> [a-team-with-no-owner-is-looked-after-by-the-workspaces-admins](a-team-with-no-owner-is-looked-after-by-the-workspaces-admins.md).
+> That a team's last owner may leave it, and that nobody leaves the Company
+> team, stand.
+
 ## Who it affects
 
 Miky owns six of Estiva's teams (Steer, QA, Backlog, Leaf, Ship and Peek),
