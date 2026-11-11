@@ -102,6 +102,13 @@ while the relay restarts, as busy. It MUST NOT repeat a timed-out read
 unchanged: the same read would be cut off again, and asking adds to the load
 that cut it off.
 
+A read or a live subscription the relay closes with NIP-01's `rate-limited:`
+prefix (too much asked too fast: by this person, for example two tabs opening at
+once, or by everyone at once) MAY be asked again with backoff, as a busy one
+is, waiting long enough for the relay's quota to start over (buzz counts over
+5 s) rather than asking inside it. The client decides by the prefix alone; the
+words after it are the relay's, not a token to read.
+
 ---
 
 ## 3. The team
