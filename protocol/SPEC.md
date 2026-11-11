@@ -4822,7 +4822,7 @@ a team's chat from the fold (`unreadOnPlace`, `unreadOnListedFile`), and the
 reason each one is lit from it too (`unreadReasons`, below); Ship and Leaf draw
 no place's dot yet. The list behind a page's dot (below) is
 `@estiva-app/conversation` 0.39.0's `whatLitPlace`, `whatLitListedFile` and
-`whatLitStream`.
+`whatLitStream`, and `mergeLitLines` for a place's or a team's list.
 
 #### Why a message is unread
 
