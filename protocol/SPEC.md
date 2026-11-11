@@ -3950,6 +3950,7 @@ staged field, or writes one, also conforms to these.
 | C54 | **What names you on a listed file** (*added 2026-11-10*, §11.8). `P` follows a topic at Important that lists a project, a document and an issue. On the issue: a comment mentioning `P` lights the topic and stays lit under two later comments naming nobody, until `P` reads the issue in any app; a reply to `P`'s comment lights it, and reading that thread clears it; a reply in a conversation `P` is not in, and a new comment naming nobody, do not light it at Important and do at All when made after `P` chose All. On an issue of the listed project, and on a page one level under a listed document, a mention lights it at both levels and a comment naming nobody at neither; on a page two levels under a listed document, nothing does. Muted, only the mention lights; not following, nothing on the files lights the topic |
 | C55 | **A refusal carries its code** (*added 2026-11-10*, §3.3, §3.4, §6.5). A move of a topic into an archived team is refused `invalid: archived: …`; one by somebody who may not write in the source `restricted: not-member: …`; one naming a topic the source no longer lists `invalid: changed: …`; an `add` of a topic no team lists, in a team that is not its home, `invalid: not-home: …`; a `remove` of a live topic no other team lists `invalid: leaves-by-moving: …`; each changes neither list. An `add` naming a topic whose team the signer cannot read, and one naming a topic address the relay holds nothing at, get the same `restricted: not-member: …`; a `remove` of either, while the list does not hold it, is accepted and changes nothing. A `remove`, a `set` leaving it out, or a `move` of a topic the list holds whose team the signer cannot read gets `restricted: not-member: …` too, but a `move` naming a topic the source does not list gets `invalid: changed: …` first. On an archived team, a `set` naming a topic it already lists is refused `invalid: archived: …`, and an `add` of a project lands. A `kind:9002` setting `archived` on a team is refused `invalid: archive-by-field: …`, and a `kind:1851` `archived` on it is accepted. Each sentence after the code is the relay's own. An app shown `invalid: some-new-code: …` says only that nothing changed; shown `invalid: the team …` with no code, it reads the sentence |
 | C56 | **Why a message is unread** (*added 2026-11-10*, §11.8). `P` follows a topic. Unread there: a new comment that mentions `P` is a mention; a new comment naming nobody is a new conversation, at Important and at All alike; a reply mentioning `P` in `P`'s own conversation is a mention; a reply naming nobody in it is a reply in your conversation, held root or not when its lowercase `p` names `P`; in someone else's conversation, a reply before `P` wrote there is a message (it lights only at All) and one after is a reply in your conversation. In a DM, a first message naming nobody is a message, never a new conversation. A reaction to `P`'s message is none of the four |
+| C57 | **What lit a stream, new and seen** (*added 2026-11-11*, §11.8). `P` follows a topic at All and has read it up to a moment. Before it: a mention of `P` and a reply in `P`'s conversation are listed as seen, a comment naming nobody is not listed; after it: a comment naming nobody is listed as new. The new lines are exactly the topic's unread messages. On a DM read up to a moment, a mention before it is listed as seen and a message naming nobody is not. A mention of `P` on a file the topic lists is a new line on the topic's list until that file's conversation is read, then a seen one. A team whose space and topic both list one file gives one line for a mention there, naming where it was said. A limit never drops a new line |
 
 ### 9.1 Reference checks
 
@@ -4819,7 +4820,9 @@ Ship, Leaf and the agent CLI all read it since 3 Nov, so no app reads a level
 as a placement any more. Since 10 Nov Peek draws its dots on topics, spaces and
 a team's chat from the fold (`unreadOnPlace`, `unreadOnListedFile`), and the
 reason each one is lit from it too (`unreadReasons`, below); Ship and Leaf draw
-no place's dot yet.
+no place's dot yet. The list behind a page's dot (below) is
+`@estiva-app/conversation` 0.39.0's `whatLitPlace`, `whatLitListedFile` and
+`whatLitStream`, and `mergeLitLines` for a place's or a team's list.
 
 #### Why a message is unread
 
@@ -4846,7 +4849,43 @@ app says them in its own copy. A reaction is not a message and is none of
 these; a reaction to `P`'s message lights a place in its own colour (record
 [a-reaction-is-seen-once-in-its-conversation](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-reaction-is-seen-once-in-its-conversation.md)).
 A reply to `P`'s agent lights nothing yet, since a reader cannot tell whose
-agent it is (§6.5); once it does, it is a reply in your conversation.
+agent it is (§6.5); once it does, it is a reply in your conversation. The same
+reasons also name a message that lit and is seen now (below).
+
+#### What lit a stream, new and seen
+
+(*added 2026-11-11*, ACT-4.) Behind a dot an app MAY open the stream's list: a
+topic's, a space's, a team's chat's or a DM's own page shows it beside its
+title. It is not a file's activity (§6.14), which lists where else a file is
+mentioned. One rule gives it, so every app lists the same lines for `P`:
+
+- **A message lights the stream** when the stream's rule above holds for it
+  without the marker test: a place's rule (§11.8 *What is unread on a place*)
+  for a topic, a space or a team's chat, with each file it lists judged by the
+  listed-file rule; the membership rule for a DM or a file `P` is a member of.
+  It is judged by `P`'s following and membership now, not as they were when the
+  message was said.
+- **It is seen** when it is not newer than its effective marker (§11.3), or is
+  below the reply floor or the stream's floor (§11.6). So a message is unread
+  exactly when it lights and is not seen, and the list and the dot never
+  disagree.
+- **The list** is every message that lights and is not seen (new), then every
+  one that lights, is seen, and was about `P`: a mention or a reply in `P`'s
+  conversation (the reasons above). A plain message `P` has read is in its
+  conversation, and not repeated here (Miky, 2026-11-11). Each part newest
+  first. An app MAY show only the newest seen lines, but every new one: they
+  are what light the dot.
+- **A place's list** holds its own stream's lines and those of the files it
+  lists, one line per message. **A team's list** is the lists of its chat,
+  spaces and topics together, one line per message (a file listed in two
+  places gives one), each line naming the conversation it was said in.
+
+A reaction to `P`'s message joins the list as its own line once its `orange:`
+mark is read (record
+[a-reaction-is-seen-once-in-its-conversation](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-reaction-is-seen-once-in-its-conversation.md)):
+opening this list is hovering the place in that record's sense. Nothing in the
+list is written or stored; it is read from the relay, so a person who loses
+access to a stream loses its lines.
 
 #### Muting is private
 
