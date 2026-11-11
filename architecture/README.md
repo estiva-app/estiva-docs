@@ -49,7 +49,7 @@ Project pages, newest first:
   topic, all drawn from one read of every topic and what it lists in the
   shared package; nothing new is written to the relay. Read at
   `https://docs.estiva.app/architecture/ship-topics-navigation.html`.
-- [Teams and following](teams-and-following.html) — Shaped, 2026-11-02. A
+- [Teams and following](teams-and-following.html) — As built, 2026-11-11 (shaped 2026-11-02). A
   Folder becomes a team with members and followers and three kinds of place
   (its chat, its spaces, the topics it leads); each person sets one level on a
   place (Not following, Important or All), only they set it, and one shared
