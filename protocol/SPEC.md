@@ -2068,7 +2068,11 @@ so a reaction in a team P cannot read never reaches P.
 - P can read that target by id: the reader fetches the targets it does not
   hold in one `{ids:[…]}` read per batch, and a deleted or unreadable target
   lights nothing;
-- P is not the reaction's effective author.
+- P is not the reaction's effective author;
+- its `created_at` is at most 60 seconds ahead of the reader's clock
+  (*added 2026-11-13*, ACT-7). A relay may accept a skewed `created_at`
+  (§5), and a reaction dated ahead would, once seen, cover every reaction
+  made before that moment (§11.2).
 
 A reader that cannot learn the relay's key works every target's author out as
 its signer, as a writer does, so the reactions to messages the relay signed on
@@ -3968,6 +3972,7 @@ throwaway relay or a fake query.
 | C11 | **Two strengths.** On one object: a `1111` whose `A` is the object is a comment; a `1111` whose `A` is another file but whose `a` names this one is a mention; a `kind:9` whose body names the object is a mention; a `1111` with no `A` is a comment on each of its `a`. Mentions are presented apart from comments. A `kind:9` reply carrying the object's `a` lists as neither; a `1111` whose `a` equals its `A` is a top-level comment whatever its `e` says (§6.4) |
 | C12 | **Edit fold.** Three edits to one message inside one second, carrying `ts`, fold to the last by `ts`. One whose `ts` is off by a second folds by `created_at`. An edit whose first `e` is marked and names another message is applied to that message and never to the second `e`. An edit byte-identical to the body does not mark the message edited. The message is marked edited, and shows the current text (§6.2, §6.8) |
 | C13 | **Reaction horizon and count.** With 101 targets, reactions are asked for the newest 100 and the omission of 1 is reported. `+`, empty and a duplicate from one pubkey count as one `+`. A reaction with two `e` counts against the last (§6.6) |
+| C58 | **Reactions to `P`, kept and dropped** (*added 2026-11-13*, §6.6, §11.8). From `{kinds:[7], "#p":[P]}`, kept: a reaction whose last `p` is `P` on `P`'s `kind:9` or `kind:1111`. Dropped, lighting nothing: one naming `P` on someone else's message; one naming `P` beside someone else after it; one on a team record; one on a target `P` cannot read or that is deleted; `P`'s own reaction to `P`'s message; one taken back by its author's `kind:5`, before or after it lit; one dated more than 60 s ahead of the reader's clock |
 | C14 | **Deletion left to the relay.** After the author's `kind:5`, the next read no longer holds the message, and the app shows nothing for it from local state. A non-author's `kind:5` is refused and the refusal is shown in the relay's words. Edit and Delete are offered only on the viewer's own message — not on another person's or an agent's (§6.5, 2026-10-06) |
 | C15 | **Attachment fold.** An edit carrying `imeta` replaces the message's set. A later edit with none leaves the message with no files. An edit carrying one file on a message with two leaves one (§6.8) |
 | C16 | **Reply shape.** A reply to a comment is a `kind:1111` with the comment's `A`/`K`/`P`, `e`/`k`/`p` naming the top-level comment, the comment's `h`, and no lowercase `a` for the object. A reply to a comment carrying a `block` copies its `block` and `quote` verbatim, before the `h` (§13.6). A reply read back threads under that comment in every conforming app (§6.4). The relay refuses a reply whose parent is missing, deleted, unreadable to its writer, not a `kind:1111`, or in another team with `invalid: reply parent not found in this team`, and accepts a top-level comment without that check (§6.4, *Replies*; *2026-11-06*) |
@@ -4022,6 +4027,10 @@ staged field, or writes one, also conforms to these.
 | C55 | **A refusal carries its code** (*added 2026-11-10*, §3.3, §3.4, §6.5). A move of a topic into an archived team is refused `invalid: archived: …`; one by somebody who may not write in the source `restricted: not-member: …`; one naming a topic the source no longer lists `invalid: changed: …`; an `add` of a topic no team lists, in a team that is not its home, `invalid: not-home: …`; a `remove` of a live topic no other team lists `invalid: leaves-by-moving: …`; each changes neither list. An `add` naming a topic whose team the signer cannot read, and one naming a topic address the relay holds nothing at, get the same `restricted: not-member: …`; a `remove` of either, while the list does not hold it, is accepted and changes nothing. A `remove`, a `set` leaving it out, or a `move` of a topic the list holds whose team the signer cannot read gets `restricted: not-member: …` too, but a `move` naming a topic the source does not list gets `invalid: changed: …` first. On an archived team, a `set` naming a topic it already lists is refused `invalid: archived: …`, and an `add` of a project lands. A `kind:9002` setting `archived` on a team is refused `invalid: archive-by-field: …`, and a `kind:1851` `archived` on it is accepted. Each sentence after the code is the relay's own. An app shown `invalid: some-new-code: …` says only that nothing changed; shown `invalid: the team …` with no code, it reads the sentence |
 | C56 | **Why a message is unread** (*added 2026-11-10*, §11.8). `P` follows a topic. Unread there: a new comment that mentions `P` is a mention; a new comment naming nobody is a new conversation, at Important and at All alike; a reply mentioning `P` in `P`'s own conversation is a mention; a reply naming nobody in it is a reply in your conversation, held root or not when its lowercase `p` names `P`; in someone else's conversation, a reply before `P` wrote there is a message (it lights only at All) and one after is a reply in your conversation. In a DM, a first message naming nobody is a message, never a new conversation. A reaction to `P`'s message is none of the four |
 | C57 | **What lit a stream, new and seen** (*added 2026-11-11*, §11.8). `P` follows a topic at All and has read it up to a moment. Before it: a mention of `P` and a reply in `P`'s conversation are listed as seen, a comment naming nobody is not listed; after it: a comment naming nobody is listed as new. The new lines are exactly the topic's unread messages. On a DM read up to a moment, a mention before it is listed as seen and a message naming nobody is not. A mention of `P` on a file the topic lists is a new line on the topic's list until that file's conversation is read, then a seen one. A team whose space and topic both list one file gives one line for a mention there, naming where it was said. A limit never drops a new line |
+| C59 | **A reaction is seen once** (*added 2026-11-13*, §11.1–§11.3, §11.8). `P` follows two topics at Important that both list one file; a 👍 to `P`'s comment on it gives both a new reaction, and the Desk row of the file too. Resting on one topic's row writes `reactions:file:<d>` with the 👍's `created_at`, not the clock, and neither topic nor the Desk row shows it after. A reaction from before 2026-11-13T17:00:00Z, or before `P`'s start in the topic, lights nothing. Muted or not following, the topic shows none |
+| C60 | **Opening the file sees it; reading it does not** (*added 2026-11-13*, §11.2, §11.3). A 👍 to `P`'s comment on a listed file lights the topic. Writing only the file's own marker past the 👍 (`file:<d>` or its address) leaves it new. Opening the file's conversation in an app that draws the 👍 under the comment writes `reactions:file:<d>` and the topic shows none. For a file named both ways, `reactions:<file-address>` alone past the 👍 also clears it |
+| C61 | **Unread wins the dot** (*added 2026-11-13*, §11.8). A topic with an unread mention of `P` and a new 👍 to `P`'s message shows one dot, the unread one, and its card lists both lines; once the mention is read and the 👍 is not seen, the dot is the reaction's |
+| C62 | **Keys carried and floored** (*added 2026-11-13*, §11.1, §11.6). A slot holding `reactions:<uuid>` and a well-formed key no app knows (`x-later:abc`), merged and republished by a client that knows neither, keeps both verbatim, and the second lights and clears nothing. A blob trimmed to fit that drops a `reactions:` key worth `v` holds `reactions-floor` ≥ `v`, so the reactions it covered stay seen; a `reactions-floor` later than its slot's `created_at` is read as that `created_at` |
 
 ### 9.1 Reference checks
 
@@ -4172,6 +4181,8 @@ does not already work. This section fixes the identifiers for the Estiva suite.
 | message | `msg:<event-id>` | 64-char lowercase hex |
 | folder | `folder:<folder-address>` | **RESERVED, unspecified** — see §11.5 |
 | reply floor | `reply-floor` | the literal key, one per blob — see §11.3 and §11.6 |
+| reactions seen | `reactions:<context>` (*added 2026-11-13*) | `reactions:` and a channel, file or `file:<d>` context from the rows above — see below |
+| reactions floor | `reactions-floor` (*added 2026-11-13*) | the literal key, one per blob — see §11.3 and §11.6 |
 
 **A container context is the scope a message carries on the wire, verbatim.**
 The `h` tag scopes a message to a channel, and the channel uuid is the context.
@@ -4220,6 +4231,38 @@ does not depend on that refusal: upstream Buzz does not make it, and a
 partner's relay in a shared team cannot be checked. `file:` is offered
 upstream as an optional NIP-RS well-known scheme beside `thread:` and `msg:`;
 if NIP-RS refuses it, Estiva keeps it as its own rule.
+
+**The reactions `P` has seen in a conversation are kept under
+`reactions:<context>`** (*added 2026-11-13*, ACT-7; records
+[a-reaction-is-seen-once-in-its-conversation](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-reaction-is-seen-once-in-its-conversation.md)
+and
+[reactions-seen-is-kept-under-reactions-and-opening-it-sees-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/reactions-seen-is-kept-under-reactions-and-opening-it-sees-it.md)).
+Its value is the `created_at` of the newest reaction to `P`'s messages (§6.6)
+that `P` has seen there. `<context>` is the context of the stream the reacted
+message is in (below): `reactions:<channel-uuid>` for the general stream,
+`reactions:<file-address>` or `reactions:file:<d>` for a file's stream. A
+reaction on a reply counts in its root's stream; there is no
+`reactions:thread:` key. A file named both ways is read as the later of
+`reactions:<file-address>` and `reactions:file:<d>`, as its marker is (§11.6),
+and a new write goes under `reactions:file:<d>`. A root with two `a` tags is in
+both files' streams, so a reaction to it is unseen in each until that stream's
+`reactions:` key covers it. A key beginning `reactions:` whose remainder is not
+a channel, file or `file:` context as above is not a reactions context: it is
+carried as a key the client does not know (below), and lights or clears nothing. The
+key names what it remembers, never how an app draws it. `reactions-floor` is
+the person's floor under every `reactions:` key (§11.3), and only a trim raises
+it (§11.6).
+
+**A key a client does not know is carried, never judged** (*added
+2026-11-13*, ACT-7). A client MUST carry a well-formed key it does not know (at
+most 256 bytes, with a timestamp in the range of §11.6; a client MAY drop the
+key `__proto__`, which some languages cannot hold as a map key) verbatim in its own
+slot, merged by maximum like any other, and MUST NOT judge it: it is not a
+frontier, not dominated, not inert, and lights or clears nothing. A client
+that merged every slot and republished its own without the keys it did not
+know would drop what a newer app wrote, and the next scheme could not be added
+until every app had learnt it. Only the byte cap and the 10,000-context cap
+drop such a key, as they drop any other (§11.6).
 
 #### Streams: which context a message answers to
 
@@ -4271,6 +4314,24 @@ An app advances **exactly the streams it is showing**, and nothing beside them:
   ever read them.
 - Marking a message read MUST advance only `msg:<id>`.
 - None of these MUST advance a parent it is not showing.
+
+Two actions see reactions to `P`'s messages (*added 2026-11-13*, ACT-7;
+record
+[reactions-seen-is-kept-under-reactions-and-opening-it-sees-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/reactions-seen-is-kept-under-reactions-and-opening-it-sees-it.md)),
+and each MUST advance the `reactions:<context>` (§11.1) of every conversation
+it shows one in, to the `created_at` of the newest reaction it shows there,
+never the clock and never later than it (a reaction on a comment on two files
+advances both files' keys):
+
+- resting on a row whose card lists a reaction to `P`'s message (§11.8, *What
+  lit a stream*), or, on a touch screen, opening that row; an app may write it
+  as the card closes, once it has been open;
+- opening a conversation that draws reactions to `P` under `P`'s messages.
+
+Seeing the reactions advances no other key: the conversation opened is read by
+the rules above, apart from it. Nothing else advances a `reactions:` key:
+reading a stream, a thread or a message sees none of its reactions unless the
+screen draws them.
 
 Advancing the parent when a person reads one reply silently marks every later
 top-level message read. **This became load-bearing the moment one channel
@@ -4330,6 +4391,26 @@ every stream in a team, and it is not specified.
 
 The hierarchy is applied **at read time**, never by writing extra keys.
 
+**A `reactions:` key has no parent** (*added 2026-11-13*, ACT-7). No stream,
+thread or floor marker reaches it, and it reaches none: reading a conversation
+does not see its reactions, and seeing a reaction reads no message. It is never
+inert, so a client MUST NOT drop it as dominated. A reaction to `P`'s message
+(§6.6) in a conversation is new for `P` when its `created_at` is at or after
+the start and later than what `P` has seen there:
+
+```
+start(<ctx>) = max( P's start in the place that shows it (§11.8),
+                    1794589200 )
+seen(<ctx>)  = max( merged["reactions:<ctx>"],
+                    merged["reactions-floor"] )
+```
+
+an absent term dropping out; for a file, the first term of `seen` is the later of
+`reactions:<file-address>` and `reactions:file:<d>`. **`1794589200`**
+(2026-11-13T17:00:00Z) is a suite constant, set once like T0: it falls after
+reactions began naming whose message they react to (§6.6), so no backlog
+lights.
+
 #### An indicator over a team
 
 Whether an app draws one indicator for a whole team is the app's choice, not
@@ -4337,7 +4418,9 @@ the protocol's. An aggregate indicator over a team, if an app draws one, is
 **computed at read time from the markers above** — over the streams in the
 team, each judged for the person's membership of it (§11.8) — and **writes
 nothing**: no key is needed for it, and it does not consume the reserved
-`folder:` grain (§11.5).
+`folder:` grain (§11.5). Hovering a team's row is hovering the conversations
+its list names (§11.8, *What lit a stream*), so it writes their `reactions:`
+keys as §11.2 says, and no key for the team (*added 2026-11-13*, ACT-7).
 
 ### 11.4 Monotonic, and there is no mark-as-unread
 
@@ -4453,6 +4536,16 @@ write it as an ordinary marker. A reader takes a slot's floor as at most that
 slot's `created_at`, since a floor is the value of a marker already in the
 blob, so a corrupt floor cannot mark later replies read. What the floor costs
 is the oldest replies nobody opened: those at or before it count as read.
+
+**`reactions-floor` pays for a dropped `reactions:` key the same way**
+(*added 2026-11-13*, ACT-7). Dropping one would bring back reactions `P` has
+already seen, since nothing else covers them (§11.3). So before a client drops
+a `reactions:` key worth `v`, by the byte cap or by the merged view's
+10,000-context cap, it MUST raise `reactions-floor` to at least `v` in the same
+blob. Like `reply-floor`, it is merged by maximum, never dropped, raised only
+this way and never written as an ordinary marker, and a reader takes a slot's
+`reactions-floor` as at most that slot's `created_at`. What it costs is the
+oldest reactions nobody saw: those at or before it count as seen.
 
 Superseded blobs at a NIP-RS coordinate are **hard-deleted** by the relay, and a
 watermark survives a NIP-09 deletion so an old signed blob cannot be
@@ -4847,6 +4940,33 @@ nothing on it; a mute keeps only the mentions (*2026-11-10*; record
 [at-important-what-names-you-on-a-listed-file-lights-the-topic](https://github.com/estiva-app/estiva-docs/blob/main/decisions/at-important-what-names-you-on-a-listed-file-lights-the-topic.md)). A list entry (§6.14) is not a message
 and lights nothing at either level. Being added lights nothing by itself.
 
+**A new reaction on a place** (*added 2026-11-13*, ACT-7; records
+[a-reaction-names-whose-message-it-reacts-to](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-reaction-names-whose-message-it-reacts-to.md),
+[a-reaction-is-seen-once-in-its-conversation](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-reaction-is-seen-once-in-its-conversation.md),
+[reactions-seen-is-kept-under-reactions-and-opening-it-sees-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/reactions-seen-is-kept-under-reactions-and-opening-it-sees-it.md),
+[at-important-what-names-you-on-a-listed-file-lights-the-topic](https://github.com/estiva-app/estiva-docs/blob/main/decisions/at-important-what-names-you-on-a-listed-file-lights-the-topic.md)).
+A place has a new reaction for `P` when a conversation it shows `P` holds a
+reaction to `P`'s message, kept by §6.6's reader rule, that is newer than that
+conversation's baseline (§11.3). The conversations a place shows `P` are its
+own stream's, at whichever level `P` follows it, and those on the files it
+lists and on the files one level under them, at Important and at All alike: a
+reaction to `P`'s message is one of the things that name `P` there. When `P`
+has muted the place or does not follow it (§11.8, *Places and following*), no
+reaction lights it. A DM has a new
+reaction for each of its two people when a reaction in it to their message is
+newer than its baseline; a team's chat is a place like any other. A reaction is
+a conversation's, never a place's: on a file listed in two places it is seen
+once, and seeing it under either place's row, on a Desk row or in the file's
+own conversation in any app sees it in both. Reading the conversation's
+messages, which writes the file's own marker, does not (§11.3). A reaction
+taken back (its author's `kind:5`), or whose target is deleted, even later, is
+gone: it lights nothing and is listed nowhere.
+
+An app draws a new reaction in a colour of its own, apart from unread (orange,
+in Peek); the colour is the app's. When a row has both something unread and a
+new reaction, it shows one dot, the unread one, and its card lists the
+reaction too (Miky, 2026-11-10, ACT-1's kickoff).
+
 **Following grants no access.** A person who cannot read a team's channel
 cannot read its places, and they stop lighting (§3.1).
 
@@ -4917,7 +5037,8 @@ A DM is one conversation between its two people, so nothing in it starts one or
 is a reply in yours: each of its messages is a mention or a message. The second
 and third can never both hold. These are categories, not words: each
 app says them in its own copy. A reaction is not a message and is none of
-these; a reaction to `P`'s message lights a place in its own colour (record
+these; a reaction to `P`'s message lights a place in its own colour (*A new
+reaction on a place*, above; record
 [a-reaction-is-seen-once-in-its-conversation](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-reaction-is-seen-once-in-its-conversation.md)).
 A reply to `P`'s agent lights nothing yet, since a reader cannot tell whose
 agent it is (§6.5); once it does, it is a reply in your conversation. The same
@@ -4951,10 +5072,16 @@ mentioned. One rule gives it, so every app lists the same lines for `P`:
   spaces and topics together, one line per message (a file listed in two
   places gives one), each line naming the conversation it was said in.
 
-A reaction to `P`'s message joins the list as its own line once its `orange:`
-mark is read (record
-[a-reaction-is-seen-once-in-its-conversation](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-reaction-is-seen-once-in-its-conversation.md)):
-opening this list is hovering the place in that record's sense. Nothing in the
+A reaction to `P`'s message that lights the stream (*A new reaction on a
+place*, above) joins the list as its own line: new while it is later than its
+conversation's baseline, and seen once its `reactions:` mark covers it (§11.3;
+records
+[a-reaction-is-seen-once-in-its-conversation](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-reaction-is-seen-once-in-its-conversation.md)
+and
+[reactions-seen-is-kept-under-reactions-and-opening-it-sees-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/reactions-seen-is-kept-under-reactions-and-opening-it-sees-it.md);
+*changed 2026-11-13*, ACT-7). Opening this list is resting on the row in
+§11.2's sense, so it writes the `reactions:` key of each conversation it lists
+a reaction in. Nothing in the
 list is written or stored; it is read from the relay, so a person who loses
 access to a stream loses its lines.
 
