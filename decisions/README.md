@@ -150,7 +150,8 @@ heading here.
 - [A team's default starts when it reached you: the later of your joining or following the team and the place coming into it, so nothing older is unread](a-teams-default-starts-when-it-reached-you.md) — Accepted, 2026-11-02
 - [Every add, join or leave on a file names the person it is about, so any app finds a file's members with one small read](a-membership-change-names-the-person-it-is-about.md) — Accepted, 2026-11-10
 - [A reaction names the person whose message it reacts to, so any app finds the reactions to your messages by asking for the ones that name you](a-reaction-names-whose-message-it-reacts-to.md) — Accepted, 2026-11-10
-- [A reaction to your message is seen once, in the conversation it is in, so hovering an orange dot clears it in every topic, on the Desk and in every app](a-reaction-is-seen-once-in-its-conversation.md) — Accepted, 2026-11-10
+- [A reaction to your message is seen once, in the conversation it is in, so hovering an orange dot clears it in every topic, on the Desk and in every app](a-reaction-is-seen-once-in-its-conversation.md) — Accepted, 2026-11-10; superseded in part, for the key's name and opening the conversation, by the one below, 2026-11-13
+- [Seeing a reaction to your message is remembered under "reactions:", and opening the conversation that shows it counts as seeing it, as resting on its orange row does](reactions-seen-is-kept-under-reactions-and-opening-it-sees-it.md) — Accepted, 2026-11-13
 - [Following a topic at Important, what names you on a file it lists lights the topic: a mention or a reply in your conversation blue, a reaction to your message orange; the file's other conversations never do](at-important-what-names-you-on-a-listed-file-lights-the-topic.md) — Accepted, 2026-11-10; the files under a listed file, one level down, added the same day
 
 ## Messages

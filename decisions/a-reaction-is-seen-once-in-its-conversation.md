@@ -5,6 +5,12 @@
 - Decided by: Miky, in the shaping session of "Activity indicator on each topic and team" (2026-11-10), on the brief "Reactions turn orange" ([page](briefs/reactions-turn-orange.html)), call 2: B, as recommended
 - Area: Read state
 
+> Superseded in part, 2026-11-13: the key is named `reactions:<context>` and
+> `reactions-floor`, and opening a conversation that shows the reaction writes
+> it as well as hovering, in
+> [reactions-seen-is-kept-under-reactions-and-opening-it-sees-it](reactions-seen-is-kept-under-reactions-and-opening-it-sees-it.md).
+> Everything else stands as this record says.
+
 ## Who it affects
 
 Miky and Katerina: a page listed in two topics they follow and on their Desk
