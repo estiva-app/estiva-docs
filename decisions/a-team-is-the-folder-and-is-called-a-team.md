@@ -6,6 +6,10 @@
 - Supersedes: a-folder-is-called-a-folder-never-a-team.md
 - Area: Folders
 
+> Superseded in part, 2026-11-11: links now say teams, in
+> [a-teams-link-says-teams-and-an-old-folder-link-still-opens-it](a-teams-link-says-teams-and-an-old-folder-link-still-opens-it.md).
+> CLI flags and tool names still keep "folder".
+
 ## Who it affects
 
 Miky and Katerina see Peek's rail, Ship's Move control, Leaf's page header,
