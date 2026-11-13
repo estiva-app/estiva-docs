@@ -4243,7 +4243,8 @@ reaction on a reply counts in its root's stream; there is no
 and a new write goes under `reactions:file:<d>`. A root with two `a` tags is in
 both files' streams, so a reaction to it is unseen in each until that stream's
 `reactions:` key covers it. A key beginning `reactions:` whose remainder is not
-a channel, file or `file:` context as above is not a reactions context. The
+a channel, file or `file:` context as above is not a reactions context: it is
+carried as a key the client does not know (below), and lights or clears nothing. The
 key names what it remembers, never how an app draws it. `reactions-floor` is
 the person's floor under every `reactions:` key (§11.3), and only a trim raises
 it (§11.6).
@@ -4317,10 +4318,12 @@ it shows one in, to the `created_at` of the newest reaction it shows there,
 never the clock:
 
 - resting on a row whose card lists a reaction to `P`'s message (§11.8, *What
-  lit a stream*), or, on a touch screen, opening that row;
+  lit a stream*), or, on a touch screen, opening that row; an app may write it
+  as the card closes, once it has been open;
 - opening a conversation that draws reactions to `P` under `P`'s messages.
 
-Neither advances any other key, and nothing else advances a `reactions:` key:
+Seeing the reactions advances no other key: the conversation opened is read by
+the rules above, apart from it. Nothing else advances a `reactions:` key:
 reading a stream, a thread or a message sees none of its reactions unless the
 screen draws them.
 
@@ -4942,7 +4945,8 @@ conversation's baseline (§11.3). The conversations a place shows `P` are its
 own stream's, at whichever level `P` follows it, and those on the files it
 lists and on the files one level under them, at Important and at All alike: a
 reaction to `P`'s message is one of the things that name `P` there. When `P`
-has muted the place or is not in it, no reaction lights it. A DM has a new
+has muted the place or does not follow it (§11.8, *Places and following*), no
+reaction lights it. A DM has a new
 reaction for each of its two people when a reaction in it to their message is
 newer than its baseline; a team's chat is a place like any other. A reaction is
 a conversation's, never a place's: on a file listed in two places it is seen
