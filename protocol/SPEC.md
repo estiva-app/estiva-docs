@@ -2068,7 +2068,11 @@ so a reaction in a team P cannot read never reaches P.
 - P can read that target by id: the reader fetches the targets it does not
   hold in one `{ids:[…]}` read per batch, and a deleted or unreadable target
   lights nothing;
-- P is not the reaction's effective author.
+- P is not the reaction's effective author;
+- its `created_at` is at most 60 seconds ahead of the reader's clock
+  (*added 2026-11-13*, ACT-7). A relay may accept a skewed `created_at`
+  (§5), and a reaction dated ahead would, once seen, cover every reaction
+  made before that moment (§11.2).
 
 A reader that cannot learn the relay's key works every target's author out as
 its signer, as a writer does, so the reactions to messages the relay signed on
@@ -3968,7 +3972,7 @@ throwaway relay or a fake query.
 | C11 | **Two strengths.** On one object: a `1111` whose `A` is the object is a comment; a `1111` whose `A` is another file but whose `a` names this one is a mention; a `kind:9` whose body names the object is a mention; a `1111` with no `A` is a comment on each of its `a`. Mentions are presented apart from comments. A `kind:9` reply carrying the object's `a` lists as neither; a `1111` whose `a` equals its `A` is a top-level comment whatever its `e` says (§6.4) |
 | C12 | **Edit fold.** Three edits to one message inside one second, carrying `ts`, fold to the last by `ts`. One whose `ts` is off by a second folds by `created_at`. An edit whose first `e` is marked and names another message is applied to that message and never to the second `e`. An edit byte-identical to the body does not mark the message edited. The message is marked edited, and shows the current text (§6.2, §6.8) |
 | C13 | **Reaction horizon and count.** With 101 targets, reactions are asked for the newest 100 and the omission of 1 is reported. `+`, empty and a duplicate from one pubkey count as one `+`. A reaction with two `e` counts against the last (§6.6) |
-| C58 | **Reactions to `P`, kept and dropped** (*added 2026-11-13*, §6.6, §11.8). From `{kinds:[7], "#p":[P]}`, kept: a reaction whose last `p` is `P` on `P`'s `kind:9` or `kind:1111`. Dropped, lighting nothing: one naming `P` on someone else's message; one naming `P` beside someone else after it; one on a team record; one on a target `P` cannot read or that is deleted; `P`'s own reaction to `P`'s message; one taken back by its author's `kind:5`, before or after it lit |
+| C58 | **Reactions to `P`, kept and dropped** (*added 2026-11-13*, §6.6, §11.8). From `{kinds:[7], "#p":[P]}`, kept: a reaction whose last `p` is `P` on `P`'s `kind:9` or `kind:1111`. Dropped, lighting nothing: one naming `P` on someone else's message; one naming `P` beside someone else after it; one on a team record; one on a target `P` cannot read or that is deleted; `P`'s own reaction to `P`'s message; one taken back by its author's `kind:5`, before or after it lit; one dated more than 60 s ahead of the reader's clock |
 | C14 | **Deletion left to the relay.** After the author's `kind:5`, the next read no longer holds the message, and the app shows nothing for it from local state. A non-author's `kind:5` is refused and the refusal is shown in the relay's words. Edit and Delete are offered only on the viewer's own message — not on another person's or an agent's (§6.5, 2026-10-06) |
 | C15 | **Attachment fold.** An edit carrying `imeta` replaces the message's set. A later edit with none leaves the message with no files. An edit carrying one file on a message with two leaves one (§6.8) |
 | C16 | **Reply shape.** A reply to a comment is a `kind:1111` with the comment's `A`/`K`/`P`, `e`/`k`/`p` naming the top-level comment, the comment's `h`, and no lowercase `a` for the object. A reply to a comment carrying a `block` copies its `block` and `quote` verbatim, before the `h` (§13.6). A reply read back threads under that comment in every conforming app (§6.4). The relay refuses a reply whose parent is missing, deleted, unreadable to its writer, not a `kind:1111`, or in another team with `invalid: reply parent not found in this team`, and accepts a top-level comment without that check (§6.4, *Replies*; *2026-11-06*) |
@@ -4251,7 +4255,8 @@ it (§11.6).
 
 **A key a client does not know is carried, never judged** (*added
 2026-11-13*, ACT-7). A client MUST carry a well-formed key it does not know (at
-most 256 bytes, with a timestamp in the range of §11.6) verbatim in its own
+most 256 bytes, with a timestamp in the range of §11.6; a client MAY drop the
+key `__proto__`, which some languages cannot hold as a map key) verbatim in its own
 slot, merged by maximum like any other, and MUST NOT judge it: it is not a
 frontier, not dominated, not inert, and lights or clears nothing. A client
 that merged every slot and republished its own without the keys it did not
@@ -4315,7 +4320,8 @@ record
 [reactions-seen-is-kept-under-reactions-and-opening-it-sees-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/reactions-seen-is-kept-under-reactions-and-opening-it-sees-it.md)),
 and each MUST advance the `reactions:<context>` (§11.1) of every conversation
 it shows one in, to the `created_at` of the newest reaction it shows there,
-never the clock:
+never the clock and never later than it (a reaction on a comment on two files
+advances both files' keys):
 
 - resting on a row whose card lists a reaction to `P`'s message (§11.8, *What
   lit a stream*), or, on a touch screen, opening that row; an app may write it
@@ -4389,17 +4395,17 @@ The hierarchy is applied **at read time**, never by writing extra keys.
 thread or floor marker reaches it, and it reaches none: reading a conversation
 does not see its reactions, and seeing a reaction reads no message. It is never
 inert, so a client MUST NOT drop it as dominated. A reaction to `P`'s message
-(§6.6) in a conversation is new for `P` when its `created_at` is later than
-that conversation's baseline:
+(§6.6) in a conversation is new for `P` when its `created_at` is at or after
+the start and later than what `P` has seen there:
 
 ```
-baseline(<ctx>) = max( merged["reactions:<ctx>"],
-                       merged["reactions-floor"],
-                       P's start in the place that shows it (§11.8),
-                       1794589200 )
+start(<ctx>) = max( P's start in the place that shows it (§11.8),
+                    1794589200 )
+seen(<ctx>)  = max( merged["reactions:<ctx>"],
+                    merged["reactions-floor"] )
 ```
 
-an absent term dropping out; for a file, the first term is the later of
+an absent term dropping out; for a file, the first term of `seen` is the later of
 `reactions:<file-address>` and `reactions:file:<d>`. **`1794589200`**
 (2026-11-13T17:00:00Z) is a suite constant, set once like T0: it falls after
 reactions began naming whose message they react to (§6.6), so no backlog
