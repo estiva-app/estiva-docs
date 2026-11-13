@@ -1884,7 +1884,8 @@ A reaction is a **`kind:7`** (NIP-25) pointing at the event being reacted to.
 **A `kind:7` carries no `h` tag, and that is the whole difficulty.** Reactions
 cannot be found the way messages are — a channel query does not return them. An
 app MUST fetch reactions **addressed by target**: collect the event ids it is
-displaying, then query for reactions pointing at those ids.
+displaying, then query for reactions pointing at those ids. The one exception
+is finding the reactions to a person's messages, below.
 
 The consequence is a horizon rather than a complete answer. A client fetching
 reactions for N targets has to choose N, and the choice is invisible to the
@@ -2010,6 +2011,49 @@ busiest holds 399 (`kind:9` and `1111` together), the busiest chat 199
 day the truncation report was written for, and whether the busiest
 chat should be read further is a question for this section, not for one app's
 constant.
+
+#### Finding the reactions to a person — decided 2026-11-10 (ACT-6)
+
+Record:
+[a-reaction-names-whose-message-it-reacts-to](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-reaction-names-whose-message-it-reacts-to.md).
+
+**A reaction names whose message it reacts to.** A `kind:7` carries
+`["p", <its target's effective author>]` after its `e`, as its **last** `p`
+(NIP-25). The effective author is §6.5's: an event the relay signed on
+someone's behalf is its `actor`'s, else its first `p`'s; any other event is its
+signer's. An agent's message names the agent, not its NIP-OA owner, and an
+edit (`40003`) never changes it: the reaction targets the original and names
+its author, even when the agent's owner made the edit. An app learns the
+relay's key from the signer of any team record (`kind:39000`), and needs it
+only for a target that carries an `actor` or a `p`
+(`@estiva-app/protocol` `effectiveAuthor`, `needsRelayKey`). A relay that
+signs a reaction on someone's behalf MUST carry `actor`, since its NIP-25 `p`
+names someone else.
+
+**The read.** `{kinds:[7], "#p":[P], since}`, stored and kept open, answers
+"the reactions to P's messages" in one request, however old the message. It
+is the one exception to "fetch reactions by target". The relay answers only
+what P may read
+([a-request-kept-open-hears-what-asking-again-would-return](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-request-kept-open-hears-what-asking-again-would-return.md)),
+so a reaction in a team P cannot read never reaches P.
+
+**A reader keeps a reaction only when:**
+
+- its last `p` equals the effective author of its target (the last 64-hex
+  `e`), so a reaction that names P falsely lights nothing;
+- P can read that target by id (the reader fetches the targets it does not
+  hold); a deleted or unreadable target lights nothing;
+- P did not write the reaction.
+
+**The `p` is not a mention** and makes nobody a member (§11.8): every read of
+mentions names its kinds, and none includes `7`. Counting reactions under a
+conversation keeps the target rule and the horizon of 100 above.
+
+**Reactions without the name are never found this way.** That covers
+reactions written before 2026-11-13, reactions from a tab still running an
+older app, and reactions from upstream Buzz's own apps, which write only the
+`e`. Nothing is backfilled. A partner on stock Buzz lights nothing for its
+people until its apps add the name.
 
 **Reactions attach to messages.** Whether they attach to anything else — a block
 inside a rich text field, an object — is a product question RFC 0.4 §7.2 answers
