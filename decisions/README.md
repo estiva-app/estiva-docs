@@ -153,6 +153,7 @@ heading here.
 - [A reaction to your message is seen once, in the conversation it is in, so hovering an orange dot clears it in every topic, on the Desk and in every app](a-reaction-is-seen-once-in-its-conversation.md) — Accepted, 2026-11-10; superseded in part, for the key's name and opening the conversation, by the one below, 2026-11-13
 - [Seeing a reaction to your message is remembered under "reactions:", and opening the conversation that shows it counts as seeing it, as resting on its orange row does](reactions-seen-is-kept-under-reactions-and-opening-it-sees-it.md) — Accepted, 2026-11-13
 - [Following a topic at Important, what names you on a file it lists lights the topic: a mention or a reply in your conversation blue, a reaction to your message orange; the file's other conversations never do](at-important-what-names-you-on-a-listed-file-lights-the-topic.md) — Accepted, 2026-11-10; the files under a listed file, one level down, added the same day
+- [Intelligence works for you in the background and never takes your attention: what it finds lands in its home, and it reaches you only the way a person's message does, by naming you](intelligence-works-in-the-background-and-reaches-you-only-by-naming-you.md) — Accepted, 2026-11-13
 
 ## Messages
 
@@ -164,7 +165,7 @@ heading here.
 - [A file's Activity lists only the places that mention it, never the conversations of the files under it](activity-lists-only-mentions-from-elsewhere.md) — Accepted, 2026-09-20
 - [A chat message belongs to the protocol, like a comment, and no app owns it](a-chat-message-belongs-to-the-protocol.md) — Accepted, 2026-10-15
 - [A conversation is one shared thing that looks and works the same in Peek, Ship and Leaf, and only its colours are each app's own](a-conversation-is-one-shared-thing-and-only-its-colours-are-the-apps.md) — Accepted, 2026-10-20; its open question on Resolve and the Highlights answered by the one below, and who makes the prototype (decided 2026-10-20) noted, 2026-10-28
-- [A thread is resolved the same way in Peek, Ship and Leaf: anyone who may comment on the file resolves or reopens it, the newest counts, and a resolved thread collapses in place](anyone-who-may-comment-resolves-or-reopens-a-thread-and-the-newest-counts.md) — Accepted, 2026-10-28; its "collapses in place" superseded in part by the one below, 2026-11-09
+- [A thread is resolved the same way in Peek, Ship and Leaf: anyone who may comment on the file resolves or reopens it, the newest counts, and a resolved thread collapses in place](anyone-who-may-comment-resolves-or-reopens-a-thread-and-the-newest-counts.md) — Accepted, 2026-10-28; its "collapses in place" superseded in part by the one below, 2026-11-09; what reads its Highlights answered by what-a-project-learns-decides-and-worries-about-are-insights-journal-entries-and-risks, 2026-11-13
 - [A resolved thread stays where it was said in Peek, and moves to a closed "Resolved" section at the end of the comments in Ship and Leaf](a-resolved-thread-stays-in-place-in-a-chat-and-moves-to-a-resolved-section-beside-a-page.md) — Accepted, 2026-11-09
 - [Every app writes comments and chat with one shared comment box and reacts with one shared reaction row, and the cards stay each app's own](every-app-writes-and-reacts-with-one-shared-box.md) — Accepted, 2026-10-16; its part "the cards stay each app's own" superseded by the one above, 2026-10-20
 - [An archived file is read-only in every app: no new comment, reply or reaction, and no edit or delete, until it is unarchived](an-archived-file-is-read-only-in-every-app.md) — Accepted, 2026-10-20; its part "or when every Folder listing it is" superseded by the one below, 2026-10-23; Leaf's own Unarchive (no more "in Peek") noted, 2026-10-28
@@ -173,6 +174,7 @@ heading here.
 - [An edit is the whole new message, its words and its files, so an edit with no files takes every file off](an-edit-is-the-whole-new-message.md) — Accepted, 2026-10-26
 - [An edit says what the message links now, so a file lists a comment while its latest words link it](an-edit-says-what-the-message-links-now.md) — Accepted, 2026-10-27
 - [Nobody deletes a whole DM; each person deletes only their own messages](nobody-deletes-a-whole-dm.md) — Accepted, 2026-10-27
+- [Anyone who can read a message or a block can mark it or unmark it, other people's included, and anyone can confirm a Proposed item; an agent never confirms its own suggestion](anyone-who-can-read-a-message-or-block-marks-it-and-anyone-confirms-a-proposed-item.md) — Accepted, 2026-11-13
 
 ## Links & widgets
 
@@ -215,6 +217,8 @@ properties and its history.
 - [A topic keeps its own list of files, one entry per file by its id; a file stays in its Folder's tree and can be in many topics](a-topic-keeps-its-own-list-of-files.md) — Accepted, 2026-10-30
 - [Each file on a topic keeps its own place and look, as notes of their own beside its list entry, so two people arranging at once both keep their change](each-file-on-a-topic-keeps-its-own-place-and-look.md) — Accepted, 2026-11-06
 - [A file can say that only the workspace's owners and admins write it, and the relay keeps to that, for any type](a-file-can-say-only-admins-write-it-and-the-relay-keeps-to-it.md) — Accepted, 2026-10-30
+- [What a project learns, decides and worries about is kept as Insights, Journal entries and Risks, each its own file of a type Estiva shares, and marking a message or a block makes one](what-a-project-learns-decides-and-worries-about-are-insights-journal-entries-and-risks.md) — Accepted, 2026-11-13
+- [An Insight, Journal entry or Risk lives on the most specific place it fits, a task, else a project, else an Initiative, and each level shows everything below it](an-insight-journal-entry-or-risk-lives-on-the-most-specific-place-it-fits.md) — Accepted, 2026-11-13
 
 ## Documents
 

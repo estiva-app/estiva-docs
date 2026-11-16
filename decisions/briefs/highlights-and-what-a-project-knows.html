@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What a project knows</title>
+<style>
+:root {
+  --bg: #fbfaf7; --ink: #1d1d1f; --muted: #5d5d66; --line: #8e8e98; --rule: #dcdad3;
+  --box: #efeee9; --card: #ffffff; --fold: #f3f1ea; --gate: #e6edfb; --team: #eaf4ec;
+  --accent: #2457c5; --warn: #b3401f; --ok: #2a7a46; --chip: #dfe6f6; --pick: #f2f6ff;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17171a; --ink: #ececef; --muted: #a8a8b2; --line: #74747f; --rule: #34343b;
+    --box: #26262b; --card: #1f1f23; --fold: #222226; --gate: #1d2a45; --team: #1d3324;
+    --accent: #93b2ff; --warn: #ff9e80; --ok: #82d69e; --chip: #2b3553; --pick: #1c2338;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17171a; --ink: #ececef; --muted: #a8a8b2; --line: #74747f; --rule: #34343b;
+  --box: #26262b; --card: #1f1f23; --fold: #222226; --gate: #1d2a45; --team: #1d3324;
+  --accent: #93b2ff; --warn: #ff9e80; --ok: #82d69e; --chip: #2b3553; --pick: #1c2338;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0 auto; max-width: 760px; padding: 24px 16px 64px;
+  background: var(--bg); color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+h1 { font-size: 28px; line-height: 1.2; margin: 4px 0 4px; }
+h2 { font-size: 20px; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--rule); }
+h3 { font-size: 17px; margin: 22px 0 6px; }
+p, li { max-width: 70ch; }
+ul { padding-left: 20px; }
+li { margin: 3px 0; }
+.kicker { color: var(--muted); font-size: 14px; margin: 0; }
+.question { font-size: 19px; line-height: 1.45; font-weight: 600; }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+.door { background: var(--box); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.note { background: var(--box); border-left: 4px solid var(--line); padding: 10px 14px; border-radius: 6px; }
+.pick { background: var(--pick); border-left: 4px solid var(--accent); padding: 10px 14px; border-radius: 6px; }
+.opt { border: 1px solid var(--rule); border-radius: 10px; padding: 4px 16px 10px; margin: 14px 0; background: var(--card); }
+.opt h3 { margin-top: 12px; }
+.opt.rec { border-color: var(--accent); }
+.tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); vertical-align: 2px; margin-left: 6px; }
+.tablewrap { overflow-x: auto; margin: 10px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.4; min-width: 560px; }
+th, td { text-align: left; vertical-align: top; padding: 7px 8px; border-bottom: 1px solid var(--rule); }
+th { font-size: 13px; color: var(--muted); font-weight: 600; }
+td:first-child { font-weight: 600; min-width: 7.5em; }
+figure { margin: 18px 0 24px; overflow-x: auto; }
+figure svg { width: 100%; min-width: 600px; height: auto; display: block; }
+figcaption { font-size: 14px; color: var(--muted); margin-top: 6px; }
+figcaption b { color: var(--ink); }
+code { font-size: 13px; background: var(--box); padding: 0 4px; border-radius: 4px; }
+.gate { fill: var(--gate); stroke: var(--accent); stroke-width: 1.5; }
+.team { fill: var(--team); stroke: var(--ok); stroke-width: 1.3; }
+.fold { fill: var(--fold); stroke: var(--line); stroke-width: 1.2; }
+.file { fill: var(--card); stroke: var(--line); stroke-width: 1.2; }
+.bad { fill: var(--card); stroke: var(--warn); stroke-width: 1.4; }
+.mark { fill: none; stroke: var(--accent); stroke-width: 3; }
+.dash { stroke-dasharray: 6 4; }
+.t { fill: var(--ink); font-size: 13px; }
+.b { font-weight: 700; }
+.ts { fill: var(--muted); font-size: 12px; }
+.ta { fill: var(--accent); font-size: 12px; font-weight: 600; }
+.tw { fill: var(--warn); font-size: 12px; font-weight: 600; }
+.tok { fill: var(--ok); font-size: 12px; font-weight: 600; }
+.arrow { fill: none; stroke: var(--ink); stroke-width: 1.3; }
+.arrowa { fill: none; stroke: var(--accent); stroke-width: 1.3; }
+.arrowx { fill: none; stroke: var(--warn); stroke-width: 1.3; stroke-dasharray: 4 3; }
+.head { fill: var(--ink); }
+.heada { fill: var(--accent); }
+</style>
+</head>
+<body>
+
+<p class="kicker">Decision brief · 13 November 2026 · answered by Miky in the brainstorm session that day and in his comments on the Leaf page “Highlights and the intelligence layer”. This page writes his answers up for four decision records; his merge of their pull request accepts them.</p>
+<h1>What a project knows</h1>
+
+<p class="question">How should a project keep what it learns, what it decides and what worries it, so that people and every app’s intelligence share one memory instead of each keeping its own?</p>
+
+<h2>Today</h2>
+<p>Every project learns, decides and worries the whole time it lives. Today that knowledge sits in conversations, documents and people’s heads, and every agent keeps its own private copy. We already keep it by hand, in four places no app reads as one:</p>
+<ul>
+  <li><b>Insights, by hand:</b> Claude’s memory is a folder on Miky’s disk, one note per lesson with its “Why” line. Katerina’s Claude sees none of it.</li>
+  <li><b>A journal, by hand:</b> our decision records and the Decided lines on issues.</li>
+  <li><b>Risks, by hand:</b> Warning callouts and each project’s Later list.</li>
+  <li><b>Ship’s feedback loop, by hand:</b> the sweep, which gathers every bug reported in Peek since the last update and checks the projects touched.</li>
+</ul>
+<p>Peek has five highlight types in its code (Insight, Concern, Conclusion, Question, Summary), and no screen offers them. On 28 October Miky decided that no app offers highlights until their shape is decided “together with what reads them”. This is what reads them.</p>
+
+<h2>Why it reaches beyond this ticket</h2>
+<ul>
+  <li>It answers “how can intelligence be better than in today’s SaaS apps?”: the agent’s memory <em>is</em> the team’s own Insights, Journal and Risks. People can see it and edit it, every app shares it, and it lives on the company’s relay, not inside one vendor’s AI.</li>
+  <li>It sets three shared types that outside apps build on, the way they build on an Issue. An outside company’s tracker, design tool or agent writes and reads the same Insight, Journal entry and Risk.</li>
+  <li>It is the input the Universal agent project waits for.</li>
+</ul>
+<p class="door"><b>One-way door.</b> Once items are on the relay and other apps read them, what an Insight, a Journal entry or a Risk means can change only compatibly; a breaking change is a new type. Who may mark and confirm, and how intelligence reaches a person, are two-way in the code but set every app’s expectations.</p>
+
+<h2>1 · What an item is</h2>
+
+<figure>
+<svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>An item is its own file that points at the messages and blocks it came from</title>
+<text class="ta" x="10" y="16">CHOSEN · its own file, pointing at its sources</text>
+<!-- sources -->
+<rect class="file" x="10" y="30" width="200" height="58" rx="8"/>
+<text class="t b" x="22" y="52">Peek · Katerina’s message</text>
+<text class="ts" x="22" y="72">marked by Miky as an Insight</text>
+<rect class="file" x="10" y="102" width="200" height="58" rx="8"/>
+<rect class="mark" x="14" y="106" width="192" height="50" rx="6"/>
+<text class="t b" x="22" y="126">Leaf · a block or a table</text>
+<text class="ts" x="22" y="145">marked: drawn with a border</text>
+<rect class="file dash" x="10" y="174" width="200" height="58" rx="8"/>
+<text class="t b" x="22" y="196">An app or an agent</text>
+<text class="ts" x="22" y="215">suggests one while you write</text>
+<!-- item -->
+<rect class="gate" x="270" y="30" width="210" height="202" rx="10"/>
+<text class="t b" x="284" y="54">Insight</text>
+<text class="ts" x="284" y="76">title · summary</text>
+<text class="ts" x="284" y="96">details: a document Leaf edits</text>
+<text class="ts" x="284" y="116">sources: one or more</text>
+<text class="ts" x="284" y="136">home: task, project, Initiative</text>
+<text class="ts" x="284" y="156">status: Proposed → Accepted …</text>
+<text class="ts" x="284" y="176">a conversation, like any file</text>
+<text class="ta" x="284" y="204">its own file, of a shared type</text>
+<!-- arrows item to sources -->
+<path class="arrowa" d="M270 70 L214 60"/><path class="heada" d="M210 59 l9 -4 l-1 9 z"/>
+<path class="arrowa" d="M270 120 L214 128"/><path class="heada" d="M210 129 l8 -6 l1 9 z"/>
+<text class="ta" x="218" y="98">points at</text>
+<path class="arrow dash" d="M214 203 L266 190"/><path class="head" d="M270 189 l-9 -3 l2 9 z"/>
+<text class="ts" x="214" y="226">at Proposed</text>
+<!-- ship -->
+<rect class="team" x="540" y="30" width="170" height="202" rx="10"/>
+<text class="t b" x="552" y="54">Ship · its project</text>
+<text class="ts" x="552" y="78">Overview · Issues</text>
+<text class="ta" x="552" y="98">Insights · Journal · Risks</text>
+<rect class="file" x="552" y="112" width="146" height="30" rx="6"/>
+<text class="ts" x="560" y="132">Katerina’s insight</text>
+<text class="ts" x="552" y="168">Peek: its conversation;</text>
+<text class="ts" x="552" y="186">Leaf edits its details;</text>
+<text class="ts" x="552" y="204">any app reads the type.</text>
+<path class="arrow" d="M480 128 L536 128"/><path class="head" d="M540 128 l-9 -4 v8 z"/>
+<text class="ts" x="486" y="120">lives in</text>
+<!-- turned down -->
+<text class="tw" x="10" y="270">TURNED DOWN · a mark on the source only</text>
+<rect class="bad" x="10" y="284" width="250" height="70" rx="8"/>
+<text class="t b" x="22" y="306">Peek · a message</text>
+<rect class="file" x="170" y="292" width="76" height="22" rx="11"/>
+<text class="ts" x="182" y="307">Insight ⚑</text>
+<text class="ts" x="22" y="328">a flag on the words, nothing else</text>
+<text class="ts" x="22" y="345">no title, status, details or conversation</text>
+<text class="ts" x="290" y="306">· One insight drawn from three messages is three flags.</text>
+<text class="ts" x="290" y="326">· Nobody can question it, refine it or close it.</text>
+<text class="ts" x="290" y="346">· What Leaf marks never reaches a project in Ship.</text>
+</svg>
+<figcaption><b>Who writes what.</b> A person marks, or an app or agent suggests; either makes one item, a file of its own that points back at its sources and lives in one home. Every app reads it as the same type.</figcaption>
+</figure>
+
+<div class="opt">
+<h3>A · A mark on the source only</h3>
+<p>A highlight is a flag on the message or block, as upstream Nostr highlights work. <b>Miky and Katerina see</b> a coloured flag on her message, and nothing in the project. <b>An outside company gets</b> a flag it can show. <b>What could go wrong:</b> nothing can be questioned, refined or closed; a decision has no “decided by”; one insight from three messages is three flags.</p>
+</div>
+<div class="opt">
+<h3>B · Do less: text in the project’s description</h3>
+<p>The Overview keeps sections for what we learned, decided and worry about, as our Progress and Decided lines do today. <b>What could go wrong:</b> no app or agent can list, filter or confirm one entry; each edit rewrites the whole description; what is said in Peek or Leaf never reaches it.</p>
+</div>
+<div class="opt rec">
+<h3>C · Each item is its own file of a shared type <span class="tag">Miky’s answer</span></h3>
+<p>Three types Estiva curates in public, like Issue: <b>Insight</b> (what we learned), <b>Journal entry</b> (what we decided or what happened: kind Decision or Update, with “decided by” kept apart from who wrote it) and <b>Risk</b> (what needs our oversight: kind Concern or Question). Each has a title, a summary, details, its sources, its home, a status and a conversation. Companies add properties and statuses on top. Marking a Peek message or a Leaf block makes one; in Leaf any block can be marked, tables included, and draws with a border. Peek and Leaf suggest one as you write. Peek’s highlight types fold in: Insight → Insight; Conclusion → Journal entry; Concern, Question → Risk; Summary is dropped, because every file has its own summary. <b>What could go wrong:</b> three new shared types are hard to change once outside apps use them.</p>
+</div>
+<div class="opt">
+<h3>D · Template databases each company reshapes</h3>
+<p>Estiva ships the three as starting databases a company copies and changes freely. <b>What could go wrong:</b> two companies’ Risks no longer mean the same thing, so an outside app or agent cannot rely on them; and people’s databases come only with the Notion-like app.</p>
+</div>
+
+<h3>The statuses: a shared start, each type’s own end</h3>
+<figure>
+<svg viewBox="0 0 720 272"xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Each type's status stages: a shared Proposed or Rejected, then its own</title>
+<rect class="gate" x="110" y="10" width="200" height="232" rx="10"/>
+<text class="ta" x="124" y="30">SHARED START</text>
+<text class="ts" x="400" y="30">EACH TYPE’S OWN</text>
+<!-- rows -->
+<g>
+<text class="t b" x="10" y="68">Insight</text>
+<rect class="file" x="124" y="48" width="84" height="30" rx="6"/><text class="t" x="134" y="68">Proposed</text>
+<rect class="file" x="220" y="48" width="78" height="30" rx="6"/><text class="ts" x="230" y="68">Rejected</text>
+<path class="arrow" d="M208 63 L216 63"/>
+<rect class="team" x="370" y="48" width="96" height="30" rx="6"/><text class="t" x="382" y="68">Accepted</text>
+<rect class="file" x="510" y="48" width="96" height="30" rx="6"/><text class="t" x="522" y="68">Outdated</text>
+<path class="arrow" d="M310 63 L364 63"/><path class="head" d="M368 63 l-8 -4 v8 z"/>
+<path class="arrow" d="M466 63 L504 63"/><path class="head" d="M508 63 l-8 -4 v8 z"/>
+</g>
+<g>
+<text class="t b" x="10" y="128">Journal entry</text>
+<rect class="file" x="124" y="108" width="84" height="30" rx="6"/><text class="t" x="134" y="128">Proposed</text>
+<rect class="file" x="220" y="108" width="78" height="30" rx="6"/><text class="ts" x="230" y="128">Rejected</text>
+<path class="arrow" d="M208 123 L216 123"/>
+<rect class="team" x="370" y="108" width="96" height="30" rx="6"/><text class="t" x="382" y="128">Accepted</text>
+<rect class="file" x="510" y="108" width="106" height="30" rx="6"/><text class="t" x="520" y="128">Superseded</text>
+<path class="arrow" d="M310 123 L364 123"/><path class="head" d="M368 123 l-8 -4 v8 z"/>
+<path class="arrow" d="M466 123 L504 123"/><path class="head" d="M508 123 l-8 -4 v8 z"/>
+</g>
+<g>
+<text class="t b" x="10" y="188">Risk</text>
+<rect class="file" x="124" y="168" width="84" height="30" rx="6"/><text class="t" x="134" y="188">Proposed</text>
+<rect class="file" x="220" y="168" width="78" height="30" rx="6"/><text class="ts" x="230" y="188">Rejected</text>
+<path class="arrow" d="M208 183 L216 183"/>
+<rect class="team" x="370" y="168" width="96" height="30" rx="6"/><text class="t" x="390" y="188">Open</text>
+<rect class="file" x="510" y="168" width="96" height="30" rx="6"/><text class="t" x="522" y="188">Resolved</text>
+<path class="arrow" d="M310 183 L364 183"/><path class="head" d="M368 183 l-8 -4 v8 z"/>
+<path class="arrow" d="M466 183 L504 183"/><path class="head" d="M508 183 l-8 -4 v8 z"/>
+</g>
+<path class="arrowa dash" d="M606 183 C 680 183, 690 110, 620 100"/><path class="heada" d="M616 99 l9 -3 l-1 9 z"/>
+<text class="ta" x="700" y="262" text-anchor="end">a resolved Risk often leads to a Journal entry or an Insight</text>
+</svg>
+<figcaption><b>Stages, not names.</b> These are what each status means; each company names its own statuses under them, as it does for any type. Confirming is moving from Proposed to the next stage.</figcaption>
+</figure>
+<p class="small">Turned down: one status set for all three (Proposed, Accepted, Rejected, Miky’s first draft), because an Insight goes out of date, a decision is replaced and a risk is resolved, and one set cannot tell those apart; and two status fields, one for triage and one for the item’s life, because they drift apart.</p>
+
+<h2>2 · Where an item lives</h2>
+<figure>
+<svg viewBox="0 0 720 270" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>An item lives on a task, else a project, else an Initiative, and each level shows what is below it</title>
+<rect class="gate" x="200" y="12" width="360" height="56" rx="10"/>
+<text class="t b" x="214" y="36">Initiative</text>
+<text class="ts" x="214" y="56">today’s topic; the name waits on Katerina</text>
+<rect class="file" x="452" y="18" width="98" height="24" rx="12"/><text class="ts" x="463" y="35">Journal entry</text>
+<rect class="team" x="40" y="104" width="280" height="56" rx="10"/>
+<text class="t b" x="54" y="128">Project · Sharing</text>
+<rect class="team" x="400" y="104" width="280" height="56" rx="10"/>
+<text class="t b" x="414" y="128">Project · Teams</text>
+<rect class="file" x="592" y="116" width="50" height="26" rx="13"/><text class="ts" x="603" y="134">Risk</text>
+<rect class="file" x="40" y="196" width="170" height="56" rx="10"/>
+<text class="t b" x="52" y="220">Task · share dialog</text>
+<rect class="file" x="128" y="226" width="62" height="22" rx="11"/><text class="ts" x="136" y="241">Insight</text>
+<rect class="file" x="230" y="196" width="130" height="56" rx="10"/>
+<text class="t b" x="242" y="220">Task · links</text>
+<rect class="file" x="440" y="196" width="160" height="56" rx="10"/>
+<text class="t b" x="452" y="220">Task · roster</text>
+<path class="arrow" d="M180 104 L300 70"/><path class="arrow" d="M540 104 L420 70"/>
+<path class="arrow" d="M125 196 L150 162"/><path class="arrow" d="M295 196 L240 162"/><path class="arrow" d="M520 196 L540 162"/>
+<text class="ts" x="54" y="150">shows its own and its tasks’</text>
+<text class="ts" x="414" y="150">a risk no task fits</text>
+<text class="ts" x="318" y="94">shows everything below it</text>
+<text class="ta" x="570" y="35">← no project yet</text>
+</svg>
+<figcaption><b>One home, rolled up.</b> Katerina’s insight about the share dialog lives on that task; the project and the Initiative show it too. A risk no task fits lives on its project; a decision made before any project exists lives on the Initiative. The home can be changed later, as an issue moves between projects.</figcaption>
+</figure>
+<ul>
+  <li><b>Miky’s answer:</b> as specific as possible: a task, else the project, else the Initiative. Choosing the home is secondary: an app or agent suggests it, and “Mark as highlight” may name a task, a project or an Initiative.</li>
+  <li><b>Turned down:</b> several homes per item. The roll-up already shows a task’s items on its project, so a second home only shows them twice, and every app would need rules for whose readers see it.</li>
+  <li><b>What could go wrong:</b> an item on a task some people cannot read stays hidden from them on the project too; a moved item’s conversation stays where it was first filed, as a moved issue’s does.</li>
+</ul>
+
+<h2>3 · Who marks and who confirms</h2>
+<ul>
+  <li><b>Miky’s answer:</b> anyone who can read a message or a block can mark it or unmark it, other people’s included. “Katerina is shy to mark it, I will do it for her.” Anyone can confirm a Proposed item, a “flexible system”: triage is the team’s job, so once Katerina confirms one, it is gone from Miky’s triage too.</li>
+  <li><b>Added by Claude, not objected to:</b> an agent never confirms its own suggestion. What an agent proposes waits for a person.</li>
+  <li><b>Turned down:</b> only the author marks (Katerina’s insight would stay unmarked); only the person who decided confirms a Journal entry (it stalls when they are away, and the entry already says who decided).</li>
+  <li><b>What could go wrong:</b> a mark on someone else’s words is visible to the team; the item’s history says who made it. Unreviewed suggestions pile up unless the tab keeps them readable.</li>
+</ul>
+
+<h2>4 · How intelligence reaches you</h2>
+<ul>
+  <li><b>Miky’s answer:</b> “Intelligence is working for you async and it doesn’t try to steal your attention.” What an app or agent finds lands in its home, and you look when you go there. Only a message that mentions you reaches your Desk, exactly as a person’s does. Ship Home’s list of projects shows which have something new, with the Activity indicator’s rules: blue for something to read, orange for something to know, no counts.</li>
+  <li><b>Turned down:</b> a separate intelligence inbox or notification stream. It competes with people for attention and grows with every app and agent added.</li>
+  <li><b>What could go wrong:</b> a Proposed item nobody looks at stays unseen; how a tab or a stale Risk invites review without notifying anyone is shaped with the build.</li>
+</ul>
+
+<h2>Trade-offs</h2>
+<div class="tablewrap"><table>
+<tr><th>Option</th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td>1A Mark on source</td><td>a flag on a message or block</td><td>a coloured flag, nothing in the project</td><td>a flag to show</td><td>low</td><td>low</td></tr>
+<tr><td>1B Text in description</td><td>none new</td><td>longer Overviews</td><td>nothing to read</td><td>low</td><td>lowest</td></tr>
+<tr><td>1C Own file, shared type ✓</td><td>three shared types, each a file</td><td>Insights, Journal, Risks tabs; marks that make items</td><td>reads and writes the same three types</td><td>high: one-way once used</td><td>high</td></tr>
+<tr><td>1D Template databases</td><td>people’s databases</td><td>each company’s own shape</td><td>cannot rely on meaning</td><td>medium</td><td>waits on the Notion-like app</td></tr>
+<tr><td>2 One home, rolled up ✓</td><td>one home field</td><td>an item where it fits, shown above</td><td>same as an issue’s project</td><td>low</td><td>medium (roll-up reads)</td></tr>
+<tr><td>2 Several homes</td><td>a list of homes</td><td>the same item twice</td><td>rules for whose readers see it</td><td>medium</td><td>medium</td></tr>
+<tr><td>3 Anyone marks and confirms ✓</td><td>no new permission</td><td>anyone helps triage</td><td>simple rule</td><td>low</td><td>low</td></tr>
+<tr><td>4 Lands in its home ✓</td><td>no new notification</td><td>quiet; new shows on Ship Home</td><td>agents follow people’s rules</td><td>low</td><td>low</td></tr>
+<tr><td>4 Intelligence inbox</td><td>a stream per person</td><td>another inbox</td><td>each app pushes its own</td><td>medium</td><td>medium</td></tr>
+</table></div>
+
+<h2>How others do it</h2>
+<ul>
+  <li><b>Upstream Nostr highlights</b> are a mark pointing at the text it quotes: option A. Fine for reading notes; nothing to confirm or close.</li>
+  <li><b>Notion</b> gives teams decision logs and risk registers as template databases each team reshapes: option D. Their meaning differs per workspace, which is fine inside one vendor and breaks across apps on an open protocol.</li>
+  <li><b>Linear</b> keeps decisions and updates as project updates inside its own app; no other app can read or add one.</li>
+  <li><b>Today’s SaaS AI</b> keeps its memory private to its vendor and sends digests and notifications of its own: the attention model Miky turned down.</li>
+</ul>
+
+<h2>The Ship project, for context (not a record)</h2>
+<p>Miky’s lean for the build: a Ship project has five tabs, <b>Overview · Issues · Insights · Journal · Risks</b>. The tab names are a screen call that goes on the build issue as a Decided line, not a record.</p>
+<div class="tablewrap"><table>
+<tr><th>Tab</th><th>What it is</th><th>Done once, by anyone</th><th>Done by each person</th></tr>
+<tr><td>Overview</td><td>what the project is, for people to read: the PRD and nothing else</td><td>—</td><td>—</td></tr>
+<tr><td>Issues</td><td>building progress</td><td>—</td><td>—</td></tr>
+<tr><td>Insights</td><td>what we learned</td><td>triage the Proposed ones, add details</td><td>see the new confirmed ones</td></tr>
+<tr><td>Journal</td><td>what we decided and what happened, as a timeline</td><td>nothing: it is a record</td><td>see what is new since your last visit</td></tr>
+<tr><td>Risks</td><td>what needs our oversight</td><td>review the open ones</td><td>see new risks as they emerge</td></tr>
+</table></div>
+<p class="small">Why Journal and not Log: in software, “log” means machine output nobody reads (Miky, 13 Nov). A Journal entry’s kind is Decision or Update.</p>
+
+<h2>Recommendation</h2>
+<p class="pick">Take Miky’s answers as the four records: <b>C</b>, each item its own file of a shared type, with a shared start and each type’s own end; <b>one home, rolled up</b>; <b>anyone marks and confirms</b>, and no agent confirms itself; <b>intelligence lands in its home</b> and reaches a person only by naming them. The reason is the protocol and the person: a shared type is what lets an outside company’s app and agent read and add to the same memory, and a quiet, home-first model keeps people’s attention for people.</p>
+
+<h2>Checked</h2>
+<ul>
+  <li>Peek’s code holds five highlight types, Insight, Concern, Conclusion, Question and Summary, and no screen offers them (Peek on main, 13 Nov). There is no “Update” type in Peek; Update is a kind of Journal entry.</li>
+  <li>The Accepted rule on resolving threads (28 Oct) offers no highlights until their shape is decided “together with what reads them”. These records answer that; they do not replace it.</li>
+  <li>The Accepted rules on types (26 and 30 Oct): one schema shape in an app’s listing or a person’s database, app types first; Estiva’s public directory of shared types; every new type starts with one named record; each company names its own statuses under shared stages.</li>
+  <li>Today every type shares one set of four stages (open, started, done, dropped); these three types bring their own, so that set becomes per type.</li>
+  <li>Accepted rules already cover a file’s summary as its own field, Leaf writing any file’s shared text, one conversation in every app, a file made under another being read by its readers, and an agent’s profile naming its owner.</li>
+  <li>Not checked: how Notion, Linear and others name these features today; the lines above are what each model does, not product claims.</li>
+</ul>
+<h3>What your merge accepts that you did not say in these words</h3>
+<ul>
+  <li><b>An agent never confirms its own suggestion.</b> Claude added it on the Leaf page; you did not object.</li>
+  <li><b>The fields</b> beyond title, summary, details and conversation: sources, home, status, a Journal entry’s kind and “decided by”, and a Risk’s kind (Concern or Question), from the page’s table, which you commented on without changing.</li>
+  <li><b>“Initiative”</b> stands for whatever today’s topics end up being called.</li>
+</ul>
+
+<h2>Parked and still open</h2>
+<ul>
+  <li><b>Loops</b>, intelligence an app brings that runs on its own: not in the first version, so no record (Miky). When one may mention someone, and how often, waits with them.</li>
+  <li><b>What intelligence costs</b>, and who pays: much later.</li>
+  <li><b>A highlight from a private DM</b> into a project the team reads: brainstormed again with private teams and notes.</li>
+  <li><b>The name Initiatives</b>, waiting on Katerina’s look at the navigation prototype.</li>
+  <li><b>Whether a person’s own mark starts at Proposed</b> or is already confirmed, and <b>where an item lives that fits no task, project or Initiative</b>: shaped with the build.</li>
+  <li><b>Order of work:</b> highlights come after the Activity indicator, as Miky set on 10 November.</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="small muted">Records: what-a-project-learns-decides-and-worries-about-are-insights-journal-entries-and-risks, an-insight-journal-entry-or-risk-lives-on-the-most-specific-place-it-fits, anyone-who-can-read-a-message-or-block-marks-it-and-anyone-confirms-a-proposed-item, intelligence-works-in-the-background-and-reaches-you-only-by-naming-you. Related: anyone-who-may-comment-resolves-or-reopens-a-thread-and-the-newest-counts, a-files-type-is-a-shared-meaning-any-app-extends, estiva-curates-shared-types-in-a-public-directory, an-apps-listing-or-a-persons-database-defines-a-type, osnovas-base-types-keep-their-records-and-every-new-type-starts-named, each-company-defines-its-own-statuses, a-companys-statuses-are-its-own-layer-of-a-types-properties, a-files-summary-is-its-own-field, a-card-changes-what-a-files-app-shares, a-conversation-is-one-shared-thing-and-only-its-colours-are-the-apps, what-belongs-to-a-file-is-stored-with-it, an-agent-signs-for-an-app-only-by-an-admin-grant, an-agents-profile-says-whose-it-is, a-team-has-members-and-followers-and-a-place-is-followed-at-a-level, at-important-what-names-you-on-a-listed-file-lights-the-topic. Peek <code>src/data/topicData.ts</code> HIGHLIGHT_META; SPEC §7.4 stages; RFC 0.5 on highlights; upstream highlights are NIP-84, kind 9802. Leaf page 30842:b38fd268…:e93f6918-57ff-42dd-b46c-be2c4b293bb8; Universal agent project 08855608.</p>
+
+</body>
+</html>
