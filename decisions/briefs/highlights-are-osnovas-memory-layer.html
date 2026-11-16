@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Osnova's memory layer</title>
+<style>
+:root {
+  --bg: #fbfaf7; --ink: #1d1d1f; --muted: #5d5d66; --line: #8e8e98; --rule: #dcdad3;
+  --box: #efeee9; --card: #ffffff; --fold: #f3f1ea; --gate: #e6edfb; --team: #eaf4ec;
+  --accent: #2457c5; --warn: #b3401f; --ok: #2a7a46; --chip: #dfe6f6; --pick: #f2f6ff;
+  --warnbg: #fbece6; --okbg: #e8f3ec;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17171a; --ink: #ececef; --muted: #a8a8b2; --line: #74747f; --rule: #34343b;
+    --box: #26262b; --card: #1f1f23; --fold: #222226; --gate: #1d2a45; --team: #1d3324;
+    --accent: #93b2ff; --warn: #ff9e80; --ok: #82d69e; --chip: #2b3553; --pick: #1c2338;
+    --warnbg: #3a221b; --okbg: #1c3024;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17171a; --ink: #ececef; --muted: #a8a8b2; --line: #74747f; --rule: #34343b;
+  --box: #26262b; --card: #1f1f23; --fold: #222226; --gate: #1d2a45; --team: #1d3324;
+  --accent: #93b2ff; --warn: #ff9e80; --ok: #82d69e; --chip: #2b3553; --pick: #1c2338;
+  --warnbg: #3a221b; --okbg: #1c3024;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0 auto; max-width: 760px; padding: 24px 16px 64px;
+  background: var(--bg); color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+h1 { font-size: 28px; line-height: 1.2; margin: 4px 0 4px; }
+h2 { font-size: 20px; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--rule); }
+h3 { font-size: 17px; margin: 22px 0 6px; }
+p, li { max-width: 70ch; }
+ul, ol { padding-left: 20px; }
+li { margin: 3px 0; }
+.kicker { color: var(--muted); font-size: 14px; margin: 0; }
+.question { font-size: 19px; line-height: 1.45; font-weight: 600; }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+.door { background: var(--box); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.note { background: var(--box); border-left: 4px solid var(--line); padding: 10px 14px; border-radius: 6px; }
+.pick { background: var(--pick); border-left: 4px solid var(--accent); padding: 10px 14px; border-radius: 6px; }
+.quote { border-left: 3px solid var(--line); background: var(--fold); padding: 8px 12px; border-radius: 4px; font-size: 15px; }
+.opt { border: 1px solid var(--rule); border-radius: 10px; padding: 4px 16px 10px; margin: 14px 0; background: var(--card); }
+.opt h3 { margin-top: 12px; }
+.opt.rec { border-color: var(--accent); }
+.tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); vertical-align: 2px; margin-left: 6px; }
+.tablewrap { overflow-x: auto; margin: 10px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.4; min-width: 560px; }
+th, td { text-align: left; vertical-align: top; padding: 7px 8px; border-bottom: 1px solid var(--rule); }
+th { font-size: 13px; color: var(--muted); font-weight: 600; }
+td:first-child { font-weight: 600; min-width: 7.5em; }
+figure { margin: 18px 0 24px; overflow-x: auto; }
+figure svg { width: 100%; min-width: 600px; height: auto; display: block; }
+figcaption { font-size: 14px; color: var(--muted); margin-top: 6px; }
+figcaption b { color: var(--ink); }
+code { font-size: 13px; background: var(--box); padding: 0 4px; border-radius: 4px; }
+.ask { border: 1px solid var(--accent); border-radius: 10px; padding: 6px 16px 10px; margin: 14px 0; background: var(--card); }
+.ask h3 { margin-top: 10px; }
+.file { fill: var(--card); stroke: var(--line); stroke-width: 1.2; }
+.filed { fill: var(--card); stroke: var(--line); stroke-width: 1.2; stroke-dasharray: 5 3; }
+.okc { fill: var(--okbg); stroke: var(--ok); stroke-width: 1.3; }
+.badc { fill: var(--warnbg); stroke: var(--warn); stroke-width: 1.3; }
+.badd { fill: var(--card); stroke: var(--warn); stroke-width: 1.3; stroke-dasharray: 5 3; }
+.gate { fill: var(--gate); stroke: var(--accent); stroke-width: 1.5; }
+.team { fill: var(--team); stroke: var(--ok); stroke-width: 1.3; }
+.fold { fill: var(--fold); stroke: var(--line); stroke-width: 1.2; }
+.strip { fill: var(--chip); stroke: none; }
+.t { fill: var(--ink); font-size: 13px; }
+.b { font-weight: 700; }
+.ts { fill: var(--muted); font-size: 12px; }
+.tl { fill: var(--accent); font-size: 12px; }
+.ta { fill: var(--accent); font-size: 12px; font-weight: 600; }
+.tw { fill: var(--warn); font-size: 12px; font-weight: 600; }
+.tok { fill: var(--ok); font-size: 12px; font-weight: 600; }
+.arrow { fill: none; stroke: var(--ink); stroke-width: 1.3; }
+.arrowa { fill: none; stroke: var(--accent); stroke-width: 1.3; }
+.arrowx { fill: none; stroke: var(--warn); stroke-width: 1.3; stroke-dasharray: 4 3; }
+.head { fill: var(--ink); }
+.heada { fill: var(--accent); }
+.headx { fill: var(--warn); }
+</style>
+</head>
+<body>
+
+<p class="kicker">Decision brief · brainstorm · 16 November 2026 · for Miky · project being shaped: Insights, Journal and Risks. Trade-offs first; the questions, each with a recommendation, at the end. <b>Answered the same day:</b> Miky took all five recommendations (“Yes, all five”), in the records an-item-can-be-about-any-file-of-any-app-and-every-app-that-opens-that-file-shows-it and every-app-relies-on-an-items-stage-and-core-fields-and-each-company-adds-its-own-on-top.</p>
+<h1>Osnova’s memory layer</h1>
+
+<p class="question">Are Insights, Journal entries and Risks a feature of Ship’s projects, or the memory layer of Osnova itself, which any app’s file can have, marked from any conversation or block and read by every app and agent? And if they are the memory layer, what does every app agree on, and what is each company’s own?</p>
+
+<p>What you said today, asked about their statuses:</p>
+<p class="quote">“I think that’s where the discussion about Notion like simple dbs should happen. Basically, I think the protocol should define high level Highlights: Insights, Journal logs, and Risks, but there probably should be some flexibility. This is definitely not just about Ship. If somebody build a HR app and there is two file types: open position and candidate. Those highlights can be related to that. Insights about position, update on position, risk about certain position… I want to make sure that we are treating this as basic stone of Osnova protocol and broader Intelligence layer (the memory layer)”</p>
+
+<h2>Today</h2>
+<p>No app offers Mark yet, and no item is on the relay. The project being shaped prototypes the three as tabs on a Ship project, marked from a Peek message or a Leaf block, from your sketch.</p>
+<p>What is already decided, all by you and all Accepted:</p>
+<ul>
+  <li><b>Three shared types</b>, Insight, Journal entry and Risk, which any app reads and writes as it does an Issue, each item a file of its own (13 Nov). The record is titled “what a <em>project</em> learns, decides and worries about”.</li>
+  <li><b>Statuses: a shared start, each type’s own end</b> (13 Nov): every item starts Proposed or Rejected, then Accepted (a Risk: Open), and ends Outdated, Superseded or Resolved. Each company names its own statuses under them, as for any type. Turned down that day: “template databases each company reshapes”, because two companies’ Risks would no longer mean the same thing.</li>
+  <li><b>An item is filed in one team and is about an issue, else a project, else an Initiative, or is just the team’s</b> (today, merged).</li>
+  <li>An item shows its source as it was marked, and the relay refuses one its readers cannot read; a Journal entry’s decider becomes a member of it; who may accept is each company’s rule, and every item starts at Proposed (all today, merged).</li>
+  <li>Your answer today that apps name the types they open in their own listing is an Accepted record, merged today (estiva-docs#449).</li>
+</ul>
+<p>So the types are already Osnova’s, not Ship’s. What is still Ship-shaped is <b>what an item can be about</b> (only Ship’s three levels) and <b>where its lists show</b> (Ship’s tabs).</p>
+
+<h2>Why it reaches beyond this project</h2>
+<ul>
+  <li><b>It decides what Osnova is for an outside company.</b> A company that builds an HR app either gets a memory on its own positions and candidates for free, or builds its own notes type beside ours, and the company then has two memories no agent reads as one.</li>
+  <li><b>An agent asks one memory, whoever wrote it.</b> “What did we decide about this position?” works the same way as “what did we decide on this project?”, or it does not.</li>
+  <li><b>It answers part of two Accepted records.</b> Today’s “about an issue, else a project, else an Initiative” would become Ship’s case of a general rule. And “some flexibility” asks whether the 13 Nov statuses still hold; this page says they do, with the flexibility as a company’s layer on top.</li>
+  <li><b>A real reason to keep memory out of one app:</b> on 9 September Katerina’s marks were lost, because they lived only in Peek’s old database, which was deleted. They never reached the relay.</li>
+</ul>
+<p class="door"><b>Two-way today, one-way once items exist.</b> Nothing is on the relay yet, so every call here costs nothing to change now. Once items are written, the meaning of the three types is one-way: a shared type changes only compatibly, and a breaking change is a new type (13 Nov record). Per call: widening “about” later is a compatible change, but narrowing it after an HR app has written items about candidates is not. Stage words are written on every status change and stay in every item’s history. A core field can be added later; removing one is a new type.</p>
+
+<h2>The picture: Ship’s tabs, or Osnova’s memory</h2>
+
+<figure>
+<svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Today: items are marked from Peek and Leaf and can be about Ship's issue, project or Initiative only</title>
+<text class="ta" x="10" y="18">TODAY · AS DECIDED AND SHAPED</text>
+<rect class="file" x="10" y="34" width="150" height="40" rx="8"/>
+<text class="t" x="22" y="59">Peek message</text>
+<rect class="file" x="10" y="84" width="150" height="40" rx="8"/>
+<text class="t" x="22" y="109">Leaf block</text>
+<text class="ts" x="166" y="72">Mark</text>
+<path class="arrow" d="M160 79 H192"/><polygon class="head" points="192,74 202,79 192,84"/>
+<rect class="okc" x="204" y="44" width="160" height="74" rx="8"/>
+<text class="t b" x="216" y="66">Insight, Journal</text>
+<text class="t b" x="216" y="84">entry or Risk</text>
+<text class="ts" x="216" y="104">filed in one team</text>
+<text class="ts" x="374" y="72">about</text>
+<path class="arrow" d="M364 79 H410"/><polygon class="head" points="410,74 420,79 410,84"/>
+<rect class="fold" x="422" y="26" width="290" height="124" rx="10"/>
+<text class="ts" x="434" y="42">Ship</text>
+<rect class="file" x="434" y="48" width="266" height="26" rx="6"/>
+<text class="t" x="446" y="66">Initiative</text>
+<rect class="gate" x="434" y="80" width="266" height="30" rx="6"/>
+<text class="t" x="446" y="100">Project: Insights · Journal · Risks</text>
+<rect class="file" x="434" y="116" width="266" height="26" rx="6"/>
+<text class="t" x="446" y="134">Issue</text>
+<rect class="badd" x="10" y="172" width="150" height="36" rx="8"/>
+<text class="t" x="22" y="195">Peek topic</text>
+<rect class="badd" x="170" y="172" width="150" height="36" rx="8"/>
+<text class="t" x="182" y="195">Leaf page</text>
+<rect class="badd" x="330" y="172" width="190" height="36" rx="8"/>
+<text class="t" x="342" y="195">Any other app’s file</text>
+<text class="tw" x="532" y="188">Cannot be what an</text>
+<text class="tw" x="532" y="204">item is about</text>
+<text class="ts" x="10" y="234">An item marked about one of these is only its team’s: it shows in no file of theirs.</text>
+</svg>
+<figcaption><b>Today.</b> The types are Osnova’s, but what an item can be about, and where its lists show, are Ship’s.</figcaption>
+</figure>
+
+<figure>
+<svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>After: any app's file can have Insights, Journal entries and Risks, marked from any conversation or block and read by every app and agent</title>
+<text class="ta" x="10" y="18">AFTER · OSNOVA’S MEMORY LAYER</text>
+<rect class="file" x="10" y="30" width="172" height="96" rx="8"/>
+<text class="t b" x="20" y="50">Ship</text>
+<text class="ts" x="20" y="67">issue, project,</text>
+<text class="ts" x="20" y="83">Initiative</text>
+<rect class="strip" x="14" y="100" width="164" height="20" rx="4"/>
+<text class="tl" x="20" y="115">Insights · Journal · Risks</text>
+<rect class="file" x="186" y="30" width="172" height="96" rx="8"/>
+<text class="t b" x="196" y="50">Peek</text>
+<text class="ts" x="196" y="67">topic</text>
+<rect class="strip" x="190" y="100" width="164" height="20" rx="4"/>
+<text class="tl" x="196" y="115">Insights · Journal · Risks</text>
+<rect class="file" x="362" y="30" width="172" height="96" rx="8"/>
+<text class="t b" x="372" y="50">Leaf</text>
+<text class="ts" x="372" y="67">page</text>
+<rect class="strip" x="366" y="100" width="164" height="20" rx="4"/>
+<text class="tl" x="372" y="115">Insights · Journal · Risks</text>
+<rect class="filed" x="538" y="30" width="172" height="96" rx="8"/>
+<text class="t b" x="548" y="50">HR app</text>
+<text class="ts" x="548" y="67">your hypothetical:</text>
+<text class="ts" x="548" y="83">open position, candidate</text>
+<rect class="strip" x="542" y="100" width="164" height="20" rx="4"/>
+<text class="tl" x="548" y="115">Insights · Journal · Risks</text>
+<path class="arrowa" d="M96 180 V136"/><polygon class="heada" points="91,136 96,126 101,136"/>
+<path class="arrowa" d="M272 180 V136"/><polygon class="heada" points="267,136 272,126 277,136"/>
+<path class="arrowa" d="M448 180 V136"/><polygon class="heada" points="443,136 448,126 453,136"/>
+<path class="arrowa" d="M624 180 V136"/><polygon class="heada" points="619,136 624,126 629,136"/>
+<text class="ta" x="102" y="160">about</text>
+<rect class="gate" x="10" y="180" width="700" height="64" rx="10"/>
+<text class="t b" x="24" y="205">Osnova’s memory: Insights, Journal entries, Risks</text>
+<text class="ts" x="24" y="226">each filed in one team, about any file of any app, kept on the company’s relay</text>
+<path class="arrow" d="M180 276 V254"/><polygon class="head" points="175,254 180,244 185,254"/>
+<path class="arrow" d="M540 244 V266"/><polygon class="head" points="535,266 540,276 545,266"/>
+<rect class="file" x="10" y="276" width="340" height="72" rx="8"/>
+<text class="t b" x="22" y="298">Marked from any conversation or block</text>
+<text class="ts" x="22" y="318">a Peek message, a Leaf or Ship block,</text>
+<text class="ts" x="22" y="336">a message in any app’s conversation</text>
+<rect class="file" x="370" y="276" width="340" height="72" rx="8"/>
+<text class="t b" x="382" y="298">Read by every app and agent</text>
+<text class="ts" x="382" y="318">Claude, a company’s own agent, any app:</text>
+<text class="ts" x="382" y="336">one memory, whichever app wrote it</text>
+</svg>
+<figcaption><b>After.</b> The same three types, the same filing in a team. What changes: an item can be about any file, and each app shows the lists of its own files. The HR app is your hypothetical example, drawn dashed.</figcaption>
+</figure>
+
+<h2>a · What an item can be about</h2>
+<p>Your real examples, from the Leaf page “Insights, Journal and Risks: real examples”: the Universal Navigation thread in Peek, Katerina’s 18 August “one search, an All topics switch”, then your 8 September “ditch that idea completely”, is listed there as “a design thread with no trail”. And your 13 November “This is correct.” on a block of the Leaf page “Highlights and the intelligence layer” decided how Peek’s highlight types fold in. Neither is about an issue, a project or an Initiative; both are about a topic or a page.</p>
+
+<figure>
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Option A: each app says how its own files roll up; option B: only Ship's levels</title>
+<text class="t b" x="10" y="40">A · Any file</text>
+<text class="ts" x="10" y="58">each app says how</text>
+<text class="ts" x="10" y="74">its files roll up</text>
+<text class="ts" x="150" y="20">Ship</text>
+<rect class="file" x="150" y="28" width="170" height="28" rx="6"/>
+<text class="t" x="162" y="47">Initiative</text>
+<path class="arrow" d="M235 72 V62"/><polygon class="head" points="230,64 235,56 240,64"/>
+<rect class="file" x="150" y="72" width="170" height="28" rx="6"/>
+<text class="t" x="162" y="91">Project</text>
+<path class="arrow" d="M235 116 V106"/><polygon class="head" points="230,108 235,100 240,108"/>
+<rect class="file" x="150" y="116" width="170" height="28" rx="6"/>
+<text class="t" x="162" y="135">Issue</text>
+<rect class="okc" x="150" y="152" width="170" height="26" rx="6"/>
+<text class="tok" x="160" y="170">Insight about the issue</text>
+<text class="ts" x="340" y="20">HR app · your hypothetical</text>
+<rect class="filed" x="340" y="72" width="170" height="28" rx="6"/>
+<text class="t" x="352" y="91">Open position</text>
+<path class="arrow" d="M425 116 V106"/><polygon class="head" points="420,108 425,100 430,108"/>
+<rect class="filed" x="340" y="116" width="170" height="28" rx="6"/>
+<text class="t" x="352" y="135">Candidate</text>
+<rect class="okc" x="340" y="152" width="170" height="26" rx="6"/>
+<text class="tok" x="350" y="170">Risk about a candidate</text>
+<text class="ts" x="530" y="20">Leaf</text>
+<text class="ts" x="530" y="91">no roll-up</text>
+<rect class="file" x="530" y="116" width="180" height="28" rx="6"/>
+<text class="t" x="542" y="135">Page</text>
+<rect class="okc" x="530" y="152" width="180" height="26" rx="6"/>
+<text class="tok" x="540" y="170">Decision about the page</text>
+<line x1="10" y1="196" x2="710" y2="196" stroke="var(--rule)" stroke-width="1"/>
+<text class="t b" x="10" y="226">B · Ship’s levels</text>
+<text class="ts" x="10" y="244">only (today)</text>
+<rect class="okc" x="150" y="210" width="170" height="44" rx="6"/>
+<text class="t" x="162" y="228">Issue → project</text>
+<text class="t" x="162" y="246">→ Initiative</text>
+<rect class="badc" x="340" y="210" width="170" height="44" rx="6"/>
+<text class="tw" x="352" y="228">Candidate: cannot</text>
+<text class="tw" x="352" y="246">be what it is about</text>
+<rect class="badc" x="530" y="210" width="180" height="44" rx="6"/>
+<text class="tw" x="542" y="228">Page: cannot be</text>
+<text class="tw" x="542" y="246">what it is about</text>
+<text class="ts" x="150" y="282">Under B, an item marked on a candidate or a page is only its team’s; it shows on no file.</text>
+</svg>
+<figcaption><b>Arrows up</b> mean “shows here too”: an item about an issue is also listed on its project and Initiative; under A, a Risk about a candidate is also listed on the position, if the HR app says candidates roll up to positions. Candidates rolling up is my extension of your example.</figcaption>
+</figure>
+
+<div class="opt rec">
+<h3>A · Any file of any app <span class="tag">recommended</span></h3>
+<p><b>What you see:</b> in Ship, nothing changes: issue, then project, then Initiative is Ship’s own roll-up. In Peek, your 8 September decision becomes a Journal entry about the Universal Navigation topic and shows in that topic, beside Katerina’s insight, so the thread has its trail where it happened. In the HR app (your example), an Insight about a position, an Update on it and a Risk about it show on the position.</p>
+<p><b>Outside company:</b> gets a memory on its own files without asking anyone. Its listing says how its files roll up (a candidate’s position, as Ship says an issue’s project).</p>
+<p><b>Locks in:</b> “about” names any file; each app owns its roll-up.</p>
+<p><b>What could go wrong:</b> an item about a file the reading app cannot open (an HR candidate in Ship’s team list) shows as a plain card with its title and a link to the app that opens it; that rests on your answer today on which app opens a type. An app that declares its roll-up wrongly lists items in the wrong place, in its own files only. An item about a file in a later private team names that file to the item’s readers, which is already parked to the private-teams brainstorm. A deleted file leaves its items as only their team’s.</p>
+</div>
+
+<div class="opt">
+<h3>B · Only Ship’s levels, as merged today <span class="tag">do less</span></h3>
+<p><b>What you see:</b> what the project’s prototype draws. Your Universal Navigation decision is about a project you pick, or only its team’s. Your “This is correct.” on the Leaf page is the same.</p>
+<p><b>Outside company:</b> an HR app cannot say “Insight about this position”. It adds its own notes type on positions, or asks Estiva to add a level.</p>
+<p><b>Locks in:</b> little at first: widening later is a compatible change. But apps built meanwhile assume three levels.</p>
+<p><b>What could go wrong:</b> each outside app grows its own memory beside ours, which is the “private memory inside one app” the 13 Nov record set out to avoid, and what lost Katerina’s marks on 9 September.</p>
+</div>
+
+<div class="tablewrap"><table>
+<thead><tr><th>Option</th><th>Protocol shape</th><th>What you and Katerina see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr></thead>
+<tbody>
+<tr><td>A · Any file</td><td>“About” is any file; roll-up is each app’s, in its listing</td><td>Ship as sketched; a topic’s or page’s own items possible</td><td>Memory on its own files, no ask</td><td>Narrowing later is one-way once items name other apps’ files</td><td>Ship: none extra. A roll-up line in each listing; a plain card for files an app cannot open</td></tr>
+<tr><td>B · Ship’s levels</td><td>“About” is an issue, project or Initiative</td><td>As sketched; topics and pages only through a project or the team</td><td>Builds its own notes type, or waits for Estiva</td><td>Widening later is compatible, but outside apps’ own types stay</td><td>Least</td></tr>
+</tbody>
+</table></div>
+
+<h2>b · Statuses: what is shared, what is each company’s</h2>
+<p>Your “some flexibility”, and the Notion-like databases, fit the layers already decided for every type: Osnova says what a status means (its stage), an app gives default statuses, a company names its own and adds its own fields, and later a person’s database writes the same shape. The question is whether the three types keep shared stages under that flexibility.</p>
+
+<figure>
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Each type's statuses with their stage words, reused or new, and the four layers of statuses</title>
+<text class="ts" x="110" y="22">Starts</text>
+<text class="ts" x="240" y="22">Then</text>
+<text class="ts" x="370" y="22">Finally</text>
+<text class="t b" x="10" y="58">Insight</text>
+<rect class="file" x="110" y="36" width="100" height="44" rx="6"/>
+<text class="t" x="120" y="54">Proposed</text>
+<text class="ta" x="120" y="72">proposed</text>
+<path class="arrow" d="M210 58 H230"/><polygon class="head" points="230,53 238,58 230,63"/>
+<rect class="file" x="240" y="36" width="110" height="44" rx="6"/>
+<text class="t" x="250" y="54">Accepted</text>
+<text class="ta" x="250" y="72">accepted</text>
+<path class="arrow" d="M350 58 H360"/><polygon class="head" points="360,53 368,58 360,63"/>
+<rect class="file" x="370" y="36" width="120" height="44" rx="6"/>
+<text class="t" x="380" y="54">Outdated</text>
+<text class="ta" x="380" y="72">outdated</text>
+<text class="t b" x="10" y="114">Journal entry</text>
+<rect class="file" x="110" y="92" width="100" height="44" rx="6"/>
+<text class="t" x="120" y="110">Proposed</text>
+<text class="ta" x="120" y="128">proposed</text>
+<path class="arrow" d="M210 114 H230"/><polygon class="head" points="230,109 238,114 230,119"/>
+<rect class="file" x="240" y="92" width="110" height="44" rx="6"/>
+<text class="t" x="250" y="110">Accepted</text>
+<text class="ta" x="250" y="128">accepted</text>
+<path class="arrow" d="M350 114 H360"/><polygon class="head" points="360,109 368,114 360,119"/>
+<rect class="file" x="370" y="92" width="120" height="44" rx="6"/>
+<text class="t" x="380" y="110">Superseded</text>
+<text class="ta" x="380" y="128">superseded</text>
+<text class="t b" x="10" y="170">Risk</text>
+<rect class="file" x="110" y="148" width="100" height="44" rx="6"/>
+<text class="t" x="120" y="166">Proposed</text>
+<text class="ta" x="120" y="184">proposed</text>
+<path class="arrow" d="M210 170 H230"/><polygon class="head" points="230,165 238,170 230,175"/>
+<rect class="badc" x="240" y="148" width="110" height="44" rx="6"/>
+<text class="t" x="250" y="166">Open</text>
+<text class="ta" x="250" y="184">accepted</text>
+<path class="arrow" d="M350 170 H360"/><polygon class="head" points="360,165 368,170 360,175"/>
+<rect class="okc" x="370" y="148" width="120" height="44" rx="6"/>
+<text class="t" x="380" y="166">Resolved</text>
+<text class="tok" x="380" y="184">done</text>
+<text class="t b" x="10" y="226">Any of them</text>
+<rect class="file" x="110" y="204" width="100" height="44" rx="6"/>
+<text class="t" x="120" y="222">Proposed</text>
+<text class="ta" x="120" y="240">proposed</text>
+<path class="arrow" d="M210 226 H230"/><polygon class="head" points="230,221 238,226 230,231"/>
+<rect class="okc" x="240" y="204" width="110" height="44" rx="6"/>
+<text class="t" x="250" y="222">Rejected</text>
+<text class="tok" x="250" y="240">dropped</text>
+<text class="tok" x="10" y="276">green: an existing stage word, same meaning as on an issue</text>
+<text class="ta" x="10" y="292">blue: a new stage word</text>
+<text class="tw" x="390" y="292">red: “Open” here is not an issue’s “open”</text>
+<text class="ta" x="520" y="22">FOUR LAYERS</text>
+<rect class="fold" x="520" y="34" width="190" height="46" rx="6"/>
+<text class="t" x="530" y="54">4 · later: a person’s</text>
+<text class="ts" x="530" y="71">Notion-like database</text>
+<rect class="team" x="520" y="86" width="190" height="46" rx="6"/>
+<text class="t" x="530" y="106">3 · the company’s own</text>
+<text class="ts" x="530" y="123">statuses and fields</text>
+<rect class="file" x="520" y="138" width="190" height="46" rx="6"/>
+<text class="t" x="530" y="158">2 · the app’s defaults</text>
+<text class="ts" x="530" y="175">Ship’s labels above</text>
+<rect class="gate" x="520" y="190" width="190" height="46" rx="6"/>
+<text class="t b" x="530" y="210">1 · Osnova: the stage</text>
+<text class="ts" x="530" y="227">what a status means</text>
+</svg>
+<figcaption><b>Left:</b> the 13 Nov statuses (top line of each box) with the stage word each would carry under the recommended wording (bottom line). <b>Right:</b> the layers every type already has; each one sits over the one below.</figcaption>
+</figure>
+
+<div class="opt rec">
+<h3>A · Shared stages for the three types, each company’s statuses and fields on top <span class="tag">recommended · as Accepted 13 Nov</span></h3>
+<p><b>What you see:</b> Ship shows Proposed, Accepted, Outdated as its defaults. A company may rename Accepted to “Confirmed”, add “Under review” under Proposed, or add a Severity to its Risks, in its own layer; later a person’s database writes the same shape.</p>
+<p><b>Outside company:</b> an HR app keeps its own words, and still knows which of another app’s Insights are accepted. An agent reads “what do we currently believe about this position?” as every item at the accepted stage, whatever it is called.</p>
+<p><b>What could go wrong:</b> a company whose habit has no such stages (say, insights that are never accepted) still meets Proposed first; who may accept is its own rule, so it can accept at once.</p>
+</div>
+
+<div class="opt">
+<h3>B · Each company defines its statuses entirely</h3>
+<p>No shared stages for the three types; each company’s statuses mean what it says. This is the “template databases each company reshapes” you turned down on 13 November; the new fact is your “some flexibility” and the HR example.</p>
+<p><b>What could go wrong:</b> an agent cannot tell a proposed insight from an accepted one in another company’s app, so a suggestion reads as memory. No app can count a project’s open Risks it did not write.</p>
+</div>
+
+<div class="opt">
+<h3>C · No stages at all <span class="tag">do less</span></h3>
+<p>An item has a label or none; whatever is marked is memory. It contradicts today’s record that every item starts at Proposed and the protocol carries its status.</p>
+<p><b>What could go wrong:</b> what an agent suggests in the background lands in memory as fact, with nothing to show nobody accepted it.</p>
+</div>
+
+<div class="tablewrap"><table>
+<thead><tr><th>Option</th><th>Protocol shape</th><th>What you and Katerina see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr></thead>
+<tbody>
+<tr><td>A · Shared stages</td><td>Stages per type, statuses as layers, as for every type</td><td>Ship’s defaults; your words if you rename</td><td>Own words; reads others’ items by stage</td><td>Stage words one-way once written</td><td>The SPEC part already owed</td></tr>
+<tr><td>B · Each company’s own</td><td>Status is a free choice per company</td><td>Same in Ship; other apps’ items unreadable by stage</td><td>Free, but cannot read anyone else’s memory</td><td>Adding stages later meets items written without</td><td>Small</td></tr>
+<tr><td>C · No stages</td><td>No lifecycle on the wire</td><td>No Proposed, no Accepted</td><td>Nothing to rely on</td><td>Against an Accepted record</td><td>Least</td></tr>
+</tbody>
+</table></div>
+
+<h3>The stage words, under A</h3>
+<p>Today every type shares four stages, open, started, done and dropped, and a reader treats any other word as “this app does not say”. Two ways to name the items’ stages:</p>
+<div class="tablewrap"><table>
+<thead><tr><th>Status (13 Nov)</th><th>W1 · reuse where the meaning is the same</th><th>W2 · all new words</th></tr></thead>
+<tbody>
+<tr><td>Proposed</td><td>proposed (new)</td><td>proposed</td></tr>
+<tr><td>Accepted; a Risk’s Open</td><td>accepted (new)</td><td>accepted</td></tr>
+<tr><td>Outdated</td><td>outdated (new)</td><td>outdated</td></tr>
+<tr><td>Superseded</td><td>superseded (new)</td><td>superseded</td></tr>
+<tr><td>Resolved</td><td>done, as an issue’s Done</td><td>resolved</td></tr>
+<tr><td>Rejected</td><td>dropped, as an issue’s Cancelled</td><td>rejected</td></tr>
+</tbody>
+</table></div>
+<ul>
+  <li><b>W1 · reuse</b> <span class="tag">recommended</span>: one meaning, one word. Any app that already counts stages, an outside one included, counts a resolved Risk as finished and a rejected item as dropped without learning anything. Today’s apps read the four new words as “does not say”, which is safe: nothing is miscounted.</li>
+  <li><b>W2 · all new</b>: items never mix with work in any count, but there are two words for “dropped”, and a generic app counts nothing until it learns six.</li>
+  <li><b>Risk’s “Open” in either case:</b> its stage is accepted, not open. On an issue, open means “not started” (Ship’s Todo); if a Risk’s Open carried that stage, every app would count a watched Risk as work nobody has begun. The label “Open” can stay as Ship’s default; labels are the company’s, and Katerina’s look.</li>
+</ul>
+
+<h2>c · Which app shows an item’s lists</h2>
+
+<figure>
+<svg viewBox="0 0 720 230" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Option A: each app shows the lists of its own files; option B: one memory app holds every list</title>
+<text class="t b" x="10" y="20">A · Every app, on its own files</text>
+<rect class="file" x="10" y="32" width="172" height="64" rx="8"/>
+<text class="t" x="20" y="52">Ship · a project</text>
+<rect class="strip" x="14" y="68" width="164" height="22" rx="4"/>
+<text class="tl" x="20" y="84">Insights · Journal · Risks</text>
+<rect class="file" x="186" y="32" width="172" height="64" rx="8"/>
+<text class="t" x="196" y="52">Peek · a topic</text>
+<rect class="strip" x="190" y="68" width="164" height="22" rx="4"/>
+<text class="tl" x="196" y="84">Insights · Journal · Risks</text>
+<rect class="file" x="362" y="32" width="172" height="64" rx="8"/>
+<text class="t" x="372" y="52">Leaf · a page</text>
+<rect class="strip" x="366" y="68" width="164" height="22" rx="4"/>
+<text class="tl" x="372" y="84">Insights · Journal · Risks</text>
+<rect class="filed" x="538" y="32" width="172" height="64" rx="8"/>
+<text class="t" x="548" y="52">HR app · a position</text>
+<rect class="strip" x="542" y="68" width="164" height="22" rx="4"/>
+<text class="tl" x="548" y="84">Insights · Journal · Risks</text>
+<line x1="10" y1="114" x2="710" y2="114" stroke="var(--rule)" stroke-width="1"/>
+<text class="t b" x="10" y="138">B · One memory app</text>
+<rect class="gate" x="10" y="150" width="300" height="70" rx="8"/>
+<text class="t b" x="22" y="172">Memory app (Ship, today)</text>
+<text class="ts" x="22" y="192">every item, by team and by file</text>
+<text class="ts" x="22" y="208">Insights · Journal · Risks</text>
+<rect class="file" x="400" y="134" width="150" height="30" rx="6"/>
+<text class="t" x="412" y="154">Peek · a topic</text>
+<rect class="file" x="400" y="170" width="150" height="30" rx="6"/>
+<text class="t" x="412" y="190">Leaf · a page</text>
+<rect class="filed" x="560" y="134" width="150" height="66" rx="6"/>
+<text class="t" x="572" y="154">HR app</text>
+<text class="ts" x="572" y="172">· a position</text>
+<path class="arrowx" d="M400 168 H322"/><polygon class="headx" points="322,163 312,168 322,173"/>
+<text class="ts" x="400" y="218">Mark, then “see it in the memory app”</text>
+</svg>
+<figcaption>Under both, an item is listed by its team, and opens in whichever app names its type in its listing (your answer today).</figcaption>
+</figure>
+
+<div class="opt rec">
+<h3>A · Every app that opens the “about” file shows its lists <span class="tag">recommended</span></h3>
+<p><b>What you see:</b> Ship shows a project’s Insights, Journal and Risks, as sketched. Peek can show a topic’s, Leaf a page’s, the HR app a position’s. The memory is where the work is, which is what the 13 Nov record said of intelligence: what it finds lands in its home, and you see it when you go there.</p>
+<p><b>Outside company:</b> draws three lists on its own files, from the same items.</p>
+<p><b>What could go wrong:</b> every open of a file reads its items too; that load is not measured on your workspace. Apps draw the lists differently. An app that never draws them leaves its files’ items in the team’s list only.</p>
+</div>
+
+<div class="opt">
+<h3>B · One memory app <span class="tag">do less</span></h3>
+<p><b>What you see:</b> Ship holds every list; Peek and Leaf offer Mark and a link into Ship.</p>
+<p><b>Outside company:</b> its people leave the HR app to read what was learned about a position, in an app it did not build, or it builds its own lists anyway.</p>
+<p><b>What could go wrong:</b> Ship becomes required for any company that wants memory, and “not just about Ship” is undone by the screens.</p>
+</div>
+
+<div class="tablewrap"><table>
+<thead><tr><th>Option</th><th>Protocol shape</th><th>What you and Katerina see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr></thead>
+<tbody>
+<tr><td>A · Every app</td><td>Any app reads the items about its files</td><td>Lists where the work is</td><td>Lists on its own files</td><td>Two-way: screens only</td><td>Lists per app, a read per file opened</td></tr>
+<tr><td>B · One app</td><td>Same wire; one app draws</td><td>Lists in Ship only</td><td>Depends on Ship</td><td>Two-way: screens only</td><td>Least</td></tr>
+</tbody>
+</table></div>
+
+<h2>d · Fields every app can rely on</h2>
+
+<figure>
+<svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>An item's core fields, which a smaller core would hand to each company, and a company's own fields</title>
+<rect class="fold" x="10" y="10" width="460" height="200" rx="10"/>
+<text class="t b" x="24" y="32">An item</text>
+<text class="ta" x="100" y="32">core: every app relies on it</text>
+<rect class="file" x="24" y="44" width="140" height="28" rx="6"/>
+<text class="t" x="34" y="63">Title</text>
+<rect class="badd" x="170" y="44" width="140" height="28" rx="6"/>
+<text class="t" x="180" y="63">Summary</text>
+<rect class="badd" x="316" y="44" width="140" height="28" rx="6"/>
+<text class="t" x="326" y="63">Details</text>
+<rect class="file" x="24" y="78" width="140" height="28" rx="6"/>
+<text class="t" x="34" y="97">Sources</text>
+<rect class="file" x="170" y="78" width="140" height="28" rx="6"/>
+<text class="t" x="180" y="97">Team</text>
+<rect class="file" x="316" y="78" width="140" height="28" rx="6"/>
+<text class="t" x="326" y="97">About</text>
+<rect class="file" x="24" y="112" width="140" height="28" rx="6"/>
+<text class="t" x="34" y="131">Status + stage</text>
+<rect class="badd" x="170" y="112" width="140" height="28" rx="6"/>
+<text class="t" x="180" y="131">Kind of entry</text>
+<rect class="badd" x="316" y="112" width="140" height="28" rx="6"/>
+<text class="t" x="326" y="131">Decided by</text>
+<rect class="team" x="24" y="156" width="432" height="42" rx="6"/>
+<text class="t" x="36" y="175">A company’s own: a Severity on a Risk, anything else</text>
+<text class="ts" x="36" y="191">in its layer; later in a person’s database</text>
+<rect class="file" x="490" y="44" width="40" height="22" rx="5"/>
+<text class="t" x="540" y="54">core in A and in B</text>
+<rect class="badd" x="490" y="84" width="40" height="22" rx="5"/>
+<text class="t" x="540" y="94">core in A; in B,</text>
+<text class="t" x="540" y="110">each company’s own</text>
+<rect class="team" x="490" y="140" width="40" height="22" rx="5"/>
+<text class="t" x="540" y="150">a company’s own,</text>
+<text class="t" x="540" y="166">in either</text>
+</svg>
+<figcaption>Kind of entry is Decision or Update for a Journal entry, Concern or Question for a Risk. Decided by is a Journal entry’s.</figcaption>
+</figure>
+
+<div class="opt rec">
+<h3>A · The 13 Nov list is the core <span class="tag">recommended</span></h3>
+<p>Title, summary, details, sources, team, about, status with its stage, kind of entry, and decided by. Companies and apps add their own on top, as the HR app adds a Salary band to a position in the types record.</p>
+<p><b>Outside company:</b> any app can show who decided, can tell a decision from an update, and can ask the decider: today’s record makes the decider a member of the entry, in every app.</p>
+</div>
+<div class="opt">
+<h3>B · A smaller core <span class="tag">do less</span></h3>
+<p>Title, sources, team, about and status only; summary, details, kind and decided by become each company’s.</p>
+<p><b>What could go wrong:</b> an agent cannot tell a decision from an update across apps, and “who decided” is a field some apps have and others do not, against today’s decider record.</p>
+</div>
+<p><b>One odd case, under either:</b> the 13 Nov record says an item has one or more sources. Your real Journal Updates (“Activity indicator completed”, 16 Nov) come from a project’s status, not a message or a block. Lean: an item typed by hand may have no source; marked ones always have one.</p>
+
+<div class="tablewrap"><table>
+<thead><tr><th>Option</th><th>Protocol shape</th><th>What you and Katerina see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr></thead>
+<tbody>
+<tr><td>A · 13 Nov core</td><td>Nine fields every app reads</td><td>Decisions with their decider, in every app</td><td>Must write all nine; reads anyone’s</td><td>Adding later is compatible; removing is a new type</td><td>As planned</td></tr>
+<tr><td>B · Smaller core</td><td>Five fields</td><td>Same in Ship; less in other apps’ items</td><td>Writes less; relies on less</td><td>Moving a field into the core later meets items without it</td><td>Slightly less</td></tr>
+</tbody>
+</table></div>
+
+<h2>One-way or two-way</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Call</th><th>Today</th><th>Once items are on the relay</th></tr></thead>
+<tbody>
+<tr><td>a · About</td><td>Free</td><td>Widening is compatible; narrowing strands items about other apps’ files</td></tr>
+<tr><td>b · Stages</td><td>Free</td><td>One-way: every status change carries its stage word, kept for good</td></tr>
+<tr><td>c · Lists</td><td>Free</td><td>Two-way: only screens</td></tr>
+<tr><td>d · Fields</td><td>Free</td><td>Adding is compatible; removing a core field is a new type</td></tr>
+<tr><td>The three types</td><td>Free</td><td>One-way: their meaning changes only compatibly</td></tr>
+</tbody>
+</table></div>
+
+<h2>What this means for the project being shaped</h2>
+<ul>
+  <li><b>The build still starts with Ship, Peek and Leaf</b>, from your sketch: Mark in Peek and Leaf, the lists on Ship’s projects. The HR app is on this page, not in the build.</li>
+  <li>Under the recommendations, three things are written differently, not built bigger: “about” takes any file, with Ship’s roll-up said in Ship’s listing; the stage words go into the SPEC part the project already owes; the core fields stay the 13 Nov list.</li>
+  <li><b>A topic’s or a page’s own lists</b> in Peek and Leaf are allowed by the protocol; whether the prototype draws them is a scope call. Lean: a Later line, unless the Universal Navigation thread makes you want it now.</li>
+</ul>
+
+<h2>How others do it</h2>
+<ul>
+  <li><b>Notion:</b> any page relates to any database row, and its Status property sorts every status into three fixed groups that each workspace names. That is option A for a, and A for b. What breaks for us: Notion’s relations live in one vendor; here every app must read them.</li>
+  <li><b>Salesforce and HubSpot:</b> notes, tasks and activities attach to any record, a contact, a deal or a custom object, with one timeline on each. That is a-A with c-A, inside one vendor.</li>
+  <li><b>Linear and Jira:</b> each team names its statuses, each in a fixed category. Our existing rule for every type.</li>
+  <li><b>Upstream Nostr highlights</b> point at any event or address, and carry no status. Any file, but no accept and no lifecycle.</li>
+</ul>
+
+<h2>The questions, each with a recommendation</h2>
+<p>Asked together as one scenario: c only arises if a is A, and the stage words only if b is A.</p>
+
+<div class="ask">
+<h3>1 · Can an item be about any file of any app?</h3>
+<p class="pick"><b>Yes (A).</b> Ship’s issue, project and Initiative become Ship’s case of a general rule, and each app says how its own files roll up. It is the protocol shape you described, “not just about Ship”, and the only one in which an outside app does not grow its own memory beside ours. It supersedes in part today’s record: its “about an issue, else a project, else an Initiative” line.</p>
+</div>
+<div class="ask">
+<h3>2 · Do the 13 Nov shared stages still hold, with the flexibility as each company’s layer?</h3>
+<p class="pick"><b>Yes (A).</b> Shared stages are what lets an agent tell what a team believes from what was only suggested; the flexibility you asked for is the company’s statuses and fields, and later the database, on top. Each company defining everything (B) is the option you turned down on 13 Nov, and it breaks the memory for every app but the one that wrote it.</p>
+</div>
+<div class="ask">
+<h3>3 · Which stage words?</h3>
+<p class="pick"><b>Reuse where the meaning is the same (W1):</b> Resolved is done, Rejected is dropped; new words only for proposed, accepted, outdated and superseded. A Risk’s Open is at the accepted stage, never at an issue’s “open”.</p>
+</div>
+<div class="ask">
+<h3>4 · Which app shows an item’s lists?</h3>
+<p class="pick"><b>Every app that opens the file it is about (A).</b> Memory sits where the work is, in every app, and no company needs Ship to have one. For this project, Ship draws them first.</p>
+</div>
+<div class="ask">
+<h3>5 · Which fields can every app rely on?</h3>
+<p class="pick"><b>The 13 Nov list (A):</b> title, summary, details, sources, team, about, status with its stage, kind of entry, decided by; everything else is a company’s own. And an item typed by hand may have no source.</p>
+</div>
+
+<h2>Checked</h2>
+<ul class="small">
+  <li><b>The three shared types, their fields, the 13 Nov statuses table, and the turned-down “template databases each company reshapes” and “one status set”:</b> record what-a-project-learns-decides-and-worries-about-are-insights-journal-entries-and-risks, Accepted, estiva-docs origin/main (de6b968, read today). Its consequence “three new shared types are one-way once items are on the relay” is quoted from there.</li>
+  <li><b>“About an issue, else a project, else an Initiative, or just the team’s”; “about” is a reference that can change; no item on the relay yet:</b> record an-item-is-filed-in-a-team-and-is-about-an-issue-a-project-or-an-initiative, Accepted, origin/main.</li>
+  <li><b>Every item starts at Proposed; who accepts is each company’s rule:</b> record who-accepts-an-item-is-each-companys-own-rule-and-the-protocol-carries-its-status, Accepted.</li>
+  <li><b>The decider becomes a member; an item shows its source as marked and the relay refuses one its readers cannot read:</b> records a-journal-entrys-decider-becomes-a-member-of-it-as-an-assignee-does and an-item-shows-its-source-as-marked-and-the-relay-refuses-one-its-readers-cannot-read, both Accepted on origin/main. Note: my brief called the second one open (#448); it was merged today at 10:38 UTC.</li>
+  <li><b>Four shared stages, and any other word read as absent:</b> SPEC §7.4 (“`stage` says what a status means … MUST treat a value outside the four as absent”). <b>Statuses as four layers, each company’s own:</b> SPEC §7.4 and records each-company-defines-its-own-statuses and a-companys-statuses-are-its-own-layer-of-a-types-properties.</li>
+  <li><b>An issue’s Todo is at stage open; Done is done; Cancelled is dropped:</b> Ship <code>src/nostr/kinds.ts:173–183</code>, origin/main.</li>
+  <li><b>A type is a shared meaning any app extends; the HR app’s Salary band on a position:</b> record a-files-type-is-a-shared-meaning-any-app-extends. <b>Every new type starts named; an app names its own types and launches with them:</b> SPEC §6.1, TYPES.md, record osnovas-base-types-keep-their-records-and-every-new-type-starts-named. <b>People’s databases come with the Notion-like app, in the same shape:</b> record an-apps-listing-or-a-persons-database-defines-a-type. <b>Estiva curates the directory in public:</b> record estiva-curates-shared-types-in-a-public-directory.</li>
+  <li><b>Which app opens a named type is not yet sayable:</b> SPEC §6.1 (“Until §7 can name a type, a manifest cannot say which app opens or draws a named type”); your answer today is estiva-docs#449, merged.</li>
+  <li><b>Intelligence lands in its home and reaches you only by naming you:</b> record intelligence-works-in-the-background-and-reaches-you-only-by-naming-you.</li>
+  <li><b>Every real moment</b> (9 Sep lost marks, the Universal Navigation thread 18 Aug to 10 Nov, your 13 Nov “This is correct.”, the 16 Nov Activity indicator Update) is from the Leaf page “Insights, Journal and Risks: real examples”, read today, or the 13 Nov record. The HR app, positions and candidates are your hypothetical; candidates rolling up to positions is my extension of it.</li>
+  <li><b>Not verified:</b> that no item is on the relay rests on the records and SPEC having no item type; I did not query the relay. How an app says its roll-up in its listing is my proposal, written nowhere. The read cost of showing items on every file is not measured on your workspace. Notion, Salesforce, HubSpot and upstream highlights are from knowledge, not re-read today. Whether the project’s prototype sketch draws tabs exactly as described is from my brief, not from the sketch itself.</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="small muted">Items are named types, a <code>kind:30852</code> with a <code>k</code> tag (SPEC §6.1, TYPES.md); names such as <code>osnova.insight</code> are left to the SPEC PR by estiva-docs#449, not decided. Under 1A the “about” field may name any file address (<code>30850</code>, <code>30851</code>, <code>30840</code>, <code>30842</code>, <code>30852</code>; SPEC §6.1 “one id, one file”, §13.1 reference), and each app’s listing names the field its files roll up by (Ship: an issue’s project, a project’s Initiative). Under 3W1, SPEC §7.4’s stages grow by <code>proposed</code>, <code>accepted</code>, <code>outdated</code>, <code>superseded</code>; Resolved writes <code>done</code>, Rejected <code>dropped</code>. Supersedes in part an-item-is-filed-in-a-team-and-is-about-an-issue-a-project-or-an-initiative (its “about an issue, else a project, else an Initiative”); confirms what-a-project-learns-decides-and-worries-about-are-insights-journal-entries-and-risks (statuses, fields) with its scope widened from a project to any file. Related: each-company-defines-its-own-statuses, a-companys-statuses-are-its-own-layer-of-a-types-properties, a-files-type-is-a-shared-meaning-any-app-extends, estiva-curates-shared-types-in-a-public-directory, osnovas-base-types-keep-their-records-and-every-new-type-starts-named, an-apps-listing-or-a-persons-database-defines-a-type, intelligence-works-in-the-background-and-reaches-you-only-by-naming-you, who-accepts-an-item-is-each-companys-own-rule-and-the-protocol-carries-its-status, a-journal-entrys-decider-becomes-a-member-of-it-as-an-assignee-does; estiva-docs#448 (merged), #449 (merged); Ship <code>src/nostr/kinds.ts</code>; upstream NIP-84. Leaf page 30842:b38fd268…:00064d61-be36-4dbc-a329-3a2104251af5.</p>
+
+</body>
+</html>

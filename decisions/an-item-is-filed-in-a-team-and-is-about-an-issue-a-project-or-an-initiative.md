@@ -5,6 +5,12 @@
 - Decided by: Miky, in the shaping session of 16 November 2026 for the project "Insights, Journal and Risks" ("I think that's right… I think you write it"): "Highlight is type of file -> the root home is one team. E.g. there is Engineering insights (the home is engineering team), it's customer insights (the home is product design,...)"; "Highlight ideally reference something specific (a issue, a project,..) worst case scenario it's just team highlight"; "if you're not able to reference e.g. specific issue or project, you can reference a Initiative"; and, asked whether this made more sense than the Accepted rule: "You learn e.g. some insights regarding process. Sure it happened on that project and you learned it there, but it's Engineering insights primarily and will be used by the whole team." Two parts are Claude's, marked below; his merge of this record accepts them
 - Area: Files
 
+> Superseded in part, 2026-11-16: its "about an issue, else a project, else an
+> Initiative". An item can be about any file of any app, Ship's three levels
+> being Ship's own case, and each app says how its files roll up, in
+> [an-item-can-be-about-any-file-of-any-app-and-every-app-that-opens-that-file-shows-it](an-item-can-be-about-any-file-of-any-app-and-every-app-that-opens-that-file-shows-it.md).
+> Everything else stands as this record says.
+
 ## Who it affects
 
 Most of what we have learned so far is a team's, not one project's. "Measure

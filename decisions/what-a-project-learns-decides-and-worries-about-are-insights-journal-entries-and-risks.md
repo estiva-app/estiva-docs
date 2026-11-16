@@ -14,6 +14,10 @@
 > [an-items-readers-are-fixed-when-it-is-made-and-a-move-changes-only-where-it-is-listed](an-items-readers-are-fixed-when-it-is-made-and-a-move-changes-only-where-it-is-listed.md).
 > How a Journal entry's "Decided by" shows, and who is told, is added by
 > [a-journal-entry-shows-who-decided-and-who-wrote-it-and-the-decider-is-told-once](a-journal-entry-shows-who-decided-and-who-wrote-it-and-the-decider-is-told-once.md).
+> Its statuses and fields are confirmed for every app, with their stage words,
+> and its "one or more" sources superseded in part (an item typed by hand may
+> have none), in
+> [every-app-relies-on-an-items-stage-and-core-fields-and-each-company-adds-its-own-on-top](every-app-relies-on-an-items-stage-and-core-fields-and-each-company-adds-its-own-on-top.md).
 > Everything else stands as this record says.
 
 ## Who it affects
