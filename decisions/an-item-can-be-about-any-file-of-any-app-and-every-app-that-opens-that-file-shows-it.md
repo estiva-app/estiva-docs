@@ -44,11 +44,11 @@ type of its own beside ours.
   When it can be about nothing specific, it is still just its team's.
 - **Ship's issue, else project, else Initiative is Ship's own case** of this
   rule, and stands for Ship.
-- *Claude's:* **each app says in its listing how its own files roll up**, as
-  Ship says an issue shows on its project and a project on its Initiative. An
-  item is also shown on what its "about" file rolls up to, in the app that
-  says so. An HR app may say a candidate rolls up to its position; candidates
-  rolling up is Claude's extension of Miky's example.
+- **Each app says how its own files roll up**, as Ship says an issue shows
+  on its project and a project on its Initiative. An item is also shown on
+  what its "about" file rolls up to, in the app that says so. *Claude's:* it
+  says so **in its listing**, and an HR app may say a candidate rolls up to
+  its position (an extension of Miky's example).
 - **Every app that opens the file an item is about shows its items there.**
   The memory sits where the work is, in every app, and no company needs one
   memory app to have one. For the project that builds this, Ship draws them

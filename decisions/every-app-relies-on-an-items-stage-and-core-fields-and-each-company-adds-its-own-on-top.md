@@ -2,14 +2,15 @@
 
 - Date: 2026-11-16
 - Status: Accepted
-- Decided by: Miky, in the shaping session of 16 November 2026 for the project "Insights, Journal and Risks". Asked whether the items' 13 November statuses still hold: "I think that's where the discussion about Notion like simple dbs should happen. Basically, I think the protocol should define high level Highlights: Insights, Journal logs, and Risks, but there probably should be some flexibility." Shown the brief "Osnova's memory layer" ([page](briefs/highlights-are-osnovas-memory-layer.html)), he took its recommendations: "Yes, all five". The stage words and the item with no source are Claude's proposals on that page, accepted by that answer; his merge of this record accepts them
+- Decided by: Miky, in the shaping session of 16 November 2026 for the project "Insights, Journal and Risks". Asked whether the items' 13 November statuses still hold: "I think that's where the discussion about Notion like simple dbs should happen. Basically, I think the protocol should define high level Highlights: Insights, Journal logs, and Risks, but there probably should be some flexibility." Shown the brief "Osnova's memory layer" ([page](briefs/highlights-are-osnovas-memory-layer.html)), he took its recommendations: "Yes, all five". The stage words, a Risk's Open at the accepted stage and the item with no source are Claude's proposals on that page, accepted by that answer; lines marked as Claude's below are not on it; his merge of this record accepts them
 - Area: Files
 
 ## Who it affects
 
 An agent asked "what do we currently believe about this project?", or about
-an HR app's open position, reads every item at the accepted stage, whoever
-wrote it and whatever the company calls that status. Ship shows Proposed,
+an HR app's open position, reads the items at the accepted stage, whatever
+the company calls that status, and weighs each by who signed the change that
+accepted it. Ship shows Proposed,
 Accepted and Outdated as its defaults; a company may rename Accepted to
 "Confirmed", add "Under review" under Proposed, or add a Severity to its
 Risks, in its own layer. And Miky's Journal Update "Activity indicator
@@ -37,9 +38,10 @@ message or a block, can be typed by hand with no source.
 
 ## Decision
 
-- **The 13 November stages hold for every app**, Ship's and any other: every
-  item starts Proposed (or Rejected), then Accepted (a Risk: Open), and ends
-  Outdated, Superseded or Resolved by type. **The flexibility is each
+- **The 13 November statuses hold for every app**, Ship's and any other:
+  every item starts Proposed, then is Rejected or Accepted (a Risk: Open),
+  and ends Outdated, Superseded or Resolved by type. Their stage words are
+  the ones below. **The flexibility is each
   company's layer on top**: its own status names, its own statuses under a
   stage, its own fields, and later a person's database.
 - **The stage words reuse a word where the meaning is the same.** Resolved is
@@ -55,6 +57,10 @@ message or a block, can be typed by hand with no source.
   entry's decided by. Everything else is a company's or an app's own.
 - **An item typed by hand may have no source.** One made by marking always
   has its source.
+- *Claude's:* **a stage is the signer's own word**, as SPEC §7.4 says of
+  every type: a reader weighs an accepted item by who signed the change that
+  accepted it, against the company's rule
+  ([who-accepts-an-item-is-each-companys-own-rule-and-the-protocol-carries-its-status](who-accepts-an-item-is-each-companys-own-rule-and-the-protocol-carries-its-status.md)).
 
 ## Rejected alternatives
 
@@ -78,8 +84,12 @@ message or a block, can be typed by hand with no source.
 
 - Confirms
   [what-a-project-learns-decides-and-worries-about-are-insights-journal-entries-and-risks](what-a-project-learns-decides-and-worries-about-are-insights-journal-entries-and-risks.md)'s
-  statuses and fields, and supersedes in part its "sources (one or more
-  messages or blocks it came from)": an item typed by hand may have none.
+  statuses and fields, and supersedes in part three things in it: the stage
+  each status carries (its table called Proposed, Rejected, Open and Resolved
+  stages; now Rejected is at dropped, Resolved at done and a Risk's Open at
+  accepted), its consequence that each type has its own stages (they are now
+  words in §7.4's one vocabulary), and its "sources (one or more messages or
+  blocks it came from)": an item typed by hand may have none.
 - SPEC §7.4's stages grow by proposed, accepted, outdated and superseded, in
   the SPEC PR the project "Insights, Journal and Risks" already owes. Apps that
   read only the four read the new words as "does not say", so nothing is
@@ -87,6 +97,11 @@ message or a block, can be typed by hand with no source.
 - Once items are on the relay the stage words are one-way: every status change
   carries its stage word, kept in the item's history. A core field can be
   added later; removing one is a new type.
-- The relay's refusal of an item whose source its readers cannot read applies
-  to the sources an item has; an item with none has nothing to check
-  ([an-item-shows-its-source-as-marked-and-the-relay-refuses-one-its-readers-cannot-read](an-item-shows-its-source-as-marked-and-the-relay-refuses-one-its-readers-cannot-read.md)).
+- *Claude's:* the relay's refusal of an item whose source its readers cannot
+  read
+  ([an-item-shows-its-source-as-marked-and-the-relay-refuses-one-its-readers-cannot-read](an-item-shows-its-source-as-marked-and-the-relay-refuses-one-its-readers-cannot-read.md))
+  checks the sources an item names. The relay cannot tell a marked item from
+  one typed by hand, so words a person types into an item with no source are
+  theirs, as words typed into any message are. The SPEC PR states that an app
+  or agent making an item by marking MUST name its source, so leaving it out
+  is never a way around the check.

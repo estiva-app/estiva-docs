@@ -18,6 +18,10 @@
 > last Consequence on an item that fits nothing, in
 > [an-item-is-filed-in-a-team-and-is-about-an-issue-a-project-or-an-initiative](an-item-is-filed-in-a-team-and-is-about-an-issue-a-project-or-an-initiative.md).
 > The roll-up, the changeable field and "choosing is secondary" stand.
+> Its task, project and Initiative, and their roll-up, are now Ship's own case
+> of an item about any file of any app, each app saying how its files roll up,
+> in
+> [an-item-can-be-about-any-file-of-any-app-and-every-app-that-opens-that-file-shows-it](an-item-can-be-about-any-file-of-any-app-and-every-app-that-opens-that-file-shows-it.md).
 
 ## Who it affects
 
