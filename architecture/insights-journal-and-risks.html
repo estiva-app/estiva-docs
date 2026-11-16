@@ -4,14 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Insights, Journal and Risks</title>
-<!--
-  Template for a project's architecture page (process/ARCHITECTURE.md).
-  Copy to architecture/<project-slug>.html, then redraw every example below:
-  the drawings here show the visual language, not any real project.
-  Classes: .b box · .w card · .ok new · .bad goes away · .q undecided (dashed)
-  · .f untouched (faint) · .a arrow · .an new arrow · .aq undecided arrow
-  · .m muted second line · .h bold label · .tag milestone tag.
--->
 <style>
 :root {
   --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
@@ -108,12 +100,12 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <h3>After</h3>
 <figure>
 <svg viewBox="0 0 720 300" role="img">
-<title>After: Peek, Leaf and Ship write an Insight, Journal entry or Risk when you mark a message, block or comment. The relay keeps it as a file in one team and refuses one whose source some of its readers cannot read. Ship's listing names the three types, so every app knows Ship opens them; Ship lists a project's items in three tabs and a team's on its team page.</title>
+<title>After: Peek, Leaf and Ship write an Insight, Journal entry or Risk when you mark a message, block or comment. The relay keeps it as a file in one team and refuses one whose source some of its readers cannot read. Ship tells the relay it opens the three types, so any app can send you to Ship for one; Ship lists a project's items in three tabs and a team's on its team page.</title>
 <rect class="b f" x="20" y="20" width="680" height="44" rx="8"/><text x="36" y="47" class="h f">Estiva ID</text><text x="120" y="47" class="m f">signs each event, unchanged</text>
 <rect class="ok" x="20" y="100" width="200" height="72" rx="8"/><text x="36" y="124" class="h">Peek</text><text x="150" y="124" class="tag">M2</text><text x="36" y="143" class="m">a message's menu: Mark as…</text><text x="36" y="160" class="m">a marked message shows it</text>
-<rect class="ok" x="260" y="100" width="200" height="72" rx="8"/><text x="276" y="124" class="h">Ship</text><text x="390" y="124" class="tag">M2 M3</text><text x="276" y="143" class="m">Insights · Journal · Risks tabs,</text><text x="276" y="160" class="m">an item's page · Mark on comments</text>
+<rect class="ok" x="260" y="100" width="200" height="72" rx="8"/><text x="276" y="124" class="h">Ship</text><text x="390" y="124" class="tag">M2 M3</text><text x="276" y="143" class="m">Insights · Journal · Risks tabs,</text><text x="276" y="160" class="m">item page · Mark comments, blocks</text>
 <rect class="ok" x="500" y="100" width="200" height="72" rx="8"/><text x="516" y="124" class="h">Leaf</text><text x="630" y="124" class="tag">M2</text><text x="516" y="143" class="m">a block's menu: Mark as…</text><text x="516" y="160" class="m">a marked block: a subtle line</text>
-<rect class="ok" x="20" y="214" width="680" height="76" rx="8"/><text x="36" y="238" class="h">The relay</text><text x="118" y="238" class="tag">M2</text><text x="36" y="257" class="m">keeps items as files in one team, each pinned to the version of its source it was marked from;</text><text x="36" y="274" class="m">refuses an item whose source some of its readers cannot read · Ship's listing names the three types</text>
+<rect class="ok" x="20" y="214" width="680" height="76" rx="8"/><text x="36" y="238" class="h">The relay</text><text x="118" y="238" class="tag">M2</text><text x="36" y="257" class="m">keeps items as files in one team, each pinned to the version of its source it was marked from;</text><text x="36" y="274" class="m">refuses an item whose source some of its readers cannot read · Ship says it opens the three types</text>
 <path class="an" d="M120,172 L120,210"/><text x="128" y="196" class="m">write the item</text>
 <path class="an" d="M600,172 L600,210"/><text x="472" y="196" class="m">write the item</text>
 <path class="an" d="M360,210 L360,176"/><text x="368" y="196" class="m">list, triage, write</text>
@@ -143,7 +135,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <rect class="b" x="480" y="60" width="104" height="48" rx="8"/><text x="492" y="82" class="h">Project</text><text x="492" y="99" class="m">Ship</text>
 <rect class="b" x="600" y="60" width="104" height="48" rx="8"/><text x="612" y="82" class="h">Initiative</text><text x="612" y="99" class="m">Ship</text>
 <path class="a" d="M464,84 L476,84"/><path class="a" d="M584,84 L596,84"/>
-<text x="360" y="128" class="m">Ship's listing says its roll-up: an issue shows on its project, a project on its Initiative</text>
+<text x="360" y="128" class="m">An issue's items also show on its project, and a project's on its Initiative</text>
 <rect class="q" x="360" y="144" width="160" height="48" rx="8"/><text x="372" y="166" class="h">Peek topic</text><text x="372" y="183" class="m">its own lists: Later?</text>
 <rect class="q" x="544" y="144" width="160" height="48" rx="8"/><text x="556" y="166" class="h">Leaf page</text><text x="556" y="183" class="m">its own lists: Later?</text>
 <rect class="b f" x="360" y="210" width="344" height="44" rx="8"/><text x="372" y="237" class="m f">an outside app's file, e.g. an open position (not built)</text>
@@ -163,7 +155,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <h2 id="flow">Flow: Miky marks Katerina's message as an Insight</h2>
 <figure>
 <svg viewBox="0 0 720 320" role="img">
-<title>Miky opens the menu on Katerina's message in Peek and chooses Mark as Insight, about the project. Peek asks Estiva ID to sign it and writes it to the relay, which checks Miky may write in the team and that every reader of the team can read the message. Ship, open on the project for Katerina, shows the Insight in its Triage.</title>
+<title>Miky opens the menu on Katerina's message in Peek and chooses Mark as Insight, about the project. Peek asks Estiva ID to sign it and writes it to the relay, which checks Miky may write in the team and that every reader of the team can read the message. Ship, open on the project for Katerina, shows the Insight on its Insights tab, already accepted since Miky marked it himself; what Triage and the Overview's What's new count as new is still open.</title>
 <text x="30" y="24" class="h">Miky in Peek</text><text x="210" y="24" class="h">Estiva ID</text><text x="370" y="24" class="h">The relay</text><text x="540" y="24" class="h">Katerina in Ship</text>
 <path class="life" d="M70,34 L70,310"/><path class="life" d="M240,34 L240,310"/><path class="life" d="M400,34 L400,310"/><path class="life" d="M590,34 L590,310"/>
 <text x="80" y="62" class="m">Mark as… Insight · team: the message's · about: the project</text>
@@ -172,10 +164,10 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <path class="an" d="M70,132 L396,132"/><text x="96" y="126" class="m">write it, pinned to the message as it reads now</text>
 <text x="408" y="158" class="m">checks Miky may write in the team,</text><text x="408" y="174" class="m">and every reader of the team can</text><text x="408" y="190" class="m">read the message; else refuses</text>
 <path class="an" d="M400,214 L586,214"/><text x="420" y="208" class="m">live: a new item about her project</text>
-<text x="434" y="242" class="m">Insights tab, Triage: Proposed</text><text x="434" y="258" class="m">or accepted by Miky's own mark</text>
-<text x="434" y="282" class="m">opens back to her message;</text><text x="434" y="298" class="m">Overview's What's new lists it</text>
+<text x="434" y="242" class="m">Insights tab: accepted (Miky's own mark);</text><text x="434" y="258" class="m">opens back to her message</text>
+<rect class="q" x="426" y="268" width="288" height="40" rx="6"/><text x="434" y="284" class="m">Triage and What's new on Overview:</text><text x="434" y="300" class="m">what counts as new is still open</text>
 </svg>
-<figcaption>Nothing is sent to Katerina: the Insight waits on the project until she goes there. Only a Journal entry naming her as the decider tells her, once, and makes her a member of it, as an assignee is of an issue. Which app opens an Insight, any app finds in the listings, where Ship names the type.</figcaption>
+<figcaption>Nothing is sent to Katerina: the Insight waits on the project until she goes there. Only a Journal entry naming her as the decider tells her, once, and makes her a member of it, as an assignee is of an issue. Any app can send you to Ship for an Insight, because Ship tells the relay it opens that type.</figcaption>
 </figure>
 
 <h2 id="access">Access</h2>
@@ -195,7 +187,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <li>A block's handle menu has Copy link in Leaf and in Ship (leaf <code>src/document/LiveDocument.tsx</code>, <code>App.shipPath.test.tsx</code>).</li>
 <li>The relay checks the signer and who may write in each team; a file's readers follow its team (base page, <a href="estiva.html">Estiva architecture</a>).</li>
 <li>Item fields, statuses, team, "about", sources, the decider and who opens a type: the Accepted records of 13 and 16 November (estiva-docs <code>decisions/</code>, #442, #444, #447–#450).</li>
-<li>Not checked yet: how the relay addresses a pinned Leaf block as a source, how a listing says its roll-up, and the cost of reading a project's items on Miky's workspace; all three are milestone 2's probe and SPEC PR.</li>
+<li>Not checked yet: how the relay addresses a pinned Leaf block as a source, how Ship says that an issue's items also show on its project, and the cost of reading a project's items on Miky's workspace; all three are milestone 2's probe and SPEC PR.</li>
 </ul>
 
 </main>
