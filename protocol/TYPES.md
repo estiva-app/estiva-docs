@@ -66,7 +66,9 @@ an app searches it by title (SPEC §5.2).
 **Its statuses are each company's own**, starting from its tracker's defaults
 ([each-company-defines-its-own-statuses](https://github.com/estiva-app/estiva-docs/blob/main/decisions/each-company-defines-its-own-statuses.md),
 Miky, 2026-10-30). What every app shares is what a status means: one of the
-four stages of [SPEC §7.4](SPEC.md). Ship's defaults:
+four stages of [SPEC §7.4](SPEC.md). A company's own are kept in its
+`osnova.schema` file for projects (below); until it saves one, Ship's
+defaults:
 
 | status | label | stage |
 | --- | --- | --- |
@@ -79,6 +81,61 @@ A project is placed by `buzz-channel` and listed in a team by that team's
 `kind:30890`; one in no other team names the workspace's Company team
 ([SPEC §3.4](SPEC.md)), as does a new one made with no team. Its changes carry
 that team as their `h`.
+
+## `osnova.issue`
+
+A piece of work: what is to be done, who does it, and how far it has got.
+Its first record is a `kind:30851` ([SPEC §6.1](SPEC.md)). An issue sits
+under at most one project, and it can move.
+
+| field | first value, on the `30851` | value |
+| --- | --- | --- |
+| `title` | `title` | the issue's name |
+| `status` | — | the company's own status; Ship's defaults are `todo`, `in_progress`, `done` and `cancelled`, below. A change carries its `stage` ([SPEC §6.2](SPEC.md)) |
+| `assignee` | — | the assignee's pubkey, 64 lowercase hex, with `["p", <pubkey>]` beside it; empty when there is none |
+| `project` | `a` | the address of the project it sits under, `30850:<pubkey>:<d>`; empty when it sits under none. Changing it moves the issue (its `movedBy` field, [SPEC §7.3](SPEC.md)); the issue's team does not change |
+| `ref` | `ref` | a display key such as `SHIP-12`, its project's `key` and a number; never an address ([SPEC §6.1](SPEC.md)) |
+| `summary` | `summary` | one or two sentences of plain text, about 240 characters ([SPEC §6.12](SPEC.md)) |
+| `archived` | — | `true` while it is archived; empty otherwise ([SPEC §6.5](SPEC.md)) |
+| `deleted` | — | `true` while it is deleted; empty otherwise ([SPEC §6.5](SPEC.md)). Until issues are kept field by field, Ship deletes an issue with a `kind:5`, which a reader still honours |
+| `description` | `content` | the issue's text ([SPEC §6.10](SPEC.md)), as a project's |
+
+**Search** finds an issue by its title and its ref ([SPEC §5.2](SPEC.md))
+until the relay lists `osnova.issue` in NIP-11 `file_search`
+([SPEC §6.13](SPEC.md)); from then on by the words of its current fields, as a
+project. Its status, assignee and archived state are not words.
+
+**Its statuses are each company's own**, as a project's, and a status change
+carries its stage. Ship's defaults:
+
+| status | label | stage |
+| --- | --- | --- |
+| `todo` | Todo | `open` |
+| `in_progress` | In Progress | `started` |
+| `done` | Done | `done` |
+| `cancelled` | Cancelled | `dropped` |
+
+An issue is filed in a team by its `h`, which never changes.
+
+## `osnova.schema`
+
+A company's own layer of another type's properties: its statuses for
+projects, or for issues, and later its labels, priorities and its own columns
+([SPEC §7.4](SPEC.md); record
+[a-companys-statuses-are-its-own-layer-of-a-types-properties](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-companys-statuses-are-its-own-layer-of-a-types-properties.md)).
+Its first record is a `kind:30852` with `["k", "osnova.schema"]`, the type it
+describes in `["of", <type>]`, the workspace's Company team as its `h`, and
+`["writers", "workspace-admins"]`, so only the workspace's owners and admins
+write it ([SPEC §6.1](SPEC.md)). There is one per type; if there are several,
+the earliest counts.
+
+| field | value |
+| --- | --- |
+| `title` | its name, such as "Issue statuses" |
+| `property:<id>` | one property of the described type, such as `property:status`: JSON `{"label", "type": "choice", "default", "options": [{"value", "label", "colour", "stage"}]}`. Each option's `stage` is one of the described type's stages |
+| `archived`, `deleted` | as on any file; an archived or deleted one does not count |
+
+Until a company saves its own, every app uses the defaults listed above.
 
 ## Why projects and issues are not git's
 
