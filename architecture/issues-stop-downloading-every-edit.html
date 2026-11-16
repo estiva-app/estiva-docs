@@ -87,7 +87,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <h3>Today</h3>
 <figure>
 <svg viewBox="0 0 720 330" role="img">
-<title>Today: Ship downloads every change ever made to every issue, 25.6 MB, and works out each issue itself; Ship, Leaf, Peek and the agent write an issue change without saying which change it follows; the relay already keeps each field of an issue in order but refuses nothing</title>
+<title>Today: Ship downloads every change ever made to every issue, 25.6 MB, and works out each issue itself; Ship, Leaf, Peek and the agent write an issue change without saying which change it follows; the relay already keeps each field of an issue in order but refuses no out-of-date change to one</title>
 <rect class="b" x="20" y="20" width="150" height="54" rx="8"/><text x="36" y="44" class="h">Ship</text><text x="36" y="62" class="m">projects and issues</text>
 <rect class="b" x="195" y="20" width="150" height="54" rx="8"/><text x="211" y="44" class="h">Leaf</text><text x="211" y="62" class="m">an issue as a page</text>
 <rect class="b" x="370" y="20" width="150" height="54" rx="8"/><text x="386" y="44" class="h">Peek</text><text x="386" y="62" class="m">issue cards, launcher</text>
@@ -194,7 +194,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <li>Shared code (interop 0.101.1 <code>fields.ts</code>): the reads, the ordered write and the merge take any file type; the switch is named for projects (<code>protocol/src/bridge.ts:347–389</code>).</li>
 <li>Ship reads every issue change (<code>src/nostr/store.ts:584</code>, "issues are not read by their fields until their stage") and writes with no "follows" (<code>src/api/writes.ts</code> <code>setIssueField</code>); its delete is permanent (<code>events.ts:534</code>). Leaf: <code>relay/projectFields.ts:123</code>, <code>document/save.ts:316</code>. Peek: opens issues as they are now (<code>src/nostr/projectFields.ts:104</code>), writes with no "follows" (<code>foreign.ts:2048</code>). Agent: lists issues as they are now (<code>lib/agent/apps/ship-workspace.ts:309</code>), every issue write with no "follows" (<code>ship.ts</code>).</li>
 <li>Access, first row: a change is filed in its issue's own team and the relay checks who may read and write there (SPEC §6.2).</li>
-<li>Not drawn: who may delete an issue today. The "after" row is the rule projects have had since 11 Nov.</li>
+<li>Deleting today: only an issue's author can delete it, for good, checked by the relay (buzz <code>handlers/side_effects.rs</code>). The "after" row is the rule projects have had since 11 Nov.</li>
 </ul>
 
 </main>
