@@ -41,7 +41,9 @@ times only, with no signed events. It is the relay's statement, not signed:
 - **The same read rules.** Each time passes exactly the read rules the event
   it stands for would. A file's text time goes only to readers of the file's
   home team, as its text does (§6.13), so a time never says someone is editing
-  a text the reader cannot read. A deleted file or a removed change drops out.
+  a text the reader cannot read. A deleted file's changes stay readable by
+  id, so its times are answered with its `deleted` change among them, and an
+  event the relay no longer holds has no time.
 - **Order only.** Nothing that decides who may do something, or what a file
   says, rests on a time from this answer; an app opens the signed event by its
   id when it needs one.
