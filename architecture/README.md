@@ -16,6 +16,14 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [Issues stop downloading every edit](issues-stop-downloading-every-edit.html)
+  — Shaped, 2026-11-16. Ship, Leaf, Peek and the agent read each issue as it
+  is now and write each change after the one it follows, as they do for
+  projects; the relay starts refusing an unordered issue change and a
+  permanent delete, and finds an issue by its words; a new file's text is its
+  own change, never in its first record. Read at
+  `https://docs.estiva.app/architecture/issues-stop-downloading-every-edit.html`.
+
 - [Insights, Journal and Risks](insights-journal-and-risks.html)
   — Shaped, 2026-11-16. You mark a message in Peek, a block in Leaf or a
   comment in Ship as an Insight, a Journal entry or a Risk, and it appears on

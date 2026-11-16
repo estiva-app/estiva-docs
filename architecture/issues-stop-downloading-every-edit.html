@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Issues stop downloading every edit</title>
+<!--
+  Template for a project's architecture page (process/ARCHITECTURE.md).
+  Copy to architecture/<project-slug>.html, then redraw every example below:
+  the drawings here show the visual language, not any real project.
+  Classes: .b box · .w card · .ok new · .bad goes away · .q undecided (dashed)
+  · .f untouched (faint) · .a arrow · .an new arrow · .aq undecided arrow
+  · .m muted second line · .h bold label · .tag milestone tag.
+-->
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.example { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
+.legend .lgone::before { background: var(--warn-bg); border-color: var(--warn); }
+.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
+.legend .lf::before { opacity: .45; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+/* Below 560px a diagram scrolls inside its figure instead of shrinking its text. */
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); stroke-width: 1.5; }
+svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .f { opacity: .45; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
+svg .aq { stroke: var(--accent); fill: none; stroke-width: 1.6; stroke-dasharray: 5 4; marker-end: url(#arr-q); }
+svg .life { stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 3 4; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 560px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+tr.new td { background: var(--ok-bg); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+</style>
+</head>
+<body>
+<!-- Arrowheads, shared by every diagram on the page. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+    <marker id="arr-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<main>
+<main>
+
+<h1>Issues stop downloading every edit</h1>
+<p class="sub"><span class="state">Shaped, 2026-11-16</span> · <a href="https://ship.estiva.app/#/project/667290a0-e790-41e2-8c34-6645e2d73ba7">Ship project</a> · Stage 2 of "One current version of every file", after <a href="https://ship.estiva.app/#/project/525d649e-bdeb-4841-96e6-41baeeb4dcbe">projects</a> · Goal: a cold Ship load carries each issue as it is now, about 5 KB an issue, not the 25.6 MB of every edit ever made to one.</p>
+
+<p>The relay already keeps every file type's changes in order; projects were the first type the apps use that for. This stage moves issues: Ship, Leaf, Peek and the agent stop downloading and replaying every issue change and read each issue as it is now, write each change after the one it follows, and a new issue's text becomes a change like any other. Look first at the Map: the relay barely changes, the apps do.</p>
+
+<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lgone">goes away</span><span class="lf">untouched, for orientation</span></div>
+
+<h2>Map</h2>
+
+<h3>Today</h3>
+<figure>
+<svg viewBox="0 0 720 330" role="img">
+<title>Today: Ship downloads every change ever made to every issue, 25.6 MB, and works out each issue itself; Ship, Leaf, Peek and the agent write an issue change without saying which change it follows; the relay already keeps each field of an issue in order but refuses nothing</title>
+<rect class="b" x="20" y="20" width="150" height="54" rx="8"/><text x="36" y="44" class="h">Ship</text><text x="36" y="62" class="m">projects and issues</text>
+<rect class="b" x="195" y="20" width="150" height="54" rx="8"/><text x="211" y="44" class="h">Leaf</text><text x="211" y="62" class="m">an issue as a page</text>
+<rect class="b" x="370" y="20" width="150" height="54" rx="8"/><text x="386" y="44" class="h">Peek</text><text x="386" y="62" class="m">issue cards, launcher</text>
+<rect class="b" x="545" y="20" width="155" height="54" rx="8"/><text x="561" y="44" class="h">Agent</text><text x="561" y="62" class="m">ship CLI, Claude</text>
+<rect class="b" x="20" y="230" width="680" height="80" rx="8"/><text x="36" y="254" class="h">Relay</text>
+<text x="36" y="274" class="m">every file type: keeps each field in order · lists files as they are now · opens one with its text</text>
+<text x="36" y="292" class="m">projects only: refuses an unordered change and a permanent delete · searches text</text>
+<path class="a" d="M70,74 L70,226"/><rect class="bad" x="26" y="180" width="150" height="38" rx="6"/><text x="34" y="196">every issue change,</text><text x="34" y="211" class="m">25.6 MB each open</text>
+<path class="a" d="M270,74 L270,226"/><text x="278" y="196" class="m">an issue's every</text><text x="278" y="211" class="m">change when opened</text>
+<path class="a" d="M445,74 L445,226"/><text x="453" y="196" class="m">opens an issue</text><text x="453" y="211" class="m">as it is now</text>
+<path class="a" d="M622,74 L622,226"/><text x="614" y="196" class="m" text-anchor="end">lists issues</text><text x="614" y="211" class="m" text-anchor="end">as they are now</text>
+<text x="80" y="100" class="m">writes: no "follows"</text><text x="280" y="100" class="m">writes: no "follows"</text><text x="455" y="100" class="m">writes: no "follows"</text><text x="614" y="100" class="m" text-anchor="end">no "follows"</text>
+<rect class="b" x="20" y="120" width="680" height="44" rx="8"/><text x="36" y="140" class="h">Shared code</text><text x="36" y="156" class="m">reads a file as it is now · writes each change in order · merges a text — projects only</text>
+</svg>
+<figcaption>Ship's read is the heavy one: it replays 6,185 changes to draw 958 issues. Peek's open and the agent's list already read issues as they are now. No app's issue write says which change it follows, so a later save replaces an earlier one silently. Estiva ID is left out: nothing about signing changes.</figcaption>
+</figure>
+
+<h3>After</h3>
+<figure>
+<svg viewBox="0 0 720 330" role="img">
+<title>After: every app reads issues as they are now and writes each change after the one it follows, through the shared code, which switches each type on its own; the relay refuses an unordered issue change and a permanent delete, and finds an issue by its words</title>
+<rect class="ok" x="20" y="20" width="150" height="54" rx="8"/><text x="36" y="44" class="h">Ship</text><text x="36" y="62" class="m">projects and issues</text><text x="128" y="38" class="tag">M2</text>
+<rect class="ok" x="195" y="20" width="150" height="54" rx="8"/><text x="211" y="44" class="h">Leaf</text><text x="211" y="62" class="m">an issue as a page</text><text x="303" y="38" class="tag">M2</text>
+<rect class="ok" x="370" y="20" width="150" height="54" rx="8"/><text x="386" y="44" class="h">Peek</text><text x="386" y="62" class="m">issue cards, launcher</text><text x="478" y="38" class="tag">M2</text>
+<rect class="ok" x="545" y="20" width="155" height="54" rx="8"/><text x="561" y="44" class="h">Agent</text><text x="561" y="62" class="m">ship CLI, Claude</text><text x="658" y="38" class="tag">M2</text>
+<rect class="ok" x="20" y="230" width="680" height="80" rx="8"/><text x="36" y="254" class="h">Relay</text><text x="620" y="254" class="tag">M1 · M3</text>
+<text x="36" y="274" class="m">unchanged: each field in order, the list, the open read</text>
+<text x="36" y="292" class="m">issues too: search by words (M1) · refuses an unordered change and a permanent delete (M3)</text>
+<path class="an" d="M70,74 L70,226"/><text x="78" y="196">each issue as it is</text><text x="78" y="211" class="m">now, ~5 KB an issue</text>
+<path class="an" d="M270,74 L270,226"/><text x="278" y="196">current values</text><text x="278" y="211" class="m">and newest text</text>
+<path class="a" d="M445,74 L445,226"/><text x="453" y="196" class="m">as today, plus</text><text x="453" y="211" class="m">search by text</text>
+<path class="a" d="M622,74 L622,226"/><text x="614" y="196" class="m" text-anchor="end">as today</text>
+<text x="80" y="100" class="m">writes: follows ✓</text><text x="280" y="100" class="m">writes: follows ✓</text><text x="455" y="100" class="m">writes: follows ✓</text><text x="614" y="100" class="m" text-anchor="end">follows ✓</text>
+<rect class="ok" x="20" y="120" width="680" height="44" rx="8"/><text x="36" y="140" class="h">Shared code</text><text x="660" y="140" class="tag">M2</text><text x="36" y="156" class="m">switched on per type · starts a file whose text is its first change · delete and restore</text>
+</svg>
+<figcaption>Milestone 1 is the relay and the public rule; milestone 2 is each app, behind its switch; milestone 3 turns the relay's refusal on for everyone at one announced moment. Nothing that points at an issue (its conversation, cards, links, unread state) moves.</figcaption>
+</figure>
+
+<h2>Objects</h2>
+<figure>
+<svg viewBox="0 0 720 300" role="img">
+<title>An issue today is a first record that carries its first text, plus changes; a new issue after this stage is a first record that only names it, and its text is its first change; a list sends the first record and each field's newest change, never the text</title>
+<text x="20" y="24" class="h">An issue filed before the switch</text>
+<rect class="b" x="20" y="36" width="320" height="70" rx="8"/><text x="34" y="58" class="h">First record</text><text x="34" y="76" class="m">title · team · project it was filed in</text><rect class="bad" x="34" y="82" width="190" height="18" rx="4"/><text x="40" y="96" class="m">its first text (2.5 KB on average)</text>
+<rect class="b" x="20" y="124" width="150" height="40" rx="8"/><text x="34" y="149">text, saved again</text>
+<rect class="b" x="190" y="124" width="150" height="40" rx="8"/><text x="204" y="149">status · assignee · …</text>
+<path class="a" d="M95,124 L95,110"/><path class="a" d="M265,124 L265,110"/>
+<text x="20" y="190" class="m">A list sends the first record with its old text,</text><text x="20" y="206" class="m">and each field's newest change: 5.2 KB an issue.</text>
+<text x="20" y="222" class="m">These 958 stay as they are; nothing is re-signed.</text>
+
+<text x="380" y="24" class="h">An issue filed after the switch</text>
+<rect class="ok" x="380" y="36" width="320" height="70" rx="8"/><text x="394" y="58" class="h">First record</text><text x="394" y="76" class="m">title · team · project it was filed in</text><text x="394" y="94" class="m">no text</text><text x="660" y="58" class="tag">M2</text>
+<rect class="ok" x="380" y="124" width="150" height="40" rx="8"/><text x="394" y="149">text, first save</text>
+<rect class="b" x="550" y="124" width="150" height="40" rx="8"/><text x="564" y="149">status · assignee · …</text>
+<path class="an" d="M455,124 L455,110"/><path class="a" d="M625,124 L625,110"/>
+<rect class="b" x="380" y="182" width="150" height="40" rx="8"/><text x="394" y="207">text, saved again</text>
+<path class="a" d="M455,182 L455,168"/><text x="462" y="178" class="m">follows</text>
+<text x="550" y="196" class="m">A list sends the first</text><text x="550" y="212" class="m">record and each field's</text><text x="550" y="228" class="m">newest change: no text.</text>
+<text x="20" y="262" class="m">Each change is signed by whoever made it and names the change it follows for its field.</text>
+<text x="20" y="280" class="m">The issue is not a new kind of object: same first record, same address, same links to it.</text>
+</svg>
+<figcaption>The first record says what the file is and carries no text; the text is its own change, written straight after. Decided on 16 Nov as the rule for every type. Which project an issue is in is also a change, so a moved issue is grouped by its newest one.</figcaption>
+</figure>
+
+<h2>Flow</h2>
+<figure>
+<svg viewBox="0 0 720 320" role="img">
+<title>The 11 November crossing, after this stage: Miky saves an issue's text; Claude, holding an older copy, saves 36 seconds later; the relay refuses Claude's save because it does not follow Miky's; the shared code merges the two texts and saves again; both people's words are in the issue</title>
+<rect class="b" x="20" y="14" width="150" height="40" rx="8"/><text x="34" y="39" class="h">Miky · Ship</text>
+<rect class="b" x="285" y="14" width="150" height="40" rx="8"/><text x="331" y="39" class="h">Relay</text>
+<rect class="b" x="550" y="14" width="150" height="40" rx="8"/><text x="564" y="39" class="h">Claude · agent</text>
+<line class="life" x1="95" y1="54" x2="95" y2="310"/><line class="life" x1="360" y1="54" x2="360" y2="310"/><line class="life" x1="625" y1="54" x2="625" y2="310"/>
+<text x="380" y="80" class="m">0  read the issue at 07:48</text>
+<path class="a" d="M95,104 L356,104"/><text x="110" y="98">1  07:56:16 saves the text, following 07:48's</text>
+<path class="a" d="M625,144 L364,144"/><text x="380" y="138">2  07:56:52 saves, following 07:48's</text>
+<rect class="ok" x="150" y="158" width="200" height="40" rx="6"/><text x="160" y="176">3  refuses it: Miky's save</text><text x="160" y="192" class="m">is the current one</text>
+<path class="an" d="M360,216 L621,216"/><text x="380" y="210">4  "someone saved first", with Miky's text</text>
+<text x="380" y="246">5  merges: different blocks join,</text><text x="380" y="262" class="m">a block both changed stops and asks</text>
+<path class="an" d="M625,290 L364,290"/><text x="380" y="284">6  saves the merged text, following Miky's</text>
+</svg>
+<figcaption>On 11 Nov step 3 did not exist: Claude's save landed on top and Miky's added line was gone. The same refusal and merge run in Ship, Leaf and Peek when two people edit one issue.</figcaption>
+</figure>
+
+<h2>Access</h2>
+<div class="tw">
+<table>
+<thead><tr><th>What</th><th>Who can see it</th><th>Who can change it</th><th>Checked by</th></tr></thead>
+<tbody>
+<tr><td>An issue and its changes</td><td>Whoever can read its team</td><td>Whoever can write in its team</td><td>The relay</td></tr>
+<tr class="new"><td>An issue's text in a list or an open read</td><td>Whoever can read the team the issue was filed in; a list never sends the text</td><td>—</td><td>The relay</td></tr>
+<tr class="new"><td>Deleting an issue</td><td>A deleted issue leaves lists and shows under Archived, Deleted, with who deleted it</td><td>Anyone who may edit it deletes and restores it (today: a permanent delete nobody can undo)</td><td>The relay: from the switch it refuses the permanent delete</td></tr>
+<tr class="new"><td>Finding an issue by its words</td><td>Only people who can read its team</td><td>—</td><td>The relay</td></tr>
+</tbody>
+</table>
+</div>
+<p class="sub">Who can read an issue does not change. Someone who cannot read its team does not find it in search and sees "You can't open this" on its link.</p>
+
+<h2>Checked</h2>
+<ul>
+<li>Production, 16 Nov, read as the agent: 6,185 issue changes, 25.58 MB (2,370 text saves, 23.16 MB); 958 issue first records, 3.29 MB (2.42 MB their texts), every one carrying its team; newest non-text change per field 2,655 events, 1.70 MB; no issue change says which change it follows; 417 issues have their only text in the first record.</li>
+<li>The 11 Nov crossing: the four saves of "Leaf's topic page shows the topic's conversation, as Ship's does" between 07:48 and 08:26, read from the relay.</li>
+<li>Relay (buzz, branch <code>nfb-demo-kinds</code>): order per field and its backfill for every file type (<code>buzz-core/src/fields.rs:16</code>, <code>buzz-db/src/store/field_heads.rs</code>); the list, open and times reads accept issues (<code>buzz-relay/src/api/bridge/fields.rs:93</code>); refusing an unordered change is projects only (<code>fields.rs:28</code>), as are refusing a permanent delete (<code>buzz-db/src/store/fields.rs:521</code>) and search (<code>buzz-core/src/file_search.rs:19</code>).</li>
+<li>Shared code (interop 0.101.1 <code>fields.ts</code>): the reads, the ordered write and the merge take any file type; the switch is named for projects (<code>protocol/src/bridge.ts:347–389</code>).</li>
+<li>Ship reads every issue change (<code>src/nostr/store.ts:584</code>, "issues are not read by their fields until their stage") and writes with no "follows" (<code>src/api/writes.ts</code> <code>setIssueField</code>); its delete is permanent (<code>events.ts:534</code>). Leaf: <code>relay/projectFields.ts:123</code>, <code>document/save.ts:316</code>. Peek: opens issues as they are now (<code>src/nostr/projectFields.ts:104</code>), writes with no "follows" (<code>foreign.ts:2048</code>). Agent: lists issues as they are now (<code>lib/agent/apps/ship-workspace.ts:309</code>), every issue write with no "follows" (<code>ship.ts</code>).</li>
+<li>Not drawn: who may delete an issue today. The "after" row is the rule projects have had since 11 Nov.</li>
+</ul>
+
+</main>
+</body>
+</html>
