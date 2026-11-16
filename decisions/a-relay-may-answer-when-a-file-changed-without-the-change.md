@@ -53,7 +53,7 @@ times only, with no signed events. It is the relay's statement, not signed:
 - **Advertised, with a fallback.** A relay offering it says so in NIP-11, and
   an app that finds no such read reads whole events as before.
 
-SPEC §6.13 carries the read and §6.14 the inputs of the activity rule (ALO-22).
+SPEC §6.13 carries the read ("When files changed, without the changes"; ALO-22).
 
 ## Rejected alternatives
 
