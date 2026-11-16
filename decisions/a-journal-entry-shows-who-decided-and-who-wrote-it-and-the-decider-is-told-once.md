@@ -5,6 +5,14 @@
 - Decided by: Miky, in the session of 16 November 2026 after the review of estiva-docs#442, choosing "show it, tell them" over showing it with no notice and over only the decider accepting; his merge of this record accepts its wording
 - Area: Files
 
+> Superseded in part, 2026-11-16: "the person named as the decider is told
+> once, the way a mention tells them", and the intelligence line's "in no
+> other way". The person named as the decider becomes a member of the entry,
+> as an assignee does of an issue, and hears its conversation as a member,
+> in
+> [a-journal-entrys-decider-becomes-a-member-of-it-as-an-assignee-does](a-journal-entrys-decider-becomes-a-member-of-it-as-an-assignee-does.md).
+> "Decided by X · written by Y", and anyone accepting, stand.
+
 > Adds to
 > [what-a-project-learns-decides-and-worries-about-are-insights-journal-entries-and-risks](what-a-project-learns-decides-and-worries-about-are-insights-journal-entries-and-risks.md),
 > whose Journal entry has a "Decided by" kept apart from who wrote it: how that

@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What an item keeps</title>
+<style>
+:root {
+  --bg: #fbfaf7; --ink: #1d1d1f; --muted: #5d5d66; --line: #8e8e98; --rule: #dcdad3;
+  --box: #efeee9; --card: #ffffff; --fold: #f3f1ea; --gate: #e6edfb; --team: #eaf4ec;
+  --accent: #2457c5; --warn: #b3401f; --ok: #2a7a46; --chip: #dfe6f6; --pick: #f2f6ff;
+  --warnbg: #fbece6; --okbg: #e8f3ec;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #17171a; --ink: #ececef; --muted: #a8a8b2; --line: #74747f; --rule: #34343b;
+    --box: #26262b; --card: #1f1f23; --fold: #222226; --gate: #1d2a45; --team: #1d3324;
+    --accent: #93b2ff; --warn: #ff9e80; --ok: #82d69e; --chip: #2b3553; --pick: #1c2338;
+    --warnbg: #3a221b; --okbg: #1c3024;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #17171a; --ink: #ececef; --muted: #a8a8b2; --line: #74747f; --rule: #34343b;
+  --box: #26262b; --card: #1f1f23; --fold: #222226; --gate: #1d2a45; --team: #1d3324;
+  --accent: #93b2ff; --warn: #ff9e80; --ok: #82d69e; --chip: #2b3553; --pick: #1c2338;
+  --warnbg: #3a221b; --okbg: #1c3024;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+body {
+  margin: 0 auto; max-width: 760px; padding: 24px 16px 64px;
+  background: var(--bg); color: var(--ink);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+h1 { font-size: 28px; line-height: 1.2; margin: 4px 0 4px; }
+h2 { font-size: 20px; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--rule); }
+h3 { font-size: 17px; margin: 22px 0 6px; }
+p, li { max-width: 70ch; }
+ul { padding-left: 20px; }
+li { margin: 3px 0; }
+.kicker { color: var(--muted); font-size: 14px; margin: 0; }
+.question { font-size: 19px; line-height: 1.45; font-weight: 600; }
+.muted { color: var(--muted); }
+.small { font-size: 14px; }
+.door { background: var(--box); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.note { background: var(--box); border-left: 4px solid var(--line); padding: 10px 14px; border-radius: 6px; }
+.pick { background: var(--pick); border-left: 4px solid var(--accent); padding: 10px 14px; border-radius: 6px; }
+.opt { border: 1px solid var(--rule); border-radius: 10px; padding: 4px 16px 10px; margin: 14px 0; background: var(--card); }
+.opt h3 { margin-top: 12px; }
+.opt.rec { border-color: var(--accent); }
+.tag { display: inline-block; font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); vertical-align: 2px; margin-left: 6px; }
+.tablewrap { overflow-x: auto; margin: 10px 0; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; line-height: 1.4; min-width: 560px; }
+th, td { text-align: left; vertical-align: top; padding: 7px 8px; border-bottom: 1px solid var(--rule); }
+th { font-size: 13px; color: var(--muted); font-weight: 600; }
+td:first-child { font-weight: 600; min-width: 7.5em; }
+figure { margin: 18px 0 24px; overflow-x: auto; }
+figure svg { width: 100%; min-width: 600px; height: auto; display: block; }
+figcaption { font-size: 14px; color: var(--muted); margin-top: 6px; }
+figcaption b { color: var(--ink); }
+code { font-size: 13px; background: var(--box); padding: 0 4px; border-radius: 4px; }
+.file { fill: var(--card); stroke: var(--line); stroke-width: 1.2; }
+.okc { fill: var(--okbg); stroke: var(--ok); stroke-width: 1.3; }
+.badc { fill: var(--warnbg); stroke: var(--warn); stroke-width: 1.3; }
+.gate { fill: var(--gate); stroke: var(--accent); stroke-width: 1.5; }
+.team { fill: var(--team); stroke: var(--ok); stroke-width: 1.3; }
+.fold { fill: var(--fold); stroke: var(--line); stroke-width: 1.2; }
+.t { fill: var(--ink); font-size: 13px; }
+.b { font-weight: 700; }
+.ts { fill: var(--muted); font-size: 12px; }
+.ta { fill: var(--accent); font-size: 12px; font-weight: 600; }
+.tw { fill: var(--warn); font-size: 12px; font-weight: 600; }
+.tok { fill: var(--ok); font-size: 12px; font-weight: 600; }
+.arrow { fill: none; stroke: var(--ink); stroke-width: 1.3; }
+.arrowx { fill: none; stroke: var(--warn); stroke-width: 1.3; stroke-dasharray: 4 3; }
+.head { fill: var(--ink); }
+.headx { fill: var(--warn); }
+/* the marking mock */
+.mock { border: 1px solid var(--rule); border-radius: 12px; background: var(--card); padding: 14px 16px; max-width: 460px; margin: 14px 0; }
+.mock .row { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); }
+.mock .pill { font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.mock .field { margin: 10px 0 2px; padding: 7px 10px; border: 1px solid var(--accent); border-radius: 8px; font-weight: 600; }
+.mock .hint { font-size: 12px; color: var(--muted); margin: 0 0 10px; }
+.mock .src { border-left: 3px solid var(--line); background: var(--fold); padding: 8px 10px; border-radius: 4px; font-size: 14px; }
+.mock .src .who { font-size: 12px; color: var(--muted); }
+.mock .src .chg { font-size: 12px; color: var(--accent); margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<p class="kicker">Decision brief · 16 November 2026 · for Miky · project being shaped: Insights, Journal and Risks. Waiting for his answer; asking it writes a Proposed record.</p>
+<h1>What an item keeps</h1>
+
+<p class="question">When you mark Katerina’s words as an Insight, a Journal entry or a Risk, does the item keep its own copy of her words, or show them from where she wrote them? And who makes sure an item never shows words to someone who could not read where they were written?</p>
+
+<h2>Today</h2>
+<p>No app offers Mark yet. What is decided: an item is its own file, filed in one team whose people read it, about an issue, a project or an Initiative (the last part waits for your merge of estiva-docs#447). It names its sources, the messages and blocks it came from, and its readers are fixed when it is made. Two things were left open on purpose: whether an item copies its source’s words, and an item whose source has other readers than its team. Both were parked “for the brainstorm on private teams and notes”.</p>
+<p>Today every team is open to the whole company: no team can be made private yet. So the only source with other readers is a direct message; a person’s notes come later. Earlier today you decided that the project offers Mark only where the source’s readers are the item’s team’s readers, and that your own mark is accepted at once, except a Decision naming someone else as the decider.</p>
+<p>One rule is already in the protocol for a close cousin: when a message shows a block of a Leaf page, it shows the block <em>live</em> and must never store its words, “because a copy goes stale and keeps showing text to someone who has since lost access”. That was decided on 7 October.</p>
+
+<h2>Why it reaches beyond this ticket</h2>
+<ul>
+  <li><b>It sets what an item is for every app and every outside company:</b> a snapshot of someone’s words, or a window onto them. An agent that reads a project’s Journal as its memory reads whichever we choose.</li>
+  <li><b>It answers part of an Accepted record</b> (an item’s readers are fixed when it is made): its “whether an item copies its source’s words” line, and, if the relay checks it, its “source with other readers” line, which gets a rule instead of a wait.</li>
+  <li><b>“Mark only where readers match” lives in our apps only.</b> Any other client, or an agent, could write an item in a team that points at a direct message and repeats its words. Only the relay can make the rule hold for everyone.</li>
+</ul>
+<p class="door"><b>One-way door for a copy.</b> Words copied into an item are on the relay for good: every save of a file is kept, so even rewriting the item leaves them in its history. They stay readable by the item’s team after the source’s team turns private, and undoing that means deleting a version in every item. Showing words from their source, live or pinned, is two-way: nothing is copied, so we could still start copying later. A relay check is cheapest to add now, while no item exists on the relay; added later, it cannot touch the items already written.</p>
+
+<h2>The picture: copy, live, pinned</h2>
+<p>Your real example: Katerina’s 18 August message in Universal Navigation, “one search, an All topics switch”, marked as an Insight. Three moments: you mark it; she later edits her message; later still, private teams exist and her team turns private. The last column is what someone sees who reads the Insight’s team but not hers.</p>
+
+<figure>
+<svg viewBox="0 0 720 400" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>What an item shows after an edit and after the source's team turns private, for copy, live and pinned</title>
+<!-- column heads -->
+<text class="t b" x="130" y="20">1 · You mark her message</text>
+<text class="t b" x="330" y="20">2 · She edits her message</text>
+<text class="t b" x="530" y="20">3 · Her team turns private</text>
+<text class="ts" x="530" y="36">seen by a reader outside it</text>
+
+<!-- row A -->
+<text class="t b" x="8" y="76">A · Copy</text>
+<text class="ts" x="8" y="94">words stored</text>
+<text class="ts" x="8" y="108">in the item</text>
+<rect class="file" x="124" y="50" width="190" height="80" rx="8"/>
+<text class="t" x="134" y="72">Insight holds its own copy:</text>
+<text class="t" x="134" y="92">“one search, an All</text>
+<text class="t" x="134" y="110">topics switch”</text>
+<rect class="badc" x="324" y="50" width="190" height="80" rx="8"/>
+<text class="tw" x="334" y="72">Still the old words</text>
+<text class="t" x="334" y="92">no sign she changed them;</text>
+<text class="t" x="334" y="110">an agent reads the old ones</text>
+<rect class="badc" x="524" y="50" width="190" height="80" rx="8"/>
+<text class="tw" x="534" y="72">Reads her words anyway</text>
+<text class="t" x="534" y="92">the copy is the item’s,</text>
+<text class="t" x="534" y="110">so its readers keep it</text>
+
+<!-- row B -->
+<text class="t b" x="8" y="186">B · Live</text>
+<text class="ts" x="8" y="204">shown from her</text>
+<text class="ts" x="8" y="218">message, as now</text>
+<rect class="file" x="124" y="160" width="190" height="80" rx="8"/>
+<text class="t" x="134" y="182">Insight shows her message</text>
+<text class="t" x="134" y="202">as it reads now, fetched</text>
+<text class="t" x="134" y="220">from where she wrote it</text>
+<rect class="badc" x="324" y="160" width="190" height="80" rx="8"/>
+<text class="tw" x="334" y="182">Shows the new words</text>
+<text class="t" x="334" y="202">an accepted item now says</text>
+<text class="t" x="334" y="220">what nobody accepted</text>
+<rect class="okc" x="524" y="160" width="190" height="80" rx="8"/>
+<text class="tok" x="534" y="182">“Not available to you”</text>
+<text class="t" x="534" y="202">the relay does not hand</text>
+<text class="t" x="534" y="220">her message to them</text>
+
+<!-- row D -->
+<text class="t b" x="8" y="296">D · Pinned</text>
+<text class="ts" x="8" y="314">shown from her</text>
+<text class="ts" x="8" y="328">message, as marked</text>
+<rect class="file" x="124" y="270" width="190" height="80" rx="8"/>
+<text class="t" x="134" y="292">Insight shows her message</text>
+<text class="t" x="134" y="312">as it read when you marked</text>
+<text class="t" x="134" y="330">it, fetched from its source</text>
+<rect class="okc" x="324" y="270" width="190" height="80" rx="8"/>
+<text class="tok" x="334" y="292">Words as marked</text>
+<text class="t" x="334" y="312">+ “edited since marked ·</text>
+<text class="t" x="334" y="330">see it now”</text>
+<rect class="okc" x="524" y="270" width="190" height="80" rx="8"/>
+<text class="tok" x="534" y="292">“Not available to you”</text>
+<text class="t" x="534" y="312">the old version lives in her</text>
+<text class="t" x="534" y="330">team too, so it is hidden</text>
+
+<!-- title footnote band -->
+<rect class="fold" x="124" y="364" width="590" height="30" rx="6"/>
+<text class="ts" x="134" y="384">Every option stores the item’s own title and summary, so in column 3 they still show.</text>
+</svg>
+<figcaption><b>Option C</b> (copy only the title) is row B with the title band’s problem made the rule: the words drift with every edit, and the title repeats them to whoever reads the item.</figcaption>
+</figure>
+
+<h2>Options: what an item keeps</h2>
+
+<div class="opt">
+<h3>A · Copy the words into the item <span class="tag">do less · upstream’s way</span></h3>
+<p><b>What you see:</b> you mark her message; the Insight holds her words as its own text, readable without fetching anything. If she later fixes a typo or changes her mind, the Insight still shows what she first wrote, with no hint.</p>
+<p><b>Outside company:</b> the simplest thing to read; any Nostr client draws it, as upstream highlights do.</p>
+<p><b>Locks in:</b> her words in every item’s history, for good.</p>
+<p><b>What could go wrong:</b> when private teams arrive and her team turns private, everyone in the Insight’s team still reads her words. It contradicts the protocol’s own “pointer, never copy” rule for a shown block. An agent keeps quoting words their author corrected.</p>
+</div>
+
+<div class="opt">
+<h3>B · Show her words live, copy nothing</h3>
+<p><b>What you see:</b> the Insight shows her message as it reads now. Anyone who cannot read her message sees “not available to you”, because the relay simply does not hand it to them.</p>
+<p><b>Outside company:</b> reads the source to draw the item, the way a shown block works today.</p>
+<p><b>What could go wrong:</b> an accepted item’s words can change after it was accepted. Your 8 September Decision, “ditch that idea completely”, is your own message; edit it later and the Journal entry reads otherwise, with nothing on the entry to say so. A deleted source leaves the item with no words.</p>
+</div>
+
+<div class="opt">
+<h3>C · Copy only the title</h3>
+<p><b>What you see:</b> the title is stored, from her words or typed by you; the body is live as in B.</p>
+<p><b>What could go wrong:</b> both problems at once, smaller: the title still repeats her words to whoever reads the item, and the body still drifts with her edits. It is listed because the title is the part every list shows, and it is where the question below comes back.</p>
+</div>
+
+<div class="opt rec">
+<h3>D · Show her words as they were when marked, checked at every read <span class="tag">recommended</span></h3>
+<p><b>What you see:</b> the Insight shows her message as it read when you marked it. If she has edited it since, a line says “edited since marked”, and her current words are one tap away. A Leaf or Ship block shows as it was in the save of the page you marked it on; every save is already kept, which is what the History panel opens. Anyone who cannot read her message, or the page, sees “not available to you”.</p>
+<p><b>Outside company:</b> reads the source and the one version the item names, one extra read; it gets a fixed record of what was decided, like a link to a file at a given commit.</p>
+<p><b>Locks in:</b> that an item points, never copies; a later “copy” option stays possible.</p>
+<p><b>What could go wrong:</b> if she deletes her message, or someone deletes that version of a page (as for a pasted password), the item shows it was deleted, and a Decision loses its words. A list of items costs a read of their sources; not measured yet on your workspace. The title is still stored, below.</p>
+</div>
+
+<h3>What you see when you mark, under D</h3>
+<div class="mock" aria-label="Sketch of marking a message as an Insight">
+  <div class="row"><span class="pill">Insight</span> filed in her topic’s team · Accepted, your own mark</div>
+  <div class="field">One search, with an All topics switch</div>
+  <p class="hint">Title suggested from her words. Edit it. It is kept in the Insight.</p>
+  <div class="src">
+    <div class="who">Katerina · Universal Navigation · 18 Aug · as marked</div>
+    “one search, an All topics switch”
+    <div class="chg">edited since marked · see it now</div>
+  </div>
+</div>
+<p class="small muted">A sketch of the content only, not a design; the last line appears only once she has edited it.</p>
+<p><b>Is a suggested title a copy? Yes.</b> Whatever the title says, suggested or typed, is stored in the item under your name and readable by its team for good. D keeps her words out of the item; it cannot keep them out of a title. Two ways to start:</p>
+<ul>
+  <li><b>The title starts filled</b> with a short suggestion you edit. One step, and Mark stays as quick as “I will do it for her”. Because Mark is offered only where readers match, the title tells nobody anything they could not read when you marked it. It stays readable if her team later turns private, as anything you wrote about it in a message would.</li>
+  <li><b>The title starts empty</b> and you write it. Nothing of hers is copied unless you choose to write it; one more thing to type each time.</li>
+</ul>
+<p>Lean: starts filled, and the hint says plainly that it is kept. What happens to such titles when a team turns private is for the private-teams brainstorm.</p>
+
+<h2>Who checks it</h2>
+<p>Separate from what an item keeps, and it holds whichever option you pick: with A it is the only guard; with D it guards the title and the pointer.</p>
+
+<figure>
+<svg viewBox="0 0 720 250" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>The relay refuses an item whose source its readers cannot all read, versus apps only</title>
+<text class="ta" x="10" y="18">R · THE RELAY CHECKS</text>
+<rect class="file" x="10" y="32" width="160" height="54" rx="8"/>
+<text class="t b" x="20" y="54">Any app or agent</text>
+<text class="ts" x="20" y="72">writes an Insight</text>
+<path class="arrow" d="M170 59 H210"/><polygon class="head" points="210,54 220,59 210,64"/>
+<rect class="gate" x="222" y="26" width="150" height="66" rx="8"/>
+<text class="t b" x="232" y="48">Relay asks:</text>
+<text class="t" x="232" y="66">can everyone in this</text>
+<text class="t" x="232" y="82">team read the source?</text>
+<path class="arrow" d="M372 46 H410"/><polygon class="head" points="410,41 420,46 410,51"/>
+<rect class="okc" x="422" y="28" width="290" height="34" rx="6"/>
+<text class="tok" x="432" y="50">Yes, a team’s message or page: stored</text>
+<path class="arrowx" d="M372 74 H410"/><polygon class="headx" points="410,69 420,74 410,79"/>
+<rect class="badc" x="422" y="66" width="290" height="34" rx="6"/>
+<text class="tw" x="432" y="88">No (a direct message today): refused</text>
+
+<text class="tw" x="10" y="140">P · OUR APPS ONLY</text>
+<rect class="file" x="10" y="154" width="160" height="54" rx="8"/>
+<text class="t b" x="20" y="176">Peek, Ship, Leaf</text>
+<text class="ts" x="20" y="194">offer no Mark on a DM</text>
+<rect class="file" x="10" y="214" width="160" height="30" rx="8"/>
+<text class="ts" x="20" y="234">another client or agent</text>
+<path class="arrowx" d="M170 229 H210"/><polygon class="headx" points="210,224 220,229 210,234"/>
+<rect class="fold" x="222" y="196" width="150" height="48" rx="8"/>
+<text class="t" x="232" y="216">Relay stores an item</text>
+<text class="t" x="232" y="234">pointing at a DM</text>
+<path class="arrowx" d="M372 220 H410"/><polygon class="headx" points="410,215 420,220 410,225"/>
+<rect class="badc" x="422" y="190" width="290" height="54" rx="6"/>
+<text class="t" x="432" y="212">The team reads its title and summary;</text>
+<text class="t" x="432" y="232">the source shows “not available”</text>
+</svg>
+<figcaption>The check is made when the item is written. An item whose source’s team turns private later is not re-checked; under D its source then shows “not available”.</figcaption>
+</figure>
+
+<ul>
+  <li><b>R · The relay refuses</b> an item whose source lives where not everyone who reads the item can read it. Today that means a direct message, so a DM message cannot be marked at all, by any app. The direction matters: a later private team may mark an open team’s message, never the other way round. Any outside company’s app gets the same answer from the relay, so “readers match” is a protocol rule, not our apps’ promise. The relay already does this kind of check: it refuses an edit whose team is not the edited message’s team.</li>
+  <li><b>P · Our apps only.</b> Peek, Ship and Leaf never offer Mark where readers differ; anything else may write such an item. Under D the source then shows “not available”, and the title shows to the whole team.</li>
+</ul>
+
+<h2>Trade-offs</h2>
+<div class="tablewrap"><table>
+<thead><tr><th>Option</th><th>Protocol shape</th><th>What you and Katerina see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr></thead>
+<tbody>
+<tr><td>A · Copy</td><td>Item carries the source’s text; against “pointer, never copy”</td><td>Her first words for good, no sign of edits</td><td>Simplest read; matches upstream highlights</td><td>One-way: every copy stays in every item’s history</td><td>Least</td></tr>
+<tr><td>B · Live</td><td>Pointer only, as a shown block is</td><td>Her words as now; an accepted item can change</td><td>One read per source</td><td>Two-way</td><td>Small</td></tr>
+<tr><td>C · Title only</td><td>Pointer plus a stored title</td><td>Drifting body, title repeats her words</td><td>As B</td><td>Titles are one-way</td><td>Small</td></tr>
+<tr><td>D · Pinned</td><td>Pointer plus the version it was marked at</td><td>Her words as marked, “edited since marked”</td><td>One read per source and its version; a fixed record</td><td>Two-way</td><td>Medium: reading a version, the edited line</td></tr>
+<tr><td>R · Relay checks</td><td>A refusal every app meets</td><td>Mark never offered on a DM; nothing slips past</td><td>Gets the rule for free; cannot leak a DM by mistake</td><td>Two-way to loosen; adding it later misses items already written</td><td>A relay rule: look up each source’s team</td></tr>
+<tr><td>P · Apps only</td><td>No rule on the wire</td><td>Same in our apps</td><td>Must know and keep our rule</td><td>Two-way</td><td>None</td></tr>
+</tbody>
+</table></div>
+
+<h2>How others do it</h2>
+<ul>
+  <li><b>Upstream Nostr highlights</b> (NIP-84) copy the highlighted text into the highlight. That suits public notes; on a company relay with private places it is option A’s leak.</li>
+  <li><b>A code host’s permalink</b> shows a file’s lines as they were at one commit, with the newest version a click away, and only to people who can open the repository: option D’s shape.</li>
+  <li><b>Our own shown block</b> (a message showing a Leaf block) is option B, by the 7 October decision, and its reason is the one against A.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<p class="pick"><b>D, checked by the relay (R), with the title starting filled and saying it is kept.</b> An item is the team’s memory of what was learned and decided, so it must say exactly what was marked and accepted, even after its author edits it; only D does that. It must also never be the thing that carries words past the people allowed to read them; D copies nothing, and the relay makes “readers match” hold for every app and agent, not only ours. It keeps the protocol’s one rule for a shown part, pointer never copy, and adds one thing: which version. Cost does not tip it: D is a medium build and the relay rule is cheapest now, before any item is on the relay.</p>
+
+<h2>Checked</h2>
+<ul class="small">
+  <li><b>The two open lines</b> (“whether an item copies its source’s words”, “an item whose source is read by other people than its home”, not decided and not built): record an-items-readers-are-fixed-when-it-is-made-and-a-move-changes-only-where-it-is-listed, Accepted, estiva-docs origin/main.</li>
+  <li><b>An item names its sources and its readers are fixed when made:</b> records what-a-project-learns-decides-and-worries-about-are-insights-journal-entries-and-risks and the readers record; filed in a team: PR estiva-docs#447, open, read today.</li>
+  <li><b>No team can be private yet:</b> SPEC §3 (team listing: “until it ships, a team is not offered as private”); spaces “public until private teams exist”. A DM is its own channel with its own members (SPEC §6.1, “one id, one file”).</li>
+  <li><b>“Pointer, never copy” and “not available to you”:</b> SPEC §13.6.1 (a reader must not store a shown block’s words; the unreadable state shows no title and no text; a team the reader cannot read is skipped silently).</li>
+  <li><b>A message’s edits keep the original:</b> SPEC §6.8 (an edit is a new event, never a rewrite). <b>Every save of a page is kept:</b> SPEC §6.2 (changes are append-only), §13.1 (each text save carries the whole text) and record a-file-keeps-every-change-for-good, which also has “delete this version”. Note: the brief I was given cited §6.4 for this; §6.4 is Conversations.</li>
+  <li><b>Pointing at a message and at a run of blocks</b> exists: SPEC §13.1 (a reference to a message, by its id), §13.3 (a run of blocks), §13.6 (a comment’s anchor already copies the selected words, but stays with its page, so its readers match).</li>
+  <li><b>The relay already looks up a target’s team</b> when checking an edit: SPEC §6.8 (“refuses one whose team is not the target’s”).</li>
+  <li><b>Real moments</b> (18 Aug, 8 Sep, 13 Nov) are from the Leaf page “Insights, Journal and Risks: real examples”. Which message of Katerina’s you meant on 13 November is not recorded there; 18 August is the example the page lists.</li>
+  <li><b>Not verified:</b> your two calls of today (Mark only where readers match; your own mark accepted at once except a Decision naming someone else) are in no record or Ship project yet; I took them from the session. That no item is on the relay rests on SPEC having no item kind yet and on PR #447’s word; I did not query the relay. NIP-84 is from knowledge of the upstream text, not re-read today. The read cost of D, and of the relay’s lookup for an item with several sources, is not measured on your workspace. How a message is pinned (to its newest edit at the time of marking) is my reading, not yet written anywhere.</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="small muted">Sources by <code>q</code> (a message, §13.1) or <code>o</code> + a block run (§13.3, as §13.6.1’s part), with an optional <code>["v", &lt;change id&gt;]</code> pin: the text save (<code>1851</code>) for a block, the newest edit (<code>40003</code>) at marking for a message, none if unedited. Relay refusal code <code>source-readers</code>: refused when the item’s <code>h</code> has readers the source’s channel lacks. Supersedes in part an-items-readers-are-fixed-when-it-is-made-and-a-move-changes-only-where-it-is-listed (its “not decided here” line). Related: who-accepts-an-item-is-each-companys-own-rule-and-the-protocol-carries-its-status, a-journal-entry-shows-who-decided-and-who-wrote-it-and-the-decider-is-told-once, a-file-keeps-every-change-for-good; SPEC §6.2, §6.8, §13.1, §13.3, §13.6, §13.6.1; estiva-docs#447; upstream NIP-84 (<code>kind:9802</code>). Leaf page 30842:b38fd268…:00064d61-be36-4dbc-a329-3a2104251af5.</p>
+
+</body>
+</html>
