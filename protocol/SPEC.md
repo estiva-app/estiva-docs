@@ -2751,22 +2751,24 @@ first records. The answer is an object:
 {"times": [{"a": "30851:<pubkey>:<d>", "created_at": 1789000000,
             "h": "<team>", "under": "30850:<pubkey>:<d>",
             "changes": [{"id": "<change id>", "created_at": 1789000300,
-                         "fields": {"status": "done", "description": null}}]}]}
+                         "fields": ["status", "description"]}]}]}
 ```
 
 - **One row per first record picked**: its address, its time, its team (its
   `h`, else its `buzz-channel`, as the fold reads it), and `under`, its first
   `a` when it has one: the file it sits under.
 - **`changes`**: each field's current change, once, as the list read would
-  return it, the text's included, each with its id, its time, and the fields it
-  sets with their values. **The text's value is `null`**: its words never
-  cross. A `member:<P>` change is left out, as in the list.
+  return it, the text's included, each with its id, its time, and the names of
+  the fields it sets. **Never a value**: what a file says crosses only as its
+  signed changes. A `member:<P>` change is left out, as in the list.
 - **Times follow their events' read rules.** The rows are built from the
   same first records and changes the list read returns, so a time is answered
   only where its event would be: a change the reader may not read is not in
-  `changes`, and the text's change only to a reader of the file's home, as
-  `"text": true` has it. A deleted file is answered, its `deleted` change among
-  the rest, since its events stay readable by id.
+  `changes`. The text is named only to a reader of the file's home, as
+  `"text": true` has it, whether by its own change or by one that sets more;
+  to anyone else such a change names its other fields, and a change of the
+  text alone is not answered. A deleted file is answered, its `deleted` change
+  among the rest, since its events stay readable by id.
 - **The relay's statement, not signed.** Nothing may be decided on it beyond
   the order of a list; an app that needs a change reads it by its id. What
   counts as news (a rename, tidying a topic, who is on a file) is the app's to
@@ -4075,7 +4077,7 @@ staged field, or writes one, also conforms to these.
 | C60 | **Opening the file sees it; reading it does not** (*added 2026-11-13*, §11.2, §11.3). A 👍 to `P`'s comment on a listed file lights the topic. Writing only the file's own marker past the 👍 (`file:<d>` or its address) leaves it new. Opening the file's conversation in an app that draws the 👍 under the comment writes `reactions:file:<d>` and the topic shows none. For a file named both ways, `reactions:<file-address>` alone past the 👍 also clears it |
 | C61 | **Unread wins the dot** (*added 2026-11-13*, §11.8). A topic with an unread mention of `P` and a new 👍 to `P`'s message shows one dot, the unread one, and its card lists both lines; once the mention is read and the 👍 is not seen, the dot is the reaction's |
 | C62 | **Keys carried and floored** (*added 2026-11-13*, §11.1, §11.6). A slot holding `reactions:<uuid>` and a well-formed key no app knows (`x-later:abc`), merged and republished by a client that knows neither, keeps both verbatim, and the second lights and clears nothing. A blob trimmed to fit that drops a `reactions:` key worth `v` holds `reactions-floor` ≥ `v`, so the reactions it covered stay seen; a `reactions-floor` later than its slot's `created_at` is read as that `created_at` |
-| C63 | **Times without the changes** (*added 2026-11-16*, §6.13). A project's issue with a status change and a text save, read with `{"fields": "times", "kinds": [30851], "#a": [<project>]}`, answers one row naming the project as `under`, with both changes newest first and `description` as `null`; no word of the text, the issue's content or any `sig` is in the answer. A member outside the issue's team gets no row; for a project stored workspace-wide whose changes are filed in a team they cannot read, a row with no changes. A deleted issue is still answered, its `deleted` change first. `"times"` beside `"newest"`, `text` or `search` is refused. NIP-11 `file_list` says `"times": true` |
+| C63 | **Times without the changes** (*added 2026-11-16*, §6.13). A project's issue with a status change and a text save, read with `{"fields": "times", "kinds": [30851], "#a": [<project>]}`, answers one row naming the project as `under`, with both changes newest first, each naming its fields (`description`, `status`); no field's value, no word of the text, the issue's content or any `sig` is in the answer. A change setting the status and the text together names only `status` to a reader outside the issue's home. A member outside the issue's team gets no row; for a project stored workspace-wide whose changes are filed in a team they cannot read, a row with no changes. A deleted issue is still answered, its `deleted` change first. `"times"` beside `"newest"`, `text` or `search` is refused. NIP-11 `file_list` says `"times": true` |
 
 ### 9.1 Reference checks
 
