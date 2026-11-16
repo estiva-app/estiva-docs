@@ -28,10 +28,21 @@ says which of its types its app opens without asking Estiva.
   from, and forces no one
   ([estiva-curates-shared-types-in-a-public-directory](estiva-curates-shared-types-in-a-public-directory.md)).
 - SPEC §6.1 says: "Until §7 can name a type, a manifest cannot say which app
-  opens or draws a named type": `records`, `projections`, `urls`, `aspect` and
-  a `kind:31990`'s claims (§7) are keyed by kind number, and every named type
-  shares `30852`. So today no app can say it opens Insights, and nothing tells
-  Peek that Ship does.
+  opens or draws a named type: `records`, `projections`, `urls` and a
+  `kind:31990`'s claims are keyed by kind number, and every named type shares
+  `30852`. That is specified with apps declaring their types to the relay." So
+  today no app can say it opens Insights, and nothing tells Peek that Ship
+  does.
+- *Claude's:* the claim in an app's listing, which app opens and draws a
+  type, is separate from what an app declares to the relay about a type,
+  which changes how files are found and ranked and never what is accepted
+  ([a-types-declaration-changes-how-files-are-found-never-what-is-accepted](a-types-declaration-changes-how-files-are-found-never-what-is-accepted.md)).
+- An app counts only once the workspace has added it
+  ([an-app-counts-only-once-the-workspace-adds-it](an-app-counts-only-once-the-workspace-adds-it.md)).
+- *Claude's:* giving Insights, Journal entries and Risks three kinds of their
+  own, so that today's kind-keyed listings could claim them, was not an
+  option: every new type starts with one named first record
+  ([osnovas-base-types-keep-their-records-and-every-new-type-starts-named](osnovas-base-types-keep-their-records-and-every-new-type-starts-named.md)).
 
 ## Decision
 
@@ -39,27 +50,24 @@ says which of its types its app opens without asking Estiva.
   names kinds today. A named type is claimed as a kind is.
 - **Any app declares its own types the same way**, Estiva's and an outside
   company's alike, with no entry in Estiva's directory needed to be opened.
-- **Two apps may both name one type.** Both are offered; neither is the
-  type's owner by declaring it.
-- *Claude's encoding, for the record:* wherever §7 keys by kind, a named type
-  is keyed by the pair `{"kind": 30852, "type": "osnova.insight"}`: in
-  `records`, `projections`, `urls`, and a `kind:31990`'s `k` claims. The type
-  name `osnova.insight` is itself the build's to settle.
-- **Not decided here:** how a company picks between two apps that both name a
-  type.
+- *Claude's:* **only the listings of apps the workspace has added count**
+  ([an-app-counts-only-once-the-workspace-adds-it](an-app-counts-only-once-the-workspace-adds-it.md)).
+- *Claude's:* **naming a type you open does not redefine it.** A shared type's
+  core stays the directory's; an app's own fields are its own.
+- *Claude's, for the SPEC PR:* the exact shape of the claim is left to the
+  SPEC PR, for example a `k` value naming the type alongside `30852`, as §6.1
+  already filters a named type's files. In it, an app's `records` adds only
+  that app's own fields, never a shared type's core fold.
+- **Not decided here:** how a company picks between two added apps that both
+  name a type, including whether both are offered.
 
 ## Rejected alternatives
 
-- **B · Estiva's public directory names one default app per type,
-  hard-coded.** Turned down: an outside company's own type could not say
-  which app opens it, and Estiva would become the gatekeeper of which app
-  opens what, which the directory record keeps it from being: it helps
+- **B · "Estiva's public list of shared types names each one's default app,
+  and apps hard-code it".** Turned down: an outside company's own type could
+  not say which app opens it, and Estiva would become the gatekeeper of which
+  app opens what, which the directory record keeps it from being: it helps
   builders agree and forces no one.
-- **Three kinds of their own**, one each for Insight, Journal entry and Risk,
-  so that today's kind-keyed listings could claim them. Turned down: it goes
-  against the Accepted record that every new type starts with one named first
-  record (osnovas-base-types-keep-their-records-and-every-new-type-starts-named),
-  and an outside company's types would still have no way to be claimed.
 
 ## Consequences
 
@@ -68,7 +76,8 @@ says which of its types its app opens without asking Estiva.
   with Ship's listing naming the three types.
 - Peek, and any app, finds the app that opens a marked message's item by
   reading the listings, as it does for a kind.
-- An outside company's types open in its own app from every Estiva app, with
-  nothing to register.
-- A company with two apps naming the same type needs a rule for which opens;
-  that is open, and shaped when it first happens.
+- An outside company's types can be found from the listings, once the
+  workspace has added its app, with nothing to register in Estiva's
+  directory.
+- A company with two added apps naming the same type needs a rule for which
+  opens; that is open, and shaped when it first happens.
