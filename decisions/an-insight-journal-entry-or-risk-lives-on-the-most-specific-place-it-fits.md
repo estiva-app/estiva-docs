@@ -11,6 +11,13 @@
 > [an-items-readers-are-fixed-when-it-is-made-and-a-move-changes-only-where-it-is-listed](an-items-readers-are-fixed-when-it-is-made-and-a-move-changes-only-where-it-is-listed.md).
 > Everything else stands as this record says.
 
+> Superseded in part, 2026-11-16 (later the same day): its "one home per item,
+> a task, else a project, else the Initiative". An item is filed in one team,
+> whose people read it, and is about a task, else a project, else an
+> Initiative, or about nothing and simply the team's, in
+> [an-item-is-filed-in-a-team-and-is-about-an-issue-a-project-or-an-initiative](an-item-is-filed-in-a-team-and-is-about-an-issue-a-project-or-an-initiative.md).
+> The roll-up, the changeable field and "choosing is secondary" stand.
+
 ## Who it affects
 
 Claude keeps by hand today what each level knows: a Decided line on the issue

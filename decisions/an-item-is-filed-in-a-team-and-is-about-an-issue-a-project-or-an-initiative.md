@@ -1,0 +1,81 @@
+# An Insight, Journal entry or Risk is filed in one team, whose people read it, and is about an issue, a project or an Initiative when it can be, or else is just the team's
+
+- Date: 2026-11-16
+- Status: Accepted
+- Decided by: Miky, in the shaping session of 16 November 2026 for the project "Insights, Journal and Risks" ("I think that's right… I think you write it"): "Highlight is type of file -> the root home is one team. E.g. there is Engineering insights (the home is engineering team), it's customer insights (the home is product design,...)"; "Highlight ideally reference something specific (a issue, a project,..) worst case scenario it's just team highlight"; "if you're not able to reference e.g. specific issue or project, you can reference a Initiative"; and, asked whether this made more sense than the Accepted rule: "You learn e.g. some insights regarding process. Sure it happened on that project and you learned it there, but it's Engineering insights primarily and will be used by the whole team." Two parts are Claude's, marked below; his merge of this record accepts them
+- Area: Files
+
+## Who it affects
+
+Most of what we have learned so far is a team's, not one project's. "Measure
+speed at Miky's scale", "a green test run can hide a broken feature" and
+"review is the agent's own step" were each learned on one ticket, and each is
+an Engineering lesson the whole team uses (the Leaf page "Insights, Journal
+and Risks: real examples", 16 Nov). Under the rule accepted on 13 November each
+would have to sit on an issue or a project it does not really belong to.
+
+With this call Miky marks such a lesson as an Insight filed in Engineering. If
+it is about a specific issue, project or Initiative, it says so, and it shows
+there too; if not, it is simply one of Engineering's insights. Where it was
+learned stays visible through its sources, the message or block it came from.
+
+## Context
+
+- [an-insight-journal-entry-or-risk-lives-on-the-most-specific-place-it-fits](an-insight-journal-entry-or-risk-lives-on-the-most-specific-place-it-fits.md)
+  (Accepted 13 Nov) gives each item one home: a task, else a project, else an
+  Initiative. It leaves open an insight from a team's chat about no project.
+- [an-items-readers-are-fixed-when-it-is-made-and-a-move-changes-only-where-it-is-listed](an-items-readers-are-fixed-when-it-is-made-and-a-move-changes-only-where-it-is-listed.md)
+  (Accepted 16 Nov): an item's readers are fixed when it is made, and a move
+  changes only where it is listed.
+- Every file is filed in one team, whose people read it
+  ([what-belongs-to-a-file-is-stored-with-it](what-belongs-to-a-file-is-stored-with-it.md)),
+  and an issue, filed in a team, also belongs to a project through a field that
+  can change.
+- A topic lives in exactly one team
+  ([a-topic-lives-in-exactly-one-team](a-topic-lives-in-exactly-one-team.md)),
+  while an Initiative, the name Miky leans to for cross-team work, groups files
+  from several teams. That name still waits on Katerina's look.
+- No Insight, Journal entry or Risk is on the relay yet: changing this costs no
+  migration.
+
+## Decision
+
+- **An item is filed in one team**, as every file is, and that team's people
+  read it. This is its root home.
+- **It is about something specific when it can be**: an issue, else a project,
+  else an Initiative. **If none fits, it is just the team's**: an Engineering
+  insight, a Product design risk.
+- **It shows on what it is about and on its team's own list.** A project shows
+  what is about its issues; an Initiative shows what is about it and about the
+  projects and issues it groups. Rolling up is a way of showing, as before.
+- **What it is about is a field and can change**, and the change is kept in its
+  history. Changing it never changes who reads the item.
+- *Claude's, not Miky's words:* **when marking, the team starts as the team of
+  what the item is about, or else the team where it was marked**, and the
+  person can change it. **Where it was learned is its sources**, never its
+  "about".
+
+## Rejected alternatives
+
+- **The item's home is the issue, project or Initiative itself** (the rule
+  Accepted on 13 Nov). Turned down: a team's lesson would be pinned to the one
+  project it happened on and stay out of sight for the rest of the team; an
+  Initiative spans teams, yet an item homed on it would be read by one team
+  only, without saying so; and a team's chat about no project had no place.
+
+## Consequences
+
+- Supersedes in part
+  [an-insight-journal-entry-or-risk-lives-on-the-most-specific-place-it-fits](an-insight-journal-entry-or-risk-lives-on-the-most-specific-place-it-fits.md):
+  its "one home per item … a task, else a project, else the Initiative" becomes
+  "filed in a team, about a task, else a project, else an Initiative, or about
+  nothing". Its roll-up, its changeable field and "choosing is secondary" stand.
+- In [an-items-readers-are-fixed-when-it-is-made-and-a-move-changes-only-where-it-is-listed](an-items-readers-are-fixed-when-it-is-made-and-a-move-changes-only-where-it-is-listed.md),
+  "the home it is made in" means the team it is filed in, and "moving its home"
+  means changing what it is about.
+- Ship shows a team's own Insights, Journal and Risks on the team's page, as
+  well as on projects and issues.
+- An item filed in one team about another team's issue shows on that issue
+  only to people who can read the item's team. Today every team is open to the
+  whole company, so nobody meets this until private teams.
+- Marking asks two things, the team and what it is about; both start filled in.

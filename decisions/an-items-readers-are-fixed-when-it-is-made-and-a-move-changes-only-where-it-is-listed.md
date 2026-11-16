@@ -15,6 +15,11 @@
 > left undecided, from a private conversation to any source whose readers
 > differ from the home's. Everything else in those records stands.
 
+> Read with, 2026-11-16: "home" here is the team an item is filed in, and
+> "moving its home" is changing what the item is about, since
+> [an-item-is-filed-in-a-team-and-is-about-an-issue-a-project-or-an-initiative](an-item-is-filed-in-a-team-and-is-about-an-issue-a-project-or-an-initiative.md).
+> What this record decides is unchanged.
+
 ## Who it affects
 
 Miky's own example: he marks Katerina's message in a Peek topic, and an
