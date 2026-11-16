@@ -354,6 +354,15 @@ last owner. No new refusal code. Record
   - `person-not-named` (`invalid:`): a `kind:1851` sets `member:<P>` or
     `follow:<P>` where `P` is not a lowercase hex key, or without `["p", P]`
     (§11.8, *added 2026-11-10*).
+  - `workspace-admins` (`restricted:`): a key that is not an owner or admin on
+    the workspace's roster writes a file only they write (§6.1, *added
+    2026-11-16*). An app says only the workspace's admins can change it.
+  - `writers-mark` (`invalid:`): a `writers` tag on an event that is not a
+    written-once first record, or with a value the relay does not list in
+    NIP-11 (§6.1).
+  - `writers-order` (`invalid:`): a marked first record whose `created_at` is
+    not later than every marked first record in its team; the app writes it
+    again with a later one and tells nobody (§6.1).
 
   A `kind:9000` naming several people is refused with a code only when
   everyone in it is refused for that same code; otherwise it is refused
@@ -937,24 +946,31 @@ owner's role, and an app's key is no exception.
   written once: on any `30852`, and on a base kind from the switch (§6.13). The
   relay refuses a `writers` tag on any other event, so the mark can be neither
   added nor taken off later.
-- **Which values a relay keeps to.** The relay lists in its NIP-11 the values
-  it enforces, `"writers": ["workspace-admins"]`, and refuses a first record
-  whose `writers` value it does not list. A reader honours only a value the
-  relay lists: on a relay that lists none, a marked file counts for nothing
-  wherever the mark is what makes it count (§7.4). Later values (one team's
-  admins, for instance) are new values, never a new meaning for this one.
+- **Which values a relay keeps to, and since when.** The relay lists in its
+  NIP-11 each value it enforces with the time, in seconds, from which it has
+  kept to it: `"writers": {"workspace-admins": 1763251200}`. It refuses a
+  first record whose `writers` value it does not list. A reader honours a
+  marked first record only when the relay lists its value and its
+  `created_at` is not earlier than that value's time; any other marked file
+  counts for nothing wherever the mark is what makes it count (§7.4), as on a
+  relay that lists none. §5.1's window means no first record dated from that
+  time on was stored without the rule. Later values (one team's admins, for
+  instance) are new values, never a new meaning for this one.
 - **What is a write.** The relay takes a marked file's first record only from
   an owner or admin, and from then on refuses, from anyone else, checking the
   role when each event arrives:
   - every `kind:1851` whose `a` or `O` names the file, archiving and deleting it
     included (§6.5);
-  - a `kind:1852` `move` or `remove` of it from its home team (§3.3).
+  - a `kind:1852` `move` or `remove` of it from its home team (§3.3);
+  - a `kind:9005` removing its first record or one of its changes for good
+    (§6.5): a team's own owners and admins do not, only the workspace's.
 
   These are not writes, and anyone who may otherwise send them does: a person
-  setting their own `member:<P>` or `follow:<P>` on it (§11.8), so someone an
-  admin added can still give it up; a comment, a reaction or a mention of it;
-  and an `add` of it to another team's list, which changes that list and not
-  the file.
+  leaving it (their own `member:<P>` set to `false`) or setting their own
+  `follow:<P>` (§11.8), so someone an admin added can still give it up; a
+  comment, a reaction or a mention of it; and an `add` or `remove` of it on
+  another team's list, which changes that list and not the file. Joining it
+  (`member:<P>` set to `true`, one's own included) is a write.
 - **Finding marked files.** `writers` is not indexed: a reader asks by kind,
   `#k` and `#h`, and keeps the events that carry the mark.
 - **Stored first is first by time.** The relay refuses a marked first record
@@ -962,7 +978,9 @@ owner's role, and an app's key is no exception.
   already stores in that team, whatever their types, so in each team the order
   of `created_at` is the order the relay stored them in. A writer that is
   refused writes again with a later `created_at`, without telling the person,
-  as for "One id, one file" above.
+  as for "One id, one file" above. Each refusal here carries its code (§3.3:
+  `workspace-admins`, `writers-mark`, `writers-order`). §5.1's window on `created_at` bounds how
+  long a file stamped ahead of the relay's clock holds the next one back.
 
 *Clarified 2026-10-15.* The order is part of each event's id preimage, so a
 writer adding a tag puts it last and moves no other. It is not a rule a reader
@@ -3612,8 +3630,9 @@ describes:
   and a company's own columns are more `property:<id>` fields of the same
   file.
 - **Finding it.** A reader asks for
-  `{"kinds": [30852], "#k": ["osnova.schema"], "#h": [<Company team>]}`, and
-  keeps the files that carry the mark on a relay that lists it (§6.1), name
+  `{"kinds": [30852], "#k": ["osnova.schema"], "#h": [<Company team>]}`,
+  paging back to the oldest (one answer holds the files for every type), and
+  keeps the files whose mark the relay honours (§6.1), name
   the type in `of`, and are neither archived nor deleted. The earliest of
   those by `created_at` is the company's file; the relay's rule on marked
   files makes that the one it stored first. A file without the mark, or in
@@ -3629,8 +3648,8 @@ describes:
   yet.
 
 A reader takes an option's label and colour from the company's own, and from
-the listing's until a company has saved its own; one that cannot read the
-company's shows the id (§6.2). **Renaming an option keeps its id**, so a
+the listing's until a company has saved its own, or when it cannot read the
+company's; a status neither names is shown by its id (§6.2). **Renaming an option keeps its id**, so a
 rename changes no file.
 
 **The tracker** is the app whose manifest publishes the kind's staged
@@ -4173,7 +4192,7 @@ staged field, or writes one, also conforms to these.
 | C61 | **Unread wins the dot** (*added 2026-11-13*, §11.8). A topic with an unread mention of `P` and a new 👍 to `P`'s message shows one dot, the unread one, and its card lists both lines; once the mention is read and the 👍 is not seen, the dot is the reaction's |
 | C62 | **Keys carried and floored** (*added 2026-11-13*, §11.1, §11.6). A slot holding `reactions:<uuid>` and a well-formed key no app knows (`x-later:abc`), merged and republished by a client that knows neither, keeps both verbatim, and the second lights and clears nothing. A blob trimmed to fit that drops a `reactions:` key worth `v` holds `reactions-floor` ≥ `v`, so the reactions it covered stay seen; a `reactions-floor` later than its slot's `created_at` is read as that `created_at` |
 | C63 | **Times without the changes** (*added 2026-11-16*, §6.13). A project's issue with a status change and a text save, read with `{"fields": "times", "kinds": [30851], "#a": [<project>]}`, answers one row naming the project as `under`, with both changes newest first, each naming its fields (`description`, `status`); no field's value, no word of the text, the issue's content or any `sig` is in the answer. A change setting the status and the text together names only `status` to a reader outside the issue's home. A member outside the issue's team gets no row; for a project stored workspace-wide whose changes are filed in a team they cannot read, a row with no changes. A deleted issue is still answered, its `deleted` change first. `"times"` beside `"newest"`, `text` or `search` is refused. NIP-11 `file_list` says `"times": true` |
-| C64 | **Only the workspace's admins write a marked file** (*added 2026-11-16*, §6.1, §6.5, §11.8). On a relay whose NIP-11 lists `"writers": ["workspace-admins"]`: a `30852` with `["writers","workspace-admins"]` from a member who is not a workspace owner or admin is refused, and from an admin lands. On it, a member's `1851` setting `title`, `archived` or `deleted`, and their `1852` `move` of it, are refused; the same from an admin land. A member an admin added sets their own `member:<P>` to `false` and it lands. A `writers` tag on a `1851`, a `30852` with `["writers","team-admins"]`, and a second marked first record in the same team whose `created_at` is not after the first, are refused. On a relay that lists no `writers`, a reader treats a marked file as counting for nothing |
+| C64 | **Only the workspace's admins write a marked file** (*added 2026-11-16*, §6.1, §6.5, §11.8). On a relay whose NIP-11 lists `"writers": {"workspace-admins": T}`: a `30852` with `["writers","workspace-admins"]` from a member who is not a workspace owner or admin is refused, and from an admin lands. On it, a member's `1851` setting `title`, `archived` or `deleted`, and their `1852` `move` of it, are refused; the same from an admin land. A member an admin added sets their own `member:<P>` to `false` and it lands. A `writers` tag on a `1851`, a `30852` with `["writers","team-admins"]`, and a second marked first record in the same team whose `created_at` is not after the first, are refused. A member setting their own `member:<P>` to `true` on it is refused, as is a `kind:9005` on its first record from a team admin who is not a workspace admin. On a relay that lists no `writers`, a reader treats a marked file as counting for nothing, and on one that lists `workspace-admins` from time `T`, a marked file dated before `T` counts for nothing too |
 | C65 | **The company's file labels, never counts** (*added 2026-11-16*, §7.4). With a marked `osnova.schema` file `of` `osnova.issue` in the Company team whose `property:status` adds `blocked` (label Blocked, stage `started`), an issue whose current change is `value` `blocked` with `["stage","status","started"]` shows Blocked and counts as started; a reader that cannot read the Company team shows `blocked` and counts it as started. The same file unmarked, or in another team, changes nothing. Of two marked files `of` the same type, the earlier by `created_at` is read; an archived one is skipped |
 | C66 | **The layer is found by type and field** (*added 2026-11-16*, §7.3). An action whose `appliesTo` is `30851` and whose `emits.field` is `status` offers the options of the company file `of` `osnova.issue`, field `property:status`, whatever name the manifest gives its vocabulary |
 
@@ -4821,8 +4840,8 @@ with the file's team as its `h`. **It needs no `prev` and is never in a
 `set`**, on every type, the ones kept in order included (§6.2): two people
 joining never clash, and adding a person never edits the file's own fields. A
 leave is never a change to anything but the leaver's own `member:<P>`. On a
-file only the workspace's admins write (§6.1), adding someone else is a write,
-so only they add people; anyone on it still leaves it, and sets their own
+file only the workspace's admins write (§6.1), adding a person is a write,
+so only they add people, themselves included; anyone on it still leaves it, and sets their own
 `follow:<P>`, as on any file (*added 2026-11-16*).
 **Created it** is the author of the file's first record, joining at its
 `created_at`; from the switch a first record is written once (§6.1). A reader

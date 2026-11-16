@@ -127,12 +127,12 @@ Its first record is a `kind:30852` with `["k", "osnova.schema"]`, the type it
 describes in `["of", <type>]`, the workspace's Company team as its `h`, and
 `["writers", "workspace-admins"]`, so only the workspace's owners and admins
 write it ([SPEC §6.1](SPEC.md)). There is one per type; if there are several,
-the earliest counts.
+the earliest whose mark the relay honours counts ([SPEC §7.4](SPEC.md)).
 
 | field | value |
 | --- | --- |
 | `title` | its name, such as "Issue statuses" |
-| `property:<id>` | one property of the described type, such as `property:status`: JSON `{"label", "type": "choice", "default", "options": [{"value", "label", "colour", "stage"}]}`. Each option's `stage` is one of the described type's stages |
+| `property:<id>` | one property of the described type, such as `property:status`: JSON `{"label", "type": "choice", "default", "options": [{"value", "label", "colour", "stage"}]}`. Each option's `colour` is a colour name (`neutral`, `blue`, `green`, `muted`), never a hex code, and its `stage` one of the described type's stages ([SPEC §7.4](SPEC.md)) |
 | `archived`, `deleted` | as on any file; an archived or deleted one does not count |
 
 Until a company saves its own, every app uses the defaults listed above.
