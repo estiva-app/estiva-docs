@@ -1,17 +1,19 @@
-# The person named as a Journal entry's decider becomes a member of the entry, as an assignee becomes a member of an issue, and hears its conversation as any member does
+# The person named as a Journal entry's decider is shown it once in their Activity and becomes a member of the entry, as an assignee does of an issue, and hears its conversation as any member does
 
 - Date: 2026-11-16
 - Status: Accepted
-- Decided by: Miky, in the shaping session of 16 November 2026 for the project "Insights, Journal and Risks", asked "A Journal entry says 'Decided by Katerina'. Is she told once only, or does she join the entry and hear about every later comment on it?": "Decision is a file. Basically Katerina become member of that file. It should have similar behavior as if Katerina gets assign to an issue." Lines marked as Claude's are read from the SPEC and the records cited, not his words; his merge of this record accepts them
+- Decided by: Miky, in the shaping session of 16 November 2026 for the project "Insights, Journal and Risks", asked "A Journal entry says 'Decided by Katerina'. Is she told once only, or does she join the entry and hear about every later comment on it?": "Decision is a file. Basically Katerina become member of that file. It should have similar behavior as if Katerina gets assign to an issue."; then, asked the same day in the session "Is she told once when she's named?", choosing "Yes, once, then member", for being named and for being assigned to anything, in any app; and, asked whether to limit naming someone as a decider now, choosing "Not now". Lines marked as Claude's are read from the SPEC and the records cited, not his words; his merge of this record accepts them
 - Area: Files
 
 > Supersedes in part
 > [a-journal-entry-shows-who-decided-and-who-wrote-it-and-the-decider-is-told-once](a-journal-entry-shows-who-decided-and-who-wrote-it-and-the-decider-is-told-once.md):
 > its "the person named as the decider is told once, when they are named, the
-> way a mention tells them", and its intelligence line, "an agent that writes
-> an entry in someone's name reaches them this way … and in no other way".
-> Its "Decided by X · written by Y", and "anyone may still accept the entry",
-> stand.
+> way a mention tells them", which becomes "shown once in their Activity,
+> then a member of the entry", and its intelligence line, "an agent that
+> writes an entry in someone's name reaches them this way … and in no other
+> way". Its "Decided by X · written by Y", and "anyone may still accept the
+> entry", stand. It also changes SPEC §11.8's "being placed makes nothing
+> unread": being placed on any file now shows once in the person's Activity.
 
 ## Who it affects
 
@@ -75,18 +77,18 @@ handles assignees handles deciders.
     they join from that change ("was placed on it").
 
   Nothing before they joined is unread for them.
-- *Claude's:* **what they see at the moment of being named is what an
-  assignee sees when assigned.** The placement itself makes nothing unread
-  (SPEC §11.8); each app shows a file newly placed on a person the way it
-  shows a new assignment, and the `#p` read finds it.
-- *Claude's:* **naming a decider again after they left places them again**,
-  as re-assigning someone does; only they can leave.
+- **Being named shows once in their Activity**, so they can open the entry
+  and correct it; after that they hear every comment as a member (Miky: "Yes,
+  once, then member"). **The same rule holds for being assigned to anything,
+  in any app**: being placed on a file shows once in the person's Activity.
+  SPEC §11.8 says today that being placed makes nothing unread, since the
+  change is not a message; the build changes §11.8 to this.
 - *Claude's:* **an agent that names someone as a decider reaches them this
   way**: as a member of that entry, under their own following and levels.
   Naming them is still the only way intelligence reaches them
   ([intelligence-works-in-the-background-and-reaches-you-only-by-naming-you](intelligence-works-in-the-background-and-reaches-you-only-by-naming-you.md));
-  what changes is that being named on an entry puts them on it, not only
-  tells them once.
+  what changes is that being named on an entry puts them on it, as well as
+  telling them once.
 
 ## Rejected alternatives
 
@@ -105,14 +107,19 @@ handles assignees handles deciders.
 ## Consequences
 
 - One rule for every person field: an app that handles assignees handles
-  deciders, with no new event and no new notice.
+  deciders, with no new event.
+- **Naming is not limited now** (Miky, "Not now"): anyone may name anyone as a
+  decider, and naming someone again after they left puts them back, the same
+  as adding a person to a file or assigning them
+  ([anyone-may-add-a-person-to-a-file](anyone-may-add-a-person-to-a-file.md)).
+  Only they can leave. It is looked at again with agents' loops.
 - A decider hears every later comment on the entries that name them, so an
   agent writing many entries in Miky's or Katerina's name adds that many
-  conversations to their unread. They can mute or leave an entry; how often an
-  agent may name someone is still open, with loops.
-- *Claude's:* a wrong "Decided by" is still caught by the person it names,
-  now through the entry showing among the files placed on them rather than
-  through a one-time notice. How an app draws that, on the Desk and in the
+  conversations to their unread and that many lines to their Activity. They
+  can mute or leave an entry.
+- A wrong "Decided by" is caught by the person it names, through the one line
+  in their Activity. *Claude's:* how that line draws, on the Desk and in the
   Activity indicator, is shaped with the build.
 - The build declares "Decided by" as a person field (§7.3), so every writer
-  adds the `p` that places the decider.
+  adds the `p` that places the decider, and changes SPEC §11.8 so being placed
+  on any file shows once in the person's Activity.

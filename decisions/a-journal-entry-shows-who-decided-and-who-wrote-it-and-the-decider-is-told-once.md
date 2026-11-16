@@ -7,9 +7,9 @@
 
 > Superseded in part, 2026-11-16: "the person named as the decider is told
 > once, the way a mention tells them", and the intelligence line's "in no
-> other way". The person named as the decider becomes a member of the entry,
-> as an assignee does of an issue, and hears its conversation as a member,
-> in
+> other way". The person named as the decider is shown it once in their
+> Activity and becomes a member of the entry, as an assignee does of an issue,
+> and hears its conversation as a member, in
 > [a-journal-entrys-decider-becomes-a-member-of-it-as-an-assignee-does](a-journal-entrys-decider-becomes-a-member-of-it-as-an-assignee-does.md).
 > "Decided by X · written by Y", and anyone accepting, stand.
 
