@@ -17,6 +17,11 @@
 > Its marking rule stands: anyone who can read a message or a block can mark
 > it.
 
+> Read with, 2026-11-16: the item a mark makes must be filed where everyone
+> who reads it can read the source, and the relay refuses it otherwise, so a
+> direct message cannot be marked today, in
+> [an-item-shows-its-source-as-marked-and-the-relay-refuses-one-its-readers-cannot-read](an-item-shows-its-source-as-marked-and-the-relay-refuses-one-its-readers-cannot-read.md).
+
 ## Who it affects
 
 Miky reads Katerina's message in Peek and thinks it is a real insight. She is

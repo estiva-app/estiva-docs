@@ -5,6 +5,13 @@
 - Decided by: Miky, by the Accepted records what-belongs-to-a-file-is-stored-with-it (LTX-4, 2026-10-19) and moving-a-file-never-changes-who-can-read-it (MAN-3, 2026-10-02), which hold for these items as for every file, and by his comment of 13 November 2026 on the Leaf page "Highlights and the intelligence layer" that a highlight from a private DM is brainstormed again with private teams and notes; applied to these items by Claude after the review of estiva-docs#442, and his merge of this record accepts that application
 - Area: Files
 
+> Superseded in part, 2026-11-16: its "not decided here, and not built before
+> it is" line. An item keeps none of its source's words except its title, and
+> shows its source as it read when it was marked; the relay refuses an item
+> whose source some of its readers cannot read, in
+> [an-item-shows-its-source-as-marked-and-the-relay-refuses-one-its-readers-cannot-read](an-item-shows-its-source-as-marked-and-the-relay-refuses-one-its-readers-cannot-read.md).
+> Its fixed readers and its moves stand.
+
 > Supersedes in part
 > [an-insight-journal-entry-or-risk-lives-on-the-most-specific-place-it-fits](an-insight-journal-entry-or-risk-lives-on-the-most-specific-place-it-fits.md):
 > its "an item is read by its home's readers", which promised that a moved
