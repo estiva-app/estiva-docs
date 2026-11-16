@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>When things changed</title>
+<style>
+:root { --bg:#fbfaf7; --ink:#1d1d1f; --mute:#6b6b70; --box:#ffffff; --line:#c9c6bf; --a:#2f6fdb; --b:#1f9d6b; --c:#b7791f; --warn:#c2412d; --chip:#f0eee8; }
+@media (prefers-color-scheme: dark) { :root { --bg:#17171a; --ink:#ececee; --mute:#a0a0a8; --box:#222227; --line:#44444c; --a:#6ea0ff; --b:#4fd1a0; --c:#e2b052; --warn:#ff7a66; --chip:#2a2a30; } }
+body { background:var(--bg); color:var(--ink); font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif; margin:0; }
+main { max-width:760px; margin:0 auto; padding:24px 16px 64px; }
+h1 { font-size:1.5rem; line-height:1.3; margin:0 0 8px; }
+h2 { font-size:1.1rem; margin:32px 0 8px; }
+p, li { margin:6px 0; }
+.q { font-size:1.15rem; border-left:4px solid var(--a); padding:4px 12px; background:var(--chip); }
+.opt { border:1px solid var(--line); border-radius:8px; padding:10px 14px; margin:12px 0; background:var(--box); }
+.opt h3 { margin:0 0 4px; font-size:1rem; }
+.rec { border:2px solid var(--b); border-radius:8px; padding:10px 14px; background:var(--box); }
+table { border-collapse:collapse; width:100%; font-size:.9rem; }
+th, td { border:1px solid var(--line); padding:6px 8px; vertical-align:top; text-align:left; }
+th { background:var(--chip); }
+.wrap { overflow-x:auto; }
+svg { width:100%; height:auto; display:block; margin:8px 0; }
+svg text { fill:var(--ink); font:13px system-ui,sans-serif; }
+svg .mute { fill:var(--mute); font-size:12px; }
+svg .bx { fill:var(--box); stroke:var(--line); stroke-width:1.5; }
+svg .ar { stroke:var(--ink); stroke-width:1.5; fill:none; marker-end:url(#h); }
+svg .big { stroke:var(--warn); stroke-width:4; fill:none; marker-end:url(#hw); }
+svg .small { stroke:var(--b); stroke-width:1.5; fill:none; marker-end:url(#hg); }
+small, .mute { color:var(--mute); }
+code { font-size:.85em; }
+</style>
+</head>
+<body>
+<main>
+<h1>May the relay tell an app when things changed, without sending what changed?</h1>
+<p class="q">To put your topics in order, every app needs to know when something last happened in each one. Should the relay be allowed to answer that question with just the times, instead of handing over every signed change so the app can read the time off it?</p>
+
+<h2>Today</h2>
+<p>Peek, Ship and Leaf all order your topics the same way: by the last time anything happened in a topic or in the files it lists, deep. That includes a comment, an edit, or a new issue filed in a listed project. You decided that rule on 6 Nov ("Where anything moved").</p>
+<p>To learn those times, each app asks the relay for the newest change of every file involved, and for every issue under each listed project. A Nostr relay can only answer with whole signed events. So a time costs the whole event: when the newest change is a saved text, the whole text comes along (up to 0.15 MB for one file), and finding a project's issues brings each issue with its text.</p>
+<p>Measured this morning as you, on Leaf's Home: <b>2.2 MB</b> for the order alone. 0.9 MB is whole issues and pages found under 27 listed files, 1.3 MB is the newest change of about 590 files. Ship pays the same on a project page. It grows with every issue filed and every long text saved.</p>
+
+<h2>Why it reaches beyond this ticket</h2>
+<p>Until now, every answer the relay gives about files is the signed events themselves. The one exception is search, where the relay adds a note on which words matched, and only beside the signed files it found. This question is whether the relay may also answer with <b>its own statement</b> ("this file's text last changed at 09:14"), with no signed event beside it.</p>
+<p>That sets what any Nostr-for-Business relay may answer and what any app may rely on. Any later "recently changed", "updated" column or inbox could use the same answer.</p>
+<p><b>It is a two-way door for the data:</b> nothing new is written to the relay. A relay advertises the new read, and an app that doesn't find it reads whole events as today. Undoing it means dropping the read. The precedent is the part that sticks: once one app relies on times from the relay, the next feature will want them too.</p>
+
+<h2>The picture</h2>
+
+<svg viewBox="0 0 720 170" role="img">
+<title>Today: whole signed events cross the wire to learn a time</title>
+<defs>
+<marker id="h" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+<marker id="hw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--warn)"/></marker>
+<marker id="hg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--b)"/></marker>
+</defs>
+<text x="0" y="16" font-weight="600">Today (and option C)</text>
+<rect class="bx" x="10" y="40" width="200" height="90" rx="8"/>
+<text x="24" y="66">Peek / Ship / Leaf</text>
+<text x="24" y="88" class="mute">reads each time off</text>
+<text x="24" y="104" class="mute">the event, applies the rule</text>
+<rect class="bx" x="510" y="40" width="200" height="90" rx="8"/>
+<text x="524" y="66">Relay</text>
+<text x="524" y="88" class="mute">checks who may read each</text>
+<text x="524" y="104" class="mute">event, sends it whole</text>
+<path class="ar" d="M210,62 L506,62"/>
+<text x="250" y="55" class="mute">"newest change of these 590 files?"</text>
+<path class="big" d="M506,112 L214,112"/>
+<text x="250" y="140" class="mute">whole signed changes and issues, texts included: 2.2 MB</text>
+</svg>
+
+<svg viewBox="0 0 720 170" role="img">
+<title>Option A: the relay answers with the times</title>
+<text x="0" y="16" font-weight="600">Option A: the relay states the times</text>
+<rect class="bx" x="10" y="40" width="200" height="90" rx="8"/>
+<text x="24" y="66">Peek / Ship / Leaf</text>
+<text x="24" y="88" class="mute">applies the same rule</text>
+<text x="24" y="104" class="mute">to the times</text>
+<rect class="bx" x="510" y="40" width="200" height="90" rx="8"/>
+<text x="524" y="66">Relay</text>
+<text x="524" y="88" class="mute">same read check per event,</text>
+<text x="524" y="104" class="mute">answers file · part · time</text>
+<path class="ar" d="M210,62 L506,62"/>
+<text x="250" y="55" class="mute">"when did each part of these files change?"</text>
+<path class="small" d="M506,112 L214,112"/>
+<text x="250" y="140" class="mute">a list of times, not signed: tens of KB</text>
+</svg>
+
+<svg viewBox="0 0 720 190" role="img">
+<title>Option B: every file is written lighter, everything stays signed</title>
+<text x="0" y="16" font-weight="600">Option B: files get lighter, everything stays signed</text>
+<rect class="bx" x="10" y="40" width="200" height="90" rx="8"/>
+<text x="24" y="66">Peek / Ship / Leaf</text>
+<text x="24" y="88" class="mute">write an issue's text only</text>
+<text x="24" y="104" class="mute">as a change, never in it</text>
+<rect class="bx" x="510" y="40" width="200" height="90" rx="8"/>
+<text x="524" y="66">Relay</text>
+<text x="524" y="88" class="mute">every old issue and page</text>
+<text x="524" y="104" class="mute">rewritten without its text</text>
+<path class="ar" d="M210,62 L506,62"/>
+<text x="250" y="55" class="mute">"newest change of these files?"</text>
+<path class="big" d="M506,112 L214,112"/>
+<text x="250" y="140" class="mute">light issues, but a saved text still comes whole: ~1.3 MB</text>
+<text x="250" y="160" class="mute">and every existing issue must be migrated (one-way)</text>
+</svg>
+
+<h2>Options</h2>
+
+<div class="opt">
+<h3>A. The relay answers "when did each part of these files last change"</h3>
+<p><b>You and Katerina:</b> the same topics in the same order, from a few KB per topic instead of whole issues and texts. Opening Leaf's Home loses about 2 MB, and a project page in Ship about as much. Filing more issues or writing longer texts no longer makes the order heavier.</p>
+<p><b>An outside company</b> gets a general read: "for these files, when did each part last change, and when were they last commented on". It works for any "recently changed" list, not only our topic order. The rule for what counts (a rename does not, a comment does) stays in each app's shared code and never moves into the relay.</p>
+<p><b>What could go wrong:</b> the answer isn't signed, so an app trusts its own relay for the order. That is fine for ordering, but nothing should ever be <i>decided</i> on a time from it. The answer has to follow exactly the read rules the events would: a project's text edit time goes only to people who can read its team, as its text does today, or the time itself would leak that someone is editing. A stale tab keeps reading whole events, which still works.</p>
+</div>
+
+<div class="opt">
+<h3>B. Keep every answer signed, and make the files lighter instead</h3>
+<p><b>You and Katerina:</b> about 0.9 MB less per open, because issues and pages no longer carry their text inside them. The 1.3 MB of saved texts stays, because the newest change of a file is still often a whole text. The Done-when is missed.</p>
+<p><b>An outside company</b> keeps the purest rule: every byte a relay sends is something someone signed. It must also write every type this way.</p>
+<p><b>What could go wrong:</b> every issue and page already on the relay has to be rewritten or migrated, and that is <b>one-way</b>. Every app that reads an issue's text from the issue itself breaks until it changes. It solves only part of this problem.</p>
+</div>
+
+<div class="opt">
+<h3>C. Do less: keep reading whole events, and accept the cost</h3>
+<p><b>You and Katerina:</b> no change. The order costs 2.2 MB on Leaf's Home today, about 3% of that open, and it keeps growing with every issue and every long text. The ticket's Done-when (no more MB than before topics were ordered) is dropped.</p>
+<p><b>An outside company:</b> nothing new to learn.</p>
+<p><b>What could go wrong:</b> it is the read most likely to grow quietly. The device copy (NIP-77, decided 4 Nov) would later make a <i>second</i> open cheap, but not the first one after a reload. The relay doesn't support it yet.</p>
+</div>
+
+<h2>Trade-offs</h2>
+<div class="wrap">
+<table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td><b>A</b></td><td>A new relay answer: times, under the same read rules, not signed</td><td>Same order, ~2 MB lighter, stops growing</td><td>A general "when did it change" read</td><td>Low: apps fall back to today's read</td><td>One relay read + the shared code + a SPEC section</td></tr>
+<tr><td><b>B</b></td><td>Every answer still signed; issue and page text only as a change</td><td>Same order, ~0.9 MB lighter, still grows with texts</td><td>Must write every type this way</td><td>High: existing files migrated</td><td>A write change in every app + a migration</td></tr>
+<tr><td><b>C</b></td><td>No change</td><td>Same order, 2.2 MB and growing</td><td>Nothing</td><td>None</td><td>None, but the Done-when changes</td></tr>
+</table>
+</div>
+
+<h2>How others do it</h2>
+<ul>
+<li><b>Upstream Nostr:</b> COUNT (NIP-45) already lets a relay answer with its own unsigned statement, a number, instead of events. A times answer is the same kind of thing.</li>
+<li><b>Matrix:</b> the newer "sliding sync" orders your rooms by a server-supplied recency stamp without sending the rooms' history. That is option A's shape, on a federated protocol.</li>
+<li><b>Slack, Linear, Notion:</b> the server simply says "updated at". It's trivial when the server is trusted, as our relay is for the company that runs it.</li>
+</ul>
+
+<div class="rec">
+<h2 style="margin-top:0">Recommendation: A</h2>
+<p>It's the only shape that makes ordering cost a few KB per topic and keeps it there as work piles up. It is also the shape an outside company would want for its own "recently changed" views. The relay states only a time, under the same read rules as the event behind it. The rule for what counts stays in the shared code, so no app's behaviour moves into the relay, and an app that finds no such read falls back to today's.</p>
+<p>It extends the line we drew for search, from "a note beside the signed files" to "a statement on its own". The reason that is acceptable: a time decides only the order of a list, never who may do something or what a file says.</p>
+</div>
+
+<h2>Checked</h2>
+<ul>
+<li>2.2 MB, of which 0.92 MB is roots under 27 listed files and the rest newest changes up to 0.147 MB each: measured as you on Leaf's Home, production, 16 Nov 10:10 UTC (<code>~/estiva/ALO-22-scratch/split-now.json</code>).</li>
+<li>An issue's first record holds its starting text: SPEC §6.10.</li>
+<li>The only non-signed thing the relay answers today is search's <code>matches</code>, beside the signed records: SPEC §6.13 and the record on search.</li>
+<li>No plain Nostr filter returns a time without its event, or skips a text change: NIP-01. Production's relay offers neither COUNT (NIP-45) nor NIP-77 (its NIP-11 today).</li>
+<li>The relay already tracks each field's current change for every file kind, not only projects, so answering times reads what it already holds: buzz <code>newest_changes</code> (<code>crates/buzz-db/src/store/fields.rs</code>).</li>
+<li>Not verified: the KB figure for A. It's an estimate (about 200 files × a few parts × ~200 bytes, plus small comments) and will be measured on the branch.</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="mute">Issue ALO-22 (30851:…:cc89109a), project "Load stays the same size as edits pile up: projects". Read: interop <code>readTopicActivity</code> (<code>packages/interop/src/activity.ts</code>), today <code>1851 #a limit=1</code>, <code>1111 #A/#O limit=1</code>, <code>30851,30842 #a×n limit=1000</code>. A: <code>/query</code> with e.g. <code>"heads": true</code> on §6.13's list read, answering <code>[{a, field, value? (lists:*), id, created_at}]</code> plus each found file's address, team and first-record time, advertised as NIP-11 <code>file_list.heads</code>; SPEC §6.13 and §6.14. Records touched: search-finds-a-file-by-the-words-of-its-current-fields, a-relay-advertises-the-list-read-apart-from-the-switch, a-file-is-its-fields-each-kept-in-order-by-the-relay; B: §6.10, early-shapes-are-migrated-or-deleted. Proposed record: a-relay-may-answer-when-a-file-changed-without-the-change.</p>
+</main>
+</body>
+</html>
