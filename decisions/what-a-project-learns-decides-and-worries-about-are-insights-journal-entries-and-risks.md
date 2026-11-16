@@ -2,8 +2,19 @@
 
 - Date: 2026-11-13
 - Status: Accepted
-- Decided by: Miky, in the brainstorm session of 13 November 2026 and in his comments that day on the Leaf page "Highlights and the intelligence layer": "each item is its own file type"; shared types Estiva curates, like Issue, with companies adding properties and statuses on top; Peek's highlight types fold into the three; statuses "shared start, own end"; the name Journal, not Log; written up as the brief "What a project knows" ([page](briefs/highlights-and-what-a-project-knows.html)), and his merge of this record accepts the fields it lists
+- Decided by: Miky, in the brainstorm session of 13 November 2026 and in his comments that day on the Leaf page "Highlights and the intelligence layer": "each item is its own file type"; shared types Estiva curates, like Issue, with companies adding properties and statuses on top; Peek's highlight types fold into the three (his comment "This is correct." on the block of that page that maps them); statuses "shared start, own end"; the name Journal, not Log; written up as the brief "What a project knows" ([page](briefs/highlights-and-what-a-project-knows.html)), and his merge of this record accepts the fields it lists
 - Area: Files
+
+> Superseded in part, 2026-11-16: the last two lines of its Consequences.
+> Whether a person's own mark starts at Proposed is each app's, company's or
+> team's rule, in
+> [who-accepts-an-item-is-each-companys-own-rule-and-the-protocol-carries-its-status](who-accepts-an-item-is-each-companys-own-rule-and-the-protocol-carries-its-status.md);
+> what is left undecided is any source whose readers differ from the home's,
+> not only a private conversation, in
+> [an-items-readers-are-fixed-when-it-is-made-and-a-move-changes-only-where-it-is-listed](an-items-readers-are-fixed-when-it-is-made-and-a-move-changes-only-where-it-is-listed.md).
+> How a Journal entry's "Decided by" shows, and who is told, is added by
+> [a-journal-entry-shows-who-decided-and-who-wrote-it-and-the-decider-is-told-once](a-journal-entry-shows-who-decided-and-who-wrote-it-and-the-decider-is-told-once.md).
+> Everything else stands as this record says.
 
 ## Who it affects
 
@@ -124,7 +135,12 @@ Issue, and adds its own fields, such as a Severity on a Risk.
 - Three new shared types are one-way once items are on the relay: what they
   mean can change only compatibly, and a breaking change is a new type.
 - SPEC §7.4's stages stop being one set for every type: each type has its own,
-  and these three share Proposed and Rejected.
+  and these three share Proposed and Rejected. This changes the one set of four
+  stages that
+  [each-company-defines-its-own-statuses](each-company-defines-its-own-statuses.md)
+  and
+  [a-companys-statuses-are-its-own-layer-of-a-types-properties](a-companys-statuses-are-its-own-layer-of-a-types-properties.md)
+  build on; a company still names its own statuses under each type's stages.
 - Our own habits move: Claude's memory, decision records, Decided lines, Later
   lists and Warning callouts become candidates to be these items, when the
   build is shaped.
