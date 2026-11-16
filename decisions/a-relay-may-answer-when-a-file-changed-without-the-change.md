@@ -70,7 +70,10 @@ SPEC §6.13 carries the read ("When files changed, without the changes"; ALO-22)
 
 ## Consequences
 
-Ordering costs a few KB per topic and stays there as edits pile up. There is
+Ordering costs a few KB per topic and stays there as edits pile up. The
+first read built (SPEC §6.13, ALO-22) answers the fields' times, each change
+naming the fields it sets and never their values; comments are still read as
+signed events, which are small, and comment times wait until they cost. There is
 now a relay answer that is not signed, so nothing may be decided on it beyond
 the order of a list. Undoing it means apps dropping the read, since nothing new
 is written to the relay; the precedent, that a relay may state facts about
