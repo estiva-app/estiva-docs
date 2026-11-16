@@ -354,6 +354,15 @@ last owner. No new refusal code. Record
   - `person-not-named` (`invalid:`): a `kind:1851` sets `member:<P>` or
     `follow:<P>` where `P` is not a lowercase hex key, or without `["p", P]`
     (§11.8, *added 2026-11-10*).
+  - `workspace-admins` (`restricted:`): a key that is not an owner or admin on
+    the workspace's roster writes a file only they write (§6.1, *added
+    2026-11-16*). An app says only the workspace's admins can change it.
+  - `writers-mark` (`invalid:`): a `writers` tag on an event that is not a
+    written-once first record, or with a value the relay does not list in
+    NIP-11 (§6.1).
+  - `writers-order` (`invalid:`): a marked first record whose `created_at` is
+    not later than every marked first record in its team; the app writes it
+    again with a later one and tells nobody (§6.1).
 
   A `kind:9000` naming several people is refused with a code only when
   everyone in it is refused for that same code; otherwise it is refused
@@ -498,7 +507,8 @@ last owner. No new refusal code. Record
   this workspace's.
 - **What lives there**: a project filed in no other team (its `buzz-channel`
   names the Company team, and its changes carry that `h`, §6.2), and the
-  company's statuses (§7.4).
+  company's file for each type, which holds its own statuses (`osnova.schema`,
+  only its owners and admins write it, §7.4).
 - **It is the Company team, and everyone in the company is a member**
   (*added 2026-11-02*; record
   [everyone-in-the-company-is-on-the-company-teams-list-and-the-relay-keeps-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/everyone-in-the-company-is-on-the-company-teams-list-and-the-relay-keeps-it.md)).
@@ -882,6 +892,8 @@ it is a type that will join the base or an app's own:
 | `k` | the file's type, such as `acme.invoice` ([TYPES.md](TYPES.md)); exactly one |
 | `h` | the team it is filed in, always; never `buzz-channel` |
 | `set` | `["set", <field>, <value>]`, one per field the creation gives a value, as that field's first value (§6.2) |
+| `of` | OPTIONAL: the type another file describes, by its name (`osnova.issue`), never a kind number; only on a type that describes another, such as `osnova.schema` (§7.4) |
+| `writers` | OPTIONAL: `["writers", "workspace-admins"]`, only the workspace's owners and admins write the file (below) |
 
 `content` is empty: a text given at creation is the `description` field's first
 value, in a `set`, with `content-format` and `imeta` beside it (§6.2). The relay
@@ -921,6 +933,54 @@ replaceable rule for these kinds. Sending the same event again is a
 base kinds, only five issues were ever stored in more than one version, all
 written by one probe and all deleted; Ship, Peek, Leaf and the agent never
 replace a root.
+
+**Only the workspace's admins write here** (*added 2026-11-16*; record
+[a-file-can-say-only-admins-write-it-and-the-relay-keeps-to-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-file-can-say-only-admins-write-it-and-the-relay-keeps-to-it.md)).
+A file of any type may be **marked**: its first record carries
+`["writers", "workspace-admins"]`, and then only a key that is itself an owner
+or admin on the relay's roster (`kind:13534`) writes it. The role is the
+signing key's own: an agent signing for its owner (§4) does not borrow the
+owner's role, and an app's key is no exception.
+
+- **Where it may stand.** Only on a first record, and only where that record is
+  written once: on any `30852`, and on a base kind from the switch (§6.13). The
+  relay refuses a `writers` tag on any other event, so the mark can be neither
+  added nor taken off later.
+- **Which values a relay keeps to, and since when.** The relay lists in its
+  NIP-11 each value it enforces with the time, in seconds, from which it has
+  kept to it: `"writers": {"workspace-admins": 1763251200}`. It refuses a
+  first record whose `writers` value it does not list. A reader honours a
+  marked first record only when the relay lists its value and its
+  `created_at` is not earlier than that value's time; any other marked file
+  counts for nothing wherever the mark is what makes it count (§7.4), as on a
+  relay that lists none. §5.1's window means no first record dated from that
+  time on was stored without the rule. Later values (one team's admins, for
+  instance) are new values, never a new meaning for this one.
+- **What is a write.** The relay takes a marked file's first record only from
+  an owner or admin, and from then on refuses, from anyone else, checking the
+  role when each event arrives:
+  - every `kind:1851` whose `a` or `O` names the file, archiving and deleting it
+    included (§6.5);
+  - a `kind:1852` `move` or `remove` of it from its home team (§3.3);
+  - a `kind:9005` removing its first record or one of its changes for good
+    (§6.5): a team's own owners and admins do not, only the workspace's.
+
+  These are not writes, and anyone who may otherwise send them does: a person
+  leaving it (their own `member:<P>` set to `false`) or setting their own
+  `follow:<P>` (§11.8), so someone an admin added can still give it up; a
+  comment, a reaction or a mention of it; and an `add` or `remove` of it on
+  another team's list, which changes that list and not the file. Joining it
+  (`member:<P>` set to `true`, one's own included) is a write.
+- **Finding marked files.** `writers` is not indexed: a reader asks by kind,
+  `#k` and `#h`, and keeps the events that carry the mark.
+- **Stored first is first by time.** The relay refuses a marked first record
+  whose `created_at` is not later than that of every marked first record it
+  already stores in that team, whatever their types, so in each team the order
+  of `created_at` is the order the relay stored them in. A writer that is
+  refused writes again with a later `created_at`, without telling the person,
+  as for "One id, one file" above. Each refusal here carries its code (§3.3:
+  `workspace-admins`, `writers-mark`, `writers-order`). §5.1's window on `created_at` bounds how
+  long a file stamped ahead of the relay's clock holds the next one back.
 
 *Clarified 2026-10-15.* The order is part of each event's id preimage, so a
 writer adding a tag puts it last and moves no other. It is not a rule a reader
@@ -1665,6 +1725,9 @@ D3, which stands):
   (§6.13) and keeps its id, its first record and every change, so a restore
   brings it back whole and nothing is written again. It stays readable by its
   id, so an app can offer Restore.
+- **A marked file** (§6.1, "Only the workspace's admins write here") is
+  archived, deleted and restored only by the workspace's owners and admins,
+  like every other change to it (*added 2026-11-16*).
 - **A `kind:5` naming a file's first record or one of its changes is refused**
   from the switch, on the types the relay keeps in order (§6.13). For those
   this replaces the author rule below and "nobody may delete another person's
@@ -3364,7 +3427,12 @@ vocabulary an `enum` names is staged (§7.4), the consumer writes the chosen
 option's stage with it, as §6.2's `stage` tag, after every other tag. No
 declaration key asks for it: the vocabulary's stages are the request. The
 options a consumer offers, and so the stage it writes, come from the layers
-of §7.4, the company's own over the listing's. A creation action that sets a
+of §7.4, the company's own over the listing's. The company's layer for an
+action is found from the type of the file it applies to and its `emits.field`
+(or the property's name, on a creation): the company's file for that type, its
+`property:<field>` (§7.4). It is never found from the name the manifest gives
+its vocabulary (`issueStatuses`), which is that app's own word and means
+nothing to another tracker (*added 2026-11-16*). A creation action that sets a
 staged property writes `["stage", <property>, <stage>]` on the root, last.
 A file created without one reads the listing's default (§6.3).
 
@@ -3529,13 +3597,59 @@ options come in layers, each over the one before:
 3. the company's own options, starting from the defaults of the tracker the
    workspace added, which its owners and admins edit; a change to them from
    anyone else, an app's key included, MUST change nothing a reader shows or
-   counts; where they are kept is specified with that file, and until a
-   company saves its own, apps use the listing's;
+   counts; they are kept in the company's file (below), and until a company
+   saves its own, apps use the listing's;
 4. later, a person's database, writing the same property shape.
 
+**The company's file** (*added 2026-11-16*; record
+[a-companys-statuses-are-its-own-layer-of-a-types-properties](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-companys-statuses-are-its-own-layer-of-a-types-properties.md)).
+A company keeps its own layer of a type's properties in one file per type it
+describes:
+
+- **What it is.** A `kind:30852` whose `k` is `osnova.schema` and whose `of`
+  names the type it describes (`["of", "osnova.issue"]`), both on its first
+  record and so written once (§6.1). It is filed in this workspace's Company
+  team (`h`, §3.4) and marked `["writers", "workspace-admins"]`, so only the
+  workspace's owners and admins write it, and the relay keeps to that (§6.1).
+- **Each property is one field**, named `property:<id>` after the described
+  type's field (`property:status`), never the bare id: the file is a file
+  too, and its own `title`, `archived` and `deleted` stay its own. The value is
+  the whole property in the one schema shape, as JSON:
+
+  ```json
+  {"label": "Status", "type": "choice", "default": "todo",
+   "options": [
+     {"value": "todo", "label": "Todo", "colour": "neutral", "stage": "open"},
+     {"value": "blocked", "label": "Blocked", "colour": "neutral", "stage": "started"}
+   ]}
+  ```
+
+  An option's `stage` is one of the described type's own stages, as its
+  directory entry (TYPES.md) gives them. `default` is the option an app that
+  creates a file sets (§6.3: it is written, never read). Labels, priorities
+  and a company's own columns are more `property:<id>` fields of the same
+  file.
+- **Finding it.** A reader asks for
+  `{"kinds": [30852], "#k": ["osnova.schema"], "#h": [<Company team>]}`,
+  paging back to the oldest (one answer holds the files for every type), and
+  keeps the files whose mark the relay honours (§6.1), name
+  the type in `of`, and are neither archived nor deleted. The earliest of
+  those by `created_at` is the company's file; the relay's rule on marked
+  files makes that the one it stored first. A file without the mark, or in
+  any other team, changes nothing. No such file, or one a reader cannot read
+  (a guest is not on the Company team, §3.4), means the listing's options, and
+  a status the listing does not name is shown by its id (§6.2).
+- **It never changes how a file is counted.** A status change carries its own
+  stage, and that is what every reader counts (§6.2), so readers who can and
+  cannot read the company's file agree. The file gives the labels, the
+  colours and the options an app offers.
+- **This workspace's** Company team is the only place it is read from. Whose
+  file labels a file in a team shared with another company is not specified
+  yet.
+
 A reader takes an option's label and colour from the company's own, and from
-the listing's until a company has saved its own; one that cannot read the
-company's shows the id (§6.2). **Renaming an option keeps its id**, so a
+the listing's until a company has saved its own, or when it cannot read the
+company's; a status neither names is shown by its id (§6.2). **Renaming an option keeps its id**, so a
 rename changes no file.
 
 **The tracker** is the app whose manifest publishes the kind's staged
@@ -4078,6 +4192,9 @@ staged field, or writes one, also conforms to these.
 | C61 | **Unread wins the dot** (*added 2026-11-13*, §11.8). A topic with an unread mention of `P` and a new 👍 to `P`'s message shows one dot, the unread one, and its card lists both lines; once the mention is read and the 👍 is not seen, the dot is the reaction's |
 | C62 | **Keys carried and floored** (*added 2026-11-13*, §11.1, §11.6). A slot holding `reactions:<uuid>` and a well-formed key no app knows (`x-later:abc`), merged and republished by a client that knows neither, keeps both verbatim, and the second lights and clears nothing. A blob trimmed to fit that drops a `reactions:` key worth `v` holds `reactions-floor` ≥ `v`, so the reactions it covered stay seen; a `reactions-floor` later than its slot's `created_at` is read as that `created_at` |
 | C63 | **Times without the changes** (*added 2026-11-16*, §6.13). A project's issue with a status change and a text save, read with `{"fields": "times", "kinds": [30851], "#a": [<project>]}`, answers one row naming the project as `under`, with both changes newest first, each naming its fields (`description`, `status`); no field's value, no word of the text, the issue's content or any `sig` is in the answer. A change setting the status and the text together names only `status` to a reader outside the issue's home. A member outside the issue's team gets no row; for a project stored workspace-wide whose changes are filed in a team they cannot read, a row with no changes. A deleted issue is still answered, its `deleted` change first. `"times"` beside `"newest"`, `text` or `search` is refused. NIP-11 `file_list` says `"times": true` |
+| C64 | **Only the workspace's admins write a marked file** (*added 2026-11-16*, §6.1, §6.5, §11.8). On a relay whose NIP-11 lists `"writers": {"workspace-admins": T}`: a `30852` with `["writers","workspace-admins"]` from a member who is not a workspace owner or admin is refused, and from an admin lands. On it, a member's `1851` setting `title`, `archived` or `deleted`, and their `1852` `move` of it, are refused; the same from an admin land. A member an admin added sets their own `member:<P>` to `false` and it lands. A `writers` tag on a `1851`, a `30852` with `["writers","team-admins"]`, and a second marked first record in the same team whose `created_at` is not after the first, are refused. A member setting their own `member:<P>` to `true` on it is refused, as is a `kind:9005` on its first record from a team admin who is not a workspace admin. On a relay that lists no `writers`, a reader treats a marked file as counting for nothing, and on one that lists `workspace-admins` from time `T`, a marked file dated before `T` counts for nothing too |
+| C65 | **The company's file labels, never counts** (*added 2026-11-16*, §7.4). With a marked `osnova.schema` file `of` `osnova.issue` in the Company team whose `property:status` adds `blocked` (label Blocked, stage `started`), an issue whose current change is `value` `blocked` with `["stage","status","started"]` shows Blocked and counts as started; a reader that cannot read the Company team shows `blocked` and counts it as started. The same file unmarked, or in another team, changes nothing. Of two marked files `of` the same type, the earlier by `created_at` is read; an archived one is skipped |
+| C66 | **The layer is found by type and field** (*added 2026-11-16*, §7.3). An action whose `appliesTo` is `30851` and whose `emits.field` is `status` offers the options of the company file `of` `osnova.issue`, field `property:status`, whatever name the manifest gives its vocabulary |
 
 ### 9.1 Reference checks
 
@@ -4722,7 +4839,10 @@ record
 with the file's team as its `h`. **It needs no `prev` and is never in a
 `set`**, on every type, the ones kept in order included (§6.2): two people
 joining never clash, and adding a person never edits the file's own fields. A
-leave is never a change to anything but the leaver's own `member:<P>`.
+leave is never a change to anything but the leaver's own `member:<P>`. On a
+file only the workspace's admins write (§6.1), adding a person is a write,
+so only they add people, themselves included; anyone on it still leaves it, and sets their own
+`follow:<P>`, as on any file (*added 2026-11-16*).
 **Created it** is the author of the file's first record, joining at its
 `created_at`; from the switch a first record is written once (§6.1). A reader
 finds the membership changes by `#O` or `#a`, and ignores one whose first `h`
