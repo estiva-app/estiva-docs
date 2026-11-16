@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Insights, Journal and Risks</title>
+<!--
+  Template for a project's architecture page (process/ARCHITECTURE.md).
+  Copy to architecture/<project-slug>.html, then redraw every example below:
+  the drawings here show the visual language, not any real project.
+  Classes: .b box · .w card · .ok new · .bad goes away · .q undecided (dashed)
+  · .f untouched (faint) · .a arrow · .an new arrow · .aq undecided arrow
+  · .m muted second line · .h bold label · .tag milestone tag.
+-->
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.example { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
+.legend .lgone::before { background: var(--warn-bg); border-color: var(--warn); }
+.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
+.legend .lf::before { opacity: .45; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+/* Below 560px a diagram scrolls inside its figure instead of shrinking its text. */
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); stroke-width: 1.5; }
+svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .f { opacity: .45; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
+svg .aq { stroke: var(--accent); fill: none; stroke-width: 1.6; stroke-dasharray: 5 4; marker-end: url(#arr-q); }
+svg .life { stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 3 4; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 560px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+tr.new td { background: var(--ok-bg); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+</style>
+</head>
+<body>
+<!-- Arrowheads, shared by every diagram on the page. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+    <marker id="arr-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<main>
+
+<h1>Insights, Journal and Risks</h1>
+<p class="sub"><span class="state">Shaped, 2026-11-16</span> · <a href="https://ship.estiva.app/#/project/976a60b6-c2a4-41c5-930f-33be2ed2646a">Ship project</a> ·Goal: you mark a message in Peek, a block in Leaf or a comment in Ship, and it appears on the project's Insights, Journal or Risks tab in Ship.</p>
+
+<p>Today what a team learns, decides and worries about has no home of its own: it sits in conversations, documents and our hand-kept notes. This project adds three shared types of file, an <b>Insight</b>, a <b>Journal entry</b> and a <b>Risk</b>: Osnova's memory layer, which any app's file can have. Each item is filed in one team, is about a file when it can be, and shows its source as it was marked. Peek, Leaf and Ship write them; Ship lists a project's in three new tabs. Start with the Objects picture.</p>
+
+<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lq">waits on a decision</span><span class="lf">untouched, for orientation</span></div>
+
+<h2 id="map">Map</h2>
+<h3>Today</h3>
+<figure>
+<svg viewBox="0 0 720 250" role="img">
+<title>Today: Peek, Ship and Leaf read and write the relay. Peek's messages and Leaf's blocks can be linked, but nothing turns one into something a team keeps. Ship's project has Overview and Issues.</title>
+<rect class="b f" x="20" y="20" width="680" height="44" rx="8"/><text x="36" y="47" class="h f">Estiva ID</text><text x="120" y="47" class="m f">signs each event for whoever is signed in</text>
+<rect class="b" x="20" y="100" width="200" height="64" rx="8"/><text x="36" y="124" class="h">Peek</text><text x="36" y="143" class="m">messages · highlight types in code,</text><text x="36" y="158" class="m">none shown since 1 Nov</text>
+<rect class="b" x="260" y="100" width="200" height="64" rx="8"/><text x="276" y="124" class="h">Ship</text><text x="276" y="143" class="m">a project: Overview · Issues</text>
+<rect class="b" x="500" y="100" width="200" height="64" rx="8"/><text x="516" y="124" class="h">Leaf</text><text x="516" y="143" class="m">documents · a block's menu:</text><text x="516" y="158" class="m">Copy link</text>
+<rect class="b" x="20" y="196" width="680" height="44" rx="8"/><text x="36" y="223" class="h">The relay</text><text x="118" y="223" class="m">messages, files, comments · checks who may write in each team</text>
+<path class="a" d="M120,164 L120,192"/><path class="a" d="M360,164 L360,192"/><path class="a" d="M600,164 L600,192"/>
+</svg>
+<figcaption>What we learn, decide and worry about is kept by hand: Claude's memory notes, decision records and Decided lines, Warning callouts and Later lists. No app reads them as one.</figcaption>
+</figure>
+
+<h3>After</h3>
+<figure>
+<svg viewBox="0 0 720 300" role="img">
+<title>After: Peek, Leaf and Ship write an Insight, Journal entry or Risk when you mark a message, block or comment. The relay keeps it as a file in one team and refuses one whose source some of its readers cannot read. Ship's listing names the three types, so every app knows Ship opens them; Ship lists a project's items in three tabs and a team's on its team page.</title>
+<rect class="b f" x="20" y="20" width="680" height="44" rx="8"/><text x="36" y="47" class="h f">Estiva ID</text><text x="120" y="47" class="m f">signs each event, unchanged</text>
+<rect class="ok" x="20" y="100" width="200" height="72" rx="8"/><text x="36" y="124" class="h">Peek</text><text x="150" y="124" class="tag">M2</text><text x="36" y="143" class="m">a message's menu: Mark as…</text><text x="36" y="160" class="m">a marked message shows it</text>
+<rect class="ok" x="260" y="100" width="200" height="72" rx="8"/><text x="276" y="124" class="h">Ship</text><text x="390" y="124" class="tag">M2 M3</text><text x="276" y="143" class="m">Insights · Journal · Risks tabs,</text><text x="276" y="160" class="m">an item's page · Mark on comments</text>
+<rect class="ok" x="500" y="100" width="200" height="72" rx="8"/><text x="516" y="124" class="h">Leaf</text><text x="630" y="124" class="tag">M2</text><text x="516" y="143" class="m">a block's menu: Mark as…</text><text x="516" y="160" class="m">a marked block: a subtle line</text>
+<rect class="ok" x="20" y="214" width="680" height="76" rx="8"/><text x="36" y="238" class="h">The relay</text><text x="118" y="238" class="tag">M2</text><text x="36" y="257" class="m">keeps items as files in one team, each pinned to the version of its source it was marked from;</text><text x="36" y="274" class="m">refuses an item whose source some of its readers cannot read · Ship's listing names the three types</text>
+<path class="an" d="M120,172 L120,210"/><text x="128" y="196" class="m">write the item</text>
+<path class="an" d="M600,172 L600,210"/><text x="472" y="196" class="m">write the item</text>
+<path class="an" d="M360,210 L360,176"/><text x="368" y="196" class="m">list, triage, write</text>
+</svg>
+<figcaption>Ship also writes: accepting, rejecting and resolving are status changes, and an item's details and conversation are edited there. M2 and M3 are the build milestones, written as issues once the prototype (M1) is approved.</figcaption>
+</figure>
+
+<h2 id="objects">Objects</h2>
+<h3>After: what an item is</h3>
+<figure>
+<svg viewBox="0 0 720 440" role="img">
+<title>An item is its own file, filed in one team whose people read it. It is about any file of any app when it can be: in Ship an issue, a project or an Initiative, rolling up; a Peek topic; a Leaf page; an outside company's file. Its sources are messages, blocks or comments, each pinned to the version that was marked. A Journal entry's decider becomes a member of it.</title>
+<rect class="w" x="20" y="20" width="300" height="250" rx="10"/>
+<text x="36" y="44" class="h">Team</text><text x="84" y="44" class="m">its people read the item</text>
+<rect class="ok" x="36" y="60" width="268" height="196" rx="8"/>
+<text x="50" y="82" class="h">Item</text><text x="92" y="82" class="m">its own file</text><text x="262" y="82" class="tag">M2</text>
+<text x="50" y="104" class="m">Insight · Journal entry · Risk</text>
+<text x="50" y="126">title · summary · details</text>
+<text x="50" y="146">status, with its shared stage</text>
+<text x="50" y="166">conversation</text>
+<text x="50" y="188">Journal: Decision or Update,</text><text x="50" y="204" class="m">decided by X, a member · written by Y</text>
+<text x="50" y="228">Risk: Concern or Question</text>
+<text x="50" y="246" class="m">a company adds its own on top</text>
+
+<text x="360" y="44" class="h">About: any file, a field that can change</text>
+<rect class="b" x="360" y="60" width="104" height="48" rx="8"/><text x="372" y="82" class="h">Issue</text><text x="372" y="99" class="m">Ship</text>
+<rect class="b" x="480" y="60" width="104" height="48" rx="8"/><text x="492" y="82" class="h">Project</text><text x="492" y="99" class="m">Ship</text>
+<rect class="b" x="600" y="60" width="104" height="48" rx="8"/><text x="612" y="82" class="h">Initiative</text><text x="612" y="99" class="m">Ship</text>
+<path class="a" d="M464,84 L476,84"/><path class="a" d="M584,84 L596,84"/>
+<text x="360" y="128" class="m">Ship's listing says its roll-up: an issue shows on its project, a project on its Initiative</text>
+<rect class="q" x="360" y="144" width="160" height="48" rx="8"/><text x="372" y="166" class="h">Peek topic</text><text x="372" y="183" class="m">its own lists: Later?</text>
+<rect class="q" x="544" y="144" width="160" height="48" rx="8"/><text x="556" y="166" class="h">Leaf page</text><text x="556" y="183" class="m">its own lists: Later?</text>
+<rect class="b f" x="360" y="210" width="344" height="44" rx="8"/><text x="372" y="237" class="m f">an outside app's file, e.g. an open position (not built)</text>
+<path class="an" d="M304,120 L356,90"/><text x="314" y="96" class="m">about</text>
+
+<rect class="b" x="20" y="320" width="150" height="56" rx="8"/><text x="34" y="342" class="h">Message</text><text x="34" y="360" class="m">in Peek</text>
+<rect class="b" x="186" y="320" width="150" height="56" rx="8"/><text x="200" y="342" class="h">Block</text><text x="200" y="360" class="m">in Leaf · a subtle line</text>
+<rect class="b" x="352" y="320" width="170" height="56" rx="8"/><text x="366" y="342" class="h">Comment or block</text><text x="366" y="360" class="m">in Ship</text>
+<path class="an" d="M100,256 L96,316"/><path class="an" d="M170,256 L256,316"/><path class="an" d="M240,256 L430,316"/>
+<text x="20" y="300" class="m">sources, each pinned to the version marked; none if typed by hand</text>
+<text x="20" y="400" class="m">The item never changes or copies its source: it shows it live, "edited since marked" when it changed.</text>
+<text x="20" y="420" class="m">The relay refuses an item, or a new source, that some of the team's people cannot read.</text>
+</svg>
+<figcaption>An item is a file, so it has what every file has: a title, a summary, details Leaf can edit and a conversation in every app. "About" is a reference, not a parent: the item stays its team's, and changing what it is about never changes who reads it. Dashed: whether Peek and Leaf draw a topic's or a page's own lists in this project.</figcaption>
+</figure>
+
+<h2 id="flow">Flow: Miky marks Katerina's message as an Insight</h2>
+<figure>
+<svg viewBox="0 0 720 320" role="img">
+<title>Miky opens the menu on Katerina's message in Peek and chooses Mark as Insight, about the project. Peek asks Estiva ID to sign it and writes it to the relay, which checks Miky may write in the team and that every reader of the team can read the message. Ship, open on the project for Katerina, shows the Insight in its Triage.</title>
+<text x="30" y="24" class="h">Miky in Peek</text><text x="210" y="24" class="h">Estiva ID</text><text x="370" y="24" class="h">The relay</text><text x="540" y="24" class="h">Katerina in Ship</text>
+<path class="life" d="M70,34 L70,310"/><path class="life" d="M240,34 L240,310"/><path class="life" d="M400,34 L400,310"/><path class="life" d="M590,34 L590,310"/>
+<text x="80" y="62" class="m">Mark as… Insight · team: the message's · about: the project</text>
+<path class="an" d="M70,82 L236,82"/><text x="96" y="76" class="m">sign the Insight as Miky</text>
+<path class="a" d="M240,104 L74,104"/>
+<path class="an" d="M70,132 L396,132"/><text x="96" y="126" class="m">write it, pinned to the message as it reads now</text>
+<text x="408" y="158" class="m">checks Miky may write in the team,</text><text x="408" y="174" class="m">and every reader of the team can</text><text x="408" y="190" class="m">read the message; else refuses</text>
+<path class="an" d="M400,214 L586,214"/><text x="420" y="208" class="m">live: a new item about her project</text>
+<text x="434" y="242" class="m">Insights tab, Triage: Proposed</text><text x="434" y="258" class="m">or accepted by Miky's own mark</text>
+<text x="434" y="282" class="m">opens back to her message;</text><text x="434" y="298" class="m">Overview's What's new lists it</text>
+</svg>
+<figcaption>Nothing is sent to Katerina: the Insight waits on the project until she goes there. Only a Journal entry naming her as the decider tells her, once, and makes her a member of it, as an assignee is of an issue. Which app opens an Insight, any app finds in the listings, where Ship names the type.</figcaption>
+</figure>
+
+<h2 id="access">Access</h2>
+<div class="tw"><table>
+<tr><th>What</th><th>Who can see it</th><th>Who can change it</th><th>Where that is checked</th></tr>
+<tr class="new"><td>An item</td><td>The people of the team it is filed in, fixed when it is made</td><td>Anyone who may write in that team: details, status, what it is about</td><td>The relay, as for every file in a team</td></tr>
+<tr class="new"><td>Marking a message, block or comment</td><td>—</td><td>Anyone who can read it, other people's included; the team starts as the source's</td><td>The relay refuses an item whose source some of the team's people cannot read</td></tr>
+<tr class="new"><td>Accepting, rejecting, resolving</td><td>Shown with who signed each change</td><td>Each team's own rule; ours: a person, or an agent with that person's approval</td><td>The app (the protocol sets no rule)</td></tr>
+<tr class="new"><td>A Journal entry's decider</td><td>Becomes a member, as an assignee</td><td>Can correct it, as any member</td><td>As for an issue's members</td></tr>
+<tr><td>The source message or block</td><td>Unchanged</td><td>Unchanged: marking never edits it</td><td>Unchanged</td></tr>
+</table></div>
+
+<h2 id="checked">Checked</h2>
+<ul>
+<li>Ship's project has Overview and Issues tabs (estiva-ship <code>src/views/ProjectView.tsx</code>, origin/main, 16 Nov).</li>
+<li>Peek keeps five highlight types in code and its message card draws none since Katerina's call of 1 November (peek-app <code>src/components/ConversationCard.tsx</code>, origin/main).</li>
+<li>A block's handle menu has Copy link in Leaf and in Ship (leaf <code>src/document/LiveDocument.tsx</code>, <code>App.shipPath.test.tsx</code>).</li>
+<li>The relay checks the signer and who may write in each team; a file's readers follow its team (base page, <a href="estiva.html">Estiva architecture</a>).</li>
+<li>Item fields, statuses, team, "about", sources, the decider and who opens a type: the Accepted records of 13 and 16 November (estiva-docs <code>decisions/</code>, #442, #444, #447–#450).</li>
+<li>Not checked yet: how the relay addresses a pinned Leaf block as a source, how a listing says its roll-up, and the cost of reading a project's items on Miky's workspace; all three are milestone 2's probe and SPEC PR.</li>
+</ul>
+
+</main>
+</body>
+</html>

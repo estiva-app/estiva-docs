@@ -16,6 +16,13 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [Insights, Journal and Risks](insights-journal-and-risks.html)
+  — Shaped, 2026-11-16. You mark a message in Peek, a block in Leaf or a
+  comment in Ship as an Insight, a Journal entry or a Risk, and it appears on
+  the project's tab of that name in Ship; each item is its own file in one
+  team, about any file of any app, its sources pinned to the version marked,
+  and the relay refuses one whose source some of its readers cannot read. Read at
+  `https://docs.estiva.app/architecture/insights-journal-and-risks.html`.
 - [Activity indicator on each topic and team](activity-indicator-on-each-topic-and-team.html)
   — As built, 2026-11-16 (shaped 2026-11-10). In Peek, the dot on a topic, a space, a team's chat
   and a DM says why it is lit when you hover it, turns orange when someone
