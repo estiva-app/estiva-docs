@@ -5,15 +5,31 @@
 - Decided by: Miky, in the brainstorm session of 13 November 2026: anyone can mark or unmark any message, other people's included ("Katerina is shy to mark it, I will do it for her"), and anyone can confirm, a "flexible system"; and, by merging this record, that an agent never confirms its own suggestion, which was Claude's addition on the Leaf page "Highlights and the intelligence layer" that he did not object to; written up as the brief "What a project knows" ([page](briefs/highlights-and-what-a-project-knows.html)), where its Checked names that addition
 - Area: Messages
 
+> Superseded in part, 2026-11-16: who confirms (accepts) or rejects a Proposed
+> item, "an agent never confirms its own suggestion", and who may unmark. The
+> protocol carries the item's status and who signed each change; who may move
+> it out of Proposed, or unmark it, is each app's, company's or team's own
+> rule, and unmarking is a status change, never a delete, in
+> [who-accepts-an-item-is-each-companys-own-rule-and-the-protocol-carries-its-status](who-accepts-an-item-is-each-companys-own-rule-and-the-protocol-carries-its-status.md).
+> The last line of its Consequences is widened to any source whose readers
+> differ from the home's, in
+> [an-items-readers-are-fixed-when-it-is-made-and-a-move-changes-only-where-it-is-listed](an-items-readers-are-fixed-when-it-is-made-and-a-move-changes-only-where-it-is-listed.md).
+> Its marking rule stands: anyone who can read a message or a block can mark
+> it.
+
 ## Who it affects
 
 Miky reads Katerina's message in Peek and thinks it is a real insight. She is
-shy to mark it, so he marks it for her. Later, either of them sees a Proposed
-Journal entry that Ship's agent drafted from a thread and confirms it, and it
-is gone from the other's triage too.
+shy to mark it, so he marks it for her.
 
-An agent may suggest as much as it likes, but what it suggests stays Proposed
-until a person confirms it.
+Today Claude proposes decision records and Miky's merge accepts them; once he
+has, they count in Katerina's sessions too.
+
+*Correction, 2026-11-16: this section first told an invented moment, a
+Proposed Journal entry that Ship's agent drafted from a thread, and said that
+what an agent suggests waits for a person. The second moment above is real;
+the rule on who accepts is now each company's own, in the record named at the
+top.*
 
 ## Context
 
@@ -39,6 +55,9 @@ until a person confirms it.
   one person has confirmed an item, it is confirmed for everyone.
 - **An agent never confirms its own suggestion.** What an agent proposes waits
   for a person.
+- *(Superseded in part, 2026-11-16: "or unmark it" above and the two lines on
+  confirming are each app's, company's or team's own rule, not the protocol's;
+  see the note at the top.)*
 - Every mark, unmark, confirm and change of an item is kept in its history, so
   it shows who did what, and the apps' intelligence learns from it.
 
@@ -56,7 +75,8 @@ until a person confirms it.
 - A mark on someone else's words is visible to everyone who reads the item, and
   its history says who made it.
 - An agent's work is always reviewed by a person before it counts, however many
-  agents and apps suggest.
+  agents and apps suggest. *(Superseded in part, 2026-11-16: that is Estiva's
+  own rule, not the protocol's; see the note at the top.)*
 - With no person reviewing, Proposed items pile up; how a tab keeps that
   readable is shaped with the build.
 - Marking a message from a private conversation into a project is not decided

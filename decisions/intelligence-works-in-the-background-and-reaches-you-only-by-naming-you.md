@@ -5,13 +5,24 @@
 - Decided by: Miky, in the brainstorm session of 13 November 2026: "Intelligence is working for you async and it doesn't try to steal your attention"; what it finds lands in its home, and only a message that mentions you reaches your Desk; Ship Home shows which projects have new activity; and, in his comments that day on the Leaf page "Highlights and the intelligence layer", using the Activity indicator's rules for it, "not a bad idea", and an agent follows the same rules as a person; written up as the brief "What a project knows" ([page](briefs/highlights-and-what-a-project-knows.html))
 - Area: Read state
 
+> Added 2026-11-16: a person named as a Journal entry's decider is told once,
+> as a mention tells them; being named as the decider is being named, so this
+> record holds, in
+> [a-journal-entry-shows-who-decided-and-who-wrote-it-and-the-decider-is-told-once](a-journal-entry-shows-who-decided-and-who-wrote-it-and-the-decider-is-told-once.md).
+
 ## Who it affects
 
-Ship's agent finds three insights and a risk in a week of Peek messages about a
-project. Miky gets no notification for them. They wait, Proposed, in the
-project's tabs. On Ship Home the project shows that something is new, the way a
-topic does, and he looks when he chooses to. Only if the agent writes a message
-that mentions him does it reach his Desk, exactly as Katerina's would.
+The sweep is run by hand today: Claude gathers what people reported in Peek
+since the last update, checks the projects touched, and asks Miky once at the
+end. Nothing pings him while it works; he looks at what it found when he
+chooses to. With this call an app's or an agent's findings work the same way:
+they wait in their home, the project on Ship Home shows that something is new,
+and only a message that mentions Miky reaches his Desk, exactly as Katerina's
+would.
+
+*Correction, 2026-11-16: this section first told an invented moment, Ship's
+agent finding three insights and a risk in a week of Peek messages. The sweep
+above is real.*
 
 ## Context
 
@@ -27,8 +38,9 @@ that mentions him does it reach his Desk, exactly as Katerina's would.
 - The Activity indicator being built in Peek draws blue for something to read
   and orange for something to know, with no counts.
 - Loops, intelligence that runs on its own in the background, are not in the
-  first version; Miky waits on decisions about them. This record holds for
-  them when they come.
+  first version; Miky waits on decisions about them. *Correction, 2026-11-16:
+  this line first added that this record holds for loops when they come; it
+  does not decide anything about loops, which are parked.*
 
 ## Decision
 
