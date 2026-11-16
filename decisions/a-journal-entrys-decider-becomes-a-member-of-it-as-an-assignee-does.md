@@ -58,15 +58,23 @@ handles assignees handles deciders.
 
 ## Decision
 
+- *Claude's, the general rule his answer applies (SPEC §11.8):* **a person
+  named in a person field of any file becomes a member of that file**, as an
+  assignee does on an issue, or a hiring manager on an open position.
 - **Naming a person as a Journal entry's decider makes them a member of the
   entry**, as assigning a person to an issue makes them a member of the issue.
 - **They hear the entry's conversation as a member does**: every later
   message in it is unread for them, under their own mute and levels, in every
   app.
 - *Claude's, read from SPEC §11.8:* **"Decided by" is a person field, and
-  setting it is a placement.** Its change carries `["p", <decider>]`, and that
-  change is what makes them a member, from the second it was made. Nothing
-  before it is unread for them.
+  either of the two placement triggers makes the decider a member:**
+  - named on the entry when it is made: the entry's first record carries
+    `["p", <decider>]`, and they join at its `created_at` ("was named on it
+    when it was made");
+  - named later: a change setting "Decided by" carries `["p", <decider>]`, and
+    they join from that change ("was placed on it").
+
+  Nothing before they joined is unread for them.
 - *Claude's:* **what they see at the moment of being named is what an
   assignee sees when assigned.** The placement itself makes nothing unread
   (SPEC §11.8); each app shows a file newly placed on a person the way it

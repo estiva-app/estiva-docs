@@ -56,7 +56,7 @@ from the relay about which sources an item may name.
   has since lost access; someone who cannot read it sees "not available to
   you" (SPEC §13.6.1, decided 7 October).
 - Nothing is rewritten: an edit to a message is a new event (SPEC §6.8), and
-  every save of a page is kept, which is what its History panel opens
+  every save of a file is kept, which is what its History panel opens
   ([a-file-keeps-every-change-for-good](a-file-keeps-every-change-for-good.md)),
   which also has "delete this version".
 - The relay already looks up a target's team when it checks an edit, and
@@ -65,8 +65,12 @@ from the relay about which sources an item may name.
   the highlight. That suits public notes; on a company relay with private
   places it carries words past their readers.
 - Earlier in the same session Miky decided that the project offers Mark only
-  where the source's readers are the item's team's readers. *That call is in
-  no record yet; it was taken from the session, as the brief says.*
+  where the source's readers are the item's team's readers. That call is
+  already carried, as a line marked as Claude's, by
+  [an-item-is-filed-in-a-team-and-is-about-an-issue-a-project-or-an-initiative](an-item-is-filed-in-a-team-and-is-about-an-issue-a-project-or-an-initiative.md)
+  ("another team is offered only when its readers are the source's"). R makes
+  it a protocol rule, in its safe direction: the item's readers must be among
+  the source's readers.
 
 ## Decision
 
@@ -76,8 +80,8 @@ marked, and keeps none of its words.**
 - An item shows each source as it read when it was marked. If the source has
   been edited since, a line says "edited since marked", and its current words
   are one tap away ("see it now").
-- A block of a Leaf or Ship page shows as it was in the save of the page it
-  was marked on.
+- A block of any file's page (a Leaf page, a Ship issue, an HR app's open
+  position…) shows as it was in the save of that page it was marked on.
 - Anyone who cannot read the source, or that save of the page, sees "not
   available to you", as for a shown block.
 - If the source is deleted, or that version of a page is deleted, the item
@@ -88,12 +92,18 @@ marked, and keeps none of its words.**
   pinned to its newest edit at the time of marking, or to the message itself
   when it was never edited; a block is pinned to the page's text save it was
   marked on.
+- *Claude's, from the review of this record:* **a pin is always a version of
+  its own source**: for a message, an edit of that message in its channel; for
+  a block, a save of that page. The relay refuses a pin that is not, and a
+  reader must not draw one that is not.
 
 **The title is the one part that is kept.** When marking, the title starts
 filled with a short suggestion from the source's words, which the person
 edits, and a hint says plainly that the title is kept in the item. Whatever
 the title says is stored in the item under the name of the person who marked
 it, and readable by its team for good. (Part of the recommendation Miky took.)
+A title suggested from the source stays in the item, and in its history, even
+when the source or its pinned version is deleted.
 
 **Who checks it (R): the relay.** The relay refuses an item whose source lives
 where not everyone who reads the item can read it.
@@ -101,9 +111,23 @@ where not everyone who reads the item can read it.
 - Today that means a direct message cannot be marked, by any app.
 - The direction matters: a later private team may mark an open team's
   message, never the other way round.
+- *Claude's, from the review of this record:* **it covers every write.** The
+  relay refuses any item event or change that names a source unless every
+  source it names resolves on this relay and every reader of the item's team
+  can read that source's channel. An item with several sources, a source
+  added or swapped later, and a changed pin are all checked; a source that is
+  unknown or missing fails closed. Readers draw sources only from the tags the
+  relay checked.
+- *Claude's, from the review of this record:* **"can read" is what the
+  relay's own read rule gives for each channel when the check runs**: for an
+  open team, every member of the workspace; for a DM, its members; for a later
+  private team, its roster at that moment; for a team two companies share
+  ([a-shared-folder-lives-on-both-relays-and-its-host-runs-it](a-shared-folder-lives-on-both-relays-and-its-host-runs-it.md)),
+  the other company's people too; a comment is judged by its own channel.
 - The check is made when the item is written. An item whose source's team
-  turns private later is not checked again; its source then shows "not
-  available to you".
+  turns private later is not checked again, and neither is one whose source
+  team later removes someone; its source then shows "not available to you"
+  to whoever can no longer read it.
 - "Readers match" is therefore a protocol rule every app and agent meets, not
   only our apps' promise.
 
@@ -133,7 +157,9 @@ and Risks".
   is copied unless they choose to; one more thing to type each time, and Mark
   stops being as quick as "I will do it for her". Turned down with the
   recommendation: since readers match when marking, a suggested title tells
-  nobody anything they could not already read.
+  nobody anything they could not already read. The cost taken with it: a
+  suggested title is a copy of the source's words, and it stays in the item
+  and its history even after the source or its version is deleted.
 - **P · Our apps only check.** Peek, Ship and Leaf never offer Mark where
   readers differ, with no rule on the wire. No build cost, and two-way.
   Turned down: any other client, or an agent, could write an item in a team
@@ -168,7 +194,11 @@ and Risks".
   is measured on Miky's workspace yet; the build's kickoff measures it.
 - If a source, or the pinned version of a page, is deleted (as for a pasted
   password), the item shows that it was deleted, and a Decision loses its
-  words.
+  words. Its title does not: a title suggested from those words stays in the
+  item and in its history, and deleting it there is a delete of the item's
+  own version.
+- *Claude's, for the build:* whether the relay re-checks an item when its
+  source's team turns private or removes a person is left for later.
 - Private teams and notes still bring their own questions: what happens to
   titles already kept when a team turns private; a person's notes as a source;
   and the questions the readers and team records left for them, such as an
