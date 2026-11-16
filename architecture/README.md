@@ -17,7 +17,7 @@ every project's "today" starts from it.
 Project pages, newest first:
 
 - [Activity indicator on each topic and team](activity-indicator-on-each-topic-and-team.html)
-  — Shaped, 2026-11-10. In Peek, the dot on a topic, a space, a team's chat
+  — As built, 2026-11-16 (shaped 2026-11-10). In Peek, the dot on a topic, a space, a team's chat
   and a DM says why it is lit when you hover it, turns orange when someone
   reacts to your message there, and each place keeps an Activity list; the
   rule lives in the shared package so any app can draw it, a reaction names
