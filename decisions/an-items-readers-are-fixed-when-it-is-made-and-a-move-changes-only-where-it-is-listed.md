@@ -15,8 +15,10 @@
 > left undecided, from a private conversation to any source whose readers
 > differ from the home's. Everything else in those records stands.
 
-> Read with, 2026-11-16: "home" here is the team an item is filed in, and
-> "moving its home" is changing what the item is about, since
+> Read with, 2026-11-16: "home" here is the team an item is filed in, and an
+> item is no longer "a file made under its home": what it is about is a
+> reference, and changing it, or moving the item to another team, changes only
+> where it is listed, since
 > [an-item-is-filed-in-a-team-and-is-about-an-issue-a-project-or-an-initiative](an-item-is-filed-in-a-team-and-is-about-an-issue-a-project-or-an-initiative.md).
 > What this record decides is unchanged.
 
