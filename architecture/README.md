@@ -16,6 +16,13 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [Production errors reach us (Sentry)](production-errors-reach-us-sentry.html)
+  — Shaped, 2026-11-17. Peek, Ship, Leaf, Estiva ID and the relay each send a
+  short report to Sentry when something breaks, built from a fixed list of
+  fields and never with what a person wrote; Claude reads Sentry after each
+  deploy, at a sweep and when a project is wrapped. Read at
+  `https://docs.estiva.app/architecture/production-errors-reach-us-sentry.html`.
+
 - [Issues stop downloading every edit](issues-stop-downloading-every-edit.html)
   — Shaped, 2026-11-16. Ship, Leaf, Peek and the agent read each issue as it
   is now and write each change after the one it follows, as they do for

@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Production errors reach us</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
+.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
+svg .aq { stroke: var(--accent); fill: none; stroke-width: 1.6; stroke-dasharray: 5 4; marker-end: url(#arr-q); }
+svg .life { stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 3 4; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 560px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+tr.new td { background: var(--ok-bg); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+    <marker id="arr-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<main>
+
+<h1>Production errors reach us</h1>
+<p class="sub"><span class="state">Shaped, 2026-11-17</span> · <a href="https://ship.estiva.app/#/project/69d49dca-7c8f-4413-9a78-b79f0e47d782">Ship project</a> · Goal: when an app or a server breaks on production, we know from the system itself, not because Miky or Katerina told us.</p>
+
+<p>Today nothing reports an error: a crash is seen only by the person it happens to. This project adds one small reporter to every app and both servers. It sends a short report to Sentry, built from a fixed list of fields, and Claude reads Sentry at set moments. Look at the Map first, then at what a report may contain.</p>
+
+<div class="legend"><span>runs today, unchanged</span><span class="lnew">new</span><span class="lq">not proven yet</span></div>
+
+<h2>Map</h2>
+<figure>
+<svg viewBox="0 0 720 420" role="img">
+<title>Peek, Ship, Leaf and Estiva ID in the browser each hand an error to a new shared reporter, which sends a short report to Sentry. Estiva ID's server and the relay report to Sentry too. Claude reads Sentry after each deploy, at a sweep and when a project is wrapped; whether the free plan lets it read is not proven yet.</title>
+<rect class="b" x="20" y="20" width="150" height="52" rx="8"/><text x="34" y="42" class="h">Peek</text><text x="34" y="60" class="m">in the browser</text>
+<rect class="b" x="195" y="20" width="150" height="52" rx="8"/><text x="209" y="42" class="h">Ship</text><text x="209" y="60" class="m">in the browser</text>
+<rect class="b" x="370" y="20" width="150" height="52" rx="8"/><text x="384" y="42" class="h">Leaf</text><text x="384" y="60" class="m">in the browser</text>
+<rect class="b" x="545" y="20" width="155" height="52" rx="8"/><text x="559" y="42" class="h">Estiva ID</text><text x="559" y="60" class="m">sign-in pages</text>
+
+<rect class="ok" x="20" y="122" width="680" height="56" rx="8"/><text x="34" y="145" class="h">Reporter, the same in every app</text><text x="34" y="164" class="m">builds each report from the allowed fields · sends each kind of error once per tab · shared package</text>
+<path class="an" d="M95,72 L95,118"/><text x="103" y="100" class="tag">M2</text>
+<path class="an" d="M270,72 L270,118"/><text x="278" y="100" class="tag">M4</text>
+<path class="an" d="M445,72 L445,118"/><text x="453" y="100" class="tag">M4</text>
+<path class="an" d="M622,72 L622,118"/><text x="630" y="100" class="tag">M4</text>
+
+<rect class="b" x="20" y="232" width="180" height="60" rx="8"/><text x="34" y="256" class="h">Estiva ID's server</text><text x="34" y="274" class="m">signs people in</text>
+<rect class="ok" x="250" y="232" width="220" height="60" rx="8"/><text x="264" y="256" class="h">Sentry</text><text x="264" y="274" class="m">hosted · groups reports · 30 days</text>
+<rect class="b" x="520" y="232" width="180" height="60" rx="8"/><text x="534" y="256" class="h">Relay</text><text x="534" y="274" class="m">stores and checks everything</text>
+<path class="an" d="M360,178 L360,228"/><text x="368" y="208" class="m">a short report</text>
+<path class="an" d="M200,262 L246,262"/><text x="208" y="252" class="tag">M6</text>
+<path class="an" d="M520,262 L474,262"/><text x="486" y="252" class="tag">M6</text>
+
+<rect class="q" x="250" y="346" width="220" height="60" rx="8"/><text x="264" y="370" class="h">Claude, reading only</text><text x="264" y="388" class="m">does the free plan allow it?</text>
+<path class="aq" d="M360,346 L360,296"/><text x="368" y="326" class="tag">M1 · probe</text>
+<text x="484" y="366" class="tag">M3</text><text x="484" y="382" class="m">after each deploy · at a sweep ·</text><text x="484" y="398" class="m">when a project is wrapped</text>
+<rect class="b" x="20" y="346" width="180" height="60" rx="8"/><text x="34" y="370" class="h">Miky</text><text x="34" y="388" class="m">owns the Sentry account</text>
+<path class="a" d="M200,376 L225,376 L225,280 L246,280"/>
+</svg>
+<figcaption>Every green part is new. M1 comes first because Sentry's price list says the free plan has no API: if Claude cannot read, the rest changes. M5 (failures a person is told about, and writes the relay refuses) adds more kinds of report through the same reporter, so it adds no box.</figcaption>
+</figure>
+
+<h2>Flow: a crash in Leaf, from the screen to a fix</h2>
+<figure>
+<svg viewBox="0 0 720 330" role="img">
+<title>A part of Leaf crashes for a person. The reporter in Leaf builds a report from the allowed fields and sends it to Sentry, which groups it with the same error from others. After the next deploy, at a sweep or at a project wrap, Claude asks Sentry what is new, and a new error is fixed or filed.</title>
+<rect class="b" x="20" y="14" width="170" height="40" rx="8"/><text x="34" y="39" class="h">A person · Leaf</text>
+<rect class="ok" x="275" y="14" width="170" height="40" rx="8"/><text x="335" y="39" class="h">Sentry</text>
+<rect class="b" x="530" y="14" width="170" height="40" rx="8"/><text x="544" y="39" class="h">Claude</text>
+<line class="life" x1="105" y1="54" x2="105" y2="320"/><line class="life" x1="360" y1="54" x2="360" y2="320"/><line class="life" x1="615" y1="54" x2="615" y2="320"/>
+<text x="118" y="82">1  a part of the page crashes;</text><text x="118" y="98" class="m">they see "Something went wrong"</text>
+<rect class="ok" x="118" y="110" width="228" height="56" rx="6"/><text x="128" y="128">2  the reporter builds the report:</text><text x="128" y="144" class="m">where the code broke, app, version,</text><text x="128" y="160" class="m">who. Never what they wrote.</text>
+<path class="an" d="M105,190 L356,190"/><text x="118" y="184">3  sends it</text>
+<text x="372" y="214">4  groups it with the same error</text>
+<path class="aq" d="M615,252 L364,252"/><text x="372" y="246">5  "what is new since the deploy?"</text>
+<text x="372" y="290">6  a new error a person hit is fixed,</text><text x="372" y="306" class="m">or filed in that app's Feedback &amp; Bugs</text>
+</svg>
+<figcaption>Step 5 happens after each deploy, at a sweep and when a project is wrapped, not on a timer (Miky, 17 Nov). Between those moments nobody is told; that is the known limit of this version.</figcaption>
+</figure>
+
+<h2>Access: what leaves, and who can read it</h2>
+<div class="tw">
+<table>
+<thead><tr><th>What</th><th>Who can see it</th><th>Who can change it</th><th>Checked by</th></tr></thead>
+<tbody>
+<tr class="new"><td><strong>A report may contain:</strong> the app and its version; the kind of error and where in the code it broke; one of our own fixed sentences or the relay's reason code; the kind of screen (never its address); the last few steps before the error, as kinds of screen and our own named actions; the browser; the person's public key; whether it is a person, a QA account or an agent.</td><td>Miky, in Sentry. Claude, reading only. Sentry the company, as the host.</td><td>Nobody. Sentry deletes it after 30 days.</td><td>The reporter, in the person's own browser, before anything is sent. Tested by planting text and reading the bytes that leave.</td></tr>
+<tr class="new"><td><strong>A report never contains:</strong> message or document text, titles, file names, page addresses, what was clicked, console lines, request contents. An error's own wording is sent only with quoted text removed.</td><td>Nobody outside the browser.</td><td>—</td><td>The same reporter and the same test.</td></tr>
+<tr class="new"><td>The address the apps send reports to. It is public, like the apps' code.</td><td>Anyone can send to it. Nobody can read with it.</td><td>Miky can replace it.</td><td>Sentry.</td></tr>
+<tr class="new"><td>Where Sentry stores the reports: Frankfurt or Iowa.</td><td>—</td><td>Chosen once, when Miky creates the account. It cannot be changed later.</td><td>Sentry.</td></tr>
+</tbody>
+</table>
+</div>
+<p class="sub">Every row is new. The servers follow the same list: the relay and Estiva ID's server report where the code broke, never what an event or a request contained.</p>
+
+<h2>Checked</h2>
+<ul>
+<li>No app or server reports errors today: a search of <code>origin/main</code> in peek, ship, leaf, estiva-id and the relay's <code>nfb-demo-kinds</code> branch finds no Sentry or similar library (17 Nov).</li>
+<li>Peek wraps itself and its panels in the shared "Something went wrong" screen (<code>src/main.tsx</code>, <code>src/layouts/PeekFrame.tsx</code>), which only writes to the console (estiva-ui <code>src/ErrorBoundary.tsx</code>). The same search finds no such wrapper in Ship or Leaf.</li>
+<li>Estiva ID is a server and sign-in pages in one repo (<code>src/server.ts</code>, <code>web/</code>); the relay is written in Rust and already writes structured logs (<code>tracing</code> in <code>Cargo.toml</code>).</li>
+<li>The peek, ship, leaf and estiva-id repos are public (<code>gh repo view</code>), so readable stack traces reveal nothing new. The relay's repo is private.</li>
+<li>Sentry's pages, read 17 Nov: free plan is one user, 5,000 errors a month, 30 days kept; the storage place is fixed at creation; a per-app cap is a paid feature; the standard library also collects console lines, clicks and addresses unless turned off.</li>
+<li><strong>Not verified:</strong> whether a free-plan account can be read by Claude at all (the price list says "API: No", and lists a Claude connector as included). That is milestone 1.</li>
+</ul>
+
+</main>
+</body>
+</html>
