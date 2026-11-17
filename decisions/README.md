@@ -228,6 +228,7 @@ properties and its history.
 - [An Insight, Journal entry or Risk shows its source as it read when it was marked, and never keeps a copy of it; the relay refuses an item whose source some of its readers cannot read](an-item-shows-its-source-as-marked-and-the-relay-refuses-one-its-readers-cannot-read.md) — Accepted, 2026-11-16
 - [The person named as a Journal entry's decider becomes a member of the entry, as an assignee becomes a member of an issue, and hears its conversation as any member does](a-journal-entrys-decider-becomes-a-member-of-it-as-an-assignee-does.md) — Accepted, 2026-11-16
 - [An Insight, Journal entry or Risk can be about any file of any app, each app says how its own files roll up, and every app that opens that file shows its items](an-item-can-be-about-any-file-of-any-app-and-every-app-that-opens-that-file-shows-it.md) — Accepted, 2026-11-16
+- [Every app reads an Insight's category, a Risk's severity, a Blocker, who decides a Question with its options, and who a Blocker waits on; each company names the categories and the severity scale](every-app-reads-an-items-category-severity-blocker-decider-and-wait-and-each-company-names-their-values.md) — Accepted, 2026-11-17
 - [Every app relies on an Insight's, Journal entry's or Risk's shared stage and its core fields, and each company adds its own statuses and fields on top](every-app-relies-on-an-items-stage-and-core-fields-and-each-company-adds-its-own-on-top.md) — Accepted, 2026-11-16
 
 ## Documents
