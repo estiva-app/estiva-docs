@@ -271,6 +271,7 @@ properties and its history.
 - [Relay-canonical by default; an app database is an exception](0001-relay-canonical-by-default.md) — Accepted, 2026-08-22; its part "share the wire format, never the interpretation", as far as it covers the fold, superseded by "A file's type is a shared meaning", 2026-10-26; its §6 "Documents use relay git" superseded by "A file is its fields", 2026-10-30
 - [Foundation packages: one repo, public npm, built ESM, and a named owner for a break](0002-foundation-packages.md) — Accepted, 2026-08-26
 - [The block editor is shared: its translation lives in @estiva-app/protocol and its editor nodes in @estiva-app/ui/editor](the-block-editor-kit-lives-in-protocol-and-ui.md) — Accepted, 2026-09-30
+- [When an app or server breaks, it sends a report built only from a fixed list of fields, through our own server, to Sentry's hosted service; Claude reads it and may change only an error's state](error-reports-go-to-hosted-sentry-built-from-an-allowed-list.md) — Accepted, 2026-11-18
 
 ## Search
 
