@@ -53,7 +53,7 @@ it. Its first record is a `kind:30850` ([SPEC §6.1](SPEC.md)).
 | `summary` | `summary` | one or two sentences of plain text, about 240 characters ([SPEC §6.12](SPEC.md)) |
 | `archived` | — | `true` while it is archived; empty otherwise ([SPEC §6.5](SPEC.md)) |
 | `deleted` | — | `true` while it is deleted; empty otherwise ([SPEC §6.5](SPEC.md)). A deleted project keeps its `key` |
-| `description` | — (`description`, else `content`, on projects written before the issues switch only) | the project's text, a new project's as its first change ([SPEC §6.1](SPEC.md)) ([SPEC §6.10](SPEC.md)): a block document labelled `estiva-blocks-1`, or unlabelled marker text ([SPEC §13.4](SPEC.md)) |
+| `description` | — (`description`, else `content`, on projects written before the issues switch only) | the project's text, a new project's as its first change ([SPEC §6.1, §6.10](SPEC.md)): a block document labelled `estiva-blocks-1`, or unlabelled marker text ([SPEC §13.4](SPEC.md)) |
 
 **Search** finds a project by the words of its current title, summary, key
 and text, title first, through the list read
@@ -98,7 +98,7 @@ under at most one project, and it can move.
 | `summary` | `summary` | one or two sentences of plain text, about 240 characters ([SPEC §6.12](SPEC.md)) |
 | `archived` | — | `true` while it is archived; empty otherwise ([SPEC §6.5](SPEC.md)) |
 | `deleted` | — | `true` while it is deleted; empty otherwise ([SPEC §6.5](SPEC.md)). A deleted issue keeps its `ref`. Until issues are kept field by field, Ship deletes an issue with a `kind:5`, which a reader still honours |
-| `description` | — (`content`, on issues written before 2026-11-18 only) | the issue's text ([SPEC §6.10](SPEC.md)), as a project's. A new issue's text is its first change, never in its first record ([SPEC §6.1](SPEC.md)) |
+| `description` | — (`content`, on issues written before the issues switch only) | the issue's text ([SPEC §6.10](SPEC.md)), as a project's. A new issue's text is its first change, never in its first record ([SPEC §6.1](SPEC.md)) |
 
 **Search** finds an issue by its title and its ref ([SPEC §5.2](SPEC.md))
 until the relay lists `osnova.issue` in NIP-11 `file_search`

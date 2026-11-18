@@ -1022,7 +1022,7 @@ description and a document's are the same field, `description`, changed by
 [a-new-files-text-is-its-first-change](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-new-files-text-is-its-first-change.md)).
 A new first record of any type says what the file is (its id, type, team,
 title, parent, ref, key, summary) and carries no text: a `30850` no
-`description` tag, a `30850`, `30851` or `30842` an empty `content`, a `30852`
+`description` tag, a `30840`, `30842`, `30850` or `30851` an empty `content`, a `30852`
 no `set` of `description`. The text given at creation is written straight
 after, as its own one-field change: a `kind:1851` with `field` `description`,
 `prev` the first record's id, and its `content-format` and `imeta` beside it
@@ -2961,8 +2961,10 @@ moment it does — **the switch** — it writes no first record twice (§6.1), a
 refuses a change filed in another team than its file's. A type in
 `requires_prev`, and every `30852` type, is **kept in order**: a change with no
 `prev` is refused (a `member:<P>` or `follow:<P>` change excepted, §11.8), and
-so is a `kind:5` naming its first record or a change (§6.5), and a new first
-record of it carrying text (§6.1). An app reads the list and never assumes it.
+so is a `kind:5` naming its first record or a change (§6.5), and, from the
+moment the relay refuses text on first records (below, "Each type has its own
+switch"), a new first record of it carrying text (§6.1). An app reads the list
+and never assumes it.
 
 **Each type has its own switch** (*added 2026-11-18*). A type joins
 `requires_prev` at one moment, for every team at once, and from then on it is
