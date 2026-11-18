@@ -377,7 +377,10 @@ last owner. No new refusal code. Record
     first record without it and the text as its first change.
   - `delete-by-field` (`invalid:`): a `kind:5` names the first record or a
     change of a file of a type the relay keeps in order; the app writes the
-    file's `deleted` field instead (§6.5, *added 2026-11-18*).
+    file's `deleted` field instead (§6.5, *added 2026-11-18*). Only a signer
+    who may read the file's team is told so; anyone else gets the answer a
+    `kind:5` naming no stored file gets, so the refusal never says that a file
+    exists.
 
   A `kind:9000` naming several people is refused with a code only when
   everyone in it is refused for that same code; otherwise it is refused
