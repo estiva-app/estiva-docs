@@ -364,14 +364,16 @@ last owner. No new refusal code. Record
     not later than every marked first record in its team; the app writes it
     again with a later one and tells nobody (§6.1).
   - `requires-prev` (`invalid:`): a change with no `prev` to a file of a type
-    the relay keeps in order, on any type, projects included (§6.13, *added
+    the relay keeps in order, projects included (§6.13, *added
     2026-11-18*). The app reads NIP-11 again, opens the file and writes the
     change again in order; a relay from before this code says it in words
     alone (§6.13, "A writer from before the switch").
   - `text-is-a-change` (`invalid:`): a new first record carries its text: a
     `30850`, `30851`, `30840` or `30842` with a `description` tag or with
-    `content`, of a type the relay keeps in order, or a `30852` with `content`
-    or a `set` of `description` (§6.1, *added 2026-11-18*). The app writes the
+    `content`, once the relay refuses text on that kind (§6.13, "Each type has
+    its own switch": from the first switch after this code, for every base
+    type then kept in order), or a `30852` with `content` or a `set` of
+    `description` (§6.1, *added 2026-11-18*). The app writes the
     first record without it and the text as its first change.
   - `delete-by-field` (`invalid:`): a `kind:5` names the first record or a
     change of a file of a type the relay keeps in order; the app writes the
@@ -1145,7 +1147,7 @@ and
   record, then the text as its own one-field change (§6.1, "A new file's text is
   its first change"), then any other first value that is not on the first
   record, such as an issue's `ref` claim, in a change with no text.
-- **The text is never one field of a several-field change it starts**: a
+- **A creation's text is never part of a several-field change**: a
   `description` given at creation is always its own change. Later saves may set
   it beside other fields, as before.
 - **Every writer SHOULD write `prev` on every change, on every type.** The relay
@@ -1796,8 +1798,11 @@ D3, which stands):
   too, each with its current changes' ids and the fields they set. A row whose
   `changes` set `deleted` may be a deleted file: read that change, and the
   ones the app needs (its `ref`, its `key`), with the first record, by `ids`,
-  and decide on those signed events, never on the row. One read per team, then
-  one by `ids` for the few rows that name `deleted`. No list mode returns
+  and decide on those signed events, never on the row. The times read honours
+  `limit` and `until` over first records, so a team with more files than one
+  page is read page by page, with `until` the oldest row's `created_at`, until
+  a page comes back short; then one read by `ids` for the few rows that name
+  `deleted`. No list mode returns
   deleted files: the times read is the one way to find them.
 - **A marked file** (§6.1, "Only the workspace's admins write here") is
   archived, deleted and restored only by the workspace's owners and admins,
@@ -3016,8 +3021,8 @@ settings, and is not how a file is kept.
 **Where it stands (2026-11-09).** The Estiva relay answers the list read,
 a named file's current text and its search, and advertises `file_list`
 (`newest`, `text`) and `file_search`. It advertises `files` exactly when its
-`BUZZ_FILES_FENCE` is `all`, from the same list it enforces; it does not yet.
-The agent (estiva-agent 0.28.0 and later; 0.29.0 is the oldest that may write)
+`BUZZ_FILES_FENCE` is `all`, from the same list it enforces; it has since
+projects' switch (state on 2026-11-18 below). The agent (estiva-agent 0.28.0 and later; 0.29.0 is the oldest that may write)
 switches when it reads NIP-11, which a running agent does again on restart; it reads projects by the list read,
 opens one with its current text, and writes each project field with `prev`,
 merging a text change or asking as §13.3 says (ALO-7). Ship, Peek and Leaf
@@ -3032,7 +3037,10 @@ true, "text": true, "times": true}` and `"file_search": {"types":
 issues are not yet. The relay already answers the list read and the times read
 for issues, and the agent lists issues by the list read. Its refusals still say
 `a project change names…` and `a file change names…` in words, with no code,
-and a `30852` with `content` is refused in words. Next, behind the relay's
+and a `30852` with `content` is refused in words. Ship's new issue and new
+project, its `add-issue` action and Peek's launcher still write the text into
+the first record, the shape §6.1 and §7.3 now rule out; each moves before the
+relay refuses it. Next, behind the relay's
 switch for issues: `osnova.issue` in `requires_prev`, the three codes of §3.3
 on every type, a new project or issue carrying text refused, a `kind:5` on an
 issue refused, and issues in `file_search`; then Ship, Leaf, Peek and the agent
