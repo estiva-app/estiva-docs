@@ -363,6 +363,19 @@ last owner. No new refusal code. Record
   - `writers-order` (`invalid:`): a marked first record whose `created_at` is
     not later than every marked first record in its team; the app writes it
     again with a later one and tells nobody (§6.1).
+  - `requires-prev` (`invalid:`): a change with no `prev` to a file of a type
+    the relay keeps in order, on any type, projects included (§6.13, *added
+    2026-11-18*). The app reads NIP-11 again, opens the file and writes the
+    change again in order; a relay from before this code says it in words
+    alone (§6.13, "A writer from before the switch").
+  - `text-is-a-change` (`invalid:`): a new first record carries its text: a
+    `30850`, `30851`, `30840` or `30842` with a `description` tag or with
+    `content`, of a type the relay keeps in order, or a `30852` with `content`
+    or a `set` of `description` (§6.1, *added 2026-11-18*). The app writes the
+    first record without it and the text as its first change.
+  - `delete-by-field` (`invalid:`): a `kind:5` names the first record or a
+    change of a file of a type the relay keeps in order; the app writes the
+    file's `deleted` field instead (§6.5, *added 2026-11-18*).
 
   A `kind:9000` naming several people is refused with a code only when
   everyone in it is refused for that same code; otherwise it is refused
@@ -849,12 +862,14 @@ An object is a **root event** plus a stream of **change events**.
 
 *Rewritten 2026-10-30.* **A file is its fields** (record
 [a-file-is-its-fields-each-kept-in-order-by-the-relay](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-file-is-its-fields-each-kept-in-order-by-the-relay.md)).
-Its root is its **first record**: its type, its id, its team and each field's
-first value, written once. Every later change sets one or more fields, each
-naming the change it follows for that field, and the relay keeps each field's
-changes in one line (§6.2). Different fields never clash. The text is one
-field, `description`, saved whole (§6.10). A list reads each file's first record
-and the newest change of each field but the text (§6.13).
+Its root is its **first record**: its type, its id, its team and the first
+value of each field it is created with but the text, written once. Every later
+change sets one or more fields, each naming the change it follows for that
+field, and the relay keeps each field's changes in one line (§6.2). Different
+fields never clash. The text is one field, `description`, saved whole (§6.10),
+and **a new file's text is its first change**, never in its first record
+(§6.1, *added 2026-11-18*). A list reads each file's first record and the
+newest change of each field but the text (§6.13).
 
 ### 6.1 Root events
 
@@ -891,13 +906,14 @@ it is a type that will join the base or an app's own:
 | `d` | the file's id, a lowercase UUID |
 | `k` | the file's type, such as `acme.invoice` ([TYPES.md](TYPES.md)); exactly one |
 | `h` | the team it is filed in, always; never `buzz-channel` |
-| `set` | `["set", <field>, <value>]`, one per field the creation gives a value, as that field's first value (§6.2) |
+| `set` | `["set", <field>, <value>]`, one per field the creation gives a value, as that field's first value (§6.2); never `description` |
 | `of` | OPTIONAL: the type another file describes, by its name (`osnova.issue`), never a kind number; only on a type that describes another, such as `osnova.schema` (§7.4) |
 | `writers` | OPTIONAL: `["writers", "workspace-admins"]`, only the workspace's owners and admins write the file (below) |
 
-`content` is empty: a text given at creation is the `description` field's first
-value, in a `set`, with `content-format` and `imeta` beside it (§6.2). The relay
-refuses a `30852` with no `k`, with two, or with a `k` naming one of the four
+`content` is empty, and no `set` names `description`: a text given at creation
+is the file's first change, as for every type (below). The relay refuses a
+`30852` with `content` or with a `set` of `description` (`text-is-a-change`,
+§3.3), and one with no `k`, with two, or with a `k` naming one of the four
 base types that keep their own kinds (`osnova.project`, `osnova.issue`,
 `osnova.document`, `osnova.topic`), so the
 four are only ever written on their own kinds. Its address is
@@ -997,8 +1013,37 @@ a bare file or a document is the address of the file it sits under, **of any
 kind**.
 
 A file's text is not a root fact either. A project's or an issue's
-description and a document's are the same field, `description`, seeded from
-`content` and changed by `kind:1851` (§6.10). A bare file has no text (§6.7).
+description and a document's are the same field, `description`, changed by
+`kind:1851` (§6.10). A bare file has no text (§6.7).
+
+**A new file's text is its first change** (*added 2026-11-18*, record
+[a-new-files-text-is-its-first-change](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-new-files-text-is-its-first-change.md)).
+A new first record of any type says what the file is (its id, type, team,
+title, parent, ref, key, summary) and carries no text: a `30850` no
+`description` tag, a `30850`, `30851` or `30842` an empty `content`, a `30852`
+no `set` of `description`. The text given at creation is written straight
+after, as its own one-field change: a `kind:1851` with `field` `description`,
+`prev` the first record's id, and its `content-format` and `imeta` beside it
+(§6.2). It is never one field of a several-field change, since the list read
+returns such a change whole (§6.13) and the text would ride every list until
+its other fields changed. So a list of new files carries no text at all.
+
+- **The relay refuses a first record that carries text** (`text-is-a-change`,
+  §3.3): a `30852` from its first event, and a base type from the moment the
+  relay keeps it in order (§6.13; for projects and issues, from the issues
+  switch).
+- **Creating is two writes.** Until the text lands, readers show a file with
+  no text. A writer keeps the person's words and says the file is created only
+  once the text change is accepted; if it was not, it sends the change again,
+  never the first record, which is written once. If someone else's text landed
+  first, the creator's change is refused as out of date and merged onto it
+  with an empty base (§13.3), so no words are lost.
+- **Older first records stay as they are.** Nothing is re-signed. A first
+  record written before the rule may carry text (a project's `description`
+  tag, an issue's or a document's `content`), and a reader takes it as the
+  text's starting value while no `description` change exists, as it takes a
+  `title` tag as the title's (§6.3, §6.10). That is the one starting-value
+  fold every field has, not a second reader path.
 
 `ref` is a display key such as `SHIP-12` that people type and search for
 (§5.2), and it MUST NOT be used for addressing. Like `title`, the root tag is
@@ -1007,14 +1052,25 @@ overrides it, and the fold (§6.3) gives the current one. That is also how an
 issue created without a ref gets one. A ref is `<key>-<n>`: the issue's
 project's key (below), and one past the highest `n` under that key on any issue
 the assigning client can see, in any project, so an issue that moved keeps a
-number nobody reuses.
+number nobody reuses. **Deleted issues count** (*added 2026-11-18*): a deleted
+issue keeps its ref, so restoring it brings back the same name, and a new issue
+never takes it. The list read leaves deleted files out; a client numbering
+issues finds them as §6.5 says ("Finding a team's deleted files") and reads
+their `ref`. The issues deleted by `kind:5` before their type was kept in order
+are gone from every read, and their numbers may be given again.
+
+An automatic ref claim refused as out of date (§6.2: someone set the `ref`
+since it read) takes the current value and never claims again; only a person
+renaming the ref writes over it.
 
 `key` on a Project is that prefix: 3–6 letters `A`–`Z` (`^[A-Z]{3,6}$`). Like
 `ref`, the root tag is only its seed and a `kind:1851` with `field` `key` aimed
 at a `30850:` address overrides it; the root tag comes after every tag written
 before it existed, so adding it moved no other tag in the id preimage (only
 `summary`, §6.12, comes after it). A writer MUST NOT give a project a key that any
-project it can see holds, or that any ref it can see already starts with. A
+project it can see holds, or that any ref it can see already starts with,
+deleted projects and issues included (§6.5, "Finding a team's deleted files"):
+a deleted project keeps its issues' refs, so a restore would collide. A
 project with no key gets one from the first client that numbers an issue in
 it, as a `kind:1851`, before that issue's ref. A reader shows a value that does
 not match the pattern rather than dropping it, and does not number from it.
@@ -1085,7 +1141,13 @@ and
   one form, never both, and names no field twice. On a change that sets `description`, its
   `content-format` and `imeta` belong to that field (§6.10, §13.4).
 - **A field's first change follows the first record**: its `prev` is the first
-  record's event id (§6.1), not its `d`.
+  record's event id (§6.1), not its `d`. A creation writes, in order, the first
+  record, then the text as its own one-field change (§6.1, "A new file's text is
+  its first change"), then any other first value that is not on the first
+  record, such as an issue's `ref` claim, in a change with no text.
+- **The text is never one field of a several-field change it starts**: a
+  `description` given at creation is always its own change. Later saves may set
+  it beside other fields, as before.
 - **Every writer SHOULD write `prev` on every change, on every type.** The relay
   refuses a change with no `prev` on the types its NIP-11 lists (§6.13) and on
   every `30852`, a `member:<P>` or `follow:<P>` change excepted (below), and takes one without it on any other type, which then races
@@ -1274,7 +1336,9 @@ with a `ts` in milliseconds (*added 2026-11-04*, ONE-2).
 - **A field's first value is the first record's**: a base type's root tag
   (§6.1's table, such as `title`; for `description`, a project's
   `description` tag, then the root's `content`, §7.2), or a
-  `30852`'s `set` for that field.
+  `30852`'s `set` for that field. A new first record carries no text (§6.1), so
+  a `description` starting value is found only on records written before that
+  rule; readers keep reading it there, one fold for every field.
 - **A change that sets several fields** applies each `set` at the change's
   time, as if it were that many one-field changes at one moment. A reader that
   does not know `set` sees a change with no `field` and folds nothing from it,
@@ -1724,15 +1788,27 @@ D3, which stands):
   of the delete is who deleted it, shown with it. A deleted file leaves lists
   (§6.13) and keeps its id, its first record and every change, so a restore
   brings it back whole and nothing is written again. It stays readable by its
-  id, so an app can offer Restore.
+  id, so an app can offer Restore. A deleted issue keeps its `ref` and a
+  deleted project its `key` (§6.1).
+- **Finding a team's deleted files** (*added 2026-11-18*), for an Archived
+  view's Deleted filter, or to number issues and choose keys (§6.1): read the
+  team's files with `"fields": "times"` (§6.13), which answers deleted files
+  too, each with its current changes' ids and the fields they set. A row whose
+  `changes` set `deleted` may be a deleted file: read that change, and the
+  ones the app needs (its `ref`, its `key`), with the first record, by `ids`,
+  and decide on those signed events, never on the row. One read per team, then
+  one by `ids` for the few rows that name `deleted`. No list mode returns
+  deleted files: the times read is the one way to find them.
 - **A marked file** (§6.1, "Only the workspace's admins write here") is
   archived, deleted and restored only by the workspace's owners and admins,
   like every other change to it (*added 2026-11-16*).
 - **A `kind:5` naming a file's first record or one of its changes is refused**
-  from the switch, on the types the relay keeps in order (§6.13). For those
+  from the switch, on the types the relay keeps in order (§6.13), issues
+  included once `osnova.issue` is listed (`delete-by-field`, §3.3). For those
   this replaces the author rule below and "nobody may delete another person's
   work". On a type not yet kept in order, a reader still honours a `kind:5`
-  as below, and a writer SHOULD write the field.
+  as below, and a writer SHOULD write the field. The `kind:5` deletes already
+  stored before a type's switch stand: those files stay deleted.
 - **Only an admin removes a change for good**, for a pasted password: a
   `kind:9005` from the team's owners or admins, or an owner or admin of the
   workspace on the relay's roster; the relay refuses one from anybody else, the
@@ -2436,12 +2512,15 @@ about every message that names the object.
 first in §6.7 for the bare file and lifted here because it is every file's
 rule. Numbered after the existing subsections for the reason §7.5 gives.*
 
-A file's text is its **`description` fold, seeded from `content`**, whatever
-its kind: a Ship project's or issue's description (§6.1), a document's
-(§6.11). So the suite has one rule: a file's body is its `description`. An
-owner MAY seed the fold from a root tag before `content`, as Ship's project
-does (§7.2, rule 2); the change stream overrides either. A bare file has no
-text (§6.7, 2026-10-19).
+A file's text is its **`description` fold**, whatever its kind: a Ship
+project's or issue's description (§6.1), a document's (§6.11). So the suite
+has one rule: a file's body is its `description`. **A new file's text is its
+first change** (§6.1, *added 2026-11-18*): its first record carries none. A
+first record written before that rule may carry it, and the fold is then
+seeded from `content`, or from a root tag before `content`, as Ship's project
+did (§7.2, rule 2); the change stream overrides either. Readers keep that seed
+for older files; writers never write one. A bare file has no text (§6.7,
+2026-10-19).
 
 **Who offers an editor on it** (*decided 2026-10-19*, record
 [a-card-changes-what-a-files-app-shares](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-card-changes-what-a-files-app-shares.md)).
@@ -2541,8 +2620,10 @@ writer emits them; a reader finds each by name (§6.1):
 | `a` | at most one | the address of the file this one sits under, of any kind. Seeds the `parent` field; a move is a change event |
 | `summary` | at most one | seeds the `summary` field, its one-line summary (§6.12) |
 
-`content` is a §13.3 block document, or empty: the first version of the text,
-which the `description` fold overrides (§6.10).
+`content` is empty on a new document: its text is its first change (§6.1,
+*changed 2026-11-18*). A document written before that rule may carry a §13.3
+block document there, the first version of the text, which the `description`
+fold overrides (§6.10).
 
 **Conversation.** `kind:1111` anchored at the document's address, in the team
 §6.4 names, as on a bare file. Deletions, reactions and edits follow §6.5,
@@ -2714,8 +2795,9 @@ names, its current `description` change as well, whole and as signed:
   file's home**, its first record's `h`, else its `buzz-channel`, as search
   does: a project stored workspace-wide is readable by everyone while its text
   is not. To anyone else the answer looks like a file whose text was never
-  changed. A file whose text was never changed has none, and its text is its
-  first record's seed (§6.10).
+  changed. A file whose text was never changed has none: a new file then has
+  no text yet (its first change has not landed, §6.1), and a file written
+  before that rule has its first record's seed (§6.10).
 - **Opening a file is this read**: its first record, one current change per
   field and one text, however many changes it has had. Each change's id is
   that field's next `prev`, the text's included. An older change is read by
@@ -2741,9 +2823,11 @@ the same, at the old cost.
 ```
 
 - **It matches a file's current values**: its title, its summary, the fields
-  its type names as words (a project's `key`; [TYPES.md](TYPES.md)), and the
-  words of its current text (§13.3 *Search text*). Status, lead and archived
-  are not words. A word that is only in an older change, a deleted file, and a
+  its type names as words (a project's `key`, an issue's `ref`;
+  [TYPES.md](TYPES.md)), and the words of its current text (§13.3 *Search
+  text*). The current text is the newest `description` change, or, on a file
+  written before §6.1's rule that has none, its first record's seed. Status,
+  lead, assignee and archived are not words. A word that is only in an older change, a deleted file, and a
   removed change are never found. Removing a pasted password follows §6.5:
   once the text is saved without it, nothing finds it. A value is "current"
   only as §6.2's fold takes it: from a change whose `h` is the file's home, so
@@ -2770,7 +2854,9 @@ the same, at the old cost.
 
   `matches` lists the files in rank order. `fields` names every one of
   `title`, `summary`, `key` and `text` that holds a typed word, best first, so
-  typing spread over a title and a text names both. `around` holds the words
+  typing spread over a title and a text names both. `key` names the field its
+  type ranks as its key word, whatever that field is called: a project's
+  `key`, an issue's `ref` ([TYPES.md](TYPES.md)). `around` holds the words
   around a typed word in the text, as plain text with no markers, and is there
   only when `fields` includes `text`. How a row draws them is the app's design,
   but `around` is an author's words: a reader draws it as text, never as
@@ -2858,7 +2944,7 @@ list as soon as `file_list` is advertised**, and an app that finds no
 A relay that keeps files in order advertises
 
 ```json
-"files": {"requires_prev": ["osnova.project"]}
+"files": {"requires_prev": ["osnova.project", "osnova.issue"]}
 ```
 
 `files` is the switch and only the switch: it says what the relay refuses,
@@ -2870,8 +2956,19 @@ moment it does — **the switch** — it writes no first record twice (§6.1), a
 refuses a change filed in another team than its file's. A type in
 `requires_prev`, and every `30852` type, is **kept in order**: a change with no
 `prev` is refused (a `member:<P>` or `follow:<P>` change excepted, §11.8), and
-so is a `kind:5` naming its first record or a change (§6.5). An app reads the
-list and never assumes it.
+so is a `kind:5` naming its first record or a change (§6.5), and a new first
+record of it carrying text (§6.1). An app reads the list and never assumes it.
+
+**Each type has its own switch** (*added 2026-11-18*). A type joins
+`requires_prev` at one moment, for every team at once, and from then on it is
+kept in order; a type already listed stays listed. Projects switched first;
+issues switch on their own later; documents and topics follow, each at its
+own moment. Everything below about "the switch" holds for each type at its
+own. A relay that adds a type also refuses, from that moment, a new first
+record carrying text of every base type it keeps in order, the ones already
+listed included (`text-is-a-change`, §3.3): on the Estiva relay that refusal
+starts for projects and issues together, at the issues switch, once Ship and
+the agent write a new project's text as its first change.
 
 These hold before the switch too, on every type: a change whose `prev` is
 present and not its field's current change is refused (§6.2), and so is one
@@ -2883,10 +2980,14 @@ the relay's, for every community it hosts at once.
 
 **A writer from before the switch.** An app reads NIP-11 when it loads, so a tab
 or an agent opened before the switch writes a change with no `prev` and is
-refused: `invalid: a project change names the change it follows in prev`,
-followed by `;` and what to do (the Estiva relay says `; reload the page and
-save again (an agent: restart it)`). An app matches the
-words before `;`, never what follows. On that refusal it reads NIP-11 again
+refused: `invalid: requires-prev: an issue change names the change it follows
+in prev`, the noun the file's type (`a project`, `an issue`, `a file` for a
+`30852`), followed by `;` and what to do (the Estiva relay says `; reload the
+page and save again (an agent: restart it)`). An app matches the code
+`requires-prev` (§3.3); from a relay that predates the code it matches the
+words before `;`, `invalid: a <noun> change names the change it follows in
+prev`, never what follows. The code is sent on every type, projects included
+(*changed 2026-11-18*). On that refusal it reads NIP-11 again
 and, if the type is now in `requires_prev`, opens the file (above) and writes
 the change again, each field's `prev` its current change; a text change is
 merged onto the text saved since, with the text the tab read as the base
@@ -2898,11 +2999,13 @@ A relay whose read takes `search` advertises it apart from `files`, which is
 the switch, so search can come before the switch:
 
 ```json
-"file_search": {"types": ["osnova.project"], "max_page_size": 20}
+"file_search": {"types": ["osnova.project", "osnova.issue"], "max_page_size": 20}
 ```
 
 `types` are the types it finds by their words. It advertises a type only once
-every file of that type is indexed. An app that finds no `file_search`, or
+every file of that type is indexed. The indexer takes a first record's
+`content` (or a project's `description` tag) as the text only while the file
+has no `description` change (§6.10). An app that finds no `file_search`, or
 not its type, falls back to §5.2's search by title.
 
 **Upstream.** This section is Estiva's standard, on the Estiva relay. The
@@ -2921,6 +3024,20 @@ merging a text change or asking as §13.3 says (ALO-7). Ship, Peek and Leaf
 read and write projects field by field once `files` names `osnova.project`,
 and a tab opened before writes again in order as above. Projects are the first
 type kept in order.
+
+**Where issues stand (2026-11-18).** On production NIP-11 says
+`"files": {"requires_prev": ["osnova.project"]}`, `"file_list": {"newest":
+true, "text": true, "times": true}` and `"file_search": {"types":
+["osnova.project"]}`: projects are kept in order and found by their words;
+issues are not yet. The relay already answers the list read and the times read
+for issues, and the agent lists issues by the list read. Its refusals still say
+`a project change names…` and `a file change names…` in words, with no code,
+and a `30852` with `content` is refused in words. Next, behind the relay's
+switch for issues: `osnova.issue` in `requires_prev`, the three codes of §3.3
+on every type, a new project or issue carrying text refused, a `kind:5` on an
+issue refused, and issues in `file_search`; then Ship, Leaf, Peek and the agent
+read and write issues field by field, and the switch for issues is announced
+in Peek. Documents and topics come after, each with its own switch.
 
 ### 6.14 A file's list of other files
 
@@ -3210,7 +3327,12 @@ because a relay indexes single-letter tags and a move's new parent is in a
 `value`. A consumer drawing a parent's children from `#via` alone MUST drop a
 child whose folded `movedBy` names another parent. A consumer that does not
 draws a moved issue under its old project, which is the failure this field
-exists to end.
+exists to end. **The same holds for every read that picks by first parent**
+(*added 2026-11-18*): the list read and the times read with `#a`, and the
+times read's `under` (§6.13), name the parent the file was created under. A
+reader by any of them also reads the `movedBy` change (an issue's `project`)
+and groups by it, which is why lists read a team's issues by `#h` and group
+them in the app.
 
 **So a move names its new parent twice** (FOL-45, 2026-09-30). A change to a
 `movedBy` field whose value is an address MUST also carry `["A", <that
@@ -3422,6 +3544,18 @@ property's `enum`) names a vocabulary (§7.4) the value MUST come from — the
 owner cannot enforce it, so the consumer checks. An empty property is omitted,
 not written as an empty tag.
 
+**A creation's text is its first change** (*added 2026-11-18*, §6.1). On a
+creation whose `emits.kind` is a file kind (`30840`, `30842`, `30850`,
+`30851`, `30852`), the property that targets `content` is the new file's text,
+not the root's `content`: the consumer writes the root with empty `content`,
+then, when the property has a value, a second event, the `kind:1851`
+`description` change with `prev` the root's id, as §6.10 writes it. The rule
+below for several events holds: a refused root stops it. The declaration's
+shape does not change, so a manifest that declares `"target": "content"` on
+`add-issue` means this on every relay; a relay that keeps the type in order
+refuses a root that carries it (`text-is-a-change`, §3.3). On any other kind,
+`content` is the event's `content` as before.
+
 **A staged vocabulary brings its stage** (*added 2026-10-30*). When the
 vocabulary an `enum` names is staged (§7.4), the consumer writes the chosen
 option's stage with it, as §6.2's `stage` tag, after every other tag. No
@@ -3478,7 +3612,8 @@ team's state, so writing one is followed by a team command (RFC 0.4 §4):
   was placed in. A team without state lists by containment and already shows
   the root; a command against it would emit state listing only this one object
   and hide everything else filed there.
-- **On a deletion**: publish the `kind:5`, then one `kind:1852` with
+- **On a deletion**: publish the `kind:5` (on a type the relay keeps in order,
+  the `deleted` change instead, §6.5), then one `kind:1852` with
   `op: remove` naming the address in **each team whose state names it**. A
   team with state lists what it names, deleted or not, so without it the row
   stays pointing at nothing (FOL-48). The deletion goes first, so a refused
@@ -3515,8 +3650,10 @@ the wire value is a string either way:
 make the value mandatory, and it does not refuse a plain one:
 
 - A value **written as a block document** carries the `content-format` tag with
-  the declared format — on the root for a creation, where it describes
-  `content`; on the change for a change, where it describes `value`. The tag is
+  the declared format — on the event that carries the value: for a creation of
+  a file kind, the text's first change (above), never the root; for any other
+  creation, the root, where it describes `content`; on the change for a
+  change, where it describes `value`. The tag is
   per event (§13.4), so a change's tag describes that change alone.
 - A value **written as plain text** — from a consumer that drew a text box, or
   one that does not know the format — carries **no tag**, and is §13.2 marker
@@ -4151,7 +4288,7 @@ throwaway relay or a fake query.
 | C29 | **A host-swapped address.** With kept shapes `https://a.example/issue/<slug>-<d>` (30851) and `https://a.example/#/issue/<d>` from a manifest on `a.example`, and only `https://b.example/document/<slug>-<d>` from one on `b.example`: a message written with `https://b.example/issue/<any>-<d of V>` keeps that URL in its body, carries `["a", V]`, draws as C21 places it, opens that URL, and `V` lists it as a mention. `https://c.example/issue/<any>-<d of V>`, with no kept shape on `c.example`; `http://b.example/issue/…` and `https://b.example:8443/issue/…`; and `https://b.example/#/issue/<d of V>` carry no tag and stay links. A manifest whose `web` is on `c.example` and that declares `urls` on `a.example` adds no shape and no origin. A manifest on `c.example` that declares `https://c.example/issue/<slug>-<d>` for kind `K`: on `b.example`, a `d` held under both `30851` and `K` names nothing and carries no tag; on `a.example`, the link is `V` (§7.7, §13.1) |
 | C30 | *Retired 2026-10-30*, with the artifact shape it tested: a list now returns signed events (§6.13), so there is no row to build a change from |
 | C31 | **A topic's list** (*added 2026-10-30*, §6.14). An entry the app writes carries `a`, `O` (the topic's `d`), `field` `lists:<d>`, `value`, `h` (the topic root's), `ts`, `["o", <d>]`, in that order, and no `p`. Of two entries for one topic and file inside one second, the later by `ts` counts; a file is listed only by `true`, and `"1"` or an empty value lists nothing. Ignored, without hiding an older good entry: one whose `o` is not the field's `<d>` (with `o` naming it second, it counts); one whose `O` is not its `a`'s `d`; one listing the topic's own `d`; one whose `h` is not the topic root's. Which topics list a file names the topic for `#o`; a file's own changes by `#O` hold no entry listing it. A listed id held by two files, or only by a team's `39000`, is not drawn and not counted. **Its arrangement** (*added 2026-11-10*): placed files come by key compared byte for byte, equal keys by the lower `<d>`, then unplaced files, oldest listed first; a place older than the file's newest `lists:<d>` = `true` is ignored, so a file taken off and put back comes back unplaced; a key that is empty, holds a character outside `0-9A-Za-z` or ends in `0` places nothing; a look other than `row` or `card` draws the manifest's widget. One change setting `order:` for two files, each `set` with its `prev` and each file with its `o`, places both. An `order:` change with a stale `prev` is refused `conflict: order:<d> follows <id>`. An `order:` change whose `o` is not `<d>` neither moves the file nor hides the place before it |
-| C35 | **A change names the one it follows** (*added 2026-10-30*, §6.2). On a relay advertising `files`, a project's `status` change with `prev` its current `status` change is accepted; the same change with no `prev` is refused; a `title` change on an issue (not in `requires_prev`) with no `prev` is accepted. A `30852` change with no `prev` is refused, and a `member:<P>` change with none, on a project or a `30852`, is accepted |
+| C35 | **A change names the one it follows** (*added 2026-10-30*, §6.2). On a relay advertising `files`, a project's `status` change with `prev` its current `status` change is accepted; the same change with no `prev` is refused; a `title` change on a document (not in `requires_prev`) with no `prev` is accepted (*changed 2026-11-18*: an issue, once `osnova.issue` is listed, is refused like a project). A `30852` change with no `prev` is refused, and a `member:<P>` change with none, on a project or a `30852`, is accepted |
 | C36 | **A field's first change** (§6.2). The first `status` change on a new project names the first record's event id as `prev` and is accepted; one naming the project's `d` instead is refused. A second first record at the same address, by its author, is refused; the identical event sent again is a `duplicate:` (§6.1) |
 | C37 | **A several-field change** (§6.2, §6.3). A change with `["set", "title", T, p1]` and `["set", "status", "done", p2]`, `O`, `a`, `h` and `["stage", "status", "done"]`, where `p1` and `p2` are current, is accepted, and every conforming reader folds both fields at its time and counts it `done`. One also carrying `field`, or naming `title` twice, is refused. A reader that does not know `set` shows the older title and status, never a mix |
 | C38 | **A stale `prev`** (§6.2). Two apps read a project's `status` at change S; the first sets `started` naming S and is accepted, the second sets `done` naming S and is refused with `conflict:`; it sends `done` again naming the first's id and is accepted, and nobody is asked. A several-field change whose `status` names S and whose `title` is current is refused whole: its title is not changed. Two `description` saves naming the same change: the second is refused, and its app merges and sends again, never overwriting |
@@ -4182,7 +4319,7 @@ staged field, or writes one, also conforms to these.
 | C50 | **A space, a topic's one team, and a move** (*added 2026-11-02*, §3.3, §6.5). A `kind:1852` `add` carrying `["a", <addr>, "", "space"]` (or the `o` form) marks the entry a space, and an `add` without the role unmarks it; a role a reader does not know leaves the entry listed. The relay refuses an `add` or `set` that lists a topic another team's `kind:30890` lists, a `remove` of a topic no other team lists unless its author archived it or it is deleted, and an `add` of a topic no team lists anywhere but its home. A `move` from team A to team B changes both lists in one write; the same move sent again is a duplicate; one from a team that does not list the topic, or into or out of an archived team, is refused and changes neither list. In an archived team an `add` naming a topic is refused and one naming a project lands. A topic found on two teams' lists is drawn in the one whose `add` or `move` naming it is newest. A move's entry keeps the role only when it carries it |
 | C51 | **Resolving a thread** (*added 2026-11-04*, §6.4, §6.5). A thread's state is its newest `kind:9101` with `t=resolution` in §6.3's order, whoever wrote it: a resolve and a reopen in the same second fold by `ts`, then the higher `id`. A `9101` whose `h` is not its target's team, one whose target is a reply, and one whose `action` is neither `resolved` nor `reopened` change nothing; a `support` outside the thread is dropped and the resolve stands. A deleted top-level message keeps the state its last `9101` gave it, and its thread offers neither Resolve nor Reopen. A top-level message the read did not return is in its replies' team when every returned reply names the same `h`, and in none otherwise, and is deleted only when a returned `kind:5` is signed by the key every one of those replies names in its lowercase `p`; otherwise it is not returned: never said to be deleted, its place reads "This comment can't be shown." above its replies, and its thread takes no new replies and offers neither Resolve nor Reopen (*2026-11-06*). It is deleted only when it has a team: replies that disagree on the team, as a reply filed in another team before the relay refused one would, leave it not returned, never deleted |
 | C52 | **The file a comment is on** (*added 2026-11-09*, §13.6.2). A `kind:1111` with `["A", V]` whose body is `Looks right.\n\nnostr:naddr1…` for `V` draws `Looks right.` and nothing for the second line; the same with an app URL that names `V` by §7.7 instead, or with `["O", <V's id>]` and an `naddr` of the same `d`, draws the same. One whose body is only `nostr:naddr1…` for `V` draws `V` as it would without the rule. A body that names `V` in a sentence draws `V`'s chip. A body whose second line is only a reference to another file `W` draws `W`'s row |
-| C53 | **A tab from before the switch** (*added 2026-11-09*, §6.13). An app loaded while NIP-11 had no `files` sets a project's `status` with no `prev`; the relay, now advertising `{"requires_prev": ["osnova.project"]}`, refuses it with a reason that starts `invalid: a project change names the change it follows in prev`. The app reads NIP-11 again, opens the project and sends the change again with `prev` its current `status` change, and it is accepted; nothing is shown to the person. Its text change sent the same way is merged onto the text saved since, with the text it read as the base. A relay keeping some teams' files in order and not others advertises no `files` |
+| C53 | **A tab from before the switch** (*added 2026-11-09*, §6.13). An app loaded while NIP-11 had no `files` sets a project's `status` with no `prev`; the relay, now advertising `{"requires_prev": ["osnova.project"]}`, refuses it with a reason that starts `invalid: requires-prev:` (from a relay that predates the code, `invalid: a project change names the change it follows in prev`; *changed 2026-11-18*). The same holds for an issue's change once `osnova.issue` is listed. The app reads NIP-11 again, opens the project and sends the change again with `prev` its current `status` change, and it is accepted; nothing is shown to the person. Its text change sent the same way is merged onto the text saved since, with the text it read as the base. A relay keeping some teams' files in order and not others advertises no `files` |
 | C54 | **What names you on a listed file** (*added 2026-11-10*, §11.8). `P` follows a topic at Important that lists a project, a document and an issue. On the issue: a comment mentioning `P` lights the topic and stays lit under two later comments naming nobody, until `P` reads the issue in any app; a reply to `P`'s comment lights it, and reading that thread clears it; a reply in a conversation `P` is not in, and a new comment naming nobody, do not light it at Important and do at All when made after `P` chose All. On an issue of the listed project, and on a page one level under a listed document, a mention lights it at both levels and a comment naming nobody at neither; on a page two levels under a listed document, nothing does. Muted, only the mention lights; not following, nothing on the files lights the topic |
 | C55 | **A refusal carries its code** (*added 2026-11-10*, §3.3, §3.4, §6.5). A move of a topic into an archived team is refused `invalid: archived: …`; one by somebody who may not write in the source `restricted: not-member: …`; one naming a topic the source no longer lists `invalid: changed: …`; an `add` of a topic no team lists, in a team that is not its home, `invalid: not-home: …`; a `remove` of a live topic no other team lists `invalid: leaves-by-moving: …`; each changes neither list. An `add` naming a topic whose team the signer cannot read, and one naming a topic address the relay holds nothing at, get the same `restricted: not-member: …`; a `remove` of either, while the list does not hold it, is accepted and changes nothing. A `remove`, a `set` leaving it out, or a `move` of a topic the list holds whose team the signer cannot read gets `restricted: not-member: …` too, but a `move` naming a topic the source does not list gets `invalid: changed: …` first. On an archived team, a `set` naming a topic it already lists is refused `invalid: archived: …`, and an `add` of a project lands. A `kind:9002` setting `archived` on a team is refused `invalid: archive-by-field: …`, and a `kind:1851` `archived` on it is accepted. Each sentence after the code is the relay's own. An app shown `invalid: some-new-code: …` says only that nothing changed; shown `invalid: the team …` with no code, it reads the sentence |
 | C56 | **Why a message is unread** (*added 2026-11-10*, §11.8). `P` follows a topic. Unread there: a new comment that mentions `P` is a mention; a new comment naming nobody is a new conversation, at Important and at All alike; a reply mentioning `P` in `P`'s own conversation is a mention; a reply naming nobody in it is a reply in your conversation, held root or not when its lowercase `p` names `P`; in someone else's conversation, a reply before `P` wrote there is a message (it lights only at All) and one after is a reply in your conversation. In a DM, a first message naming nobody is a message, never a new conversation. A reaction to `P`'s message is none of the four |
@@ -4195,7 +4332,9 @@ staged field, or writes one, also conforms to these.
 | C64 | **Only the workspace's admins write a marked file** (*added 2026-11-16*, §6.1, §6.5, §11.8). On a relay whose NIP-11 lists `"writers": {"workspace-admins": T}`: a `30852` with `["writers","workspace-admins"]` from a member who is not a workspace owner or admin is refused, and from an admin lands. On it, a member's `1851` setting `title`, `archived` or `deleted`, and their `1852` `move` of it, are refused; the same from an admin land. A member an admin added sets their own `member:<P>` to `false` and it lands. A `writers` tag on a `1851`, a `30852` with `["writers","team-admins"]`, and a second marked first record in the same team whose `created_at` is not after the first, are refused. A member setting their own `member:<P>` to `true` on it is refused, as is a `kind:9005` on its first record from a team admin who is not a workspace admin. On a relay that lists no `writers`, a reader treats a marked file as counting for nothing, and on one that lists `workspace-admins` from time `T`, a marked file dated before `T` counts for nothing too |
 | C65 | **The company's file labels, never counts** (*added 2026-11-16*, §7.4). With a marked `osnova.schema` file `of` `osnova.issue` in the Company team whose `property:status` adds `blocked` (label Blocked, stage `started`), an issue whose current change is `value` `blocked` with `["stage","status","started"]` shows Blocked and counts as started; a reader that cannot read the Company team shows `blocked` and counts it as started. The same file unmarked, or in another team, changes nothing. Of two marked files `of` the same type, the earlier by `created_at` is read; an archived one is skipped |
 | C66 | **The layer is found by type and field** (*added 2026-11-16*, §7.3). An action whose `appliesTo` is `30851` and whose `emits.field` is `status` offers the options of the company file `of` `osnova.issue`, field `property:status`, whatever name the manifest gives its vocabulary |
-
+| C67 | **A new file's text is its first change** (*added 2026-11-18*, §6.1, §7.3). On a relay listing `osnova.issue` in `requires_prev`: a new `30851` with its text in `content` is refused `invalid: text-is-a-change:`; the same issue with empty `content` is accepted (control), and its text, a `kind:1851` `description` change with `prev` the first record's id, is accepted. A new `30850` with a `description` tag is refused the same way; a `30852` with a `set` of `description` is refused on any relay that takes `30852`. A list read of the team returns the issue's first record and no text. A consumer running `add-issue` with a `description` writes the root, then the change, and the `content-format` tag is on the change |
+| C68 | **A deleted issue keeps its number** (*added 2026-11-18*, §6.1, §6.5). With `osnova.issue` listed, an issue `ABC-7` is deleted by a `deleted` change: a `kind:5` naming it is refused `invalid: delete-by-field:`; the list read leaves it out; the times read answers it, its `deleted` change among its changes. A client numbering a new issue under `ABC` reads it by id and gives `ABC-8`, not `ABC-7`; restoring it shows `ABC-7` again |
+| C69 | **An issue is found by its words** (*added 2026-11-18*, §6.13). With `osnova.issue` in `file_search.types`, a word from an issue's current title, summary, ref or text finds it for a reader of its team, `key` naming the ref in `match.fields`; a word only in an older text finds nothing; an issue written before §6.1's rule with its only text in `content` is found by a word of that text until its first `description` change |
 ### 9.1 Reference checks
 
 ```bash

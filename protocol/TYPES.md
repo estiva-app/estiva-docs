@@ -52,8 +52,8 @@ it. Its first record is a `kind:30850` ([SPEC §6.1](SPEC.md)).
 | `key` | `key` | 3–6 letters `A`–`Z`, the prefix of its issues' refs ([SPEC §6.1](SPEC.md)) |
 | `summary` | `summary` | one or two sentences of plain text, about 240 characters ([SPEC §6.12](SPEC.md)) |
 | `archived` | — | `true` while it is archived; empty otherwise ([SPEC §6.5](SPEC.md)) |
-| `deleted` | — | `true` while it is deleted; empty otherwise ([SPEC §6.5](SPEC.md)) |
-| `description` | `description`, else `content` | the project's text ([SPEC §6.10](SPEC.md)): a block document labelled `estiva-blocks-1`, or unlabelled marker text ([SPEC §13.4](SPEC.md)) |
+| `deleted` | — | `true` while it is deleted; empty otherwise ([SPEC §6.5](SPEC.md)). A deleted project keeps its `key` |
+| `description` | — (`description`, else `content`, on projects written before the issues switch only) | the project's text, a new project's as its first change ([SPEC §6.1](SPEC.md)) ([SPEC §6.10](SPEC.md)): a block document labelled `estiva-blocks-1`, or unlabelled marker text ([SPEC §13.4](SPEC.md)) |
 
 **Search** finds a project by the words of its current title, summary, key
 and text, title first, through the list read
@@ -97,13 +97,15 @@ under at most one project, and it can move.
 | `ref` | `ref` | a display key such as `SHIP-12`, its project's `key` and a number; never an address ([SPEC §6.1](SPEC.md)) |
 | `summary` | `summary` | one or two sentences of plain text, about 240 characters ([SPEC §6.12](SPEC.md)) |
 | `archived` | — | `true` while it is archived; empty otherwise ([SPEC §6.5](SPEC.md)) |
-| `deleted` | — | `true` while it is deleted; empty otherwise ([SPEC §6.5](SPEC.md)). Until issues are kept field by field, Ship deletes an issue with a `kind:5`, which a reader still honours |
-| `description` | `content` | the issue's text ([SPEC §6.10](SPEC.md)), as a project's |
+| `deleted` | — | `true` while it is deleted; empty otherwise ([SPEC §6.5](SPEC.md)). A deleted issue keeps its `ref`. Until issues are kept field by field, Ship deletes an issue with a `kind:5`, which a reader still honours |
+| `description` | — (`content`, on issues written before 2026-11-18 only) | the issue's text ([SPEC §6.10](SPEC.md)), as a project's. A new issue's text is its first change, never in its first record ([SPEC §6.1](SPEC.md)) |
 
 **Search** finds an issue by its title and its ref ([SPEC §5.2](SPEC.md))
 until the relay lists `osnova.issue` in NIP-11 `file_search`
-([SPEC §6.13](SPEC.md)); from then on by the words of its current fields, as a
-project. Its status, assignee and archived state are not words.
+([SPEC §6.13](SPEC.md)); from then on by the words of its current title,
+summary, ref and text, as a project. Its key word field is `ref`: ranked with
+the summary and reported as `key` in a match. Its status, assignee and
+archived state are not words.
 
 **Its statuses are each company's own**, as a project's, and a status change
 carries its stage. Ship's defaults:
