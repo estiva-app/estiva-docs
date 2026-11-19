@@ -18,7 +18,7 @@ Sentry keeps a log of when each of them opened which kind of screen and how
 long it took. Katerina is told before the first app sends one. In return, a
 speed project starts from what each of them really waited, not only from a QA
 account on a near-empty workspace: in October a Peek page passed on QA-1's
-workspace and took 5–10 seconds on Miky's (PEE-2), and Katerina's tabs have
+workspace and took 5–10 seconds on Miky's, and Katerina's tabs have
 never been measured, because the speed kit signs in only as a QA account or
 as Miky.
 
@@ -76,7 +76,8 @@ staff's opens with it.
   them in Sentry and Claude with its read-only token; Claude prints, per
   person and kind of screen, how many opens, the typical wait and the worst,
   at a sweep and when a speed project starts or closes. Nothing runs on a
-  timer, and nothing alarms after a deploy.
+  timer. This record adds no alarm after a deploy; that stays with the speed
+  kit's before and after run in `/land`.
 
 The project [Real page-open timings](https://docs.estiva.app/architecture/real-page-open-timings.html)
 carries it out.
@@ -111,8 +112,8 @@ carries it out.
   each waited; Miky checks by hand only when the numbers show no change, or
   one he doubts.
 - Sentry holds a log of when each of us opened which kind of screen, for 30
-  days. Removing the key later stops it for new timings at once; the old ones
-  age out.
+  days. If we later take the person's key off the list, new timings stop
+  naming anyone at once, and the old ones are deleted after 30 days.
 - Every new field in a timing is a change to the list, reviewed as one.
 - Free-plan limits: 5,000,000 spans a month and 30 days kept; our own limits
   keep timings from crowding out errors. A paid plan or another host later
