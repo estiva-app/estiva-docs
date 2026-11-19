@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documents and topics stop downloading every edit</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.example { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
+.legend .lgone::before { background: var(--warn-bg); border-color: var(--warn); }
+.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
+.legend .lf::before { opacity: .45; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+/* Below 560px a diagram scrolls inside its figure instead of shrinking its text. */
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); stroke-width: 1.5; }
+svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .f { opacity: .45; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
+svg .aq { stroke: var(--accent); fill: none; stroke-width: 1.6; stroke-dasharray: 5 4; marker-end: url(#arr-q); }
+svg .life { stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 3 4; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 560px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+tr.new td { background: var(--ok-bg); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+</style>
+</head>
+<body>
+<!-- Arrowheads, shared by every diagram on the page. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+    <marker id="arr-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<main>
+
+<h1>Documents and topics stop downloading every edit</h1>
+<p class="sub"><span class="state">Shaped, 2026-11-19</span> · <a href="https://ship.estiva.app/#/project/a5475ad5-e601-4c7a-a961-cf65d0f6c496">Ship project</a> · Last stage of "One current version of every file", after <a href="https://ship.estiva.app/#/project/525d649e-bdeb-4841-96e6-41baeeb4dcbe">projects</a> and <a href="https://ship.estiva.app/#/project/667290a0-e790-41e2-8c34-6645e2d73ba7">issues</a> · Goal: all four file types follow one rule, with no way left to read or write a file the old way.</p>
+
+<p>Projects and issues are read as they are now and written in order. This stage moves the last two types, Leaf documents and Peek topics, at one announced moment, and then removes the old way from the relay, the apps and the agent. Look first at the Map: documents are where the load is (12.3 MB of old saves), topics are where the writes are widest (all three apps add files to a topic). Then the Flow: the switch can be turned back until Miky and Katerina have each looked, and not after.</p>
+
+<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lgone">goes away</span><span class="lf">untouched, for orientation</span></div>
+
+<h2>Map</h2>
+
+<h3>Today</h3>
+<figure>
+<svg viewBox="0 0 720 330" role="img">
+<title>Today: Leaf downloads every save ever made to every page, 12.3 MB, and replays them; Leaf, Peek, Ship and the agent write a page or topic change without saying which change it follows; the relay keeps every type in order but refuses an out-of-date change only on projects and issues; each app and the agent carries two ways of reading and writing, chosen per type</title>
+<rect class="b" x="20" y="20" width="150" height="54" rx="8"/><text x="36" y="44" class="h">Leaf</text><text x="36" y="62" class="m">pages, tree, Home</text>
+<rect class="b" x="195" y="20" width="150" height="54" rx="8"/><text x="211" y="44" class="h">Peek</text><text x="211" y="62" class="m">topics, cards, launcher</text>
+<rect class="b" x="370" y="20" width="150" height="54" rx="8"/><text x="386" y="44" class="h">Ship</text><text x="386" y="62" class="m">a topic's files, cards</text>
+<rect class="b" x="545" y="20" width="155" height="54" rx="8"/><text x="561" y="44" class="h">Agent</text><text x="561" y="62" class="m">file and peek commands</text>
+<rect class="b" x="20" y="230" width="680" height="80" rx="8"/><text x="36" y="254" class="h">Relay</text>
+<text x="36" y="274" class="m">every file type: keeps each field in order · lists files as they are now · opens one with its text</text>
+<text x="36" y="292" class="m">projects and issues only: refuses an unordered change and a permanent delete · searches text</text>
+<path class="a" d="M70,74 L70,226"/><rect class="bad" x="26" y="180" width="150" height="38" rx="6"/><text x="34" y="196">every page save,</text><text x="34" y="211" class="m">12.3 MB each open</text>
+<path class="a" d="M270,74 L270,226"/><text x="278" y="196" class="m">opens a topic or page</text><text x="278" y="211" class="m">as it is now</text>
+<path class="a" d="M445,74 L445,226"/><text x="453" y="196" class="m">topics, as</text><text x="453" y="211" class="m">they are</text>
+<path class="a" d="M622,74 L622,226"/><text x="614" y="196" class="m" text-anchor="end">every change</text><text x="614" y="211" class="m" text-anchor="end">of a page</text>
+<text x="80" y="100" class="m">writes: no "follows"</text><text x="280" y="100" class="m">writes: no "follows"</text><text x="455" y="100" class="m">writes: no "follows"</text><text x="630" y="100" class="m">no "follows"</text>
+<rect class="b" x="20" y="120" width="680" height="44" rx="8"/><text x="36" y="140" class="h">Shared code</text><text x="36" y="156" class="m">reads a file as it is now · writes in order · merges a text · any type</text><rect class="bad" x="500" y="128" width="190" height="28" rx="6"/><text x="508" y="146" class="m">two ways, switched per type</text>
+</svg>
+<figcaption>649 changes to 81 pages weigh 12.3 MB, 578 of them whole-text saves; read as they are now the same pages are about 1.5 MB, nearly all current text. 377 changes to 71 topics weigh 0.3 MB: a topic has no text. A page save sends the whole text and the last one wins. Adding a file to a topic is written by Leaf, Peek and Ship alike, with no "follows". "Follows" on the arrows means a change says which change it comes after; today none does. Peek already opens a topic or page as it is now, but its reads of who is in a topic and of a topic's file list still fetch old changes. Estiva ID is left out: how you sign in and sign does not change.</figcaption>
+</figure>
+
+<h3>After</h3>
+<figure>
+<svg viewBox="0 0 720 330" role="img">
+<title>After: every app reads pages and topics as they are now and writes each change after the one it follows; the relay refuses an unordered change and a permanent delete on every file type and finds a page by its words; the second way of reading and writing, and the per-type switch, are gone from the relay, the shared code, the apps and the agent</title>
+<rect class="ok" x="20" y="20" width="150" height="54" rx="8"/><text x="36" y="44" class="h">Leaf</text><text x="36" y="62" class="m">pages, tree, Home</text><text x="112" y="38" class="tag">M2 · M4</text>
+<rect class="ok" x="195" y="20" width="150" height="54" rx="8"/><text x="211" y="44" class="h">Peek</text><text x="211" y="62" class="m">topics, cards, launcher</text><text x="287" y="38" class="tag">M2 · M4</text>
+<rect class="ok" x="370" y="20" width="150" height="54" rx="8"/><text x="386" y="44" class="h">Ship</text><text x="386" y="62" class="m">a topic's files, cards</text><text x="462" y="38" class="tag">M2 · M4</text>
+<rect class="ok" x="545" y="20" width="155" height="54" rx="8"/><text x="561" y="44" class="h">Agent</text><text x="561" y="62" class="m">file and peek commands</text><text x="642" y="38" class="tag">M2 · M4</text>
+<rect class="ok" x="20" y="230" width="680" height="80" rx="8"/><text x="36" y="254" class="h">Relay</text><text x="590" y="254" class="tag">M1 · M3 · M4</text>
+<text x="36" y="274" class="m">every file type: in order, refuses an unordered change, and a permanent delete (M3)</text>
+<text x="36" y="292" class="m">search finds a page by its words, a topic by its title and summary (M1) · no setting turns the rule off (M4)</text>
+<path class="an" d="M70,74 L70,226"/><text x="78" y="196">each page as it is</text><text x="78" y="211" class="m">now; text on open</text>
+<path class="an" d="M270,74 L270,226"/><text x="278" y="196">no old changes,</text><text x="278" y="211" class="m">search by text</text>
+<path class="a" d="M445,74 L445,226"/><text x="453" y="196" class="m">as today</text>
+<path class="an" d="M622,74 L622,226"/><text x="614" y="196" text-anchor="end">a page as</text><text x="614" y="211" class="m" text-anchor="end">it is now</text>
+<text x="80" y="100" class="m">writes: follows ✓</text><text x="280" y="100" class="m">writes: follows ✓</text><text x="455" y="100" class="m">writes: follows ✓</text><text x="630" y="100" class="m">follows ✓</text>
+<rect class="ok" x="20" y="120" width="680" height="44" rx="8"/><text x="36" y="140" class="h">Shared code</text><text x="620" y="140" class="tag">M2 · M4</text><text x="36" y="156" class="m">one way for every type · a topic's file list is written in order</text>
+</svg>
+<figcaption>Milestone 1 is the public rule and the relay, behind its switch. Milestone 2 is each app and the agent, behind theirs. Milestone 3 turns the rule on for pages and topics on every team at one announced moment. Milestone 4 removes the switch and the old way everywhere; from then any server that speaks the protocol must keep every file in order and answer the list read, which replaces part of the record "a relay advertises the list read apart from the switch". Nothing that points at a page or a topic (its conversation, comments on a block, links to a block, cards, unread state) moves, and no stored change is signed again.</figcaption>
+</figure>
+
+<h2>Flow</h2>
+<figure>
+<svg viewBox="0 0 720 250" role="img">
+<title>The order of the stage: built behind switches; announced in Peek and agents updated; one moment when pages and topics switch on every team; a hold during which the switch can be turned back, ending when Miky and Katerina have each looked and found nothing missing; then the old way is removed and there is no way back</title>
+<line class="life" x1="20" y1="120" x2="700" y2="120"/>
+<rect class="b" x="20" y="30" width="150" height="60" rx="8"/><text x="32" y="52" class="h">Built behind switches</text><text x="32" y="70" class="m">relay, apps, agent</text><text x="32" y="84" class="m">on QA's team</text><text x="136" y="84" class="tag">M1–2</text>
+<rect class="b" x="190" y="30" width="140" height="60" rx="8"/><text x="202" y="52" class="h">Announced</text><text x="202" y="70" class="m">in Peek; agents</text><text x="202" y="84" class="m">updated first</text><text x="304" y="84" class="tag">M3</text>
+<rect class="ok" x="350" y="30" width="130" height="60" rx="8"/><text x="362" y="52" class="h">The moment</text><text x="362" y="70" class="m">pages and topics,</text><text x="362" y="84" class="m">every team</text><text x="454" y="84" class="tag">M3</text>
+<rect class="ok" x="500" y="30" width="200" height="60" rx="8"/><text x="512" y="52" class="h">The old way is removed</text><text x="512" y="70" class="m">relay switches, both paths in</text><text x="512" y="84" class="m">apps and agent</text><text x="672" y="84" class="tag">M4</text>
+<path class="an" d="M350,150 L496,150"/><text x="352" y="170">the hold</text><text x="352" y="186" class="m">can be turned back</text><text x="352" y="200" class="m">until Miky and Katerina</text><text x="352" y="214" class="m">have each looked, after</text><text x="352" y="228" class="m">this switch and the issues one</text>
+<path class="a" d="M500,150 L696,150"/><text x="512" y="170">no way back</text><text x="512" y="186" class="m">bringing the old way back</text><text x="512" y="200" class="m">would mean rebuilding it</text>
+<text x="20" y="150" class="m">a Leaf tab from before the moment: its page save</text><text x="20" y="166" class="m">merges or asks, never replaces. Any other older tab</text><text x="20" y="182" class="m">or agent is refused, keeps the person's words, and</text><text x="20" y="198" class="m">works after a reload or an update</text>
+</svg>
+<figcaption>Decided by Miky on 19 Nov: the old way goes after a hold, not at the moment and not never. Until milestone 4 the revert is the relay's switch for the two types; the apps then fall back to reading every change.</figcaption>
+</figure>
+
+<h3>Two people save one page</h3>
+<figure>
+<svg viewBox="0 0 720 300" role="img">
+<title>After the switch: two people hold the same copy of a page; the first save lands; the relay refuses the second because it does not follow the first; Leaf merges the two texts, joining changes to different blocks and asking about a block both changed, and saves again; both people's words are in the page</title>
+<rect class="b" x="20" y="14" width="150" height="40" rx="8"/><text x="34" y="39" class="h">First person · Leaf</text>
+<rect class="b" x="285" y="14" width="150" height="40" rx="8"/><text x="331" y="39" class="h">Relay</text>
+<rect class="b" x="550" y="14" width="150" height="40" rx="8"/><text x="564" y="39" class="h">Second, or Claude</text>
+<line class="life" x1="95" y1="54" x2="95" y2="290"/><line class="life" x1="360" y1="54" x2="360" y2="290"/><line class="life" x1="625" y1="54" x2="625" y2="290"/>
+<text x="380" y="78" class="m">0  both opened the same version of the page</text>
+<path class="an" d="M95,104 L356,104"/><text x="110" y="98">1  saves, following that version</text>
+<path class="an" d="M625,140 L364,140"/><text x="380" y="134">2  saves, following the same version</text>
+<rect class="ok" x="150" y="152" width="200" height="40" rx="6"/><text x="160" y="170">3  refuses it: the first save</text><text x="160" y="186" class="m">is the current one</text><text x="344" y="186" class="tag" text-anchor="end">M3</text>
+<path class="an" d="M360,210 L621,210"/><text x="380" y="204">4  "someone saved first", with their text</text>
+<text x="380" y="238">5  merges: different blocks join,</text><text x="380" y="254" class="m">a block both changed stops and asks</text><text x="690" y="238" class="tag">M2</text>
+<path class="an" d="M625,280 L364,280"/><text x="380" y="274">6  saves the merged text, following the first</text>
+</svg>
+<figcaption>Today step 3 does not exist for a page: the second save lands on top and the first person's words are gone. No real moment of this on a page is recorded yet; 20 pairs of saves by two authors landed within 10 minutes on one page (production, 19 Nov).</figcaption>
+</figure>
+
+<h2>Access</h2>
+<div class="tw">
+<table>
+<thead><tr><th>What</th><th>Who can see it</th><th>Who can change it</th><th>Checked by</th></tr></thead>
+<tbody>
+<tr><td>A page or topic and its changes</td><td>Whoever can read its team</td><td>Whoever can write in its team</td><td>The relay</td></tr>
+<tr class="new"><td>Deleting a page or a topic</td><td>It leaves lists and shows in Peek's Archive, Deleted, with who deleted it; in Leaf from its own link. Its sub-pages show at the team's top until it is restored (a page today: they are moved up for good). A deleted topic stays on its team's list, skipped, and comes back where it was with its files. Leaf's delete confirmation says where to bring a page back</td><td>Anyone who may edit it deletes and restores it; the delete marks only the file, so a restore puts everything back (a page today: only its author, for good)</td><td>The relay: from the moment it refuses the permanent delete</td></tr>
+<tr class="new"><td>A change that names no change it follows</td><td>—</td><td>Nobody, on any file type, from the moment; from milestone 4 no setting allows it</td><td>The relay</td></tr>
+<tr class="new"><td>Finding a page by its words, a topic by its title or summary</td><td>Only people who can read its team</td><td>—</td><td>The relay</td></tr>
+</tbody>
+</table>
+</div>
+<p class="sub">Who can read a page or a topic does not change.</p>
+
+<h2>Checked</h2>
+<ul>
+<li>Production, 19 Nov, read as the agent: 81 pages, 649 changes, 12.32 MB (578 text saves, 12.27 MB), none naming the change it follows; newest change per field 0.04 MB plus 1.42 MB of current texts; about 1.7 MB added a week. 71 topics, 377 changes, 0.27 MB, 343 naming no change they follow. Not yet measured in Miky's browser.</li>
+<li>The relay's own description lists <code>osnova.project</code> and <code>osnova.issue</code> as switched (<code>files.requires_prev</code>, read 19 Nov).</li>
+<li>Relay (buzz, branch <code>nfb-demo-kinds</code>): the ordered types (<code>buzz-core/src/fields.rs:29</code>), the permanent-delete refusal (<code>buzz-db/src/store/fields.rs:522</code>) and search (<code>buzz-core/src/file_search.rs:21</code>) name projects and issues; one off/on setting per type (<code>fields.rs:553–577</code>); the list, open and times reads take every file type.</li>
+<li>Shared code: the reads, the ordered write and the merge take any type (interop <code>fields.ts</code>); the switch is read per type (protocol <code>bridge.ts:375</code>); a topic's list entries are written with no "follows" (interop <code>topics.ts:100–125</code>).</li>
+<li>Leaf reads every change of every page on Home and on open (<code>src/relay/projectFields.ts:155–181</code>, <code>src/home/recent.ts:61</code>), saves the whole text with no "follows" (<code>src/document/save.ts:348</code>), deletes for good (<code>src/document/fileMenu.ts:122</code>). Peek opens topics as they are now and writes them with no "follows" (<code>src/nostr/foreign.ts:2087</code>). Ship writes a topic's list (<code>src/nostr/store.ts:1627</code>). Agent: <code>lib/agent/apps/file.ts</code>, <code>peek.ts</code>.</li>
+<li>A comment on a block and a link to a block are found in the page's current text, never an older version (SPEC §13.6); to be proven by probe after a merged save, in milestone 2.</li>
+<li>Deleting today: only a page's author can delete it, for good (the relay checks the delete is signed by the file's author, buzz <code>handlers/side_effects.rs</code>). The "after" row is the rule projects and issues already have (SPEC §6.5).</li>
+</ul>
+
+</main>
+</body>
+</html>

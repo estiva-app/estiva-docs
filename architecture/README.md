@@ -16,6 +16,13 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [Documents and topics stop downloading every edit](documents-and-topics-stop-downloading-every-edit.html)
+  — Shaped, 2026-11-19. Leaf pages and Peek topics are read as they are now
+  and written in order at one announced moment, a delete marks only the file
+  and can be undone, and after a hold the old way of reading and writing files
+  is removed from the relay, the apps and the agent. Read at
+  `https://docs.estiva.app/architecture/documents-and-topics-stop-downloading-every-edit.html`.
+
 - [Real page-open timings](real-page-open-timings.html)
   — Shaped, 2026-11-19. Peek, Ship and Leaf time every page open until no
   placeholder is left and send a short timing, built from a fixed list and
