@@ -4,14 +4,6 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Smoke test after every deploy</title>
-<!--
-  Template for a project's architecture page (process/ARCHITECTURE.md).
-  Copy to architecture/<project-slug>.html, then redraw every example below:
-  the drawings here show the visual language, not any real project.
-  Classes: .b box · .w card · .ok new · .bad goes away · .q undecided (dashed)
-  · .f untouched (faint) · .a arrow · .an new arrow · .aq undecided arrow
-  · .m muted second line · .h bold label · .tag milestone tag.
--->
 <style>
 :root {
   --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
@@ -118,7 +110,9 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <title>After: /land starts one smoke test that signs in to Peek, Ship, Leaf and Estiva ID after any deploy; each app says which version it serves; the test walks about ten core flows as two test accounts of its own</title>
 <rect class="b" x="20" y="20" width="170" height="54" rx="8"/><text x="36" y="44" class="h">Claude · /land</text><text x="36" y="62" class="m">after any deploy</text>
 <path class="an" d="M190,47 L246,47"/><text x="204" y="38" class="tag">M3</text>
-<text x="20" y="94" class="m">a ticket's check becomes</text><text x="20" y="108" class="m">a step in the test · M3</text>
+<rect class="ok" x="20" y="88" width="170" height="38" rx="8"/><text x="34" y="104" class="h">Core flows list</text><text x="34" y="119" class="m">kickoff and review · M2</text>
+<path class="an" d="M105,74 L105,84"/>
+<path class="an" d="M250,70 L220,70 L220,107 L194,107"/>
 <rect class="ok" x="250" y="20" width="260" height="64" rx="8"/><text x="266" y="44" class="h">Smoke test</text><text x="266" y="60" class="m">five next-door flows · M1</text><text x="266" y="75" class="m">each app's core flows · M2</text>
 <rect class="ok" x="560" y="20" width="140" height="64" rx="8"/><text x="574" y="44" class="h">Test accounts</text><text x="574" y="60" class="m">two of its own,</text><text x="574" y="75" class="m">not QA-1 · M1</text>
 <path class="an" d="M510,40 L556,40"/>
@@ -126,35 +120,37 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <path class="an" d="M300,84 L300,146"/>
 <path class="an" d="M430,84 L430,146"/>
 <path class="an" d="M490,84 L490,118 L630,118 L630,146"/>
-<text x="318" y="122" class="tag">signs in, opens</text>
-<rect class="ok" x="20" y="150" width="150" height="70" rx="8"/><text x="36" y="173" class="h">Peek</text><text x="36" y="191" class="m">says its version · M1</text>
-<rect class="ok" x="200" y="150" width="150" height="70" rx="8"/><text x="216" y="173" class="h">Ship</text><text x="216" y="191" class="m">says its version · M1</text>
-<rect class="ok" x="380" y="150" width="150" height="70" rx="8"/><text x="396" y="173" class="h">Leaf</text><text x="396" y="191" class="m">says its version · M1</text>
-<rect class="ok" x="560" y="150" width="140" height="70" rx="8"/><text x="574" y="173" class="h">Estiva ID</text><text x="574" y="191" class="m">its version · M1</text>
+<text x="318" y="122" class="m">signs in, opens</text>
+<rect class="ok" x="20" y="150" width="150" height="70" rx="8"/><text x="36" y="173" class="h">Peek</text><text x="36" y="191" class="m">says its version · M1</text><text x="36" y="207" class="m">verify skill · M3</text>
+<rect class="ok" x="200" y="150" width="150" height="70" rx="8"/><text x="216" y="173" class="h">Ship</text><text x="216" y="191" class="m">says its version · M1</text><text x="216" y="207" class="m">verify skill · M3</text>
+<rect class="ok" x="380" y="150" width="150" height="70" rx="8"/><text x="396" y="173" class="h">Leaf</text><text x="396" y="191" class="m">says its version · M1</text><text x="396" y="207" class="m">verify skill · M3</text>
+<rect class="ok" x="560" y="150" width="140" height="70" rx="8"/><text x="574" y="173" class="h">Estiva ID</text><text x="574" y="191" class="m">its version · M1</text><text x="574" y="207" class="m">verify skill · M3</text>
 <rect class="b" x="200" y="290" width="330" height="50" rx="8"/><text x="216" y="312" class="h">Relay</text><text x="216" y="330" class="m">300 requests a minute for each account</text>
+<rect class="q" x="556" y="298" width="144" height="34" rx="8"/><text x="568" y="319" class="m">its version? · M1</text>
+<path class="aq" d="M530,315 L552,315"/>
 <path class="a" d="M95,220 L95,265 L250,265 L250,286"/>
 <path class="a" d="M275,220 L275,286"/>
 <path class="a" d="M455,220 L455,265 L480,265 L480,286"/>
 </svg>
-<figcaption>The test opens all four apps whichever one was deployed, a relay deploy included. Each app gains an address that says which version it is serving. The test walks about ten core flows, written as one list that kickoff and review also read. It signs in as two test accounts of its own, which show as two more names in People. The apps read and write the relay as they do today; the test adds no new path to it.</figcaption>
+<figcaption>The test opens all four apps whichever one was deployed, a relay deploy included. Each app gains an address that says which version it is serving. The test walks about ten core flows, written as one list that kickoff and review also read. It signs in as two test accounts of its own, which show as two more names in People. A ticket adds a step only when it changes a core flow. The apps read and write the relay as they do today; the test adds no new path to it. Dashed: whether the relay can say which version it runs is found out in milestone 1.</figcaption>
 </figure>
 
 <h2>Flow</h2>
 <figure>
-<svg viewBox="0 0 720 470" role="img">
+<svg viewBox="0 0 720 490" role="img">
 <title>A Leaf deploy: the test waits for Leaf's new version, makes an issue in Ship, opens it in Peek and Leaf, a second account comments, the first sees it in every app, and the result goes on the pull request; a failed step is run again on the version before</title>
 <rect class="b" x="20" y="14" width="220" height="40" rx="8"/><text x="34" y="39" class="h">/land · smoke test</text>
 <rect class="b" x="450" y="14" width="250" height="40" rx="8"/><text x="464" y="39" class="h">Production: Peek, Ship, Leaf</text>
-<line class="life" x1="130" y1="54" x2="130" y2="460"/><line class="life" x1="575" y1="54" x2="575" y2="460"/>
+<line class="life" x1="130" y1="54" x2="130" y2="480"/><line class="life" x1="575" y1="54" x2="575" y2="480"/>
 <path class="an" d="M130,96 L571,96"/><text x="145" y="88">1  asks each app its version, waits for Leaf's new one</text>
 <path class="an" d="M130,146 L571,146"/><text x="145" y="138">2  first account makes an issue in Ship, with a picture</text>
-<path class="an" d="M130,196 L571,196"/><text x="145" y="188">3  opens it in Peek and in Leaf: title, text, picture, card</text>
+<path class="an" d="M130,196 L571,196"/><text x="145" y="188">3  opens it in Peek and in Leaf: title, text, picture, conversation</text>
 <path class="an" d="M130,246 L571,246"/><text x="145" y="238">4  second account comments on it in Ship</text>
 <path class="an" d="M571,296 L134,296"/><text x="145" y="288">5  first account sees the comment in Peek and Leaf, no reload</text>
-<rect class="ok" x="145" y="318" width="410" height="58" rx="6"/><text x="157" y="338">6  a step fails: the same step runs on the version before</text><text x="157" y="354" class="m">failed there too → an older bug, filed</text><text x="157" y="368" class="m">passed there → stops a person: fix or revert · looks wrong: filed</text>
-<rect class="ok" x="145" y="392" width="410" height="44" rx="6"/><text x="157" y="412">7  result on the pull request</text><text x="157" y="428" class="m">each app's version · each step · a screenshot of a failed one</text>
+<rect class="ok" x="145" y="318" width="410" height="74" rx="6"/><text x="157" y="338">6  a step fails: the same step runs on the version before</text><text x="530" y="338" class="tag">M3</text><text x="157" y="354" class="m">already has an open issue → reported as known, with its link</text><text x="157" y="368" class="m">failed there too → an older bug, filed</text><text x="157" y="382" class="m">passed there → stops a person: fix or revert · looks wrong: filed</text>
+<rect class="ok" x="145" y="408" width="410" height="44" rx="6"/><text x="157" y="428">7  result on the pull request</text><text x="157" y="444" class="m">each app's version · each step · a screenshot of a failed one</text>
 </svg>
-<figcaption>Two of the five next-door flows, an issue opened in the other apps and a comment arriving in all three. Step 6 is the same whichever app the failing step is in (Miky, 19 Nov).</figcaption>
+<figcaption>Two of the five next-door flows, an issue opened in the other apps and a comment arriving in all three. Step 3 is where the run would have failed on 20 Oct, when a picture in an issue showed as its file name in Peek. Step 6 is the same whichever app the failing step is in (Miky, 19 Nov).</figcaption>
 </figure>
 
 <h2>Checked</h2>
