@@ -5,6 +5,11 @@
 - Decided by: Miky, in the session of 16 November 2026 after the review of estiva-docs#442: "Let's go deeper. We should probably have status like proposed decision or decision open. Then it shouldn't be that much prescriptive who can do the final decision. That's not for the protocol. each app, probably each org or even team should have their own rules. We should start loose."; and, the same day, that unmarking is a status change gated by the same rule; his merge of this record accepts its wording
 - Area: Messages
 
+> Superseded in part, 2026-11-19: "unmarking is a status change, never a
+> delete", and, for a highlight, "the relay lets only an event's author delete
+> it". Anyone who can read a highlight can delete it, in
+> [anyone-can-delete-a-highlight-and-only-activity-keeps-a-trace](anyone-can-delete-a-highlight-and-only-activity-keeps-a-trace.md).
+
 > Supersedes in part
 > [anyone-who-can-read-a-message-or-block-marks-it-and-anyone-confirms-a-proposed-item](anyone-who-can-read-a-message-or-block-marks-it-and-anyone-confirms-a-proposed-item.md):
 > its "anyone who may comment on a Proposed item can confirm it", its "an

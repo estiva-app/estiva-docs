@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Which models read us</title>
+<style>
+:root { --bg:#fbfaf7; --ink:#1d1c1a; --muted:#6b675f; --line:#d9d4ca; --box:#ffffff; --company:#eef3ea; --companyline:#7d9a6c; --out:#fbeee6; --outline:#c07a4f; --team:#eaf0f8; --teamline:#5d7fa8; --accent:#8a5a14; }
+@media (prefers-color-scheme: dark) { :root { --bg:#161513; --ink:#ece8e1; --muted:#a39e94; --line:#3a3731; --box:#211f1c; --company:#1e2a1b; --companyline:#8fb27b; --out:#33231a; --outline:#d9956a; --team:#1b2431; --teamline:#86a7cf; --accent:#e0b46a; } }
+* { box-sizing: border-box }
+body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif }
+main { max-width:760px; margin:0 auto; padding:28px 16px 64px }
+h1 { font-size:1.6rem; line-height:1.25; margin:0 0 6px }
+h2 { font-size:1.15rem; margin:34px 0 8px }
+h3 { font-size:1rem; margin:22px 0 4px }
+p, li { margin:6px 0 }
+.lede { color:var(--muted); margin:0 0 18px }
+.q { font-size:1.15rem; border-left:4px solid var(--accent); padding:4px 0 4px 14px; margin:18px 0 }
+svg { width:100%; height:auto; display:block; margin:10px 0 4px }
+svg text { fill:var(--ink); font:13px system-ui, sans-serif }
+svg .small { font-size:12px; fill:var(--muted) }
+.cap { color:var(--muted); font-size:.9rem; margin:0 0 14px }
+table { border-collapse:collapse; width:100%; font-size:.92rem; margin:10px 0 }
+th, td { border:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top }
+th { background:var(--box) }
+.opt { border:1px solid var(--line); background:var(--box); border-radius:8px; padding:4px 16px 10px; margin:14px 0 }
+.rec { border:2px solid var(--accent); border-radius:8px; padding:6px 16px; margin:14px 0 }
+.small { font-size:.88rem; color:var(--muted) }
+</style>
+</head>
+<body>
+<main>
+<h1>Which models read us</h1>
+<p class="lede">Open call 1 of "The intelligence layer: where we are going", after your answers of 19 Nov. About five minutes.</p>
+
+<p class="q">When a company picks the AI models its apps and agents use, can one team say "not that model for our conversations"?</p>
+
+<h2>Today</h2>
+<p>Two rules disagree. Peek's own rule says a work thread never goes to a cloud model, so its ⌘K answers only on your device. Claude, through the Estiva plugin, reads every team its agent is in and sends it to Anthropic. Nobody decided between them; they were set one app at a time.</p>
+<p>On 19 Nov you settled most of the question. Each company hosts everything itself, and models are model-agnostic, as in Buzz: the provider is a setting (Anthropic, the company's own model, any OpenAI-compatible endpoint). And it's already decided that an agent reads only the teams it's in, and that its owner can cut it off at once. So the company chooses its providers. What's left is whether that choice is one switch for the whole company, or whether a team can narrow it.</p>
+
+<svg viewBox="0 0 720 200" role="img"><title>Today: two rules in two apps</title>
+<rect x="10" y="20" width="300" height="160" rx="10" fill="var(--company)" stroke="var(--companyline)"/>
+<text x="24" y="44">The company's relay</text>
+<rect x="30" y="60" width="120" height="44" rx="6" fill="var(--box)" stroke="var(--line)"/><text x="44" y="87">Product team</text>
+<rect x="170" y="60" width="120" height="44" rx="6" fill="var(--box)" stroke="var(--line)"/><text x="190" y="87">HR team</text>
+<rect x="30" y="120" width="260" height="44" rx="6" fill="var(--box)" stroke="var(--line)"/><text x="44" y="140">Peek ⌘K: model on your device</text><text class="small" x="44" y="156">"a work thread never goes to a cloud"</text>
+<rect x="470" y="60" width="240" height="60" rx="10" fill="var(--out)" stroke="var(--outline)"/><text x="486" y="86">Anthropic (Claude)</text><text class="small" x="486" y="104">through the Estiva plugin</text>
+<path d="M150 82 C 330 30, 400 60, 470 80" fill="none" stroke="var(--outline)" stroke-width="2"/>
+<path d="M290 82 C 380 90, 420 92, 470 96" fill="none" stroke="var(--outline)" stroke-width="2"/>
+<text class="small" x="330" y="150">every team the agent is in goes out</text>
+</svg>
+<p class="cap">Today. Peek keeps everything on the device; the Claude plugin sends whatever its agent can read.</p>
+
+<h2>Why it reaches beyond this ticket</h2>
+<p>It sets the rule every app and every agent follows before it hands a team's words to a model, including an outside company's app. The rule itself is a <b>two-way door</b>: a setting can be added or loosened later. The words aren't: once a conversation reaches an outside provider, it can't be taken back. And a narrowing added later only binds apps built after it. An app written meanwhile won't check it.</p>
+
+<h2>Options</h2>
+
+<div class="opt">
+<h3>A. One switch for the company (do less)</h3>
+<p>An admin picks the models once. Every app and agent may send any conversation it can read to any of them. Peek's on-device-only rule is retired on purpose.</p>
+<svg viewBox="0 0 720 150" role="img"><title>Option A: one company setting</title>
+<rect x="10" y="10" width="330" height="130" rx="10" fill="var(--company)" stroke="var(--companyline)"/>
+<text x="24" y="34">The company: models = Claude, own model</text>
+<rect x="30" y="52" width="120" height="44" rx="6" fill="var(--box)" stroke="var(--line)"/><text x="44" y="79">Product team</text>
+<rect x="190" y="52" width="120" height="44" rx="6" fill="var(--box)" stroke="var(--line)"/><text x="210" y="79">HR team</text>
+<rect x="470" y="20" width="240" height="44" rx="8" fill="var(--out)" stroke="var(--outline)"/><text x="486" y="47">Claude (outside)</text>
+<rect x="470" y="86" width="240" height="44" rx="8" fill="var(--company)" stroke="var(--companyline)"/><text x="486" y="113">Company's own model</text>
+<path d="M150 70 L470 42" stroke="var(--outline)" stroke-width="2"/><path d="M310 74 L470 48" stroke="var(--outline)" stroke-width="2"/>
+<path d="M150 80 L470 104" stroke="var(--companyline)" stroke-width="2"/><path d="M310 80 L470 108" stroke="var(--companyline)" stroke-width="2"/>
+</svg>
+<p><b>You and Katerina:</b> one choice when Estiva is set up; afterwards every app answers with the same strong model, Peek's ⌘K included.</p>
+<p><b>An outside company:</b> it has to choose for its most sensitive team. A fintech either keeps HR and disputes off Claude by giving it up for everyone, or accepts that HR goes out too.</p>
+<p><b>What could go wrong:</b> a private team (HR, a deal room) gets created after the switch and quietly inherits a frontier cloud model nobody chose for it.</p>
+</div>
+
+<div class="opt">
+<h3>B. The company sets models, and a team can narrow them</h3>
+<p>The admin's list is the most any team gets. A team can say "only the device and our own model". Every app and agent reads the team's setting before sending its words to a model, as each already checks who may read the team.</p>
+<svg viewBox="0 0 720 150" role="img"><title>Option B: a team narrows the company's models</title>
+<rect x="10" y="10" width="330" height="130" rx="10" fill="var(--company)" stroke="var(--companyline)"/>
+<text x="24" y="34">The company: models = Claude, own model</text>
+<rect x="30" y="52" width="120" height="44" rx="6" fill="var(--box)" stroke="var(--line)"/><text x="44" y="79">Product team</text>
+<rect x="170" y="48" width="160" height="80" rx="6" fill="var(--team)" stroke="var(--teamline)"/><text x="182" y="72">HR team</text><text class="small" x="182" y="92">narrowed to:</text><text class="small" x="182" y="110">own model only</text>
+<rect x="470" y="20" width="240" height="44" rx="8" fill="var(--out)" stroke="var(--outline)"/><text x="486" y="47">Claude (outside)</text>
+<rect x="470" y="86" width="240" height="44" rx="8" fill="var(--company)" stroke="var(--companyline)"/><text x="486" y="113">Company's own model</text>
+<path d="M150 70 L470 42" stroke="var(--outline)" stroke-width="2"/>
+<path d="M150 80 L470 104" stroke="var(--companyline)" stroke-width="2"/><path d="M330 96 L470 108" stroke="var(--companyline)" stroke-width="2"/>
+<text class="small" x="356" y="60">✕ HR never to Claude</text>
+</svg>
+<p><b>You and Katerina:</b> nothing changes for your teams. A private team shows its narrower setting in its own settings, and an AI answer in it comes from the allowed model.</p>
+<p><b>An outside company:</b> uses the frontier model where it's fine and keeps HR and disputes on its own model, without a policy document. Its own apps must honour the team setting, as they honour who may read the team.</p>
+<p><b>What could go wrong:</b> an app or agent that ignores the setting. It's a rule apps keep, not something the relay can stop once the words have left. And a weaker model in a narrowed team gives worse answers there.</p>
+</div>
+
+<div class="opt">
+<h3>C. Each person says which models may read their words</h3>
+<p>Like consent: every author sets their own list, and a model may read a thread only if every author in it allows that model.</p>
+<p><b>You and Katerina:</b> a setting each, and a thread goes quiet to AI the moment one cautious person joins it.</p>
+<p><b>An outside company:</b> unpredictable; whether AI works in a thread depends on who happened to write there.</p>
+<p><b>What could go wrong:</b> one setting blocks a whole team's memory, and the company's choice of models stops meaning anything.</p>
+</div>
+
+<h2>Trade-offs</h2>
+<table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td>A</td><td>One company setting; no team-level rule</td><td>Same model everywhere</td><td>Must pick for its most sensitive team</td><td>Adding B later doesn't bind apps already built</td><td>Smallest</td></tr>
+<tr><td>B</td><td>Company setting plus a team narrowing that every app checks, where access already lives</td><td>Same, except a narrowed team</td><td>Strong model for most teams, own model for sensitive ones</td><td>Loosening is just a setting</td><td>A team setting and a check in each app and agent</td></tr>
+<tr><td>C</td><td>Per-author consent on every read</td><td>AI on and off by who wrote</td><td>Unpredictable</td><td>Hard: words already checked against old consents</td><td>Largest</td></tr>
+</table>
+
+<h2>How others do it</h2>
+<ul>
+<li><b>Google Workspace</b>: an admin turns Gemini on or off per group of people, not only for the whole company.</li>
+<li><b>Microsoft 365</b>: a sensitivity label on a file can keep Copilot from using it.</li>
+<li><b>Slack and Notion</b>: an admin switch for the workspace, with the vendor's own model behind it.</li>
+</ul>
+<p class="small">Each enforces this inside one vendor's cloud. On an open protocol, nobody stands between the words and the model but the app, so the rule must be one that every app reads the same way.</p>
+
+<div class="rec">
+<p><b>Recommendation: B.</b> The setting belongs where access already lives, on the team. That's the shape an outside company can trust: a private team is private from the models it didn't choose, too. Putting it in the protocol now means every app is built to check it from the start; adding it after A leaves apps that never look. Peek's on-device-only rule retires either way, in favour of the company's and the team's choice.</p>
+</div>
+
+<h2>Checked</h2>
+<ul>
+<li>Peek's rule, "a work thread must never be sent to a cloud", is a rule in Peek's repository, not a decision record.</li>
+<li>An agent reads only the teams it's in, and its owner can end that at once: Accepted records "removing an agent from a team keeps it out" and "an agent's owner ends its access at once".</li>
+<li>Your 19 Nov answers (provider as a setting, each company hosts everything itself) are on the brief "Memory layer, next level" and in the Leaf page.</li>
+<li>Buzz picks its model with one setting (Anthropic, an OpenAI-compatible endpoint, Databricks): checked in Buzz's agent earlier today.</li>
+<li><b>Not checked today:</b> Google's, Microsoft's, Slack's and Notion's current admin controls. These lines are from memory.</li>
+</ul>
+
+<h2>For the record</h2>
+<p class="small">The team setting would be a field on the Folder (team) every app reads, beside its roster; the company list a workspace setting. Records touched: removing-an-agent-from-a-folder-keeps-it-out, an-agents-owner-ends-its-access-at-once, an-agent-signs-for-an-app-only-by-an-admin-grant. Peek's <code>.claude/rules/on-device-ai.md</code> would change. Prototype ticket 009bc509.</p>
+</main>
+</body>
+</html>
