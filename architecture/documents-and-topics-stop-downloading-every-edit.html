@@ -183,7 +183,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <li>Shared code: the reads, the ordered write and the merge take any type (interop <code>fields.ts</code>); the switch is read per type (protocol <code>bridge.ts:375</code>); a topic's list entries are written with no "follows" (interop <code>topics.ts:100–125</code>).</li>
 <li>Leaf reads every change of every page on Home and on open (<code>src/relay/projectFields.ts:155–181</code>, <code>src/home/recent.ts:61</code>), saves the whole text with no "follows" (<code>src/document/save.ts:348</code>), deletes for good (<code>src/document/fileMenu.ts:122</code>). Peek opens topics as they are now and writes them with no "follows" (<code>src/nostr/foreign.ts:2087</code>). Ship writes a topic's list (<code>src/nostr/store.ts:1627</code>). Agent: <code>lib/agent/apps/file.ts</code>, <code>peek.ts</code>.</li>
 <li>A comment on a block and a link to a block are found in the page's current text, never an older version (SPEC §13.6); to be proven by probe after a merged save, in milestone 2.</li>
-<li>Deleting today: only a page's author can delete it, for good (Leaf's own refusal words, <code>fileMenu.ts</code>). The "after" row is the rule projects and issues already have (SPEC §6.5).</li>
+<li>Deleting today: only a page's author can delete it, for good (the relay checks the delete is signed by the file's author, buzz <code>handlers/side_effects.rs</code>). The "after" row is the rule projects and issues already have (SPEC §6.5).</li>
 </ul>
 
 </main>
