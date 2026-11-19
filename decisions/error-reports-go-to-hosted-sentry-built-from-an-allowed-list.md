@@ -5,6 +5,12 @@
 - Decided by: Miky, on the Quality page and in the shaping session of "Production errors reach us (Sentry)", 17 November; the write token in the kickoff session of "Sentry is set up and Claude can read a test error on the free plan", 18 November
 - Area: Infrastructure
 
+> Superseded in part, 2026-11-19: "tracing" in "No session replay, tracing or
+> logs". Page-open timings are allowed, built from their own fixed list and
+> naming the person, in
+> [page-open-timings-go-to-sentry-named-by-the-person-built-from-an-allowed-list](page-open-timings-go-to-sentry-named-by-the-person-built-from-an-allowed-list.md).
+> Everything else stands as this record says.
+
 ## Who it affects
 
 Miky and Katerina stop being the first to find a crash: Peek, Ship, Leaf,

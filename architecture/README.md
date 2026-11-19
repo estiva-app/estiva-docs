@@ -16,6 +16,12 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [Real page-open timings](real-page-open-timings.html)
+  — Shaped, 2026-11-19. Peek, Ship and Leaf time every page open until no
+  placeholder is left and send a short timing, built from a fixed list and
+  naming the person, through Estiva ID's server to Sentry; Claude prints what
+  each of us waited per kind of screen. Read at
+  `https://docs.estiva.app/architecture/real-page-open-timings.html`.
 - [Smoke test after every deploy](smoke-test-after-every-deploy.html)
   — Shaped, 2026-11-19. After a deploy, one test signs in to Peek, Ship, Leaf
   and Estiva ID as test accounts and walks about ten core flows, half of them
