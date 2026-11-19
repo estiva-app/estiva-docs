@@ -16,6 +16,10 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [Smoke test after every deploy](smoke-test-after-every-deploy.html)
+  — Shaped, 2026-11-19. After a deploy, one test signs in to Peek, Ship, Leaf
+  and Estiva ID as test accounts and walks about ten core flows, half of them
+  one app showing another app's file; each app says which version it serves.
 - [Production errors reach us (Sentry)](production-errors-reach-us-sentry.html)
   — Shaped, 2026-11-17. Peek, Ship, Leaf, Estiva ID and the relay each send a
   short report to Sentry when something breaks, built from a fixed list of
