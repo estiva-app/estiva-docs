@@ -143,6 +143,7 @@ export const DRAWINGS = [
   'architecture/real-page-open-timings.html',
   'architecture/smoke-test-after-every-deploy.html',
   'architecture/production-errors-reach-us-sentry.html',
+  'architecture/documents-and-topics-stop-downloading-every-edit.html',
   'architecture/issues-stop-downloading-every-edit.html',
   'architecture/insights-journal-and-risks.html',
   'architecture/activity-indicator-on-each-topic-and-team.html',

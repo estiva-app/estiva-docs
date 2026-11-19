@@ -33,6 +33,13 @@ Project pages, newest first:
   deploy, at a sweep and when a project is wrapped. Read at
   `https://docs.estiva.app/architecture/production-errors-reach-us-sentry.html`.
 
+- [Documents and topics stop downloading every edit](documents-and-topics-stop-downloading-every-edit.html)
+  — Shaped, 2026-11-19. Leaf pages and Peek topics are read as they are now
+  and written in order at one announced moment, a delete marks only the file
+  and can be undone, and after a hold the old way of reading and writing files
+  is removed from the relay, the apps and the agent. Read at
+  `https://docs.estiva.app/architecture/documents-and-topics-stop-downloading-every-edit.html`.
+
 - [Issues stop downloading every edit](issues-stop-downloading-every-edit.html)
   — Shaped, 2026-11-16. Ship, Leaf, Peek and the agent read each issue as it
   is now and write each change after the one it follows, as they do for
