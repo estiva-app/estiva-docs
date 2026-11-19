@@ -68,7 +68,7 @@ tr.new td { background: var(--ok-bg); }
 
 
 <h1>Real page-open timings</h1>
-<p class="sub"><span class="state">Shaped, 2026-11-19</span> · draft, not in Ship yet · builds on <a href="https://docs.estiva.app/architecture/production-errors-reach-us-sentry.html">Production errors reach us</a> · Goal: per kind of screen, we know how long Miky and Katerina each really waited for Peek, Ship and Leaf to open.</p>
+<p class="sub"><span class="state">Shaped, 2026-11-19</span> · <a href="https://ship.estiva.app/#/project/da23efea-1404-481b-9400-fe604cab9981">Ship project</a> ·builds on <a href="https://docs.estiva.app/architecture/production-errors-reach-us-sentry.html">Production errors reach us</a> · Goal: per kind of screen, we know how long Miky and Katerina each really waited for Peek, Ship and Leaf to open.</p>
 
 <p>Today a page's speed is measured only by the speed kit: a QA account, or Claude signed in as Miky, opening a few fixed pages from one machine. Nothing measures the opens a person really makes. This project adds a timer beside the error reporter. It times every open, sends a short timing down the same road as an error report, and Claude prints what each of us waited. Look at the Map first, then at what a timing may contain.</p>
 
