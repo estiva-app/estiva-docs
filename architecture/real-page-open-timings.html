@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Real page-open timings</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
+.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
+svg .aq { stroke: var(--accent); fill: none; stroke-width: 1.6; stroke-dasharray: 5 4; marker-end: url(#arr-q); }
+svg .life { stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 3 4; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 560px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+tr.new td { background: var(--ok-bg); }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+    <marker id="arr-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<main>
+
+
+<h1>Real page-open timings</h1>
+<p class="sub"><span class="state">Shaped, 2026-11-19</span> · <a href="https://ship.estiva.app/#/project/da23efea-1404-481b-9400-fe604cab9981">Ship project</a> ·builds on <a href="https://docs.estiva.app/architecture/production-errors-reach-us-sentry.html">Production errors reach us</a> · Goal: per kind of screen, we know how long Miky and Katerina each really waited for Peek, Ship and Leaf to open.</p>
+
+<p>Today a page's speed is measured only by the speed kit: a QA account, or Claude signed in as Miky, opening a few fixed pages from one machine. Nothing measures the opens a person really makes. This project adds a timer beside the error reporter. It times every open, sends a short timing down the same road as an error report, and Claude prints what each of us waited. Look at the Map first, then at what a timing may contain.</p>
+
+<div class="legend"><span>runs today, unchanged</span><span class="lnew">new</span></div>
+
+<h2>Map</h2>
+<figure>
+<svg viewBox="0 0 720 560" role="img">
+<title>Peek, Ship and Leaf each gain a page-open timer, beside the error reporter in the shared platform package. The timer sends a short timing to Estiva ID's server, signed in. The server builds it again from its own list, under its own limit, and passes it to Sentry, which keeps timings beside the errors. Claude reads them with a command and prints what each person waited per kind of screen, next to the speed kit's QA number.</title>
+<rect class="b" x="20" y="20" width="210" height="52" rx="8"/><text x="34" y="42" class="h">Peek</text><text x="34" y="60" class="m">in the browser</text>
+<rect class="b" x="255" y="20" width="210" height="52" rx="8"/><text x="269" y="42" class="h">Ship</text><text x="269" y="60" class="m">in the browser</text>
+<rect class="b" x="490" y="20" width="210" height="52" rx="8"/><text x="504" y="42" class="h">Leaf</text><text x="504" y="60" class="m">in the browser</text>
+
+<rect class="b" x="20" y="122" width="250" height="64" rx="8"/><text x="34" y="145" class="h">Error reporter</text><text x="34" y="164" class="m">in the shared platform package</text><text x="34" y="179" class="m">knows the kind of screen</text>
+<rect class="ok" x="290" y="122" width="410" height="64" rx="8"/><text x="304" y="145" class="h">Page-open timer</text><text x="304" y="164" class="m">from the click or the new tab until no placeholder is left</text><text x="304" y="179" class="m">skips a tab you were not looking at · same package</text><text x="668" y="145" class="tag">M2</text>
+<path class="an" d="M125,72 L330,118"/><text x="150" y="104" class="tag">M3</text>
+<path class="an" d="M400,72 L440,118"/><text x="430" y="92" class="tag">M2</text>
+<path class="an" d="M595,72 L560,118"/><text x="590" y="100" class="tag">M3</text>
+
+<rect class="b" x="170" y="240" width="380" height="84" rx="8"/><text x="184" y="262" class="h">Estiva ID's server</text><text x="184" y="280" class="m">checks you are signed in, passes reports on</text>
+<rect class="ok" x="184" y="288" width="352" height="28" rx="6"/><text x="194" y="307">timings: their own list and their own limit</text><text x="508" y="307" class="tag">M2</text>
+<path class="an" d="M495,186 L400,236"/><text x="462" y="216" class="m">a short timing, signed in</text>
+<path class="a" d="M145,186 L250,236"/><text x="60" y="216" class="m">errors, as today</text>
+
+<rect class="b" x="170" y="368" width="380" height="84" rx="8"/><text x="184" y="390" class="h">Sentry</text><text x="184" y="408" class="m">hosted, in Frankfurt · errors, as today</text>
+<rect class="ok" x="184" y="416" width="352" height="28" rx="6"/><text x="194" y="435">timings, kept beside the errors</text><text x="508" y="435" class="tag">M1</text>
+<path class="an" d="M360,324 L360,364"/>
+<rect class="b" x="20" y="380" width="120" height="60" rx="8"/><text x="34" y="404" class="h">Miky</text><text x="34" y="422" class="m">owns the account</text>
+
+<rect class="b" x="170" y="486" width="250" height="60" rx="8"/><text x="184" y="510" class="h">Claude</text><text x="184" y="528" class="m">reads errors, as today</text>
+<path class="an" d="M300,486 L300,456"/><text x="308" y="476" class="tag">M1 · reads a timing back</text>
+<rect class="b" x="560" y="486" width="140" height="60" rx="8"/><text x="574" y="510" class="h">Speed kit</text><text x="574" y="528" class="m">QA runs, as today</text>
+<path class="an" d="M556,516 L424,516"/><text x="436" y="508" class="tag">M4 · beside it</text>
+<text x="20" y="508" class="tag">M4 · prints what</text><text x="20" y="524" class="tag">each of us waited</text></svg>
+<figcaption>The road is the one errors already take; the green parts are what timings add. The timer reuses the kinds of screen the error reporter already names (Ship: issue, issues, project; Leaf: document, home; Peek by its routes), so it never needs a page's address. Estiva ID's own pages, both servers and the agent are left out: nothing about them changes. M1 comes first because it may not work: Sentry's free plan has to let Claude read a timing back.</figcaption>
+</figure>
+
+<h2>Flow: Katerina opens an issue in Ship</h2>
+<figure>
+<svg viewBox="0 0 720 400" role="img">
+<title>Katerina clicks an issue in Ship. The timer notes the click and waits until no placeholder is left on the page, then builds a timing from the allowed fields and sends it, signed in, to Estiva ID's server. The server checks the sign-in, builds the timing again from its own list and passes it to Sentry. At the next sweep, or when a speed project starts or is wrapped, Claude prints what each person waited per kind of screen, and the next speed work starts from the slowest.</title>
+<rect class="b" x="20" y="14" width="150" height="40" rx="8"/><text x="32" y="39" class="h">Katerina · Ship</text>
+<rect class="b" x="215" y="14" width="150" height="40" rx="8"/><text x="227" y="39" class="h">Estiva ID's server</text>
+<rect class="b" x="395" y="14" width="150" height="40" rx="8"/><text x="447" y="39" class="h">Sentry</text>
+<rect class="b" x="565" y="14" width="140" height="40" rx="8"/><text x="612" y="39" class="h">Claude</text>
+<line class="life" x1="95" y1="54" x2="95" y2="390"/><line class="life" x1="290" y1="54" x2="290" y2="390"/><line class="life" x1="470" y1="54" x2="470" y2="390"/><line class="life" x1="635" y1="54" x2="635" y2="390"/>
+<text x="108" y="80">1  clicks an issue</text>
+<rect class="ok" x="108" y="92" width="174" height="72" rx="6"/><text x="118" y="110">2  the timer waits until</text><text x="118" y="126">no placeholder is left:</text><text x="118" y="142" class="m">issue page · a click ·</text><text x="118" y="158" class="m">3.8 s · never its title</text>
+<path class="an" d="M95,190 L286,190"/><text x="108" y="184">3  sends it, signed in</text>
+<rect class="ok" x="300" y="202" width="160" height="42" rx="6"/><text x="310" y="220">4  checks the sign-in,</text><text x="310" y="236" class="m">builds it again</text>
+<path class="an" d="M290,268 L466,268"/><text x="302" y="262">5  passes it on</text>
+<text x="482" y="296">6  keeps it</text>
+<path class="an" d="M635,326 L474,326"/><text x="482" y="320">7  "what did we wait?"</text>
+<text x="482" y="354">8  prints each person's waits</text><text x="482" y="370" class="m">per kind of screen, beside QA's</text>
+</svg>
+<figcaption>Step 7 happens at a sweep and when a speed project starts or is wrapped, not after every deploy and not on a timer. The 3.8 s is an example, not a measurement. A timing never stops or slows the page: it is sent after the page is ready, and one that fails to send is dropped.</figcaption>
+</figure>
+
+<h2>Access: what leaves, and who can read it</h2>
+<div class="tw">
+<table>
+<thead><tr><th>What</th><th>Who can see it</th><th>Who can change it</th><th>Checked by</th></tr></thead>
+<tbody>
+<tr class="new"><td><strong>A timing may contain:</strong> the app and its version; the kind of screen (never its address); how it was opened (a new tab, a reload, a click inside the app); how long until the page was ready, and in Peek how long until its saved picture showed; when; the browser; the person's public key; whether it is a person, a QA account or an agent.</td><td>Miky, in Sentry. Claude, reading. Sentry the company, as the host.</td><td>Nobody. Sentry deletes it after 30 days.</td><td>The timer in the person's browser, then Estiva ID's server before it passes the timing on. Tested by planting text and reading what leaves the browser and what leaves our server.</td></tr>
+<tr class="new"><td><strong>A timing never contains:</strong> titles, file names, page addresses, which issue, page or conversation was opened, message or document text, what the relay was asked, or the person's IP address.</td><td>Nobody outside the browser.</td><td>—</td><td>The same two checks and the same test.</td></tr>
+<tr class="new"><td><strong>What the timings add up to:</strong> a log of when each person opened which kind of screen, and how long it took. Miky chose to keep the person's key on it (19 Nov), because "what we each wait" cannot be answered without it.</td><td>As the first row.</td><td>—</td><td>Katerina is told before the first app sends one.</td></tr>
+<tr class="new"><td><strong>Who can send a timing.</strong> A signed-in person's app, through Estiva ID's server; the public key on it is the one signed in. Nothing is sent before sign-in: there is no door for a signed-out timing. Sentry's address is held by our servers only.</td><td>—</td><td>—</td><td>Estiva ID's server.</td></tr>
+<tr class="new"><td><strong>A company running its own deployment</strong> gets no timings unless it names a place for them, apart from where its errors go. Turning on crash reports never turns on timings.</td><td>—</td><td>The company, in its deployment's settings.</td><td>Each app's setting for where timings go; with none, nothing is sent.</td></tr>
+<tr class="new"><td><strong>Timings cannot crowd out errors.</strong> They are counted under their own limit, in the browser and on the server, apart from the error allowance.</td><td>—</td><td>—</td><td>Estiva ID's server. Tested by sending many timings, then an error.</td></tr>
+</tbody>
+</table>
+</div>
+<p class="sub">Every row is new. What an error report may contain does not change.</p>
+
+<h2>Checked</h2>
+<p class="sub">Read on 2026-11-19 from <code>origin/main</code> of each repository, and from the Sentry account.</p>
+<ul>
+<li>The error reporter is <code>packages/platform/src/error-reports.ts</code> in estiva-foundation, published as <code>@estiva-app/platform</code> 0.9.0. Peek, Ship and Leaf each start it in <code>src/main.tsx</code> and tell it the kind of screen on every navigation.</li>
+<li>Estiva ID's <code>src/domain/error-reports.ts</code> builds every report again from its own list and sends Sentry one error event. A field it does not name is dropped, so a timing cannot pass today. Its limits count per person and per app (30 in ten minutes, 100 an hour).</li>
+<li>No app marks a page as ready. Loading placeholders are marked in each app (<code>PageSkeleton</code> in Ship and Leaf, <code>aria-busy</code> and skeleton classes in all three). Peek notes when its saved picture showed and when the live page replaced it (<code>src/lib/pagePicture.ts</code>).</li>
+<li>The speed kit (<code>scripts/app-speed.mjs</code> in Peek's repository) calls a page ready when its awaited text is on screen and no placeholder is left outside the sidebar. The awaited text is a test fixture; the placeholder check is what a real tab can run.</li>
+<li>Sentry: the account is on the free plan, which includes 5,000,000 spans a month, and took 81 errors in the last 30 days.</li>
+<li>A timing sent by hand to the Ship project through the envelope address Estiva ID's server already uses was stored as a span, counted apart from errors, and read back with Claude's read-only token: the kind of screen, how it was opened, the wait, the account and the person's key; the IP address sent with it was not stored. Sentry keeps spans 30 days on this plan (its headline says 90; what it keeps spans for is 30). Read on 2026-11-19.</li>
+<li>The call is written down in the record <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/page-open-timings-go-to-sentry-named-by-the-person-built-from-an-allowed-list.md">page-open-timings-go-to-sentry-named-by-the-person-built-from-an-allowed-list</a>, which amends the error record's "no tracing".</li>
+</ul>
+
+</main>
+</body>
+</html>
