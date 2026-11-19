@@ -115,7 +115,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <h3>After</h3>
 <figure>
 <svg viewBox="0 0 720 360" role="img">
-<title>After: /land starts one smoke test that signs in to Peek, Ship, Leaf and Estiva ID after any deploy; each app says its version and has a feature map; whether the test has its own accounts waits on Miky</title>
+<title>After: /land starts one smoke test that signs in to Peek, Ship, Leaf and Estiva ID after any deploy; each app says which version it serves; the test walks about ten core flows as two test accounts of its own</title>
 <rect class="b" x="20" y="20" width="170" height="54" rx="8"/><text x="36" y="44" class="h">Claude · /land</text><text x="36" y="62" class="m">after any deploy</text>
 <path class="an" d="M190,47 L246,47"/><text x="204" y="38" class="tag">M3</text>
 <text x="20" y="94" class="m">a ticket's check becomes</text><text x="20" y="108" class="m">a step in the test · M3</text>
@@ -130,7 +130,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <rect class="ok" x="20" y="150" width="150" height="70" rx="8"/><text x="36" y="173" class="h">Peek</text><text x="36" y="191" class="m">says its version · M1</text>
 <rect class="ok" x="200" y="150" width="150" height="70" rx="8"/><text x="216" y="173" class="h">Ship</text><text x="216" y="191" class="m">says its version · M1</text>
 <rect class="ok" x="380" y="150" width="150" height="70" rx="8"/><text x="396" y="173" class="h">Leaf</text><text x="396" y="191" class="m">says its version · M1</text>
-<rect class="ok" x="560" y="150" width="140" height="70" rx="8"/><text x="574" y="173" class="h">Estiva ID</text><text x="574" y="191" class="m">says its version · M1</text>
+<rect class="ok" x="560" y="150" width="140" height="70" rx="8"/><text x="574" y="173" class="h">Estiva ID</text><text x="574" y="191" class="m">its version · M1</text>
 <rect class="b" x="200" y="290" width="330" height="50" rx="8"/><text x="216" y="312" class="h">Relay</text><text x="216" y="330" class="m">300 requests a minute for each account</text>
 <path class="a" d="M95,220 L95,265 L250,265 L250,286"/>
 <path class="a" d="M275,220 L275,286"/>
@@ -159,7 +159,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 
 <h2>Checked</h2>
 <ul>
-<li><code>/land</code> after a deploy: the ticket's Done-when check as QA-1 or QA-2, then Sentry's new errors, then the speed kit only for a changed read (<code>~/estiva/.claude/skills/land/SKILL.md</code>, step 5, read 19 Nov).</li>
+<li><code>/land</code> after a deploy: the ticket's Done-when check as QA-1 or QA-2, then Sentry's new errors, then the speed kit only for a changed read (the <code>/land</code> skill's step 5, kept outside the repositories; read 19 Nov).</li>
 <li>The probe signs in through Estiva ID's test login and drives Peek, Ship and Leaf, one account per run (<code>peek-app/scripts/probe.mjs</code> on <code>origin/main</code>).</li>
 <li>No app serves its version: no version address, tag or header in Peek, Ship, Leaf or Estiva ID; the commit is in each bundle only as the Sentry release.</li>
 <li>The relay's limit, 300 requests a minute for each account, and a page open at 55 to 100 requests: from the agent's notes of earlier measurements and the two bugs filed 19 Nov, not measured again today.</li>
