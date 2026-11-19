@@ -153,7 +153,8 @@ heading here.
 - [A reaction to your message is seen once, in the conversation it is in, so hovering an orange dot clears it in every topic, on the Desk and in every app](a-reaction-is-seen-once-in-its-conversation.md) — Accepted, 2026-11-10; superseded in part, for the key's name and opening the conversation, by the one below, 2026-11-13
 - [Seeing a reaction to your message is remembered under "reactions:", and opening the conversation that shows it counts as seeing it, as resting on its orange row does](reactions-seen-is-kept-under-reactions-and-opening-it-sees-it.md) — Accepted, 2026-11-13
 - [Following a topic at Important, what names you on a file it lists lights the topic: a mention or a reply in your conversation blue, a reaction to your message orange; the file's other conversations never do](at-important-what-names-you-on-a-listed-file-lights-the-topic.md) — Accepted, 2026-11-10; the files under a listed file, one level down, added the same day
-- [Intelligence works for you in the background and never takes your attention: what it finds lands in its home, and it reaches you only the way a person's message does, by naming you](intelligence-works-in-the-background-and-reaches-you-only-by-naming-you.md) — Accepted, 2026-11-13; a Journal entry's named decider told once, as being named, by a-journal-entry-shows-who-decided-and-who-wrote-it-and-the-decider-is-told-once, 2026-11-16
+- [Intelligence works for you in the background and never takes your attention: what it finds lands in its home, and it reaches you only the way a person's message does, by naming you](intelligence-works-in-the-background-and-reaches-you-only-by-naming-you.md) — Accepted, 2026-11-13
+- [When an agent or a loop marks your message or block, you are told in Activity, as when a person names you](a-loop-that-marks-your-message-tells-you-in-activity.md) — Accepted, 2026-11-19; a Journal entry's named decider told once, as being named, by a-journal-entry-shows-who-decided-and-who-wrote-it-and-the-decider-is-told-once, 2026-11-16
 
 ## Messages
 
@@ -175,7 +176,9 @@ heading here.
 - [An edit says what the message links now, so a file lists a comment while its latest words link it](an-edit-says-what-the-message-links-now.md) — Accepted, 2026-10-27
 - [Nobody deletes a whole DM; each person deletes only their own messages](nobody-deletes-a-whole-dm.md) — Accepted, 2026-10-27
 - [Anyone who can read a message or a block can mark it or unmark it, other people's included, and anyone can confirm a Proposed item; an agent never confirms its own suggestion](anyone-who-can-read-a-message-or-block-marks-it-and-anyone-confirms-a-proposed-item.md) — Accepted, 2026-11-13; who confirms, "an agent never confirms its own suggestion" and who unmarks superseded in part by the one below, 2026-11-16; its marking narrowed to a team whose readers can all read the source by an-item-shows-its-source-as-marked-and-the-relay-refuses-one-its-readers-cannot-read, 2026-11-16
-- [Who may accept an Insight, Journal entry or Risk, or unmark one, is each app's, company's or team's own rule; the protocol carries only the item's status, which starts at Proposed, and who signed each change](who-accepts-an-item-is-each-companys-own-rule-and-the-protocol-carries-its-status.md) — Accepted, 2026-11-16
+- [Who may accept an Insight, Journal entry or Risk, or unmark one, is each app's, company's or team's own rule; the protocol carries only the item's status, which starts at Proposed, and who signed each change](who-accepts-an-item-is-each-companys-own-rule-and-the-protocol-carries-its-status.md) — Accepted, 2026-11-16; its "unmarking is never a delete" superseded in part, for a highlight, by the one below, 2026-11-19
+- [Anyone who can read a highlight can delete it; it leaves no trace in the thread or the lists, and the person who marked it and the message's author are told in Activity, where they can still open it](anyone-can-delete-a-highlight-and-only-activity-keeps-a-trace.md) — Accepted, 2026-11-19
+- [A model's suggested mark never holds back sending: it shows before you send when it is ready in time, otherwise on the sent message, and on a document block when you pause or move on](a-suggested-mark-never-blocks-sending-and-shows-when-it-is-ready.md) — Accepted, 2026-11-19
 
 ## Links & widgets
 
@@ -231,6 +234,9 @@ properties and its history.
 - [An Insight, Journal entry or Risk can be about any file of any app, each app says how its own files roll up, and every app that opens that file shows its items](an-item-can-be-about-any-file-of-any-app-and-every-app-that-opens-that-file-shows-it.md) — Accepted, 2026-11-16
 - [Every app reads an Insight's category, a Risk's severity, a Blocker, who decides a Question with its options, and who a Blocker waits on; each company names the categories and the severity scale](every-app-reads-an-items-category-severity-blocker-decider-and-wait-and-each-company-names-their-values.md) — Accepted, 2026-11-17
 - [Every app relies on an Insight's, Journal entry's or Risk's shared stage and its core fields, and each company adds its own statuses and fields on top](every-app-relies-on-an-items-stage-and-core-fields-and-each-company-adds-its-own-on-top.md) — Accepted, 2026-11-16
+- [An Insight, Journal entry or Risk shows where it was used, and a Proposed one nobody uses or adds to fades and is archived](an-item-shows-where-it-was-used-and-a-proposed-one-nobody-uses-fades.md) — Accepted, 2026-11-19
+- [What an agent reads as memory is a brief written from the Insights, Journal entries and Risks; the items stay the sources a person opens and corrects](memory-is-a-brief-written-from-the-items-and-the-items-are-its-sources.md) — Accepted, 2026-11-19
+- [A mark can be a Highlight, not sorted into a word yet, and a To-do is a fourth, light type anyone marks; both are a trial judged on the prototype](a-highlight-is-a-mark-not-sorted-yet-and-a-to-do-is-a-light-task.md) — Proposed, 2026-11-19
 
 ## Documents
 
@@ -256,6 +262,9 @@ properties and its history.
 - [An agent's profile says, signed by its owner, whose agent it is, and a message by your own agent counts as your own](an-agents-profile-says-whose-it-is.md) — Accepted, 2026-11-09
 - [Removing an agent from a Folder keeps it out, even while the person it works for is in](removing-an-agent-from-a-folder-keeps-it-out.md) — Accepted, 2026-10-27
 - [The person an agent works for can end that at once, and the relay cuts the agent off](an-agents-owner-ends-its-access-at-once.md) — Accepted, 2026-10-27
+- [Nothing an agent or a loop does to memory is hidden: each mark says why, each change says who, what and why, and a person can undo it](nothing-an-agent-does-to-memory-is-hidden.md) — Accepted, 2026-11-19
+- [A loop may change an Accepted item, merging or updating it; the item says who, what and why, whoever added it is told in Activity, and they can undo it](a-loop-may-change-an-accepted-item-and-whoever-added-it-can-undo-it.md) — Accepted, 2026-11-19
+- [A company picks the AI models its apps and agents use once, from any provider, and a team cannot narrow that choice](a-company-picks-its-ai-models-once-from-any-provider.md) — Accepted, 2026-11-19
 - [An app defines the files it needs, and the workspace's owner or admin decides which apps are installed, so every Estiva app may start a file of a named type](an-app-defines-the-files-it-needs-and-the-owner-installs-it.md) — Accepted, 2026-11-02
 
 ## Devices & sessions
