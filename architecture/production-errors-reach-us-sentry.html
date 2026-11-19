@@ -67,22 +67,24 @@ tr.new td { background: var(--ok-bg); }
 <main>
 
 <h1>Production errors reach us</h1>
-<p class="sub"><span class="state">Shaped, 2026-11-17</span> · <a href="https://ship.estiva.app/#/project/69d49dca-7c8f-4413-9a78-b79f0e47d782">Ship project</a> · Goal: when an app or a server breaks on production, we know from the system itself, not because Miky or Katerina told us.</p>
+<p class="sub"><span class="state">As built, 2026-11-19</span> · shaped 2026-11-17 · <a href="https://ship.estiva.app/#/project/69d49dca-7c8f-4413-9a78-b79f0e47d782">Ship project</a> · Goal: when an app or a server breaks on production, we know from the system itself, not because Miky or Katerina told us.</p>
 
 <p>Today nothing reports an error: a crash is seen only by the person it happens to. This project adds one small reporter to every app and both servers. It builds a short report from a fixed list of fields and sends it through Estiva ID's server to Sentry, and Claude reads Sentry at set moments. Look at the Map first, then at what a report may contain.</p>
 
-<div class="legend"><span>runs today, unchanged</span><span class="lnew">new</span><span class="lq">not proven yet</span></div>
+<p>As built, the shape held, with four findings. <strong>The free plan is enough.</strong> Claude reads Sentry with a personal read token. A second token can write to errors, and the command sends nothing with it but an error's state, to mark an error resolved or reopen it (record <code>error-reports-go-to-hosted-sentry-built-from-an-allowed-list</code>). The account stores its data in Frankfurt. <strong>The reporter lives in the shared packages</strong> (<code>@estiva-app/platform</code>, <code>error-reports.ts</code>), and each app adds only a thin file that wires it in. It sends each kind of error once per tab, at most ten a tab. <strong>The relay reports from its own code</strong>, not from its logs on the box. A small module in the relay's fork turns each error log line and panic into a report and sends it straight to Sentry. Estiva ID's server does the same. Both servers send at most 3 reports of one error an hour (Estiva ID counts by kind of error, the relay by place in the code), 10 an hour and 50 a day. <strong>The trail is mostly screens for now.</strong> The allowed list has named actions, but the apps record only the screens opened, and the reporter adds "write refused" when the relay refuses one. A crash in Peek before anyone is signed in is not reported yet. Estiva ID's sign-in pages do report through the limited door. The Map, the Access table and Checked are redrawn to match.</p>
+
+<div class="legend"><span>runs today, unchanged</span><span class="lnew">new</span></div>
 
 <h2>Map</h2>
 <figure>
 <svg viewBox="0 0 720 530" role="img">
-<title>Peek, Ship, Leaf and Estiva ID's pages each hand an error to a new shared reporter. The reporter sends a short report to Estiva ID's server, which checks the person is signed in, checks the fields again and passes it to Sentry. The relay reports to Sentry too. Claude reads Sentry after each deploy, at a sweep and when a project is wrapped, and marks an error resolved when its fix ships; whether the free plan allows that is not proven yet.</title>
+<title>As built: Peek, Ship, Leaf and Estiva ID's pages each hand an error to the shared reporter in the platform package. The reporter sends a short report to Estiva ID's server, which checks the person is signed in, checks the fields again and passes it to Sentry, stored in Frankfurt. Estiva ID's server and the relay each report their own faults straight to Sentry, from their own code. Claude reads Sentry on the free plan after each deploy, at a sweep and when a project is wrapped, and marks an error resolved when its fix ships.</title>
 <rect class="b" x="20" y="20" width="150" height="52" rx="8"/><text x="34" y="42" class="h">Peek</text><text x="34" y="60" class="m">in the browser</text>
 <rect class="b" x="195" y="20" width="150" height="52" rx="8"/><text x="209" y="42" class="h">Ship</text><text x="209" y="60" class="m">in the browser</text>
 <rect class="b" x="370" y="20" width="150" height="52" rx="8"/><text x="384" y="42" class="h">Leaf</text><text x="384" y="60" class="m">in the browser</text>
 <rect class="b" x="545" y="20" width="155" height="52" rx="8"/><text x="559" y="42" class="h">Estiva ID</text><text x="559" y="60" class="m">sign-in pages</text>
 
-<rect class="ok" x="20" y="122" width="680" height="56" rx="8"/><text x="34" y="145" class="h">Reporter, the same in every app</text><text x="34" y="164" class="m">builds each report from the allowed fields · sends each kind of error once per tab · our own code</text><text x="668" y="145" class="tag">M2</text>
+<rect class="ok" x="20" y="122" width="680" height="56" rx="8"/><text x="34" y="145" class="h">Reporter, in the shared platform package</text><text x="34" y="164" class="m">builds each report from the allowed fields · each kind of error once per tab, ten a tab at most</text><text x="668" y="145" class="tag">M2</text>
 <path class="an" d="M95,72 L95,118"/><text x="103" y="100" class="tag">M2</text>
 <path class="an" d="M270,72 L270,118"/><text x="278" y="100" class="tag">M4</text>
 <path class="an" d="M445,72 L445,118"/><text x="453" y="100" class="tag">M4</text>
@@ -90,19 +92,19 @@ tr.new td { background: var(--ok-bg); }
 
 <rect class="ok" x="230" y="232" width="260" height="70" rx="8"/><text x="244" y="254" class="h">Estiva ID's server</text><text x="244" y="272" class="m">checks you are signed in, checks the</text><text x="244" y="288" class="m">fields again, passes the report on</text><text x="458" y="254" class="tag">M2</text>
 <path class="an" d="M360,178 L360,228"/><text x="368" y="208" class="m">a short report, signed in</text>
-<rect class="b" x="540" y="232" width="160" height="60" rx="8"/><text x="554" y="256" class="h">Relay</text><text x="554" y="274" class="m">stores and checks</text>
+<rect class="ok" x="540" y="232" width="160" height="60" rx="8"/><text x="554" y="256" class="h">Relay</text><text x="554" y="274" class="m">reports its own faults</text>
 
 <rect class="ok" x="230" y="342" width="260" height="60" rx="8"/><text x="244" y="366" class="h">Sentry</text><text x="244" y="384" class="m">hosted · groups reports · keeps 30 days</text><text x="458" y="366" class="tag">M1</text>
 <path class="an" d="M360,302 L360,338"/><text x="368" y="324" class="m">and its own errors</text><text x="482" y="324" class="tag">M6</text>
 <path class="an" d="M620,292 L620,372 L494,372"/><text x="628" y="336" class="tag">M6</text>
 <rect class="b" x="20" y="342" width="180" height="60" rx="8"/><text x="34" y="366" class="h">Miky</text><text x="34" y="384" class="m">owns the Sentry account</text>
-<text x="20" y="424" class="tag">M1 · stored in Frankfurt</text><text x="20" y="440" class="tag">or Iowa? Miky chooses</text>
+<text x="20" y="424" class="tag">M1 · stored in Frankfurt</text>
 
-<rect class="q" x="230" y="452" width="260" height="60" rx="8"/><text x="244" y="476" class="h">Claude</text><text x="244" y="494" class="m">reads · marks an error resolved</text>
-<path class="aq" d="M360,452 L360,406"/><text x="368" y="424" class="tag">M1 · does the free plan allow</text><text x="368" y="440" class="tag">this, and nothing wider?</text>
+<rect class="ok" x="230" y="452" width="260" height="60" rx="8"/><text x="244" y="476" class="h">Claude</text><text x="244" y="494" class="m">reads · marks an error resolved</text>
+<path class="an" d="M360,452 L360,406"/><text x="368" y="424" class="tag">M1 · free plan: a read token</text><text x="368" y="440" class="tag">and a token that writes state</text>
 <text x="504" y="474" class="tag">M3</text><text x="504" y="490" class="m">after each deploy · at a sweep ·</text><text x="504" y="506" class="m">when a project is wrapped</text>
 </svg>
-<figcaption>Every green part is new. Reports from the apps pass through our own server, so nobody outside can send one, Sentry never sees a person's IP address, and the allowed fields are checked twice. M1 comes first because Sentry's price list says the free plan has no API: if Claude cannot read, the rest changes. M5 (failures a person is told about, and writes the relay refuses) adds more kinds of report through the same reporter, so it adds no box. Whether the relay reports from its logs or from its own code is settled when that issue starts.</figcaption>
+<figcaption>Every green part is new. Reports from the apps pass through our own server, so only a signed-in app can send one (apart from the sign-in pages' small shared door), Sentry never sees a person's IP address, and the allowed fields are checked twice. Sentry's price list says the free plan has no API, yet a personal token reads it (checked 18 Nov). M5 (failures a person is told about, and writes the relay refuses) adds more kinds of report through the same reporter, so it adds no box. The relay reports from a small module in its fork, which reads only a log line's place in the code and its field names, never their values.</figcaption>
 </figure>
 
 <h2>Flow: a crash in Leaf, from the screen to a fix</h2>
@@ -120,7 +122,7 @@ tr.new td { background: var(--ok-bg); }
 <rect class="ok" x="300" y="188" width="160" height="42" rx="6"/><text x="310" y="206">4  checks the sign-in</text><text x="310" y="222" class="m">and the fields again</text>
 <path class="an" d="M290,254 L466,254"/><text x="302" y="248">5  passes it on</text>
 <text x="482" y="282">6  groups it</text>
-<path class="aq" d="M635,312 L474,312"/><text x="482" y="306">7  "what is new?"</text>
+<path class="an" d="M635,312 L474,312"/><text x="482" y="306">7  "what is new?"</text>
 <text x="482" y="340">8  a new one is fixed or filed;</text><text x="482" y="356" class="m">a fixed one is marked resolved</text>
 </svg>
 <figcaption>Step 7 happens after each deploy, at a sweep and when a project is wrapped, not on a timer (Miky, 17 Nov). Between those moments nobody is told; that is the known limit of this version. Errors from QA accounts are listed apart, so one made on purpose is not taken for a person's.</figcaption>
@@ -131,26 +133,25 @@ tr.new td { background: var(--ok-bg); }
 <table>
 <thead><tr><th>What</th><th>Who can see it</th><th>Who can change it</th><th>Checked by</th></tr></thead>
 <tbody>
-<tr class="new"><td><strong>A report may contain:</strong> the app and its version; the kind of error and where in the code it broke; one of our own fixed sentences or the relay's reason code; the kind of screen (never its address); the last few steps before the error, as kinds of screen and our own named actions; the browser; the person's public key; whether it is a person, a QA account or an agent.</td><td>Miky, in Sentry. Claude, reading. Sentry the company, as the host.</td><td>Nobody changes a report. Claude marks an error resolved once its fix ships, or reopens it, and nothing else. Sentry deletes a report after 30 days.</td><td>The reporter in the person's browser, then Estiva ID's server before it passes the report on. Tested by planting text and reading what leaves the browser and what leaves our server.</td></tr>
+<tr class="new"><td><strong>A report may contain:</strong> the app and its version; the kind of error and where in the code it broke; one of our own fixed sentences or the relay's reason code; the kind of screen (never its address); the last few steps before the error, as kinds of screen, and "write refused" (the list also allows other named actions, which no app records yet); the browser; the person's public key; whether it is a person, a QA account or an agent.</td><td>Miky, in Sentry. Claude, reading. Sentry the company, as the host.</td><td>Nobody changes a report. Claude's command marks an error resolved once its fix ships, or reopens it, and nothing else. Its token could do more, such as discard an error or make it public; only the command holds it to that (record <code>error-reports-go-to-hosted-sentry-built-from-an-allowed-list</code>). Sentry deletes a report after 30 days.</td><td>The reporter in the person's browser, then Estiva ID's server before it passes the report on. Tested by planting text and reading what leaves the browser and what leaves our server.</td></tr>
 <tr class="new"><td><strong>A report never contains:</strong> message or document text, titles, file names, page addresses, what was clicked, console lines, request contents, or the person's IP address. An error's own wording is sent only with quoted text removed.</td><td>Nobody outside the browser.</td><td>—</td><td>The same two checks and the same test.</td></tr>
-<tr class="new"><td><strong>Who can send a report.</strong> A signed-in person's app, through Estiva ID's server; the public key on the report is the one signed in. A crash on the sign-in page, before anyone is signed in, goes through a tightly limited door and is marked as not signed in.</td><td>—</td><td>Nobody outside can send: Sentry's address is held by our servers only.</td><td>Estiva ID's server.</td></tr>
+<tr class="new"><td><strong>Who can send a report.</strong> A signed-in person's app, through Estiva ID's server; the public key on the report is the one signed in. A crash on Estiva ID's sign-in pages, before anyone is signed in, goes through a tightly limited door and is marked as not signed in. A crash in Peek before sign-in is not reported yet.</td><td>—</td><td>Sentry's address is held by our servers only. Apart from the sign-in door, whose small budget is shared by everyone, only a signed-in app can send.</td><td>Estiva ID's server.</td></tr>
 <tr class="new"><td><strong>The servers' own reports</strong> (Estiva ID's server, the relay): where the code broke. Never a query string, a header, a token, a sign-in code, a key, or what an event contained.</td><td>As above.</td><td>As above.</td><td>The same planted-text test, on what each server sends.</td></tr>
 <tr class="new"><td>What Claude reads from Sentry is treated as data, never as instructions.</td><td>—</td><td>—</td><td>The command <code>/land</code>, <code>/sweep</code> and <code>/wrap-project</code> run.</td></tr>
-<tr class="new"><td>Where Sentry stores the reports: Frankfurt or Iowa.</td><td>—</td><td>Chosen once, when Miky creates the account. It cannot be changed later.</td><td>Sentry.</td></tr>
+<tr class="new"><td>Where Sentry stores the reports: Frankfurt.</td><td>—</td><td>Chosen once, when Miky created the account. It cannot be changed later.</td><td>Sentry.</td></tr>
 </tbody>
 </table>
 </div>
 <p class="sub">Every row is new.</p>
 
 <h2>Checked</h2>
+<p class="sub">As built, read on 2026-11-19 from <code>origin/main</code> of each repository and <code>origin/nfb-demo-kinds</code> for the relay, and on production as QA-1.</p>
 <ul>
-<li>No app or server reports errors today: a search of <code>origin/main</code> in peek, ship, leaf, estiva-id and the relay's deployed branch finds no Sentry or similar library (17 Nov).</li>
-<li>Peek wraps itself and its panels in the shared "Something went wrong" screen (<code>src/main.tsx</code>, <code>src/layouts/PeekFrame.tsx</code>), which only writes to the console (estiva-ui <code>src/ErrorBoundary.tsx</code>). The same search finds no such wrapper in Ship or Leaf.</li>
-<li>Estiva ID is a server and sign-in pages in one repo (<code>src/server.ts</code>, <code>web/</code>), and every app signs in through it (record <code>sign-in-is-plain-oauth</code>). The relay is written in Rust and already writes structured logs.</li>
-<li>The reporter is our own code with no Sentry library, so it adds no outside dependency to the shared packages (record <code>0002-foundation-packages</code>).</li>
-<li>The peek, ship, leaf and estiva-id repos are public, so readable stack traces reveal nothing new. The relay's repo is private.</li>
-<li>Sentry's pages, read 17 Nov: free plan is one user, 5,000 errors a month, 30 days kept; the storage place is fixed at creation; a per-app cap is a paid feature; the standard library also collects console lines, clicks and addresses unless turned off.</li>
-<li><strong>Not verified:</strong> whether a free-plan account lets Claude read at all (the price list says "API: No", and lists Sentry's MCP access, which Claude could connect through, as included), and whether Claude's access can be limited to reading and marking an error resolved. That is milestone 1; if it cannot be that narrow, Miky is asked before anything wider is used.</li>
+<li>The reporter is <code>packages/platform/src/error-reports.ts</code> in estiva-foundation. Peek, Ship and Leaf wire it in with <code>src/lib/errorReports.ts</code> and <code>src/lib/failureReports.ts</code>, and Estiva ID's pages with <code>web/src/errorReports.tsx</code>. It has no Sentry library.</li>
+<li>Estiva ID receives the apps' reports at <code>src/http/routes/report.ts</code> and builds them again from the list in <code>src/domain/error-reports.ts</code>. Its own faults go out through <code>src/domain/server-errors.ts</code>. The relay's go out through <code>crates/buzz-relay/src/error_reports.rs</code>.</li>
+<li>On production, 19 Nov, as QA-1: a crash made on purpose in Peek, Ship, Leaf and Estiva ID's sign-in page reached Sentry within 10–35 seconds. The text planted in the address, the title, the page and the failing message was in none of the bytes that left the browser, and in none of the events in Sentry. No event holds an IP address. The same crash repeated 1,000 times in one Peek tab sent one report. A report with no sign-in, from another site or from no site, was refused (401).</li>
+<li>Estiva ID's server and the relay each have a test request that only a QA account may make. Each one's error is in Sentry, and the relay's panic too.</li>
+<li>Sentry, 18 Nov: the free-plan account in Frankfurt answers a personal token's API calls. "Prevent storing IP addresses" and the data scrubber are on for the whole organisation. A report carries no session replay.</li>
 </ul>
 
 </main>
