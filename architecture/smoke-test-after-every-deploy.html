@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Smoke test after every deploy</title>
+<!--
+  Template for a project's architecture page (process/ARCHITECTURE.md).
+  Copy to architecture/<project-slug>.html, then redraw every example below:
+  the drawings here show the visual language, not any real project.
+  Classes: .b box · .w card · .ok new · .bad goes away · .q undecided (dashed)
+  · .f untouched (faint) · .a arrow · .an new arrow · .aq undecided arrow
+  · .m muted second line · .h bold label · .tag milestone tag.
+-->
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.example { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
+.legend .lgone::before { background: var(--warn-bg); border-color: var(--warn); }
+.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
+.legend .lf::before { opacity: .45; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+/* Below 560px a diagram scrolls inside its figure instead of shrinking its text. */
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); stroke-width: 1.5; }
+svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .f { opacity: .45; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
+svg .aq { stroke: var(--accent); fill: none; stroke-width: 1.6; stroke-dasharray: 5 4; marker-end: url(#arr-q); }
+svg .life { stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 3 4; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 560px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+tr.new td { background: var(--ok-bg); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+</style>
+</head>
+<body>
+<!-- Arrowheads, shared by every diagram on the page. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+    <marker id="arr-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<main>
+
+<h1>Smoke test after every deploy</h1>
+<p class="sub"><span class="state">Shaped, 2026-11-19</span> · <a href="https://ship.estiva.app/#/project/4388b4ca-82e4-4399-8ee4-dc9cffd0435b">Ship project</a> · Goal: after every deploy, a change in one app that breaks the app next to it is caught by a run on production, not by Miky or Katerina.</p>
+
+<p>Today the only check after a deploy is the ticket's own, in the app that changed. The project adds one run that signs in to every app as test accounts and walks about ten core flows, half of them one app showing another app's file. Look first at the Map's "After": the run reaches all four apps whichever one was deployed.</p>
+
+<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lgone">goes away</span><span class="lq">waits on a decision</span><span class="lf">untouched, for orientation</span></div>
+
+<h2>Map</h2>
+
+<h3>Today</h3>
+<figure>
+<svg viewBox="0 0 720 310" role="img">
+<title>Today: after a deploy, Claude runs the ticket's own check as QA-1 in the one app that changed, and reads new errors from Sentry; the other apps are not opened</title>
+<rect class="b" x="20" y="20" width="200" height="54" rx="8"/><text x="36" y="44" class="h">Claude · /land</text><text x="36" y="62" class="m">after a deploy</text>
+<g class="f"><rect class="b" x="520" y="20" width="180" height="54" rx="8"/><text x="536" y="44" class="h">Sentry</text><text x="536" y="62" class="m">errors since the deploy</text></g>
+<path class="a f" d="M220,40 L516,40"/><text x="300" y="32" class="m">reads what is new</text>
+<path class="a" d="M120,74 L120,104 L455,104 L455,126"/><text x="136" y="97" class="m">the ticket's own check, as QA-1, in the app that changed</text>
+<g class="f"><rect class="b" x="20" y="130" width="150" height="54" rx="8"/><text x="36" y="154" class="h">Peek</text><text x="36" y="172" class="m">not opened</text></g>
+<g class="f"><rect class="b" x="200" y="130" width="150" height="54" rx="8"/><text x="216" y="154" class="h">Ship</text><text x="216" y="172" class="m">not opened</text></g>
+<rect class="b" x="380" y="130" width="150" height="54" rx="8"/><text x="396" y="154" class="h">Leaf</text><text x="396" y="172" class="m">just deployed</text>
+<g class="f"><rect class="b" x="560" y="130" width="140" height="54" rx="8"/><text x="576" y="154" class="h">Estiva ID</text><text x="576" y="172" class="m">signs QA-1 in</text></g>
+<rect class="b" x="200" y="240" width="330" height="50" rx="8"/><text x="216" y="262" class="h">Relay</text><text x="216" y="280" class="m">300 requests a minute for each account</text>
+<path class="a f" d="M95,184 L95,215 L250,215 L250,236"/>
+<path class="a f" d="M275,184 L275,236"/>
+<path class="a" d="M455,184 L455,215 L480,215 L480,236"/>
+</svg>
+<figcaption>A Leaf deploy as the example. The check is written for that ticket and thrown away. Nothing opens Peek or Ship, and no app can say which version it is serving. Left out: the speed kit, which runs only when a change adds a read.</figcaption>
+</figure>
+
+<h3>After</h3>
+<figure>
+<svg viewBox="0 0 720 360" role="img">
+<title>After: /land starts one smoke test that signs in to Peek, Ship, Leaf and Estiva ID after any deploy; each app says its version and has a feature map; whether the test has its own accounts waits on Miky</title>
+<rect class="b" x="20" y="20" width="170" height="54" rx="8"/><text x="36" y="44" class="h">Claude · /land</text><text x="36" y="62" class="m">after any deploy</text>
+<path class="an" d="M190,47 L246,47"/><text x="204" y="38" class="tag">M3</text>
+<text x="20" y="94" class="m">a ticket's check becomes</text><text x="20" y="108" class="m">a step in the test · M3</text>
+<rect class="ok" x="250" y="20" width="260" height="64" rx="8"/><text x="266" y="44" class="h">Smoke test</text><text x="266" y="60" class="m">five next-door flows · M1</text><text x="266" y="75" class="m">each app's core flows · M2</text>
+<rect class="ok" x="560" y="20" width="140" height="64" rx="8"/><text x="574" y="44" class="h">Test accounts</text><text x="574" y="60" class="m">two of its own,</text><text x="574" y="75" class="m">not QA-1 · M1</text>
+<path class="an" d="M510,40 L556,40"/>
+<path class="an" d="M270,84 L270,132 L95,132 L95,146"/>
+<path class="an" d="M300,84 L300,146"/>
+<path class="an" d="M430,84 L430,146"/>
+<path class="an" d="M490,84 L490,118 L630,118 L630,146"/>
+<text x="318" y="122" class="tag">signs in, opens</text>
+<rect class="ok" x="20" y="150" width="150" height="70" rx="8"/><text x="36" y="173" class="h">Peek</text><text x="36" y="191" class="m">says its version · M1</text>
+<rect class="ok" x="200" y="150" width="150" height="70" rx="8"/><text x="216" y="173" class="h">Ship</text><text x="216" y="191" class="m">says its version · M1</text>
+<rect class="ok" x="380" y="150" width="150" height="70" rx="8"/><text x="396" y="173" class="h">Leaf</text><text x="396" y="191" class="m">says its version · M1</text>
+<rect class="ok" x="560" y="150" width="140" height="70" rx="8"/><text x="574" y="173" class="h">Estiva ID</text><text x="574" y="191" class="m">says its version · M1</text>
+<rect class="b" x="200" y="290" width="330" height="50" rx="8"/><text x="216" y="312" class="h">Relay</text><text x="216" y="330" class="m">300 requests a minute for each account</text>
+<path class="a" d="M95,220 L95,265 L250,265 L250,286"/>
+<path class="a" d="M275,220 L275,286"/>
+<path class="a" d="M455,220 L455,265 L480,265 L480,286"/>
+</svg>
+<figcaption>The test opens all four apps whichever one was deployed, a relay deploy included. Each app gains an address that says which version it is serving. The test walks about ten core flows, written as one list that kickoff and review also read. It signs in as two test accounts of its own, which show as two more names in People. The apps read and write the relay as they do today; the test adds no new path to it.</figcaption>
+</figure>
+
+<h2>Flow</h2>
+<figure>
+<svg viewBox="0 0 720 470" role="img">
+<title>A Leaf deploy: the test waits for Leaf's new version, makes an issue in Ship, opens it in Peek and Leaf, a second account comments, the first sees it in every app, and the result goes on the pull request; a failed step is run again on the version before</title>
+<rect class="b" x="20" y="14" width="220" height="40" rx="8"/><text x="34" y="39" class="h">/land · smoke test</text>
+<rect class="b" x="450" y="14" width="250" height="40" rx="8"/><text x="464" y="39" class="h">Production: Peek, Ship, Leaf</text>
+<line class="life" x1="130" y1="54" x2="130" y2="460"/><line class="life" x1="575" y1="54" x2="575" y2="460"/>
+<path class="an" d="M130,96 L571,96"/><text x="145" y="88">1  asks each app its version, waits for Leaf's new one</text>
+<path class="an" d="M130,146 L571,146"/><text x="145" y="138">2  first account makes an issue in Ship, with a picture</text>
+<path class="an" d="M130,196 L571,196"/><text x="145" y="188">3  opens it in Peek and in Leaf: title, text, picture, card</text>
+<path class="an" d="M130,246 L571,246"/><text x="145" y="238">4  second account comments on it in Ship</text>
+<path class="an" d="M571,296 L134,296"/><text x="145" y="288">5  first account sees the comment in Peek and Leaf, no reload</text>
+<rect class="ok" x="145" y="318" width="410" height="58" rx="6"/><text x="157" y="338">6  a step fails: the same step runs on the version before</text><text x="157" y="354" class="m">failed there too → an older bug, filed</text><text x="157" y="368" class="m">passed there → stops a person: fix or revert · looks wrong: filed</text>
+<rect class="ok" x="145" y="392" width="410" height="44" rx="6"/><text x="157" y="412">7  result on the pull request</text><text x="157" y="428" class="m">each app's version · each step · a screenshot of a failed one</text>
+</svg>
+<figcaption>Two of the five next-door flows, an issue opened in the other apps and a comment arriving in all three. Step 6 is the same whichever app the failing step is in (Miky, 19 Nov).</figcaption>
+</figure>
+
+<h2>Checked</h2>
+<ul>
+<li><code>/land</code> after a deploy: the ticket's Done-when check as QA-1 or QA-2, then Sentry's new errors, then the speed kit only for a changed read (<code>~/estiva/.claude/skills/land/SKILL.md</code>, step 5, read 19 Nov).</li>
+<li>The probe signs in through Estiva ID's test login and drives Peek, Ship and Leaf, one account per run (<code>peek-app/scripts/probe.mjs</code> on <code>origin/main</code>).</li>
+<li>No app serves its version: no version address, tag or header in Peek, Ship, Leaf or Estiva ID; the commit is in each bundle only as the Sentry release.</li>
+<li>The relay's limit, 300 requests a minute for each account, and a page open at 55 to 100 requests: from the agent's notes of earlier measurements and the two bugs filed 19 Nov, not measured again today.</li>
+<li>Not verified: whether the relay can say which version it runs.</li>
+</ul>
+
+</main>
+</body>
+</html>
