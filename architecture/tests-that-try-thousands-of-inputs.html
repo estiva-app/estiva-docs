@@ -76,8 +76,8 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <main>
 
 <h1>Tests that try thousands of inputs</h1>
-<p class="sub"><span class="state">Shaped, 2026-11-20</span> · <a href="https://ship.estiva.app/#/project/5509e53f-252b-416b-ab68-22143cd0b998">Ship project</a> · Goal: a file reads the same in Ship as in Peek and Leaf, and a document or a link comes back as it went in, checked on every change by tests that make up their own inputs. Follows <a href="smoke-test-after-every-deploy.html">Smoke test after every deploy</a>.</p>
-<!-- When the project closes: <span class="state">As built, <date></span>. A later page about the same parts links the earlier one here. -->
+<p class="sub"><span class="state">As built, 2026-11-20</span> · shaped the same day ·<a href="https://ship.estiva.app/#/project/5509e53f-252b-416b-ab68-22143cd0b998">Ship project</a> · Goal: a file reads the same in Ship as in Peek and Leaf, and a document or a link comes back as it went in, checked on every change by tests that make up their own inputs. Follows <a href="smoke-test-after-every-deploy.html">Smoke test after every deploy</a>.</p>
+<!-- A later page about the same parts links this one here. -->
 
 <p>Nothing a person uses changes. The picture to look at first is "Who reads a file's changes": the same changes are read by three pieces of code today, and nothing checks that they agree beyond one recorded set of real events. The project adds tests that make up thousands of histories and compare the three.</p>
 
@@ -113,7 +113,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <h3>After</h3>
 <figure>
 <svg viewBox="0 0 720 436" role="img">
-<title>After: a maker of random histories feeds every read. The shared read and the second shared read must agree, in any order of changes (milestone 1). Ship's own read and the shared read must agree, or the difference is written down (milestone 2). Random documents and links are checked to come back as they went in, and Peek's copy of the address rules is compared with the shared one (milestone 3). At a rewrite, the old and the new code are compared on the same histories (milestone 4).</title>
+<title>After: a maker of random histories feeds every read. The shared read and the second shared read must agree, in any order of changes (milestone 1). Ship's own read and the shared read must agree; all five differences found were bugs and are fixed, so none is kept on purpose (milestone 2). Random documents and links are checked to come back as they went in, in the shared packages and in Peek's, Ship's and Leaf's own addresses (milestone 3). At a rewrite, the old and the new code are compared on the same histories (milestone 4).</title>
 <g class="f">
 <rect class="b" x="20" y="20" width="150" height="54" rx="8"/><text x="36" y="44" class="h">Ship</text><text x="36" y="62" class="m">projects and issues</text>
 <rect class="b" x="200" y="20" width="150" height="54" rx="8"/><text x="216" y="44" class="h">Peek</text><text x="216" y="62" class="m">chat</text>
@@ -129,16 +129,16 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <rect class="b" x="20" y="150" width="150" height="60" rx="8"/><text x="34" y="175" class="h">Ship's own read</text><text x="34" y="194" class="m">in Ship's code</text>
 <rect class="b" x="250" y="150" width="190" height="60" rx="8"/><text x="264" y="175" class="h">Shared read</text><text x="264" y="194" class="m">interop · other apps' files</text>
 <rect class="b" x="520" y="150" width="180" height="60" rx="8"/><text x="534" y="175" class="h">Second shared read</text><text x="534" y="194" class="m">interop · lists of files</text>
-<path class="an" d="M174,180 L246,180" marker-start="url(#arr-ok)"/><text x="182" y="170" class="tag">M2</text><text x="176" y="230" class="m">must agree,</text><text x="176" y="245" class="m">or written down</text>
+<path class="an" d="M174,180 L246,180" marker-start="url(#arr-ok)"/><text x="182" y="170" class="tag">M2</text><text x="176" y="230" class="m">must agree:</text><text x="176" y="245" class="m">5 found, 5 fixed</text>
 <path class="an" d="M444,180 L516,180" marker-start="url(#arr-ok)"/><text x="468" y="170" class="tag">M1</text><text x="446" y="230" class="m">must agree,</text><text x="446" y="245" class="m">in any order</text>
-<rect class="ok" x="20" y="290" width="330" height="60" rx="8"/><text x="34" y="314" class="h">Made-up histories of changes</text><text x="316" y="314" class="tag">M1</text><text x="34" y="333" class="m">renames, moves, statuses, ties, repeats</text>
+<rect class="ok" x="20" y="290" width="330" height="60" rx="8"/><text x="34" y="314" class="h">Made-up histories of changes</text><text x="316" y="314" class="tag">M1</text><text x="34" y="333" class="m">one maker, protocol/testing, for every repo</text>
 <path class="an" d="M110,290 L110,214"/>
 <path class="an" d="M330,290 L330,214"/>
 <path class="an" d="M345,300 L600,300 L600,214"/>
-<rect class="ok" x="20" y="362" width="330" height="56" rx="8"/><text x="34" y="386" class="h">Made-up documents and links</text><text x="316" y="386" class="tag">M3</text><text x="34" y="405" class="m">to text and back · written and read back</text>
-<rect class="ok" x="370" y="362" width="330" height="56" rx="8"/><text x="384" y="386" class="h">At a rewrite: old code against new</text><text x="666" y="386" class="tag">M4</text><text x="384" y="405" class="m">same histories · one command, run by /land</text>
+<rect class="ok" x="20" y="362" width="330" height="56" rx="8"/><text x="34" y="386" class="h">Made-up documents and links</text><text x="316" y="386" class="tag">M3</text><text x="34" y="405" class="m">to text and back · links in Peek, Ship, Leaf</text>
+<rect class="ok" x="370" y="362" width="330" height="56" rx="8"/><text x="384" y="386" class="h">At a rewrite: old code against new</text><text x="666" y="386" class="tag">M4</text><text x="384" y="405" class="m">same histories · /land, named reads</text>
 </svg>
-<figcaption>The apps and what they read are unchanged, so they are drawn faint. What is new sits in each repo's checks: a maker of random histories (M1) feeds all three reads, and the tests require the same answer. Ship's read against the shared one is M2; a difference kept on purpose goes on a written list. Random documents and links (M3) check the shared code that turns a document into text and a file into an address, and Peek's own copy of the address rules against the shared one. M4 reuses the histories to compare a read before and after a rewrite. No copy of a read is removed by this project.</figcaption>
+<figcaption>The apps and what they read are unchanged, so they are drawn faint. What is new sits in each repo's checks: a maker of random histories (M1) feeds all three reads, and the tests require the same answer. Ship's read against the shared one is M2: the five differences it found were all bugs and are fixed, so the list of differences kept on purpose is empty. Random documents and links (M3) check the shared code that turns a document into text and a file into an address, the agent's description edits, and the links Peek, Ship and Leaf write and read. M4 reuses the histories to compare a read before and after a rewrite; <code>/land</code> runs it on a change to a read it names, and reads that need a browser are not named yet. Every repo runs these on each pull request on a fixed seed, and a failure prints the smallest input and the seed that replays it. No copy of a read is removed by this project.</figcaption>
 </figure>
 
 <h2>What each test states</h2>
@@ -155,7 +155,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 </tbody>
 </table>
 </div>
-<p class="sub">M1 also settles two suspected bugs found while shaping: two changes made in the same second are read in the order they arrived, and a file id with a colon in it is cut short. Each is shown and fixed, or shown not to be a bug.</p>
+<p class="sub">M1 also settles two suspected bugs found while shaping: two changes made in the same second are read in the order they arrived, and a file id with a colon in it is cut short. As built, both were real and are fixed: two versions saved in the same second always list the same way, and a file id with a colon no longer drops its creator from it (protocol 0.62.0, interop 0.108.0, conversation 0.43.0).</p>
 <p class="sub">Objects, Flow and Access are not drawn: the project changes no object, nothing moves between apps or people differently, and nobody's access changes.</p>
 
 <h2>Checked</h2>
@@ -166,6 +166,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <li>Peek's own copy of the address rules: <code>peek-app src/lib/objectUrl.ts</code> exports <code>slugify</code>, <code>objectRef</code>, <code>identifierFromRef</code> (20 Nov).</li>
 <li>No repo has a library that makes up test inputs: no <code>fast-check</code> in any <code>package.json</code> of the six repos (20 Nov).</li>
 <li>Which app calls which read, by the imports on each <code>origin/main</code> (20 Nov): the shared read in Peek (<code>src/nostr/fileConversation.ts</code>, <code>fileMentions.ts</code>), Leaf (<code>src/document/save.ts</code>, <code>src/folders/workspace.ts</code>) and the agent (<code>lib/agent/apps/file.ts</code>, <code>ship-workspace.ts</code>); the second shared read in Leaf (<code>src/comments/CommentsColumn.tsx</code>) and the agent (<code>lib/agent/apps/ship-workspace.ts</code>). Ship also uses the shared read, for other apps' files only (<code>src/api/foreign.ts</code>).</li>
+<li><b>As built, 20 Nov, on each <code>origin/main</code>:</b> the maker of histories is <code>estiva-foundation packages/protocol/src/testing.ts</code> (<code>historyArb</code>, <code>deliveryArb</code>, <code>runSettings</code>, fixed seed 20261120), imported by interop's and conversation's <code>history.property.test.mjs</code> and by Ship's <code>src/nostr/fold.shared-read.property.test.ts</code>. Documents: protocol <code>test/document.property.test.ts</code> and estiva-agent <code>scripts/descriptions.property.test.ts</code>. Links: protocol and interop/conversation <code>link.property.test</code>, Peek <code>src/lib/objectUrl.property.test.ts</code>, Ship <code>src/router.property.test.ts</code>, Leaf <code>src/route.property.test.ts</code>. Old against new: <code>.claude/skills/land/read-compare.mjs</code> over the reads in <code>reads.mjs</code>. Ship's rename bug (ship#127) put back fails M2 on two events, a project created as Payments and renamed Billing, with seed 20261120; the nested-list bug (foundation#163) put back fails M3 with a four-line example.</li>
 <li>The recorded set holds 1,103 events: <code>estiva-ship conformance/fold-fixture.json</code>, counted 20 Nov.</li>
 <li>No test in the shared packages names the second shared read (<code>filesOf</code>) in a test folder, so nothing compares it with the other two (searched 20 Nov).</li>
 </ul>
