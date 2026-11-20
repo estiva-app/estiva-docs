@@ -62,7 +62,11 @@ editing, or conflict resolution between concurrent writers (see *Open Questions*
 }
 ```
 
-- `d` MUST be present and stable for the life of the File. It SHOULD be a UUID.
+- `d` MUST be present and stable for the life of the File. It MUST be a
+  lowercase UUID (`xxxxxxxx-xxxx-4xxx-…`, hex digits `0-9a-f`): a File's link
+  ends in its `d`, and only a UUID reads back the same in every app. An id a
+  person knows the File by (an imported tracker's `PROJ-123`) is a tag or a
+  field, never the `d`. A relay MAY refuse a File whose `d` is not one.
   It MUST NOT encode the relay, organisation, or author — a File is portable, and
   an id that names its origin is not.
 - `title` SHOULD be present.
