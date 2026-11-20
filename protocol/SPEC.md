@@ -223,7 +223,7 @@ produce the same events in the same order.
 | **create** | `kind:9007` with a new id and its `name`; then `kind:1852` `add` with no addresses and no `name`, so the team has state from birth | — |
 | **rename** | `kind:9002` with the new `name`. Nothing else: a `kind:1852` never carries a name | by the relay, to anybody but the channel's owners and admins and, on a team with no owner, the workspace's owners and admins (below) |
 | **archive** / **restore** | `kind:1851` on the team's address, `field` `archived`, `value` `true` (or empty to restore), `h` the team itself; `content` MAY carry what the person said about it | by the consumer, to anybody but the team's owners and admins and, on a team with no owner, the workspace's owners and admins (below); a reader ignores one from anybody else (§3.2). By the relay, an archive of the Company team, for good (§3.4) |
-| **delete** | `kind:9008` with the team's `h` | by the relay, while the team holds a file, which, since no file's first record is ever removed (§6.5), means once it ever held one: such a team is archived instead (*decided 2026-11-20*) — a first record (`30840`, `30842`, `30850`, `30851` or `30852`) under its `h`, deleted ones included (§6.5), or anything its listing names — and for good on the Company team (§3.4), and to anybody but the channel's owner, the person who owns an owner-role agent in the channel, or an owner or admin of the workspace on the relay's roster |
+| **delete** | `kind:9008` with the team's `h` | by the relay, once the team ever held a file — a first record (`30840`, `30842`, `30850`, `30851` or `30852`) under its `h`, deleted ones included (§6.5), or anything its listing names; such a team is archived instead (below) — and for good on the Company team (§3.4), and to anybody but the channel's owner, the person who owns an owner-role agent in the channel, or an owner or admin of the workspace on the relay's roster |
 | **place** a new file | the file's root, with this team's `h` (or the tag its owner's `placement` names, §7.3) — under a parent, the parent's own team instead (§6.7); then `kind:1852` `add` naming its address | — |
 | **move** a file to another team | one `kind:1852` `move` for each team that lists the file: `h` the target, `["from", <source>]`, and an entry for the file and for each file nested beneath it (§6.7 Nesting), deleted ones included (found by the times read, §6.5), so a subtree moves whole and a restore lands where the rest went; never the files a topic lists (§6.14). The file's `h` does not change. A topic's `space` role does not travel: the target's entry carries it only when the person ticks "Keep it a space in <team>", which a consumer offers ticked when the topic was a space and the person may mark the target's spaces. Moving a space out of a team takes its mark off, so a consumer offers it only to a member of the source team | by the consumer, when the target is private and the file's `h` names any other channel (§3.1: the move would look private and not be), and a space's move by somebody who is not a member of its team. By the relay, the whole command, changing neither list: when either team holds no listing, the source is the target, the source does not list a topic the command names or lists none of its entries, the mover may not write in the source, the mover takes a space out of the source or marks one in the target without being a member of that team, or the command moves a topic into or out of an archived team (§6.5) |
 | **start a conversation** | `kind:9` with the team's `h` (§6.4) | — |
@@ -338,7 +338,7 @@ last owner. No new refusal code. Record
   - `not-home` (`invalid:`): an `add` or `set` lists a topic no team lists
     anywhere but its home (below).
   - `leaves-by-moving` (`invalid:`): a `remove`, or a `set` leaving it out,
-    takes off a topic that is not archived, deleted or not, and that no other
+    takes off a topic its author has not archived (a deleted one included) and that no other
     team lists (below).
   - `author-lists-first` (`invalid:`): on a workspace with no Company team, a
     topic whose `h` is not a team and that no team lists is listed first by
@@ -425,7 +425,7 @@ last owner. No new refusal code. Record
   team already lists is not refused, so it re-marks and unmarks its own topics
   as before. **A topic leaves a team only by moving, or by being archived**:
   the relay refuses a `remove` (or a `set` leaving it out) of a topic that is
-  not archived (its newest `archived` change, §6.5) while no other team lists
+  not archived (its author's newest `archived` change, §6.5) while no other team lists
   it (`leaves-by-moving`). A deleted topic is no exception: it stays on its
   team's list, which a reader draws without it, so a restore puts it back in
   its place (*changed 2026-11-20*, record
@@ -487,8 +487,8 @@ last owner. No new refusal code. Record
   from this section is a known gap, not a regression.
 - **The kinds an app signs** to offer all of the above: `9007`, `9002`, `9008`,
   `1852`, `1851`, `9`, and for a team's people `9021`, `9022`, `9000` and
-  `9001`. (Unlisting follows a `kind:5`, which is the file's
-  own deletion and not a team operation.) Never `30890` or `39000`; those
+  `9001`. (Deleting a file is its own `deleted` change and writes nothing
+  to a team, §6.5.) Never `30890` or `39000`; those
   are the relay's. A signing service MAY grant an app fewer, and that app then
   offers fewer operations — it MUST NOT offer one it cannot sign.
 
@@ -1794,7 +1794,7 @@ D3, which stands):
 - **Delete** is a change setting `deleted` to `true`, and **restore** one
   setting it to the empty value, each naming its `prev` like any field, by
   anyone who may write in the file's team — not only its author. The signer
-  of the delete is who deleted it, shown with it. A deleted file leaves lists
+  of the delete is who deleted it, shown with it. A deleted file is left out of the list read
   (§6.13) and keeps its id, its first record and every change, so a restore
   brings it back whole and nothing is written again. It stays readable by its
   id, so an app can offer Restore. A deleted issue keeps its `ref` and a
@@ -1826,9 +1826,8 @@ D3, which stands):
 - **A `kind:5` naming a file's first record or one of its changes is refused**
   (`delete-by-field`, §3.3), on every file kind and from anyone, its author
   included. A file is deleted only by its field. A file removed by a `kind:5`
-  before its type was kept in order stays removed (§6.13); before the close a
-  reader honours such a `kind:5` on a type not yet kept in order, and a writer
-  writes the field.
+  before its type was kept in order stays removed (§6.13). A writer writes
+  the field on every type, before the close too.
 - **Only an admin removes a change for good**, for a pasted password: a
   `kind:9005` from the team's owners or admins, or an owner or admin of the
   workspace on the relay's roster; the relay refuses one from anybody else, the
@@ -1840,10 +1839,10 @@ D3, which stands):
   and is still current for one of them is removed only after that field is
   set again. **A file's first record is never removed**, by anyone, owners and
   admins of the team or the workspace included (the relay refuses that
-  `9005`), so every deleted file can be brought back; a value only the first
-  record carries, such as a title written at creation, is replaced by a later
-  change and stays in the first record until removing a whole file for good, a
-  later feature, exists. No Estiva app offers the action yet, and Estiva ID grants no
+  `9005`), so every deleted file can be brought back. A password typed into
+  a file's title when it was created can be renamed away, but stays in the
+  first record until removing a whole file for good, a later feature, exists.
+  No Estiva app offers the action yet, and Estiva ID grants no
   app or agent `9005` (KINDS.md §5).
 
 **Delete of what is not a file** — a message, a comment, a reaction — is a
@@ -2959,8 +2958,9 @@ For every file kind (§6.1's table and `30852`), a relay:
 - **refuses a new first record that carries text** (`text-is-a-change`, §6.1);
 - **refuses a `kind:5` naming a file's first record or one of its changes**
   (`delete-by-field`, §3.3): a file is deleted by its `deleted` field (§6.5);
-- **refuses a `kind:9005` naming a file's first record**, from anyone, owners
-  and admins included, and one naming a field's current change (§6.5);
+- **removes no file's first record by any means** — a `kind:9005`, a
+  report's resolution or an operator's action — from anyone, owners
+  and admins included, nor a field's current change (§6.5);
 - **refuses a file's first record or change that carries a NIP-40
   `expiration` tag**, which would remove it for good;
 - **refuses to delete a team that ever held a file** (§3.3).
@@ -2978,20 +2978,20 @@ ones included"). Changes written before their type was kept in order name no
 `prev` and stay as they are: a reader folds them by time (§6.3), and the first
 change written in order names the newest of them as its `prev`.
 
-**NIP-11.** Every relay advertises the read and the rule as fixed values:
+**NIP-11.** Before the close, a relay advertises the read in `file_list` and
+the types it keeps in order in `files` (below). From the close, a relay MAY
+keep advertising them, for apps and agents loaded before it, as
 
 ```json
 "file_list": {"newest": true, "text": true, "times": true},
 "files": {"requires_prev": ["osnova.project", "osnova.issue", "osnova.document", "osnova.topic"]}
 ```
 
-They are kept for apps written before the close, which read them to decide
-how to read and write (record
-[a-relay-advertises-the-list-read-apart-from-the-switch](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-relay-advertises-the-list-read-apart-from-the-switch.md),
-in the part that stands). An app written after the close decides nothing on
-either: it reads with the list and writes in order on every relay.
-`requires_prev` names the four base types and never grows: a named type, and
-any type added later, is in order from its first event and is never listed.
+and MAY leave them out: neither is part of what makes a relay conformant
+(§9.2), and an app written after the close never reads them (*decided
+2026-11-20*). `requires_prev`, where it is kept, names the four base types and
+never grows: a named type, and any type added later, is in order from its
+first event and is never listed.
 
 **A writer that did not name the change it follows** — a tab or an agent
 loaded before its type was kept in order — is refused: `invalid:
@@ -3026,12 +3026,15 @@ only one.
 the close removes it and dates every "from the close"*). The rule came in
 one type at a time. A relay advertised `files` with the types it kept in order
 (**the switch**), for every team at once or not at all; a type joined
-`requires_prev` at one moment and stayed, and from then on the rules above held
-for it, the per-type `text-is-a-change` refusal included. Projects switched on
-2026-11-11 and issues on 2026-11-19; documents and topics switch together, at
-one announced moment. Until then a relay takes a change with no `prev` on a
-document or a topic and honours a `kind:5` on one as §6.5 says, and an app reads with `file_list` only as far as the relay advertises
-it. On the Estiva relay each switch can be turned back until the people using
+`requires_prev` at one moment and could be turned back until the close. While
+listed, a type's changes named their `prev`, its first records were written
+once, its changes stayed in their file's team, a new first record carried no
+text and a `kind:5` on it was refused (`delete-by-field`); the other refusals
+in the list above date from the close. Projects switched on 2026-11-11 and
+issues on 2026-11-19; documents and topics switch together, at one announced
+moment, and until then a writer writes their `deleted` field and names
+`prev` where it can. An app reads with `file_list` only as far as the relay
+advertises it. On the Estiva relay each switch can be turned back until the people using
 the apps have each checked their files after both the issues switch and the
 documents-and-topics switch; then the
 relay's per-type switches go and every app, the shared code and the agent
@@ -4338,12 +4341,12 @@ staged field, or writes one, also conforms to these.
 | C34 | **An unknown option is shown.** A file whose current status is `triage` with stage `started`, an id no layer the reader can read lists, shows `triage` as its status and counts as `started`; it is not dropped from a list, a board or a count |
 | C48 | **A level on a place is its person's own** (*added 2026-11-02*, §11.8). A `follow:<P>` with `all` or `important` signed by `P` sets `P`'s level; one signed by anybody else, or with `P` not the signer's lowercase hex, is refused by the relay and ignored by a reader; any other value than `all`, `important` or empty is refused by the relay and sets nothing. `P`'s own `member:<P>`=`false` ends every level and join before it, from any app; a level, join or Add after it puts `P` back in. An Add puts `P` in at Important and never sets a level. A `follow:<P>`'s `p` places `P` on nothing |
 | C49 | **A team's default** (*added 2026-11-02*, §11.8). A member of a team is in its chat and spaces at Important, a follower (by `estiva:teams:v1`) in its spaces, nobody in the topics it leads, and nobody in any place of an archived team by any way, a chosen level included; a place in `off` is not reached. Nothing before the later of the person's join (the earliest `kind:9000`/`9021` since their last leave, or the `kind:9007` for its maker) or follow `since` and the space's marking `add` or `move` (the earliest since it was last unmarked or removed) is unread. Important lights a new conversation, a reply in a conversation the person wrote in or is mentioned in, and a mention; All also every reply and the conversations on the files the place lists, not the files nested under them (§6.7 Nesting) nor a listed project's issues (*2026-11-06*); a list entry lights nothing |
-| C50 | **A space, a topic's one team, and a move** (*added 2026-11-02*, §3.3, §6.5). A `kind:1852` `add` carrying `["a", <addr>, "", "space"]` (or the `o` form) marks the entry a space, and an `add` without the role unmarks it; a role a reader does not know leaves the entry listed. The relay refuses an `add` or `set` that lists a topic another team's `kind:30890` lists, a `remove` of a topic no other team lists unless its author archived it or it is deleted, and an `add` of a topic no team lists anywhere but its home. A `move` from team A to team B changes both lists in one write; the same move sent again is a duplicate; one from a team that does not list the topic, or into or out of an archived team, is refused and changes neither list. In an archived team an `add` naming a topic is refused and one naming a project lands. A topic found on two teams' lists is drawn in the one whose `add` or `move` naming it is newest. A move's entry keeps the role only when it carries it |
+| C50 | **A space, a topic's one team, and a move** (*added 2026-11-02*, §3.3, §6.5). A `kind:1852` `add` carrying `["a", <addr>, "", "space"]` (or the `o` form) marks the entry a space, and an `add` without the role unmarks it; a role a reader does not know leaves the entry listed. The relay refuses an `add` or `set` that lists a topic another team's `kind:30890` lists, a `remove` of a topic no other team lists unless its author archived it (a deleted topic is not exempt, *changed 2026-11-20*), and an `add` of a topic no team lists anywhere but its home. A `move` from team A to team B changes both lists in one write; the same move sent again is a duplicate; one from a team that does not list the topic, or into or out of an archived team, is refused and changes neither list. In an archived team an `add` naming a topic is refused and one naming a project lands. A topic found on two teams' lists is drawn in the one whose `add` or `move` naming it is newest. A move's entry keeps the role only when it carries it |
 | C51 | **Resolving a thread** (*added 2026-11-04*, §6.4, §6.5). A thread's state is its newest `kind:9101` with `t=resolution` in §6.3's order, whoever wrote it: a resolve and a reopen in the same second fold by `ts`, then the higher `id`. A `9101` whose `h` is not its target's team, one whose target is a reply, and one whose `action` is neither `resolved` nor `reopened` change nothing; a `support` outside the thread is dropped and the resolve stands. A deleted top-level message keeps the state its last `9101` gave it, and its thread offers neither Resolve nor Reopen. A top-level message the read did not return is in its replies' team when every returned reply names the same `h`, and in none otherwise, and is deleted only when a returned `kind:5` is signed by the key every one of those replies names in its lowercase `p`; otherwise it is not returned: never said to be deleted, its place reads "This comment can't be shown." above its replies, and its thread takes no new replies and offers neither Resolve nor Reopen (*2026-11-06*). It is deleted only when it has a team: replies that disagree on the team, as a reply filed in another team before the relay refused one would, leave it not returned, never deleted |
 | C52 | **The file a comment is on** (*added 2026-11-09*, §13.6.2). A `kind:1111` with `["A", V]` whose body is `Looks right.\n\nnostr:naddr1…` for `V` draws `Looks right.` and nothing for the second line; the same with an app URL that names `V` by §7.7 instead, or with `["O", <V's id>]` and an `naddr` of the same `d`, draws the same. One whose body is only `nostr:naddr1…` for `V` draws `V` as it would without the rule. A body that names `V` in a sentence draws `V`'s chip. A body whose second line is only a reference to another file `W` draws `W`'s row |
 | C53 | **A writer that did not name the change it follows** (*added 2026-11-09*, §6.13; *changed 2026-11-20*). A tab loaded before its type was kept in order sets a document's `title` with no `prev`; the relay refuses it with a reason that starts `invalid: requires-prev:` (from a relay that predates the code, `invalid: a document change names the change it follows in prev`). The app opens the document and sends the change again with `prev` its current `title` change, and it is accepted; nothing is shown to the person. Its text change sent the same way is merged onto the text saved since, with the text it read as the base, and never replaces it. The same holds for a project, an issue and a topic |
 | C54 | **What names you on a listed file** (*added 2026-11-10*, §11.8). `P` follows a topic at Important that lists a project, a document and an issue. On the issue: a comment mentioning `P` lights the topic and stays lit under two later comments naming nobody, until `P` reads the issue in any app; a reply to `P`'s comment lights it, and reading that thread clears it; a reply in a conversation `P` is not in, and a new comment naming nobody, do not light it at Important and do at All when made after `P` chose All. On an issue of the listed project, and on a page one level under a listed document, a mention lights it at both levels and a comment naming nobody at neither; on a page two levels under a listed document, nothing does. Muted, only the mention lights; not following, nothing on the files lights the topic |
-| C55 | **A refusal carries its code** (*added 2026-11-10*, §3.3, §3.4, §6.5). A move of a topic into an archived team is refused `invalid: archived: …`; one by somebody who may not write in the source `restricted: not-member: …`; one naming a topic the source no longer lists `invalid: changed: …`; an `add` of a topic no team lists, in a team that is not its home, `invalid: not-home: …`; a `remove` of a live topic no other team lists `invalid: leaves-by-moving: …`; each changes neither list. An `add` naming a topic whose team the signer cannot read, and one naming a topic address the relay holds nothing at, get the same `restricted: not-member: …`; a `remove` of either, while the list does not hold it, is accepted and changes nothing. A `remove`, a `set` leaving it out, or a `move` of a topic the list holds whose team the signer cannot read gets `restricted: not-member: …` too, but a `move` naming a topic the source does not list gets `invalid: changed: …` first. On an archived team, a `set` naming a topic it already lists is refused `invalid: archived: …`, and an `add` of a project lands. A `kind:9002` setting `archived` on a team is refused `invalid: archive-by-field: …`, and a `kind:1851` `archived` on it is accepted. Each sentence after the code is the relay's own. An app shown `invalid: some-new-code: …` says only that nothing changed; shown `invalid: the team …` with no code, it reads the sentence |
+| C55 | **A refusal carries its code** (*added 2026-11-10*, §3.3, §3.4, §6.5). A move of a topic into an archived team is refused `invalid: archived: …`; one by somebody who may not write in the source `restricted: not-member: …`; one naming a topic the source no longer lists `invalid: changed: …`; an `add` of a topic no team lists, in a team that is not its home, `invalid: not-home: …`; a `remove` of a topic that is not archived, deleted or live, that no other team lists `invalid: leaves-by-moving: …`; each changes neither list. An `add` naming a topic whose team the signer cannot read, and one naming a topic address the relay holds nothing at, get the same `restricted: not-member: …`; a `remove` of either, while the list does not hold it, is accepted and changes nothing. A `remove`, a `set` leaving it out, or a `move` of a topic the list holds whose team the signer cannot read gets `restricted: not-member: …` too, but a `move` naming a topic the source does not list gets `invalid: changed: …` first. On an archived team, a `set` naming a topic it already lists is refused `invalid: archived: …`, and an `add` of a project lands. A `kind:9002` setting `archived` on a team is refused `invalid: archive-by-field: …`, and a `kind:1851` `archived` on it is accepted. Each sentence after the code is the relay's own. An app shown `invalid: some-new-code: …` says only that nothing changed; shown `invalid: the team …` with no code, it reads the sentence |
 | C56 | **Why a message is unread** (*added 2026-11-10*, §11.8). `P` follows a topic. Unread there: a new comment that mentions `P` is a mention; a new comment naming nobody is a new conversation, at Important and at All alike; a reply mentioning `P` in `P`'s own conversation is a mention; a reply naming nobody in it is a reply in your conversation, held root or not when its lowercase `p` names `P`; in someone else's conversation, a reply before `P` wrote there is a message (it lights only at All) and one after is a reply in your conversation. In a DM, a first message naming nobody is a message, never a new conversation. A reaction to `P`'s message is none of the four |
 | C57 | **What lit a stream, new and seen** (*added 2026-11-11*, §11.8). `P` follows a topic at All and has read it up to a moment. Before it: a mention of `P` and a reply in `P`'s conversation are listed as seen, a comment naming nobody is not listed; after it: a comment naming nobody is listed as new. The new lines are exactly the topic's unread messages. On a DM read up to a moment, a mention before it is listed as seen and a message naming nobody is not. A mention of `P` on a file the topic lists is a new line on the topic's list until that file's conversation is read, then a seen one. A team whose space and topic both list one file gives one line for a mention there, naming where it was said. A limit never drops a new line |
 | C59 | **A reaction is seen once** (*added 2026-11-13*, §11.1–§11.3, §11.8). `P` follows two topics at Important that both list one file; a 👍 to `P`'s comment on it gives both a new reaction, and the Desk row of the file too. Resting on one topic's row writes `reactions:file:<d>` with the 👍's `created_at`, not the clock, and neither topic nor the Desk row shows it after. A reaction from before 2026-11-13T17:00:00Z, or before `P`'s start in the topic, lights nothing. Muted or not following, the topic shows none |
@@ -4359,7 +4362,7 @@ staged field, or writes one, also conforms to these.
 | C69 | **An issue is found by its words** (*added 2026-11-18*, §6.13). With `osnova.issue` in `file_search.types`, a word from an issue's current title, summary, ref or text finds it for a reader of its team, `key` naming the ref in `match.fields`; a word only in an older text finds nothing; an issue written before §6.1's rule with its only text in `content` is found by a word of that text until its first `description` change |
 | C70 | **A delete touches only the file** (*added 2026-11-20*, §6.5, §6.7). Document D has sub-page E. Deleting D writes one `deleted` change: E's `parent` is unchanged and no `kind:1852` is written. The list read leaves D out and the reader draws E at the team's top. Someone who did not write D restores it, and E is under D again |
 | C71 | **A deleted topic stays on its team's list** (*added 2026-11-20*, §3.3, §6.14). Topic T on team X is deleted: X's `30890` still lists T, a reader draws X's list without it, and a `remove` of T from X is refused `invalid: leaves-by-moving:`. A file T lists is not drawn on any list while it is deleted, and its entry, `order:` and `look:` stay. Restoring T puts it back in its place on X's list, with its files |
-| C72 | **A topic's list is kept in order** (*added 2026-11-20*, §6.14). A `lists:<d>` change with no `prev` is refused `invalid: requires-prev:`; two people adding different files to one topic at once, each naming the list's current change for its own entry, both land |
+| C72 | **A topic's list is kept in order** (*added 2026-11-20*, §6.14). A `lists:<d>` change with no `prev` is refused `invalid: requires-prev:`; two people adding different files to one topic at once both land, since each `lists:<d>` is its own field: each names that entry's current change as `prev`, or the topic's first record when the file was never listed |
 | C73 | **Nothing removes a whole file** (*added 2026-11-20*, §6.5, §6.13). A `kind:5` with an `a` naming a `30840` or a `30842` is refused `invalid: delete-by-field:`. A `kind:9005` on a document's first record is refused from the team's owner and from a workspace admin. A new `30842` carrying a NIP-40 `expiration` tag is refused, as is a change carrying one. A `kind:9008` on a team whose only file is deleted is refused, and one on a team that never held a file lands (control) |
 | C74 | **A document is read as it is now** (*added 2026-11-20*, §6.13). A list read of a team's documents and topics with `"fields": "newest"` returns each first record and its fields' current changes, and no text; opening a document with `#d` and `"text": true` returns one text, its current one, however many saves it has had. A word in a document's current title, summary or text finds it for a reader of its team, and a word only an older save had finds nothing |
 ### 9.1 Reference checks
@@ -4429,15 +4432,15 @@ writing files for it.
 
 | # | A relay |
 | --- | --- |
-| R1 | answers §6.13's read: `"fields": "newest"`, `"text": true` with `#d`, and `"fields": "times"`, and advertises them in NIP-11 `file_list` |
-| R2 | refuses a change with no `prev`, a `member:<P>` or `follow:<P>` change excepted (`requires-prev`), and one whose `prev` is not its field's current change (`conflict`) |
+| R1 | answers §6.13's read: `"fields": "newest"`, `"text": true` with `#d`, and `"fields": "times"` (advertising them in NIP-11 is optional from the close) |
+| R2 | refuses a change with no `prev`, a `member:<P>` or `follow:<P>` change excepted (`requires-prev`), and one whose `prev` is not its field's current change (`conflict: <field> follows <event id>`, §6.2) |
 | R3 | writes no first record twice, and refuses a change filed in another team than its file's |
 | R4 | refuses a new first record that carries text (`text-is-a-change`) |
 | R5 | refuses a `kind:5` naming a file's first record or one of its changes (`delete-by-field`) |
-| R6 | refuses a `kind:9005` naming a file's first record, or a field's current change |
+| R6 | removes no file's first record by any means — a `kind:9005`, a report's resolution or an operator's action — and no field's current change |
 | R7 | refuses a file's first record or change that carries a NIP-40 `expiration` tag |
 | R8 | refuses a `kind:9008` while the team holds a file, deleted ones included, and always on the Company team (§3.3, §3.4) |
-| R9 | refuses a `remove` that takes a topic that is not archived off the only team that lists it, deleted or not (`leaves-by-moving`) |
+| R9 | refuses a `remove` that takes a topic its author has not archived (a deleted one included) off the only team that lists it (`leaves-by-moving`) |
 
 `file_search` (§6.13) is optional; an app without it searches by title
 (§5.2).
@@ -6516,10 +6519,11 @@ tags:    ["h", <folder>], ["a", "30851:<pubkey>:<d>"],
 | **resolved** | the block is in the object | the block, attributed to the object and linking to it |
 | **unaddressable** | the object's body is not a block document | that this part can't be shown, linking to the whole object; nothing was deleted |
 | **detached** | the object is readable and the block is gone | that this part was deleted |
-| **deleted** | the read by address is empty, and a `kind:5` naming the address by `a` is found | that it was deleted, with no title |
+| **deleted** | the object's newest `deleted` change is `true` (§6.5); or, for one removed before its type was kept in order, the read by address is empty and a `kind:5` naming the address by `a` is found | that it was deleted, with no title |
 | **unreadable** | the read by address is empty, and no deletion is found | that it is not available to the reader, with no title and no text |
 
-To tell the last two apart, a reader that gets nothing for
+A deleted file is still readable by its id, so a reader tells it by its
+`deleted` field. For an empty read, a reader that gets nothing for
 `{kinds:[k], authors:[pubkey], "#d":[d]}` asks for `{kinds:[5], "#a":[address]}`.
 A team the reader cannot read is skipped silently, so an empty answer cannot
 say why. A deletion can (42 of 52 file deletions on production carry no `h`).
