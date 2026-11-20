@@ -3039,11 +3039,11 @@ one type at a time. A relay advertised `files` with the types it kept in order
 `requires_prev` at one moment and could be turned back until the close. While
 listed, a type's changes named their `prev`, its first records were written
 once, its changes stayed in their file's team, a new first record carried no
-text and a `kind:5` on it was refused (`delete-by-field`). From 2026-11-20 a
-listed type's first record and its fields' current changes are also removed by
-no other means, and neither they nor a change carry an `expiration`: for
-projects and issues on every team from that day, for documents and topics from
-their switch. A team that ever held a file is refused deletion from 2026-11-20
+text and a `kind:5` on it was refused (`delete-by-field`). From 2026-11-20, on
+each team a type's switch covers, that type's first record and its fields'
+current changes are also removed by no other means, and neither they nor a
+change carry an `expiration`: for projects and issues on every team from that
+day, for documents and topics from their switch. A team that ever held a file is refused deletion from 2026-11-20
 whatever is listed, since that refusal names no type. Projects switched on 2026-11-11 and
 issues on 2026-11-19; documents and topics switch together, at one announced
 moment, and until then a writer writes their `deleted` field and names
@@ -4455,7 +4455,7 @@ writing files for it.
 | R5 | refuses a `kind:5` naming a file's first record or one of its changes (`delete-by-field`) |
 | R6 | removes no file's first record by any means — a `kind:9005`, a report's resolution or an operator's action — and no field's current change |
 | R7 | refuses a file's first record or change that carries a NIP-40 `expiration` tag |
-| R8 | refuses a `kind:9008` while the team holds a file, deleted ones included, and always on the Company team (§3.3, §3.4) |
+| R8 | refuses a `kind:9008` once the team ever held a file, deleted ones and ones removed for good before their type was kept in order included, and always on the Company team (§3.3, §3.4) |
 | R9 | refuses a `remove` that takes a topic its author has not archived (a deleted one included) off the only team that lists it (`leaves-by-moving`) |
 
 `file_search` (§6.13) is optional; an app without it searches by title
