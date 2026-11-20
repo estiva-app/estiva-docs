@@ -88,7 +88,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 
 <p>Today the ⌘K box and everything it knows live inside Peek. This project moves that into one shared piece that Peek, Leaf and Ship all mount, each handing it what is open. The browser's own model gains a second job: guessing which action a sentence wants. Nothing the relay stores or checks changes.</p>
 
-<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lgone">goes away</span><span class="lq">waits on a decision</span><span class="lf">untouched, for orientation</span></div>
+<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span></div>
 
 <h2>Map</h2>
 
@@ -113,9 +113,9 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 
 <h3>After</h3>
 <figure>
-<svg viewBox="0 0 720 420" role="img">
-<title>After: one shared launcher is mounted by Peek, Leaf and Ship. The kit gains a preview and a dot. The browser's Decisions API orders the suggested actions. Whether the company's models answer waits on a decision.</title>
-<rect class="ok" x="20" y="20" width="210" height="64" rx="8"/><text x="36" y="44" class="h">Peek</text><text x="36" y="62" class="m">the open conversation</text><text x="186" y="78" class="tag">M1</text>
+<svg viewBox="0 0 720 360" role="img">
+<title>After: one shared launcher is mounted by Peek, Leaf and Ship. The kit gains a preview and a dot. The browser's Decisions API orders the suggested actions. Chrome's on-device model still answers a prompt.</title>
+<rect class="ok" x="20" y="20" width="210" height="64" rx="8"/><text x="36" y="44" class="h">Peek</text><text x="36" y="62" class="m">the open conversation</text><text x="156" y="78" class="tag">M1 · M2</text>
 <rect class="ok" x="260" y="20" width="200" height="64" rx="8"/><text x="276" y="44" class="h">Ship</text><text x="276" y="62" class="m">the open issue or project</text><text x="416" y="78" class="tag">M2</text>
 <rect class="ok" x="490" y="20" width="210" height="64" rx="8"/><text x="506" y="44" class="h">Leaf</text><text x="506" y="62" class="m">the open page</text><text x="656" y="78" class="tag">M2</text>
 <rect class="ok" x="140" y="136" width="440" height="76" rx="8"/><text x="156" y="160" class="h">The launcher, shared</text><text x="156" y="178" class="m">one field: search, then a prompt · keeps the sentence on Escape</text><text x="156" y="196" class="m">a new shared package</text><text x="536" y="204" class="tag">M2</text>
@@ -130,9 +130,8 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <path class="a" d="M280,212 L280,266"/>
 <path class="an" d="M440,212 L440,266"/>
 <path class="a" d="M540,212 L540,240 L625,240 L625,266"/>
-<rect class="q" x="190" y="362" width="340" height="44" rx="8"/><text x="204" y="382" class="h">The company's models</text><text x="204" y="398" class="m">answer in every browser? → decision, its own project</text>
 </svg>
-<figcaption>M1 makes Peek's box the approved one. M2 lifts it out of Peek so Leaf and Ship mount the same thing. M3 adds the guess, which only reorders the suggested actions and is absent without the flag. Dashed: who answers a prompt beyond Chrome is not this project's.</figcaption>
+<figcaption>M1 makes Peek's box the approved one. M2 lifts it out of Peek so Leaf and Ship mount the same thing. M3 adds the guess, which only reorders the suggested actions and is absent without the flag. Answers stay with Chrome's on-device model: the company's models are not planned for (Miky, 20 Nov), so asking works in Chrome only.</figcaption>
 </figure>
 
 <h2>Flow</h2>
