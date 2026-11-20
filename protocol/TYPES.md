@@ -97,7 +97,7 @@ under at most one project, and it can move.
 | `ref` | `ref` | a display key such as `SHIP-12`, its project's `key` and a number; never an address ([SPEC §6.1](SPEC.md)) |
 | `summary` | `summary` | one or two sentences of plain text, about 240 characters ([SPEC §6.12](SPEC.md)) |
 | `archived` | — | `true` while it is archived; empty otherwise ([SPEC §6.5](SPEC.md)) |
-| `deleted` | — | `true` while it is deleted; empty otherwise ([SPEC §6.5](SPEC.md)). A deleted issue keeps its `ref`. Until issues are kept field by field, Ship deletes an issue with a `kind:5`, which a reader still honours |
+| `deleted` | — | `true` while it is deleted; empty otherwise ([SPEC §6.5](SPEC.md)). A deleted issue keeps its `ref`. An issue deleted by a `kind:5` before issues were kept in order stays removed |
 | `description` | — (`content`, on issues written before the issues switch only) | the issue's text ([SPEC §6.10](SPEC.md)), as a project's. A new issue's text is its first change, never in its first record ([SPEC §6.1](SPEC.md)) |
 
 **Search** finds an issue by its title and its ref ([SPEC §5.2](SPEC.md))
