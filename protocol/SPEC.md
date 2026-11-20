@@ -264,7 +264,9 @@ last owner. No new refusal code. Record
   only a team that never held one can be deleted (*decided 2026-11-20*, record
   [every-file-type-is-kept-in-order-and-a-delete-only-marks-the-file](https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-file-type-is-kept-in-order-and-a-delete-only-marks-the-file.md)).
   A project counts where its listing or its `buzz-channel` puts it. The reason
-  then ends "a team that has held files is archived, not deleted". A relay that does not refuse a team with files hides
+  then says "a team that held a file is archived, not deleted", and what to
+  do instead (the Estiva relay: "archive it instead"). A team whose only files
+  were removed for good before their type was kept in order held a file too. A relay that does not refuse a team with files hides
   those too — what happened to the `Folders` Folder on 2026-09-14 — so the
   refusal is a conformance requirement of the relay, not a courtesy. **Archive** is the
   reversible way to put a team away: its state, contents and channel are
@@ -2974,7 +2976,10 @@ file's change and is not covered by these rules.
 record was removed by a `kind:5` the relay accepted before its type was kept
 in order stays removed: it is in no read, a relay never serves it again, no
 reader offers Restore for it, and its id is never used again (§6.1, "deleted
-ones included"). Changes written before their type was kept in order name no
+ones included"). Its team still held a file, so the team is archived, never
+deleted (§3.3). A topic removed that way is no longer a file a restore can
+bring back, so its entry may be taken off its team's list (§3.3's
+`leaves-by-moving` covers a topic deleted by its field, not this one). Changes written before their type was kept in order name no
 `prev` and stay as they are: a reader folds them by time (§6.3), and the first
 change written in order names the newest of them as its `prev`.
 
@@ -3017,7 +3022,12 @@ back to it.
 `types` are the types it finds by their words. It advertises a type only once
 every file of that type is indexed. The indexer takes a first record's
 `content` (or a project's `description` tag) as the text only while the file
-has no `description` change (§6.10). An app that finds no `file_search`, or
+has no `description` change (§6.10). A document is found by the words of its
+current title, summary and text; a topic by its title and summary, since a
+topic has no text: what an old topic's first record carries in `content` is
+not its words (*added 2026-11-20*). A search that names no type is answered
+from the types listed, so a type still being indexed takes search from no
+other. An app that finds no `file_search`, or
 not its type, falls back to §5.2's search by title. That is a different way
 to find a file, not a second way to read one: the list read above is the
 only one.
@@ -3029,8 +3039,12 @@ one type at a time. A relay advertised `files` with the types it kept in order
 `requires_prev` at one moment and could be turned back until the close. While
 listed, a type's changes named their `prev`, its first records were written
 once, its changes stayed in their file's team, a new first record carried no
-text and a `kind:5` on it was refused (`delete-by-field`); the other refusals
-in the list above date from the close. Projects switched on 2026-11-11 and
+text and a `kind:5` on it was refused (`delete-by-field`). From 2026-11-20, on
+each team a type's switch covers, that type's first record and its fields'
+current changes are also removed by no other means, and neither they nor a
+change carry an `expiration`: for projects and issues on every team from that
+day, for documents and topics from their switch. A team that ever held a file is refused deletion from 2026-11-20
+whatever is listed, since that refusal names no type. Projects switched on 2026-11-11 and
 issues on 2026-11-19; documents and topics switch together, at one announced
 moment, and until then a writer writes their `deleted` field and names
 `prev` where it can. An app reads with `file_list` only as far as the relay
@@ -3049,11 +3063,13 @@ settings, and is not how a file is kept.
 **Where it stands (2026-11-20).** On production NIP-11 says `"files":
 {"requires_prev": ["osnova.project", "osnova.issue"]}`, `"file_list":
 {"newest": true, "text": true, "times": true}` and `"file_search": {"types":
-["osnova.project", "osnova.issue"]}`: projects and issues are kept in order and
-found by their words. Documents and topics are next, together, in the project
-"Documents and topics stop downloading every edit": the relay's half behind its
-switch, then Leaf, Peek, Ship and the agent reading and writing them field by
-field, then one announced moment, then the close.
+["osnova.project", "osnova.issue", "osnova.document", "osnova.topic"]}`:
+projects and issues are kept in order, and all four types are found by their
+words. Documents and topics are next, together, in the project
+"Documents and topics stop downloading every edit": the relay's half is built
+behind its switch, which is on for one test team only; then Leaf, Peek, Ship
+and the agent read and write them field by field, then one announced moment,
+then the close.
 
 ### 6.14 A file's list of other files
 
@@ -4439,7 +4455,7 @@ writing files for it.
 | R5 | refuses a `kind:5` naming a file's first record or one of its changes (`delete-by-field`) |
 | R6 | removes no file's first record by any means — a `kind:9005`, a report's resolution or an operator's action — and no field's current change |
 | R7 | refuses a file's first record or change that carries a NIP-40 `expiration` tag |
-| R8 | refuses a `kind:9008` while the team holds a file, deleted ones included, and always on the Company team (§3.3, §3.4) |
+| R8 | refuses a `kind:9008` once the team ever held a file, deleted ones and ones removed for good before their type was kept in order included, and always on the Company team (§3.3, §3.4) |
 | R9 | refuses a `remove` that takes a topic its author has not archived (a deleted one included) off the only team that lists it (`leaves-by-moving`) |
 
 `file_search` (§6.13) is optional; an app without it searches by title
