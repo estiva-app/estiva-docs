@@ -3046,8 +3046,12 @@ change carry an `expiration`: for projects and issues on every team from that
 day, for documents and topics from their switch. A team that ever held a file is refused deletion from 2026-11-20
 whatever is listed, since that refusal names no type. Projects switched on 2026-11-11 and
 issues on 2026-11-19; documents and topics switch together, at one announced
-moment, and until then a writer writes their `deleted` field and names
-`prev` where it can. An app reads with `file_list` only as far as the relay
+moment. Until then, on a team their switch does not cover, a writer names
+`prev` where it can, and a page or a topic is still deleted the way it was
+before: a `kind:5` asking the relay to remove it, its team's list giving it
+up, and a page's sub-pages moved up to its parent. A `deleted` change there
+would leave it in every reader that does not yet fold that field. The promise
+that a delete only marks the file starts at each type's switch. An app reads with `file_list` only as far as the relay
 advertises it. On the Estiva relay each switch can be turned back until the people using
 the apps have each checked their files after both the issues switch and the
 documents-and-topics switch; then the
