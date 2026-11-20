@@ -3,15 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Project architecture</title>
-<!--
-  Template for a project's architecture page (process/ARCHITECTURE.md).
-  Copy to architecture/<project-slug>.html, then redraw every example below:
-  the drawings here show the visual language, not any real project.
-  Classes: .b box · .w card · .ok new · .bad goes away · .q undecided (dashed)
-  · .f untouched (faint) · .a arrow · .an new arrow · .aq undecided arrow
-  · .m muted second line · .h bold label · .tag milestone tag.
--->
+<title>Tests that try thousands of inputs</title>
 <style>
 :root {
   --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
@@ -102,7 +94,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <rect class="b" x="370" y="20" width="150" height="54" rx="8"/><text x="386" y="44" class="h">Leaf</text><text x="386" y="62" class="m">documents</text>
 <rect class="b" x="540" y="20" width="160" height="54" rx="8"/><text x="556" y="44" class="h">Agent</text><text x="556" y="62" class="m">ship / peek CLI</text>
 <rect class="b" x="20" y="150" width="150" height="60" rx="8"/><text x="34" y="175" class="h">Ship's own read</text><text x="34" y="194" class="m">in Ship's code</text>
-<rect class="b" x="250" y="150" width="190" height="60" rx="8"/><text x="264" y="175" class="h">Shared read</text><text x="264" y="194" class="m">interop · any app's file</text>
+<rect class="b" x="250" y="150" width="190" height="60" rx="8"/><text x="264" y="175" class="h">Shared read</text><text x="264" y="194" class="m">interop · other apps' files</text>
 <rect class="b" x="520" y="150" width="180" height="60" rx="8"/><text x="534" y="175" class="h">Second shared read</text><text x="534" y="194" class="m">interop · lists of files</text>
 <path class="a" d="M95,74 L95,146"/>
 <path class="a" d="M300,74 L300,146"/>
@@ -135,7 +127,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <path class="a" d="M560,74 L560,112 L430,112 L430,146"/>
 </g>
 <rect class="b" x="20" y="150" width="150" height="60" rx="8"/><text x="34" y="175" class="h">Ship's own read</text><text x="34" y="194" class="m">in Ship's code</text>
-<rect class="b" x="250" y="150" width="190" height="60" rx="8"/><text x="264" y="175" class="h">Shared read</text><text x="264" y="194" class="m">interop · any app's file</text>
+<rect class="b" x="250" y="150" width="190" height="60" rx="8"/><text x="264" y="175" class="h">Shared read</text><text x="264" y="194" class="m">interop · other apps' files</text>
 <rect class="b" x="520" y="150" width="180" height="60" rx="8"/><text x="534" y="175" class="h">Second shared read</text><text x="534" y="194" class="m">interop · lists of files</text>
 <path class="an" d="M174,180 L246,180" marker-start="url(#arr-ok)"/><text x="182" y="170" class="tag">M2</text><text x="176" y="230" class="m">must agree,</text><text x="176" y="245" class="m">or written down</text>
 <path class="an" d="M444,180 L516,180" marker-start="url(#arr-ok)"/><text x="468" y="170" class="tag">M1</text><text x="446" y="230" class="m">must agree,</text><text x="446" y="245" class="m">in any order</text>
@@ -154,7 +146,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <table>
 <thead><tr><th>Rule</th><th>Tried on</th><th>Milestone</th></tr></thead>
 <tbody>
-<tr class="new"><td>The same changes in any order, or delivered twice, give the same file</td><td>The two shared reads; who is a member; your read state</td><td>M1</td></tr>
+<tr class="new"><td>The same changes in any order, or delivered twice, give the same file</td><td>The two shared reads; the shared code for who is a member and for merging your read state, where a read marker never moves back. How each app decides what is unread is not compared.</td><td>M1</td></tr>
 <tr class="new"><td>The two shared reads give the same file</td><td>Random histories</td><td>M1</td></tr>
 <tr class="new"><td>Ship's read and the shared read give the same title, status, summary, parent, assignee, archived and deleted</td><td>Random histories of a project and its issues</td><td>M2</td></tr>
 <tr class="new"><td>A document turned into text and back is the same document, and unchanged blocks keep their ids</td><td>Random documents</td><td>M3</td></tr>
@@ -163,6 +155,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 </tbody>
 </table>
 </div>
+<p class="sub">M1 also settles two suspected bugs found while shaping: two changes made in the same second are read in the order they arrived, and a file id with a colon in it is cut short. Each is shown and fixed, or shown not to be a bug.</p>
 <p class="sub">Objects, Flow and Access are not drawn: the project changes no object, nothing moves between apps or people differently, and nobody's access changes.</p>
 
 <h2>Checked</h2>
@@ -172,7 +165,9 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <li>The one check today: the header of <code>estiva-ship scripts/conformance.test.ts</code>, which folds the recorded fixture with Ship's read while estiva-agent's test of the same name runs it through Ship's manifest and interop (20 Nov).</li>
 <li>Peek's own copy of the address rules: <code>peek-app src/lib/objectUrl.ts</code> exports <code>slugify</code>, <code>objectRef</code>, <code>identifierFromRef</code> (20 Nov).</li>
 <li>No repo has a library that makes up test inputs: no <code>fast-check</code> in any <code>package.json</code> of the six repos (20 Nov).</li>
-<li>Taken from a survey of the code and not read line by line: which app calls which read (Peek, Leaf and the agent through the shared read; Leaf and the agent through the second), and the count of 1,103 events in the fixture.</li>
+<li>Which app calls which read, by the imports on each <code>origin/main</code> (20 Nov): the shared read in Peek (<code>src/nostr/fileConversation.ts</code>, <code>fileMentions.ts</code>), Leaf (<code>src/document/save.ts</code>, <code>src/folders/workspace.ts</code>) and the agent (<code>lib/agent/apps/file.ts</code>, <code>ship-workspace.ts</code>); the second shared read in Leaf (<code>src/comments/CommentsColumn.tsx</code>) and the agent (<code>lib/agent/apps/ship-workspace.ts</code>). Ship also uses the shared read, for other apps' files only (<code>src/api/foreign.ts</code>).</li>
+<li>The recorded set holds 1,103 events: <code>estiva-ship conformance/fold-fixture.json</code>, counted 20 Nov.</li>
+<li>No test in the shared packages names the second shared read (<code>filesOf</code>) in a test folder, so nothing compares it with the other two (searched 20 Nov).</li>
 </ul>
 
 </main>
