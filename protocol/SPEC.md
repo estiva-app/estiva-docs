@@ -1121,14 +1121,23 @@ The bracketed tags and those after `ts` appear only where a rule asks for them:
 - **`K`, the type of the file the change is about** (*added 2026-11-20*;
   record
   [a-change-says-the-type-of-its-file](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-change-says-the-type-of-its-file.md)).
-  A change MUST carry `["K", <type>]` after its `O` (after `a` when it has no
-  `O`), naming by name
+  A change to a file MUST carry `["K", <type>]` after its `O` (after `a` when
+  it has no `O`), naming by name
   (§6.1, such as `osnova.document`) the type of the file its `a` names, as a
-  comment carries its file's type (§6.4). An app asks for a person's changes to
-  some types with `{kinds:[1851], authors:[…], "#K":[…]}`. A reader ignores a
-  change whose `K` is not the type of the file its `a` names. Changes written
-  before this carry no `K`: a reader that needs every change asks by `#a` or
-  `#O`, never by `#K` alone.
+  comment carries its file's type (§6.4): the kind's name for the four base
+  kinds, and for a `30852` the `k` of its first record, which a writer reads
+  with the file's `h`. An app asks for a person's changes to
+  some types with `{kinds:[1851], authors:[…], "#K":[…]}`. **The relay refuses
+  a change whose `K` is not the type of the file its `a` names**, `invalid:
+  type-mismatch:` (§3.3), as it refuses an `a` and `O` that disagree; a reader
+  drops no change for its `K` (*decided 2026-11-20*; record
+  [the-relay-refuses-a-change-that-says-the-wrong-type](https://github.com/estiva-app/estiva-docs/blob/main/decisions/the-relay-refuses-a-change-that-says-the-wrong-type.md)).
+  A change with no `K` is accepted: changes written
+  before this carry none, and so does a tab or an agent loaded before it, so a
+  reader that needs every change asks by `#a` or `#O`, never by `#K` alone.
+  **A change on a team's own address** (`39000:`: `archived`, §3.3; a
+  `member:<P>` or a level on its chat, §11.8) is not a file's change and
+  carries no `K`, nor does a change to any kind that is not a file's (§6.1).
 - **`prev`, the change it follows for its field**, below.
 - **`A`**, on a move — a change to a `movedBy` field (§7.2) — naming the new
   parent. It is an index, not a second target: `a` (with `O`, the same file) is
@@ -1209,7 +1218,7 @@ also the order each change named.
 
 A malformed change is refused `invalid:`: a missing `prev` where one is
 required, both forms or a field named twice, a wrong `h`, an `a` and `O` that
-disagree, and, on a type kept in order, a change to a file whose first record
+disagree, a `K` that is not the file's type (`type-mismatch`), and, on a type kept in order, a change to a file whose first record
 the relay does not hold. An app does not send it again as it is. A refusal
 under a condition §3.3 lists, such as an archive of the Company team (§3.4),
 carries its reason code after the prefix, `invalid: <code>: <sentence>`, or
@@ -4396,6 +4405,7 @@ staged field, or writes one, also conforms to these.
 | C72 | **A topic's list is kept in order** (*added 2026-11-20*, §6.14). A `lists:<d>` change with no `prev` is refused `invalid: requires-prev:`; two people adding different files to one topic at once both land, since each `lists:<d>` is its own field: each names that entry's current change as `prev`, or the topic's first record when the file was never listed |
 | C73 | **Nothing removes a whole file** (*added 2026-11-20*, §6.5, §6.13). A `kind:5` with an `a` naming a `30840` or a `30842` is refused `invalid: delete-by-field:`. A `kind:9005` on a document's first record is refused from the team's owner and from a workspace admin. A new `30842` carrying a NIP-40 `expiration` tag is refused, as is a change carrying one. A `kind:9008` on a team whose only file is deleted is refused, and one on a team that never held a file lands (control) |
 | C74 | **A document is read as it is now** (*added 2026-11-20*, §6.13). A list read of a team's documents and topics with `"fields": "newest"` returns each first record and its fields' current changes, and no text; opening a document with `#d` and `"text": true` returns one text, its current one, however many saves it has had. A word in a document's current title, summary or text finds it for a reader of its team, and a word only an older save had finds nothing |
+| C75 | **A change says its file's type** (*added 2026-11-20*, §6.2). A `title` change to an issue carrying `["K", "osnova.issue"]` after its `O`, and a change setting two fields with the same `K`, are accepted; `{"kinds":[1851], "authors":[<them>], "#K":["osnova.issue"]}` returns both and no change to a document, and the same read with a type no change carries returns nothing. The same change with `["K", "osnova.document"]` is refused `invalid: type-mismatch:` and the field's current change is unchanged; with no `K` it is accepted and found by `#a`, not by `#K`. An `archived` change on a team's `39000:` address carries no `K` and is accepted |
 ### 9.1 Reference checks
 
 ```bash
