@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project architecture</title>
+<!--
+  Template for a project's architecture page (process/ARCHITECTURE.md).
+  Copy to architecture/<project-slug>.html, then redraw every example below:
+  the drawings here show the visual language, not any real project.
+  Classes: .b box · .w card · .ok new · .bad goes away · .q undecided (dashed)
+  · .f untouched (faint) · .a arrow · .an new arrow · .aq undecided arrow
+  · .m muted second line · .h bold label · .tag milestone tag.
+-->
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.example { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
+.legend .lgone::before { background: var(--warn-bg); border-color: var(--warn); }
+.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
+.legend .lf::before { opacity: .45; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+/* Below 560px a diagram scrolls inside its figure instead of shrinking its text. */
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); stroke-width: 1.5; }
+svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .f { opacity: .45; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
+svg .aq { stroke: var(--accent); fill: none; stroke-width: 1.6; stroke-dasharray: 5 4; marker-end: url(#arr-q); }
+svg .life { stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 3 4; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 560px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+tr.new td { background: var(--ok-bg); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+</style>
+</head>
+<body>
+<!-- Arrowheads, shared by every diagram on the page. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+    <marker id="arr-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<main>
+
+<h1>Tests that try thousands of inputs</h1>
+<p class="sub"><span class="state">Shaped, 2026-11-20</span> · <a href="https://ship.estiva.app/#/project/5509e53f-252b-416b-ab68-22143cd0b998">Ship project</a> · Goal: a file reads the same in Ship as in Peek and Leaf, and a document or a link comes back as it went in, checked on every change by tests that make up their own inputs. Follows <a href="smoke-test-after-every-deploy.html">Smoke test after every deploy</a>.</p>
+<!-- When the project closes: <span class="state">As built, <date></span>. A later page about the same parts links the earlier one here. -->
+
+<p>Nothing a person uses changes. The picture to look at first is "Who reads a file's changes": the same changes are read by three pieces of code today, and nothing checks that they agree beyond one recorded set of real events. The project adds tests that make up thousands of histories and compare the three.</p>
+
+<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lf">untouched, for orientation</span></div>
+
+<h2>Map: who reads a file's changes</h2>
+
+<h3>Today</h3>
+<figure>
+<svg viewBox="0 0 720 310" role="img">
+<title>Today: Ship reads a project or an issue with its own code. Peek, Leaf and the agent read it through a shared read. Leaf and the agent also use a second shared read for lists of files. The only check that these agree is one recorded set of 1,103 real events, run through Ship's read and the shared read.</title>
+<rect class="b" x="20" y="20" width="150" height="54" rx="8"/><text x="36" y="44" class="h">Ship</text><text x="36" y="62" class="m">projects and issues</text>
+<rect class="b" x="200" y="20" width="150" height="54" rx="8"/><text x="216" y="44" class="h">Peek</text><text x="216" y="62" class="m">chat</text>
+<rect class="b" x="370" y="20" width="150" height="54" rx="8"/><text x="386" y="44" class="h">Leaf</text><text x="386" y="62" class="m">documents</text>
+<rect class="b" x="540" y="20" width="160" height="54" rx="8"/><text x="556" y="44" class="h">Agent</text><text x="556" y="62" class="m">ship / peek CLI</text>
+<rect class="b" x="20" y="150" width="150" height="60" rx="8"/><text x="34" y="175" class="h">Ship's own read</text><text x="34" y="194" class="m">in Ship's code</text>
+<rect class="b" x="250" y="150" width="190" height="60" rx="8"/><text x="264" y="175" class="h">Shared read</text><text x="264" y="194" class="m">interop · any app's file</text>
+<rect class="b" x="520" y="150" width="180" height="60" rx="8"/><text x="534" y="175" class="h">Second shared read</text><text x="534" y="194" class="m">interop · lists of files</text>
+<path class="a" d="M95,74 L95,146"/>
+<path class="a" d="M300,74 L300,146"/>
+<path class="a" d="M410,74 L410,146"/>
+<path class="a" d="M500,74 L540,146"/>
+<path class="a" d="M640,74 L640,146"/>
+<path class="a" d="M560,74 L560,112 L430,112 L430,146"/>
+<rect class="b" x="20" y="250" width="420" height="44" rx="8"/><text x="34" y="269" class="h">The one check that they agree</text><text x="34" y="286" class="m">one recorded set of 1,103 real events, through both reads</text>
+<path class="a" d="M95,250 L95,214"/>
+<path class="a" d="M345,250 L345,214"/>
+<text x="460" y="269" class="m">Nothing compares the second</text><text x="460" y="286" class="m">shared read with either.</text>
+</svg>
+<figcaption>The same changes to a project or an issue (created, renamed, moved, a status set, archived) are read by three pieces of code. When two of them disagree, one app shows a file differently from the app next door. The recorded set only holds what had happened on our relay when it was recorded. Left out: Peek also keeps its own copy of the rules for a file's address, compared with nothing.</figcaption>
+</figure>
+
+<h3>After</h3>
+<figure>
+<svg viewBox="0 0 720 436" role="img">
+<title>After: a maker of random histories feeds every read. The shared read and the second shared read must agree, in any order of changes (milestone 1). Ship's own read and the shared read must agree, or the difference is written down (milestone 2). Random documents and links are checked to come back as they went in, and Peek's copy of the address rules is compared with the shared one (milestone 3). At a rewrite, the old and the new code are compared on the same histories (milestone 4).</title>
+<g class="f">
+<rect class="b" x="20" y="20" width="150" height="54" rx="8"/><text x="36" y="44" class="h">Ship</text><text x="36" y="62" class="m">projects and issues</text>
+<rect class="b" x="200" y="20" width="150" height="54" rx="8"/><text x="216" y="44" class="h">Peek</text><text x="216" y="62" class="m">chat</text>
+<rect class="b" x="370" y="20" width="150" height="54" rx="8"/><text x="386" y="44" class="h">Leaf</text><text x="386" y="62" class="m">documents</text>
+<rect class="b" x="540" y="20" width="160" height="54" rx="8"/><text x="556" y="44" class="h">Agent</text><text x="556" y="62" class="m">ship / peek CLI</text>
+<path class="a" d="M95,74 L95,146"/>
+<path class="a" d="M300,74 L300,146"/>
+<path class="a" d="M410,74 L410,146"/>
+<path class="a" d="M500,74 L540,146"/>
+<path class="a" d="M640,74 L640,146"/>
+<path class="a" d="M560,74 L560,112 L430,112 L430,146"/>
+</g>
+<rect class="b" x="20" y="150" width="150" height="60" rx="8"/><text x="34" y="175" class="h">Ship's own read</text><text x="34" y="194" class="m">in Ship's code</text>
+<rect class="b" x="250" y="150" width="190" height="60" rx="8"/><text x="264" y="175" class="h">Shared read</text><text x="264" y="194" class="m">interop · any app's file</text>
+<rect class="b" x="520" y="150" width="180" height="60" rx="8"/><text x="534" y="175" class="h">Second shared read</text><text x="534" y="194" class="m">interop · lists of files</text>
+<path class="an" d="M174,180 L246,180" marker-start="url(#arr-ok)"/><text x="182" y="170" class="tag">M2</text><text x="176" y="230" class="m">must agree,</text><text x="176" y="245" class="m">or written down</text>
+<path class="an" d="M444,180 L516,180" marker-start="url(#arr-ok)"/><text x="468" y="170" class="tag">M1</text><text x="446" y="230" class="m">must agree,</text><text x="446" y="245" class="m">in any order</text>
+<rect class="ok" x="20" y="290" width="330" height="60" rx="8"/><text x="34" y="314" class="h">Made-up histories of changes</text><text x="316" y="314" class="tag">M1</text><text x="34" y="333" class="m">renames, moves, statuses, ties, repeats</text>
+<path class="an" d="M110,290 L110,214"/>
+<path class="an" d="M330,290 L330,214"/>
+<path class="an" d="M345,300 L600,300 L600,214"/>
+<rect class="ok" x="20" y="362" width="330" height="56" rx="8"/><text x="34" y="386" class="h">Made-up documents and links</text><text x="316" y="386" class="tag">M3</text><text x="34" y="405" class="m">to text and back · written and read back</text>
+<rect class="ok" x="370" y="362" width="330" height="56" rx="8"/><text x="384" y="386" class="h">At a rewrite: old code against new</text><text x="666" y="386" class="tag">M4</text><text x="384" y="405" class="m">same histories · one command, run by /land</text>
+</svg>
+<figcaption>The apps and what they read are unchanged, so they are drawn faint. What is new sits in each repo's checks: a maker of random histories (M1) feeds all three reads, and the tests require the same answer. Ship's read against the shared one is M2; a difference kept on purpose goes on a written list. Random documents and links (M3) check the shared code that turns a document into text and a file into an address, and Peek's own copy of the address rules against the shared one. M4 reuses the histories to compare a read before and after a rewrite. No copy of a read is removed by this project.</figcaption>
+</figure>
+
+<h2>What each test states</h2>
+<div class="tw">
+<table>
+<thead><tr><th>Rule</th><th>Tried on</th><th>Milestone</th></tr></thead>
+<tbody>
+<tr class="new"><td>The same changes in any order, or delivered twice, give the same file</td><td>The two shared reads; who is a member; your read state</td><td>M1</td></tr>
+<tr class="new"><td>The two shared reads give the same file</td><td>Random histories</td><td>M1</td></tr>
+<tr class="new"><td>Ship's read and the shared read give the same title, status, summary, parent, assignee, archived and deleted</td><td>Random histories of a project and its issues</td><td>M2</td></tr>
+<tr class="new"><td>A document turned into text and back is the same document, and unchanged blocks keep their ids</td><td>Random documents</td><td>M3</td></tr>
+<tr class="new"><td>A link written and read back names the same file; Peek's copy of the address rules answers as the shared one does</td><td>Random titles and ids</td><td>M3</td></tr>
+<tr class="new"><td>A rewritten read gives the same answers as the code it replaces</td><td>The same random histories</td><td>M4</td></tr>
+</tbody>
+</table>
+</div>
+<p class="sub">Objects, Flow and Access are not drawn: the project changes no object, nothing moves between apps or people differently, and nobody's access changes.</p>
+
+<h2>Checked</h2>
+<ul>
+<li>Ship's own read: <code>estiva-ship src/nostr/fold.ts</code>, <code>foldFolder</code> with its own <code>orderingMs</code>, <code>byOrder</code>, <code>latestPerAddress</code> (<code>origin/main</code>, 20 Nov).</li>
+<li>The shared read and the second shared read: <code>estiva-foundation packages/interop/src/projection.ts</code> (<code>projectEvents</code>, <code>foldChanges</code>) and <code>fields.ts</code> (<code>filesOf</code>, read at lines 105–125, 20 Nov).</li>
+<li>The one check today: the header of <code>estiva-ship scripts/conformance.test.ts</code>, which folds the recorded fixture with Ship's read while estiva-agent's test of the same name runs it through Ship's manifest and interop (20 Nov).</li>
+<li>Peek's own copy of the address rules: <code>peek-app src/lib/objectUrl.ts</code> exports <code>slugify</code>, <code>objectRef</code>, <code>identifierFromRef</code> (20 Nov).</li>
+<li>No repo has a library that makes up test inputs: no <code>fast-check</code> in any <code>package.json</code> of the six repos (20 Nov).</li>
+<li>Taken from a survey of the code and not read line by line: which app calls which read (Peek, Leaf and the agent through the shared read; Leaf and the agent through the second), and the count of 1,103 events in the fixture.</li>
+</ul>
+
+</main>
+</body>
+</html>
