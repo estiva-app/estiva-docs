@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Our process skills live in git</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.example { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
+.legend .lgone::before { background: var(--warn-bg); border-color: var(--warn); }
+.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
+.legend .lf::before { opacity: .45; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+/* Below 560px a diagram scrolls inside its figure instead of shrinking its text. */
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); stroke-width: 1.5; }
+svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .f { opacity: .45; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
+svg .aq { stroke: var(--accent); fill: none; stroke-width: 1.6; stroke-dasharray: 5 4; marker-end: url(#arr-q); }
+svg .life { stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 3 4; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 560px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+tr.new td { background: var(--ok-bg); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+</style>
+</head>
+<body>
+<!-- Arrowheads, shared by every diagram on the page. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+    <marker id="arr-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<main>
+
+<h1>Our process skills live in git</h1>
+<p class="sub"><span class="state">Shaped, 2026-11-20</span> · <a href="https://ship.estiva.app/#/project/8f7fc9a7-1d71-4c91-800c-f890f423a561">Ship project</a> · Goal: every change to how Claude works for us has a history, can be undone, and reaches Katerina's machine and any other without copying.</p>
+
+<p>Today the skills, the reviewers, the rules and the hooks are loose files on Miky's computer. The project turns the folder they sit in into a git checkout, at the same path, and gives it a home on GitHub that other machines pull from. Look at the Map first: the only new box outside Miky's computer is the process repository.</p>
+
+<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lgone">goes away</span><span class="lq">waits on a decision</span><span class="lf">untouched, for orientation</span></div>
+
+<h2>Map</h2>
+
+<h3>Today</h3>
+<figure>
+<svg viewBox="0 0 720 300" role="img">
+<title>Today: on Miky's computer, Claude sessions read the skills and reviewers, the rules, the hooks and the brief format from four places, none of them in git. GitHub holds the app repositories and the estiva plugin, which is all Katerina's computer receives.</title>
+<rect class="w" x="20" y="20" width="330" height="260" rx="10"/><text x="36" y="46" class="h">Miky's computer</text>
+<rect class="b" x="36" y="64" width="140" height="56" rx="8"/><text x="48" y="88" class="h">Skills, reviewers</text><text x="48" y="106" class="m">~/estiva/.claude</text>
+<rect class="b" x="190" y="64" width="146" height="56" rx="8"/><text x="202" y="88" class="h">Rules</text><text x="202" y="106" class="m">~/estiva/CLAUDE.md</text>
+<rect class="b" x="36" y="134" width="140" height="50" rx="8"/><text x="48" y="156" class="h">Hooks</text><text x="48" y="173" class="m">~/.claude/hooks</text>
+<rect class="b" x="190" y="134" width="146" height="50" rx="8"/><text x="202" y="156" class="h">Brief format</text><text x="202" y="173" class="m">decision-briefs/</text>
+<rect class="b" x="36" y="212" width="300" height="54" rx="8"/><text x="48" y="235" class="h">Claude sessions</text><text x="48" y="253" class="m">started in ~/estiva · read all four while they run</text>
+<path class="a" d="M106,212 L106,188"/><path class="a" d="M263,212 L263,188"/>
+<rect class="w" x="390" y="20" width="310" height="110" rx="10"/><text x="406" y="46" class="h">GitHub</text><text x="406" y="66" class="m">the app repositories, each with its own rules</text><text x="406" y="84" class="m">the estiva plugin</text><text x="406" y="112" class="m">nothing from the four boxes on the left</text>
+<rect class="w" x="390" y="170" width="310" height="110" rx="10"/><text x="406" y="196" class="h">Katerina's computer</text>
+<rect class="b" x="406" y="212" width="280" height="54" rx="8"/><text x="418" y="235" class="h">Claude sessions</text><text x="418" y="253" class="m">app rules and the plugin · no /kickoff, no /land</text>
+<path class="a" d="M545,130 L545,166"/><text x="555" y="154" class="m">clone, plugin update</text>
+</svg>
+<figcaption>Everything that tells a session how we work sits on one computer, in four places, with no record of what changed. Left out: the agent's memory notes, which stay per machine.</figcaption>
+</figure>
+
+<h3>After</h3>
+<figure>
+<svg viewBox="0 0 720 330" role="img">
+<title>After: the process folder on Miky's computer is a git checkout at the same path and holds skills, reviewers, rules, hooks and the brief format (milestone 1). Each change is committed with its reason and pushed to a private process repository on GitHub (milestone 1). Katerina's computer has the same checkout and pulls it when a session starts (milestone 2).</title>
+<rect class="w" x="20" y="20" width="330" height="260" rx="10"/><text x="36" y="46" class="h">Miky's computer</text>
+<rect class="ok" x="36" y="64" width="300" height="120" rx="8"/><text x="48" y="88" class="h">Process folder, a git checkout</text><text x="48" y="108">skills · reviewers · rules · hooks · briefs</text><text x="48" y="128" class="m">~/estiva/.claude, the path sessions read today</text><text x="48" y="148" class="m">the old places for rules and hooks still work</text><text x="48" y="172" class="tag">M1</text>
+<rect class="b" x="36" y="212" width="300" height="54" rx="8"/><text x="48" y="235" class="h">Claude sessions</text><text x="48" y="253" class="m">started in ~/estiva · read it while they run</text>
+<path class="a" d="M186,212 L186,188"/>
+<rect class="w" x="390" y="20" width="310" height="120" rx="10"/><text x="406" y="46" class="h">GitHub</text><text x="406" y="88" class="m">app repositories</text><text x="406" y="106" class="m">the estiva plugin</text>
+<rect class="ok" x="526" y="36" width="164" height="52" rx="8"/><text x="538" y="58" class="h">Process repository</text><text x="538" y="76" class="m">private · every change</text>
+<path class="an" d="M336,100 L370,100 L370,62 L518,62"/><text x="400" y="130" class="tag">M1</text><text x="424" y="130" class="m">commit with the reason, push</text>
+<rect class="w" x="390" y="190" width="310" height="120" rx="10"/><text x="406" y="216" class="h">Katerina's computer</text>
+<rect class="ok" x="556" y="234" width="130" height="58" rx="8"/><text x="566" y="256" class="h">Process folder</text><text x="566" y="274" class="m">the same checkout</text>
+<rect class="b" x="406" y="234" width="130" height="58" rx="8"/><text x="416" y="256" class="h">Claude sessions</text><text x="416" y="274" class="m">same skills, rules</text>
+<path class="a" d="M536,263 L552,263"/>
+<path class="an" d="M650,92 L650,230"/><text x="400" y="176" class="tag">M2</text><text x="424" y="176" class="m">pulled when a session starts</text>
+</svg>
+<figcaption>Milestone 1 changes Miky's computer only: one folder, one history, the same path. Milestone 2 adds the second computer. What stays on each machine and never enters the repository: sign-in secrets, the server key, and the agent's memory notes.</figcaption>
+</figure>
+
+<h2>Flow</h2>
+<figure>
+<svg viewBox="0 0 720 320" role="img">
+<title>Miky corrects how a skill behaves; his session changes the skill in the process folder and commits it with the reason; the commit is pushed to the process repository; Katerina's next session pulls it when it starts and her /kickoff reads the new text. A revert travels the same way.</title>
+<rect class="b" x="20" y="14" width="170" height="40" rx="8"/><text x="34" y="39" class="h">Miky's session</text>
+<rect class="b" x="275" y="14" width="170" height="40" rx="8"/><text x="289" y="39" class="h">Process repository</text>
+<rect class="b" x="530" y="14" width="170" height="40" rx="8"/><text x="544" y="39" class="h">Katerina's session</text>
+<line class="life" x1="105" y1="54" x2="105" y2="310"/><line class="life" x1="360" y1="54" x2="360" y2="310"/><line class="life" x1="615" y1="54" x2="615" y2="310"/>
+<text x="118" y="84">1  Miky corrects a skill;</text><text x="118" y="100" class="m">the session edits it in place</text>
+<rect class="ok" x="118" y="112" width="220" height="40" rx="6"/><text x="128" y="130">2  commits it with the reason</text><text x="128" y="146" class="m">live here at once, as today</text>
+<path class="an" d="M105,178 L356,178"/><text x="118" y="172">3  pushes</text>
+<path class="an" d="M360,222 L611,222"/><text x="374" y="216">4  pulled when her session starts</text>
+<text x="420" y="254">5  her /kickoff reads the new text</text>
+<text x="118" y="290">6  a bad change: one revert,</text><text x="118" y="306" class="m">and steps 3 to 5 carry it out again</text>
+</svg>
+<figcaption>The step that is new for Miky's sessions is 2: a change is no longer just a saved file. Steps 3 to 5 replace copying by hand, which nobody does today. A change goes straight in, with no pull request first, and only sessions on Miky's computer make one (Miky, 20 Nov).</figcaption>
+</figure>
+
+<h2>Access</h2>
+<div class="tw">
+<table>
+<thead><tr><th>What</th><th>Who can see it</th><th>Who can change it</th><th>Checked by</th></tr></thead>
+<tbody>
+<tr><td>Skills, reviewers, rules, hooks — today</td><td>Whoever is at Miky's computer</td><td>Any session on it; no record of what changed or why</td><td>Nobody</td></tr>
+<tr class="new"><td>The same files — after</td><td>Whoever can read the process repository: it is private, to Miky, Katerina and their sessions</td><td>Sessions on Miky's computer; each change is a commit that says why. Katerina's sessions follow it</td><td>GitHub, for who may push; the history, for what and why</td></tr>
+<tr><td>Sign-in secrets and the server key</td><td>The machine they are on</td><td>Miky</td><td>Unchanged: they never enter the repository</td></tr>
+</tbody>
+</table>
+</div>
+<p class="sub">The green row is the change. Someone who cannot read the repository gets nothing new: the app repositories' own rules still reach them, as today.</p>
+
+<h2>Checked</h2>
+<ul>
+<li><b>Not in git.</b> <code>git -C ~/estiva/.claude rev-parse</code> answers "not a git repository"; <code>~/estiva</code> is not one either (20 Nov).</li>
+<li><b>What is there.</b> Eight skills, <code>/land</code>'s nine scripts, four reviewers; <code>~/estiva/CLAUDE.md</code> (606 lines); three hooks in <code>~/.claude/hooks</code>, named by absolute path in <code>~/.claude/settings.json</code>; <code>decision-briefs/FORMAT.md</code> (listed 20 Nov).</li>
+<li><b>Sessions read it while they run.</b> Claude Code applies skill and reviewer edits without a restart (its docs, "Edit a skill during a session").</li>
+<li><b>Katerina's computer.</b> GitHub holds the app repositories and the plugin (<code>estiva-agent/plugin</code>, with no skills in it); no repository holds the process files (<code>gh repo list estiva-app</code>, 20 Nov). Her computer itself was not looked at.</li>
+<li><b>Not verified.</b> Whether the rules file can sit inside the process folder and still be read by a session started in an app repository; the first milestone probes it, and the fallback keeps the file where it is, linked into the checkout. Whether a <code>.git</code> inside the folder changes anything for a session: the docs are silent, and the first issue checks it with a throwaway session.</li>
+</ul>
+
+</main>
+</body>
+</html>

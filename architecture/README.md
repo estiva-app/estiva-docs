@@ -16,6 +16,13 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [Our process skills live in git](our-process-skills-live-in-git.html)
+  — Shaped, 2026-11-20. The folder of skills, reviewers, rules and hooks that
+  tell Claude how we work becomes a git checkout at the same path, with a
+  private repository on GitHub, so every change says why, can be undone, and
+  reaches a second computer when a session starts. Read at
+  `https://docs.estiva.app/architecture/our-process-skills-live-in-git.html`.
+
 - [Documents and topics stop downloading every edit](documents-and-topics-stop-downloading-every-edit.html)
   — Shaped, 2026-11-19. Leaf pages and Peek topics are read as they are now
   and written in order at one announced moment, a delete marks only the file
