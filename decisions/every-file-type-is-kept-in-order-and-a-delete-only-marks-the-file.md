@@ -47,11 +47,9 @@ topics, documents) and not just projects."
 ## Context
 
 - [a-file-is-its-fields-each-kept-in-order-by-the-relay](a-file-is-its-fields-each-kept-in-order-by-the-relay.md)
-  is the rule; SPEC §6.13 brought it in type by type, each at its own switch
-  (`requires_prev` in NIP-11). On 2026-11-20 the Estiva relay advertises
-  `"files": {"requires_prev": ["osnova.project", "osnova.issue"]}`: projects
-  switched on 11 Nov and issues on 19 Nov. Documents and topics are next, as
-  one stage and at one moment.
+  is the rule; SPEC §6.13 brought it in type by type, each at its own switch.
+  Projects and issues are kept in order; documents and topics are next, as one
+  stage and at one moment.
 - While any type is unswitched, every app and the agent keep two ways of
   reading and writing files, the relay keeps a list of which types are in
   order, and SPEC tells an outside builder to read that list and build both
@@ -76,35 +74,31 @@ topics, documents) and not just projects."
 
 ## Decision
 
-1. **The old way goes after a hold.** Documents and topics switch together, at
-   one announced moment. Until Miky and Katerina have each looked, after both
-   the issues switch and this one, and found nothing missing, a switch can be
-   turned back. Then the relay's per-type switches go, and the apps, the
+1. **The old way goes after a hold.** Until Miky and Katerina have each
+   looked, after both the issues switch and the documents-and-topics switch,
+   and found nothing missing, a switch can be turned back. Then the relay's per-type switches go, and the apps, the
    shared code and the agent drop the path that reads every change and writes
    without order.
 2. **A delete touches only the file.** Deleting a file is one change to its
    `deleted` field, by anyone who may edit it. No sub-page is moved under
-   another parent and no topic is taken off its team's list: while a page is
-   deleted its sub-pages are drawn as if it were absent, and a restore brings
-   back exactly what was there.
+   another parent and no topic is taken off its team's list, so a restore
+   brings back exactly what was there.
 3. **After the close, every server that speaks the protocol keeps every type
    of file in order and answers the list read.** SPEC keeps no fallback for a
-   server that does not; one that does not is not conformant. A new type is in
-   order from its first change, as a named type already is.
-4. **Nobody removes a whole file for good**, a team's or the workspace's owner
-   or admin included: a server refuses a removal that names a file's first
-   record, so every deleted file can be brought back. Removing an older change
+   server that does not; one that does not is not conformant.
+4. **Nobody removes a whole file for good**, an owner or admin included: a server refuses a removal that names a file's first
+   record, and a file's first record or change that would expire on its own
+   (NIP-40 `expiration`), so every deleted file can be brought back. Removing an older change
    for good, for a pasted password, stays an admin's action as SPEC §6.5 says.
    Removing a whole file for good, for a legal or privacy reason, is its own
    later feature.
 5. **A team that ever held a file is archived, never deleted.** A server
    refuses to delete a team while any file was filed in it, deleted ones
-   included, and says to archive it instead. Only a team that never held a
+   included, or its list names one, and says to archive it instead. Only a team that never held a
    file can be deleted.
 6. **An app declares Delete as what it writes**: a change of the file's
    `deleted` field with a confirm step, like Archive. A listing that still
-   declares a NIP-09 deletion for a file is read the same way, and the
-   NIP-09 declaration is left for what is not a file.
+   declares a NIP-09 deletion for a file is read the same way.
 
 SPEC §6.13, §6.5, §6.2, §6.7, §6.14, §3.3, §6.1, §7.3 and §9, KINDS.md and
 TYPES.md carry it out (the issue "The SPEC says every file type is kept in
@@ -132,7 +126,7 @@ writing files".
 - **A fallback for a server without the list read or without order**, as the
   record this one supersedes in part kept. Every builder would keep a second
   way of reading and writing for a server nobody runs.
-- **An owner or admin may still remove a whole file for good.** One action
+- **An owner or admin may remove a whole file for good.** One action
   would undo the promise that a delete can be brought back, and remove a file
   other people wrote; a legal or privacy removal is a feature of its own, with
   its own rules.
@@ -153,9 +147,16 @@ writing files".
   343 topic changes that name nothing stay as they are, and are folded by
   time as before; the first ordered change of a field names the newest of
   them.
+- A file deleted the old way, before its type was kept in order, stays
+  deleted and is not offered for restore: the promise starts at each type's
+  switch.
 - Until the close, the hold keeps the switch two-way, as before.
+- A type added later, like a named type already, is in order from its first
+  change; nothing lists it.
 - A deleted page's sub-pages stay where they are; every app draws them as it
   draws the children of a parent it cannot read.
+- A NIP-09 deletion stays for what is not a file: a message, a comment, a
+  reaction.
 - Wider delete: anyone who may edit a topic many people follow may delete it,
   and any of them may bring it back.
 - A pasted password stays removable change by change. A secret pasted into
