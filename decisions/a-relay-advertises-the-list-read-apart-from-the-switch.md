@@ -5,6 +5,12 @@
 - Decided by: Miky, in the ALO-7 kickoff session of 2026-11-02, answering "may an app use the relay's fast project list as soon as the relay offers it, or only from the announced switch?" (the issue "The agent reads and writes projects field by field", its `## Decided` lines)
 - Area: Files
 
+> Superseded in part, 2026-11-20: its fallback for an app that finds no list
+> read, and its consequence that the key can be withdrawn, are replaced by
+> [every-file-type-is-kept-in-order-and-a-delete-only-marks-the-file](every-file-type-is-kept-in-order-and-a-delete-only-marks-the-file.md):
+> after the close every server keeps every file in order and answers the list
+> read, with no fallback. The rest of this record stands until the close.
+
 ## Who it affects
 
 Miky, Katerina and their Claude sessions: each app loads projects at the same

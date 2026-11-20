@@ -17,6 +17,11 @@
 > the protocol's type names, search over the current version and the staged
 > build stand.
 
+> Superseded in part, 2026-11-20: its consequence "Close to two-way" is
+> replaced by
+> [every-file-type-is-kept-in-order-and-a-delete-only-marks-the-file](every-file-type-is-kept-in-order-and-a-delete-only-marks-the-file.md):
+> after the close every server keeps every file in order, one-way.
+
 ## Who it affects
 
 Miky and Katerina: lists stay the same size as edits pile up, as decided on 29

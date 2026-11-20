@@ -5,6 +5,12 @@
 - Decided by: Miky, in the TEA-3 session (2026-11-02), on the brief "Who can claim a topic"
 - Area: Folders
 
+> Superseded in part, 2026-11-20: "or deleted", in how a topic leaves a team,
+> is replaced by
+> [every-file-type-is-kept-in-order-and-a-delete-only-marks-the-file](every-file-type-is-kept-in-order-and-a-delete-only-marks-the-file.md):
+> a deleted topic stays on its team's list, so a restore puts it back where
+> it was.
+
 ## Who it affects
 
 Katerina moves #bugs from Engineering to Design in Peek. If Design does not
