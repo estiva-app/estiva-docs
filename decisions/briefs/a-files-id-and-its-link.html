@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A file's id and link</title>
+<style>
+:root{--bg:#fbfaf7;--ink:#1d1d1b;--soft:#6b6a65;--box:#ffffff;--line:#c9c6bd;--ok:#2f7d4f;--bad:#b4442f;--pick:#f1ecdc;}
+@media (prefers-color-scheme: dark){:root{--bg:#191917;--ink:#ecebe6;--soft:#a3a29b;--box:#24241f;--line:#4a4943;--ok:#6cc08f;--bad:#e88a74;--pick:#2e2b21;}}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;margin:0}
+main{max-width:760px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:1.5rem;line-height:1.25;margin:0 0 8px}
+h2{font-size:1.1rem;margin:32px 0 8px}
+p,li{margin:6px 0}
+.q{font-size:1.15rem;font-weight:600}
+.soft{color:var(--soft);font-size:.92rem}
+svg{width:100%;height:auto;display:block;margin:8px 0}
+svg text{fill:var(--ink);font:13px system-ui,sans-serif}
+svg .s{fill:var(--soft);font-size:12px}
+svg .b{fill:var(--box);stroke:var(--line)}
+svg .ok{fill:var(--ok)} svg .bad{fill:var(--bad)}
+svg .ar{stroke:var(--soft);fill:none;marker-end:url(#a)}
+.opt{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:12px 0;background:var(--box)}
+.opt.pick{background:var(--pick)}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{border-top:1px solid var(--line);padding:6px 6px;text-align:left;vertical-align:top}
+.wrap{overflow-x:auto}
+code{font-size:.88em}
+</style>
+</head>
+<body><main>
+<h1>A file's id and its link</h1>
+<p class="q">When an app makes a file whose id is not one of our usual random ids, what link should that file get, so that it opens the same file in Peek, Ship and Leaf?</p>
+
+<h2>Today</h2>
+<p>Every file Peek, Ship and Leaf make gets a random id (a uuid). Its link is the title then the id: <code>ship.estiva.app/issue/fix-login-3f0c1a52-…</code>. You can swap the host for Leaf or Peek and it opens the same issue; pasted into a conversation it draws as the issue. You decided that on 20 Oct ("One file, one address, any app's host").</p>
+<p>The protocol lets another app pick its own ids. Our main document says a file's id is a uuid; the shorter rule an outside company reads first (the file standard) only says it <em>should</em> be one. The link tests written this week tried thousands of made-up ids and found that for an id that is not a lowercase uuid, each app answers differently: Peek writes a long link with the whole address in it, Ship would write a short link that opens nothing, Leaf falls back to its old coded link. Production today has <strong>no</strong> such file (all 1,700+ files checked on 20 Nov).</p>
+
+<h2>Why it reaches beyond this ticket</h2>
+<p>It sets what any company building on the protocol may use as an id, and what link every app owes such a file. Today it is cheap either way. Once outside apps publish files with their own ids, or people paste their links into messages, the rule can only be loosened, never tightened: messages keep the links they were written with.</p>
+
+<h2>The picture</h2>
+<svg viewBox="0 0 720 300" role="img"><title>An odd id today and under each option</title>
+<defs><marker id="a" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L8 4L0 8z" fill="currentColor"/></marker></defs>
+<rect class="b" x="10" y="20" width="160" height="60" rx="8"/><text x="22" y="44">A file with id</text><text x="22" y="64">"PROJ-123"</text>
+<text x="200" y="18" class="s">Today: each app its own answer</text>
+<rect class="b" x="200" y="26" width="510" height="26" rx="6"/><text x="210" y="44">Peek: long link with the whole address</text><text x="620" y="44" class="ok">opens</text>
+<rect class="b" x="200" y="56" width="510" height="26" rx="6"/><text x="210" y="74">Ship: short link with "PROJ-123" in it</text><text x="620" y="74" class="bad">opens nothing</text>
+<rect class="b" x="200" y="86" width="510" height="26" rx="6"/><text x="210" y="104">Leaf: its old coded link (/f/naddr…)</text><text x="620" y="104" class="s">Leaf only</text>
+<line x1="10" y1="132" x2="710" y2="132" stroke="var(--line)"/>
+<text x="10" y="156" font-weight="600">A · every app writes and reads one long link for such a file</text>
+<text x="22" y="178" class="s">/issue/30851:&lt;who made it&gt;:PROJ-123 — same path on any host; opens and draws as the file everywhere</text>
+<text x="10" y="210" font-weight="600">B · a file's id must be a lowercase uuid; the relay refuses any other</text>
+<text x="22" y="232" class="s">the app that tries "PROJ-123" gets an error when it saves; every file has one short link</text>
+<text x="10" y="264" font-weight="600">C · leave it until such a file exists</text>
+<text x="22" y="286" class="s">nothing changes; the first outside app with its own ids gets links that differ per app</text>
+</svg>
+
+<h2>Options</h2>
+<div class="opt pick"><strong>B · A file's id is always a lowercase uuid, and the relay says so when an app tries another.</strong>
+<p>You and Katerina see nothing change: every file keeps one short, readable link. An outside company importing its tracker keeps "PROJ-123" as a field on the file (its title or a reference), not as the id. Its app learns the rule the first time it saves, from the relay's answer, instead of finding later that its links open nothing.</p>
+<p><em>What could go wrong:</em> a generic Nostr client that writes our file kinds with its own ids is refused. App settings and app listings are not files and keep their own ids (the census found ids like that only there).</p></div>
+<div class="opt"><strong>A · Any id works, and every app writes and reads the long link for one that is not a uuid.</strong>
+<p>You see nothing change. An outside company can keep its own ids as the file's id. Every app, theirs included, must write and read two link shapes: the short one, and a long one carrying the whole address (Peek's today). Pasted into a message, the long link is ugly but works.</p>
+<p><em>What could go wrong:</em> two shapes forever, and each new app has to get the second one right; the week's tests found three apps getting it wrong three ways.</p></div>
+<div class="opt"><strong>C · Do less: leave the rule as it is.</strong>
+<p>Nothing to build. The day an outside app uses its own ids, its links open in some apps and not others, and a pasted one may stay a plain link.</p></div>
+
+<h2>Trade-offs</h2>
+<div class="wrap"><table>
+<tr><th></th><th>Protocol shape</th><th>What people see</th><th>Outside company</th><th>Undo cost</th><th>Build cost</th></tr>
+<tr><td>B</td><td>One id rule, one link shape; the file standard matches our main document</td><td>Nothing changes</td><td>Must make a uuid id; told at save</td><td>Low: loosening later is easy</td><td>File standard wording, a relay rule, one test</td></tr>
+<tr><td>A</td><td>Any id; two link shapes every app must handle</td><td>Nothing changes; odd links are long</td><td>Keeps its own ids; must build both shapes</td><td>High once long links sit in messages</td><td>Ship and Leaf learn the long link; shared reader</td></tr>
+<tr><td>C</td><td>Two documents disagree</td><td>Nothing, until it breaks</td><td>Finds out from broken links</td><td>—</td><td>None</td></tr>
+</table></div>
+
+<h2>How others do it</h2>
+<ul>
+<li>Linear, Notion, Google Docs: the id in a link is always one the system made; a person's own code ("PROJ-123") is a field shown beside it.</li>
+<li>Nostr itself lets an id be any text; that is why the file standard only says "should". The stricter rule would be ours, for our file kinds only.</li>
+</ul>
+
+<h2>Recommendation</h2>
+<p><strong>B.</strong> One id rule gives every file one link that works in every app, which is what "one file, one address, any app's host" promised; our main document already says a file's id is a uuid, so this makes the file standard say the same and lets the relay tell an app at save rather than its people finding dead links later. It is also the reversible one: if an outside company needs its own ids, we can open the door to A then; closing it after links exist is not possible. The product reviewer on this ticket leaned A, for the outside company keeping its ids; I think a field carries that better than the id.</p>
+
+<h2>Checked</h2>
+<ul>
+<li>No file with a non-uuid id on production: every file kind read as the agent, 20 Nov (ids that are not uuids exist only on app settings and one app listing).</li>
+<li>Main document requires a uuid id for a bare file and a document; the file standard says "should".</li>
+<li>Each app's answer for such an id: from this week's tests and the fixes merged today in Peek, Ship and Leaf.</li>
+<li>Not checked: whether any generic Nostr client writes our file kinds today (none seen on our relay).</li>
+</ul>
+
+<p class="soft">For the record: TES-4; NIP-FC line 65 ("d SHOULD be a UUID"); SPEC §6.7, §6.11 (d REQUIRED opaque uuid), §7.7 (consumer relies on a v4 uuid d); record a-files-path-is-the-same-on-every-apps-host; Peek's long link <code>/topic/&lt;kind&gt;:&lt;pubkey&gt;:&lt;d&gt;</code>; estiva-foundation#252, peek#676, ship#430, leaf#143. Upper-case uuids fall under B too (lowercase only).</p>
+</main></body></html>
