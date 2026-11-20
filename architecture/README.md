@@ -16,6 +16,12 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [Tests that try thousands of inputs](tests-that-try-thousands-of-inputs.html)
+  — Shaped, 2026-11-20. Nothing a person uses changes: each repo's checks gain
+  tests that make up thousands of histories of changes, documents and links,
+  and Ship's own read of a file is compared with the shared read that Peek,
+  Leaf and the agent use. Read at
+  `https://docs.estiva.app/architecture/tests-that-try-thousands-of-inputs.html`.
 - [Documents and topics stop downloading every edit](documents-and-topics-stop-downloading-every-edit.html)
   — Shaped, 2026-11-19. Leaf pages and Peek topics are read as they are now
   and written in order at one announced moment, a delete marks only the file
