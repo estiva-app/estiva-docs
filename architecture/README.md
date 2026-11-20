@@ -16,6 +16,12 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [Move Ship onto the shared read](move-ship-onto-the-shared-read.html)
+  — Shaped, 2026-11-20. Nothing a person uses changes: three pieces of code
+  that read a project or an issue (Ship's own, the shared read, the agent's
+  rebuild of the history) become one, and the shared read gains each field's
+  who and when and the file's history. Read at
+  `https://docs.estiva.app/architecture/move-ship-onto-the-shared-read.html`.
 - [⌘K in every app](k-in-every-app.html)
   — Shaped, 2026-11-20. Peek's ⌘K box moves into one shared piece that Peek,
   Leaf and Ship mount, each handing it what is open; where the browser has the
