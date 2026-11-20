@@ -1105,8 +1105,8 @@ CON-33*).
 
 | Kind | Tag order |
 | --- | --- |
-| `1851`, one field | `a`, [`O`], `field`, `value`, `h`, [`content-format`], `ts`, [`prev`], then any `A`, `o`, `imeta` and `p`, then [`stage`] |
-| `1851`, several fields | `a`, `O`, `h`, `ts`, one `set` per field, then any `content-format`, `A`, `o`, `imeta` and `p`, then one [`stage`] per staged field it sets |
+| `1851`, one field | `a`, [`O`], `K`, `field`, `value`, `h`, [`content-format`], `ts`, [`prev`], then any `A`, `o`, `imeta` and `p`, then [`stage`] |
+| `1851`, several fields | `a`, `O`, `K`, `h`, `ts`, one `set` per field, then any `content-format`, `A`, `o`, `imeta` and `p`, then one [`stage`] per staged field it sets |
 
 The bracketed tags and those after `ts` appear only where a rule asks for them:
 
@@ -1114,10 +1114,21 @@ The bracketed tags and those after `ts` appear only where a rule asks for them:
   [a-change-is-about-its-file-as-a-comment-is](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-change-is-about-its-file-as-a-comment-is.md)).
   A change SHOULD carry `["O", <d>]` naming by its id the file its `a` names,
   as a comment names its file (§6.4); a list entry (`lists:<d>`, §6.14) and a
-  change setting several fields MUST. It is the same target, not a second one,
-  and carries no `K`: the `a` says the kind. A new change keeps its `a`. The
+  change setting several fields MUST. It is the same target, not a second one.
+  A new change keeps its `a`. The
   relay refuses a change whose `a` is not the address of the file its `O`
   names, and a reader ignores one, whether it asked by `#a` or by `#O`.
+- **`K`, the type of the file the change is about** (*added 2026-11-20*;
+  record
+  [a-change-says-the-type-of-its-file](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-change-says-the-type-of-its-file.md)).
+  A change MUST carry `["K", <type>]` after its `O` (after `a` when it has no
+  `O`), naming by name
+  (§6.1, such as `osnova.document`) the type of the file its `a` names, as a
+  comment carries its file's type (§6.4). An app asks for a person's changes to
+  some types with `{kinds:[1851], authors:[…], "#K":[…]}`. A reader ignores a
+  change whose `K` is not the type of the file its `a` names. Changes written
+  before this carry no `K`: a reader that needs every change asks by `#a` or
+  `#O`, never by `#K` alone.
 - **`prev`, the change it follows for its field**, below.
 - **`A`**, on a move — a change to a `movedBy` field (§7.2) — naming the new
   parent. It is an index, not a second target: `a` (with `O`, the same file) is

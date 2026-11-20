@@ -223,6 +223,7 @@ properties and its history.
 - [A relay may answer when each part of a file last changed, as its own statement under the same read rules, without sending the signed changes](a-relay-may-answer-when-a-file-changed-without-the-change.md) — Accepted, 2026-11-16
 - [Two people's changes to one text merge block by block, and anything that would lose someone's words asks instead](merging-two-changes-to-one-text-never-loses-words.md) — Accepted, 2026-11-02
 - [A change names the file it changes the way a comment names the file it is on, and every other file it points at the way a mention does](a-change-is-about-its-file-as-a-comment-is.md) — Accepted, 2026-10-30
+- [A change says the type of the file it changes, as a comment does, so an app can ask for a person's changes to one type of file](a-change-says-the-type-of-its-file.md) — Accepted, 2026-11-20
 - [A topic keeps its own list of files, one entry per file by its id; a file stays in its Folder's tree and can be in many topics](a-topic-keeps-its-own-list-of-files.md) — Accepted, 2026-10-30
 - [Each file on a topic keeps its own place and look, as notes of their own beside its list entry, so two people arranging at once both keep their change](each-file-on-a-topic-keeps-its-own-place-and-look.md) — Accepted, 2026-11-06
 - [A file can say that only the workspace's owners and admins write it, and the relay keeps to that, for any type](a-file-can-say-only-admins-write-it-and-the-relay-keeps-to-it.md) — Accepted, 2026-10-30
