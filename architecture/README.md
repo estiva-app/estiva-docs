@@ -16,6 +16,12 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [⌘K in every app](k-in-every-app.html)
+  — Shaped, 2026-11-20. Peek's ⌘K box moves into one shared piece that Peek,
+  Leaf and Ship mount, each handing it what is open; where the browser has the
+  local Decisions API, a guess orders the suggested actions. Nothing on the
+  relay changes. Read at
+  `https://docs.estiva.app/architecture/k-in-every-app.html`.
 - [Tests that try thousands of inputs](tests-that-try-thousands-of-inputs.html)
   — Shaped, 2026-11-20. Nothing a person uses changes: each repo's checks gain
   tests that make up thousands of histories of changes, documents and links,
