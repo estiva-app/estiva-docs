@@ -5,6 +5,11 @@
 - Decided by: Miky, on 2026-09-25 when asked whether Folder commands should be declared as app actions (MAN-3), and in the MAN-3 kickoff session on 2026-10-02 for how the operations are given
 - Area: Folders
 
+> Superseded in part, 2026-11-20: "unlist a deleted file" leaves §3.3's list
+> of operations, by
+> [every-file-type-is-kept-in-order-and-a-delete-only-marks-the-file](every-file-type-is-kept-in-order-and-a-delete-only-marks-the-file.md):
+> a delete takes nothing off a list.
+
 ## Who it affects
 
 Miky and Katerina see the same Folders, with the same create, rename, archive,
