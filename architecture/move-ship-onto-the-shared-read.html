@@ -77,10 +77,10 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 
 
 <h1>Move Ship onto the shared read</h1>
-<p class="sub"><span class="state">Shaped, 2026-11-20</span> · <a href="https://ship.estiva.app/#/project/45283dd2-c80c-4c5a-a2b0-dcddb44f7f61">Ship project</a> · Goal: Ship reads a project or an issue with the same code Peek, Leaf and the agent use, so there is no second read left to disagree with them. Follows <a href="tests-that-try-thousands-of-inputs.html">Tests that try thousands of inputs</a>.</p>
+<p class="sub"><span class="state">As built, 2026-11-23</span> · shaped 2026-11-20 · <a href="https://ship.estiva.app/#/project/45283dd2-c80c-4c5a-a2b0-dcddb44f7f61">Ship project</a> · Goal: Ship reads a project or an issue with the same code Peek, Leaf and the agent use, so there is no second read left to disagree with them. Follows <a href="tests-that-try-thousands-of-inputs.html">Tests that try thousands of inputs</a>.</p>
 <!-- A later page about the same parts links this one here. -->
 
-<p>Nothing a person uses changes. Today the same changes to a project or an issue are turned into what you see by three pieces of code: Ship's own, the shared one, and the agent's rebuild of the history. After, there is one, and it gives any app what only Ship's gave.</p>
+<p>Nothing a person uses changes. Before, the same changes to a project or an issue were turned into what you see by three pieces of code: Ship's own, the shared one, and the agent's rebuild of the history. As built, there is one, and it gives any app what only Ship's gave.</p>
 
 <div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lgone">goes away</span><span class="lf">untouched, for orientation</span></div>
 
@@ -113,7 +113,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <figcaption>Three pieces of code turn the same changes into a project or an issue. Ship's own read is the only one that gives who set each field and when, and the full history, so the agent rebuilds the history a second time. Left out: Ship already asks the relay through the shared "fields" read and then reads the answer with its own code; and conversations, which every app already reads through one shared piece.</figcaption>
 </figure>
 
-<h3>After</h3>
+<h3>After, as built (23 Nov)</h3>
 <figure>
 <svg viewBox="0 0 720 316" role="img">
 <title>After: the shared read gives each field with who set it and when, and the file's history (milestone 2). Ship reads through it and its own read is removed (milestone 3). The agent reads the history from it and its rebuild is removed (milestone 4). Before any of that, the comparison covers every field Ship shows (milestone 1). A protocol change reruns the link tests (milestone 4).</title>
@@ -126,21 +126,21 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 </g>
 <rect class="ok" x="540" y="20" width="160" height="54" rx="8"/><text x="556" y="44" class="h">Agent</text><text x="556" y="62" class="m">ship / peek CLI</text>
 <rect class="bad" x="20" y="150" width="130" height="60" rx="8"/><text x="32" y="175" class="h">Ship's own read</text><text x="32" y="194" class="m">removed</text><text x="118" y="194" class="tag">M3</text>
-<rect class="ok" x="170" y="150" width="380" height="60" rx="8"/><text x="184" y="175" class="h">Shared read</text><text x="516" y="175" class="tag">M2</text><text x="184" y="194" class="m">a card · each field with who and when · the history</text>
+<rect class="ok" x="170" y="150" width="380" height="60" rx="8"/><text x="184" y="175" class="h">Shared read</text><text x="516" y="175" class="tag">M2</text><text x="184" y="194" class="m">projectEvents: card and fields · historyOf: history</text>
 <rect class="bad" x="570" y="150" width="130" height="60" rx="8"/><text x="582" y="175" class="h">Agent's history</text><text x="582" y="194" class="m">removed</text><text x="668" y="194" class="tag">M4</text>
 <path class="an" d="M110,74 L110,112 L220,112 L220,146"/><text x="150" y="106" class="tag">M3</text>
 <path class="an" d="M610,74 L610,112 L510,112 L510,146"/><text x="548" y="106" class="tag">M4</text>
-<rect class="ok" x="20" y="250" width="400" height="48" rx="8"/><text x="34" y="270" class="h">Old read against new</text><text x="388" y="270" class="tag">M1</text><text x="34" y="288" class="m">every field Ship shows · made-up and real histories</text>
+<rect class="ok" x="20" y="250" width="400" height="48" rx="8"/><text x="34" y="270" class="h">Ship's names against the shared read</text><text x="388" y="270" class="tag">M1</text><text x="34" y="288" class="m">every field Ship shows · made-up histories</text>
 <path class="an" d="M300,250 L300,214"/>
 <rect class="ok" x="440" y="250" width="260" height="48" rx="8"/><text x="454" y="270" class="h">Link tests rerun</text><text x="668" y="270" class="tag">M4</text><text x="454" y="288" class="m">on any protocol change</text>
 </svg>
-<figcaption>One read is left. It grows first (M2), so Ship loses nothing when it moves (M3): the History panel and the archive line read from the shared history. The agent then drops its own rebuild (M4). M1 comes before all of it: the comparison is widened to every field Ship shows, so each step is judged against the code it replaces. Inside the shared package the card and the fields stay two functions that a test keeps agreeing; making them one is not this project. What Ship asks the relay for does not change.</figcaption>
+<figcaption>As built: one read is left. It grew first (M2: interop 0.111.0 gives each field with who set it and when, and <code>historyOf</code> gives a file's history), and was then made about twice as fast on Miky's workspace (interop 0.112.0), so Ship opens no slower on it. Ship moved (M3): its lists and pages read through <code>projectEvents</code>, with a thin naming layer (<code>src/nostr/files.ts</code>), and its History panel and archive line read <code>historyOf</code>; its own read (<code>fold.ts</code>, 902 lines) is deleted. The agent dropped its rebuild (M4, agent 0.38.0), and Peek and Leaf run the same version (interop 0.113.0). The comparison test now guards Ship's naming against the shared read. What a history lists is the record <code>a-files-history-lists-only-the-changes-that-changed-it</code>. What Ship asks the relay for did not change.</figcaption>
 </figure>
 
 <h2>What each read gives</h2>
 <div class="tw">
 <table>
-<thead><tr><th>About a project or an issue</th><th>Ship's own read, today</th><th>Shared read, today</th><th>Shared read, after</th></tr></thead>
+<thead><tr><th>About a project or an issue</th><th>Ship's own read, today</th><th>Shared read, today</th><th>Shared read, as built</th></tr></thead>
 <tbody>
 <tr><td>Title, summary, parent, assignee, archived, deleted</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
 <tr class="new"><td>Status</td><td>As stored</td><td>The card gives its label only; the fields give it as stored</td><td>As stored and its label (M2)</td></tr>
@@ -153,7 +153,16 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <p class="sub">Objects, Flow and Access are not drawn: the project changes no object, nothing moves between apps or people differently, and nobody's access changes. Nothing on the page waits on a decision.</p>
 
 <h2>Checked</h2>
-<p class="sub">Each on the repo's <code>origin/main</code>, 20 Nov.</p>
+<p class="sub">As built, each on the repo's <code>origin/main</code> or on production, 23 Nov.</p>
+<ul>
+<li>Ship: <code>src/nostr/fold.ts</code> and <code>foldFolder</code> are gone from <code>main</code>; <code>src/nostr/files.ts</code> (404 lines) calls interop's <code>projectEvents</code> and <code>historyOf</code>, and <code>pages/history.ts</code> reads <code>historyOfFile</code> from it. ship.estiva.app serves a8e084e, which contains the move (14fa336).</li>
+<li>The comparison: <code>src/nostr/read.shared-read.property.test.ts</code> compares Ship's names against <code>projectEvents</code> and <code>filesOf</code> for every field Ship shows.</li>
+<li>Agent: <code>lib/agent/apps/ship-workspace.ts</code> builds <code>activity</code> from <code>historyOf</code>.</li>
+<li>Peek, Leaf and Ship depend on interop 0.113.0 and protocol 0.67.0; Peek and Leaf serve builds that contain the bump.</li>
+<li>CI: <code>check-interop.yml</code> and <code>check-conversation.yml</code> run on <code>packages/protocol/**</code> too (estiva-foundation#264).</li>
+<li>Production, as QA-1: the two busiest issues' History panels and the archive line of "Catch up the Buzz fork" read word for word as before the move, times aside.</li>
+</ul>
+<p class="sub">As shaped, each on the repo's <code>origin/main</code>, 20 Nov.</p>
 <ul>
 <li>Ship's own read: <code>estiva-ship src/nostr/fold.ts</code>, 902 lines, <code>foldFolder</code> returns <code>{projects, issues, activity, conversations}</code>; called from <code>api/writes.ts</code> and <code>nostr/store.ts</code>. <code>pages/history.ts</code> and <code>lib/archive.ts</code> read <code>activity</code>.</li>
 <li>Shared read, a card: <code>estiva-foundation packages/interop/src/projection.ts</code> <code>projectEvents</code>: pure, a status label, one <code>changedAt</code>/<code>changedBy</code>, no history, <code>comments: []</code>.</li>
