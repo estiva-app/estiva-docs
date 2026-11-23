@@ -16,6 +16,10 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [The relay says what a copy is missing](the-relay-says-what-a-copy-is-missing.html)
+  — Shaped, 2026-11-23. The relay works out who can read in one place and
+  learns to say what a copy on the device is missing (NIP-77); Peek asks for
+  the Desk's own rows first and fetches only the difference.
 - [Move Ship onto the shared read](move-ship-onto-the-shared-read.html)
   — Shaped, 2026-11-20. Nothing a person uses changes: three pieces of code
   that read a project or an issue (Ship's own, the shared read, the agent's
