@@ -5,9 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The relay says what a copy is missing: architecture</title>
 <!--
-  Template for a project's architecture page (process/ARCHITECTURE.md).
-  Copy to architecture/<project-slug>.html, then redraw every example below:
-  the drawings here show the visual language, not any real project.
   Classes: .b box · .w card · .ok new · .bad goes away · .q undecided (dashed)
   · .f untouched (faint) · .a arrow · .an new arrow · .aq undecided arrow
   · .m muted second line · .h bold label · .tag milestone tag.
@@ -114,7 +111,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <h3>After</h3>
 <figure>
 <svg viewBox="0 0 720 380" role="img">
-<title>After: the speed kit measures a reopen (milestone 1). The relay works out who can read in one place and says what a copy is missing (milestone 2). Peek asks for the Desk's own rows first and nothing twice (milestone 3). The copy sends what it holds and fetches only what is missing (milestone 4). The relay change is offered to Block (milestone 5). A catch-up counts once against the allowance, like a question.</title>
+<title>After: the speed kit measures a reopen (milestone 1). The relay works out who can read in one place and says what a copy is missing (milestone 2). Peek asks for the Desk's own rows first and nothing twice (milestone 3). The copy sends what it holds and fetches only what is missing (milestone 4). The relay change is offered to Block (milestone 5). A catch-up counts once against the allowance, like a question. Who sends the offer to Block, and in what form, waits on a decision.</title>
 <rect class="ok" x="20" y="20" width="240" height="60" rx="8"/><text x="34" y="44" class="h">Peek's Desk</text><text x="34" y="62" class="m">its own rows first, nothing twice</text><text x="228" y="44" class="tag">M3</text>
 <rect class="ok" x="20" y="130" width="240" height="64" rx="8"/><text x="34" y="154" class="h">Copy on the device</text><text x="34" y="172" class="m">says what it holds, fetches only</text><text x="34" y="186" class="m">what is missing, drops what is gone</text><text x="228" y="154" class="tag">M4</text>
 <rect class="ok" x="20" y="232" width="190" height="52" rx="8"/><text x="34" y="254" class="h">Speed kit</text><text x="34" y="272" class="m">measures a reopen as Miky</text><text x="180" y="254" class="tag">M1</text>
@@ -125,13 +122,13 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <path class="a" d="M115,130 L115,84"/><text x="124" y="110" class="m">draws from it</text>
 <path class="an" d="M260,146 L446,146 "/><text x="270" y="138">"this is what I hold"</text>
 <path class="an" d="M446,178 L264,178"/><text x="270" y="170">what is missing, what is gone</text>
-<text x="232" y="246" class="tag">M2 · decided 23 Nov</text><text x="232" y="262" class="m">a catch-up counts once against</text><text x="232" y="276" class="m">the 50 requests per 5 s</text>
+<text x="232" y="246" class="tag">M2 · decided 23 Nov</text><text x="232" y="262" class="m">a catch-up counts once against</text><text x="232" y="276" class="m">the 50 requests per 5 s; its rounds are capped</text>
 <rect class="ok" x="450" y="290" width="250" height="56" rx="8"/><text x="466" y="314" class="h">Block's Buzz</text><text x="466" y="332" class="m">the relay change, offered upstream</text><text x="650" y="286" class="tag">M5</text>
-<path class="an" d="M575,216 L575,286"/>
+<path class="aq" d="M575,216 L575,286"/><text x="586" y="244" class="tag">decision</text><text x="586" y="260" class="m">who sends it, and how?</text>
 <g class="f"><rect class="b" x="20" y="316" width="90" height="46" rx="8"/><text x="34" y="338" class="h">Ship</text><text x="34" y="354" class="m">later</text>
 <rect class="b" x="120" y="316" width="90" height="46" rx="8"/><text x="134" y="338" class="h">Leaf</text><text x="134" y="354" class="m">later</text></g>
 </svg>
-<figcaption>Asking a plain question stays, for small questions and for a relay that does not speak NIP-77. Ship and Leaf get catch-up when they get a copy, in their own projects. The copy stays Peek's own; one copy for all three apps is a later project.</figcaption>
+<figcaption>Asking a plain question stays, for small questions and for a relay that does not speak NIP-77. Ship and Leaf get catch-up when they get a copy, in their own projects. The copy stays Peek's own; one copy for all three apps is a later project. Two calls are still Miky's: who sends the offer to Block and in what form (dashed), and the seconds and megabytes the project is checked against, set once milestone 1 has measured a reopen.</figcaption>
 </figure>
 
 <h2>Flow</h2>
@@ -155,7 +152,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <h3>After</h3>
 <figure>
 <svg viewBox="0 0 720 330" role="img">
-<title>After: the Desk draws from the copy. For the Desk's own rows the copy tells the relay what it holds. The relay works out what Miky may read, compares, and answers with what is missing and what is gone. The copy fetches only the missing events and drops the gone ones. The Desk's rows are current within seconds; teams and files read ahead catch up the same way afterwards.</title>
+<title>After: the Desk draws from the copy. For the Desk's own rows the copy tells the relay what it holds. The relay works out what Miky may read, compares, and answers with what is missing and what is gone. The copy fetches only the missing events and drops the gone ones. The Desk's rows are current first; reading ahead into teams and files waits its turn. How many seconds and megabytes the project is checked against waits on a decision after milestone 1.</title>
 <rect class="b" x="20" y="14" width="170" height="40" rx="8"/><text x="34" y="39" class="h">Miky · Peek's Desk</text>
 <rect class="b" x="275" y="14" width="170" height="40" rx="8"/><text x="289" y="39" class="h">Copy on the device</text>
 <rect class="b" x="530" y="14" width="170" height="40" rx="8"/><text x="590" y="39" class="h">Relay</text>
@@ -165,9 +162,9 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <rect class="ok" x="400" y="148" width="205" height="42" rx="6"/><text x="410" y="166">3  works out what Miky may</text><text x="410" y="182" class="m">read, and compares</text><text x="575" y="182" class="tag">M2</text>
 <path class="an" d="M615,214 L364,214"/><text x="372" y="208">4  what is missing, what is gone</text>
 <path class="an" d="M360,250 L611,250"/><text x="372" y="244">5  fetches only the missing</text>
-<path class="an" d="M360,286 L109,286"/><text x="120" y="280">6  Desk rows current;</text><text x="120" y="304" class="m">teams and files catch up after</text>
+<path class="an" d="M360,286 L109,286"/><text x="120" y="280">6  Desk rows current;</text><text x="120" y="304" class="m">teams and files wait their turn</text><rect class="q" x="420" y="272" width="280" height="42" rx="6"/><text x="430" y="290" class="tag">decision</text><text x="430" y="306" class="m">how many seconds, how many MB: after M1</text>
 </svg>
-<figcaption>Steps 2 to 5 are two round trips where today there is one, so a tiny question may stay a plain question. How many seconds step 6 takes is set once milestone 1 has measured it.</figcaption>
+<figcaption>Steps 2 to 5 are two round trips where today there is one, so a tiny question may stay a plain question. How many seconds step 6 may take, and how many megabytes a reopen may download, are Miky's to set once milestone 1 has measured a reopen.</figcaption>
 </figure>
 
 <h2>Access</h2>
@@ -175,7 +172,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <table>
 <thead><tr><th>What</th><th>Who can see it</th><th>Who can change it</th><th>Checked by</th></tr></thead>
 <tbody>
-<tr><td>A message, comment or file in a team (today)</td><td>People who can read that team</td><td>Unchanged</td><td>The relay, on every answer; the rule is repeated for questions, counts and questions over HTTP</td></tr>
+<tr><td>A message, comment or file in a team (today)</td><td>People who can read that team</td><td>Its author, and whoever the team lets</td><td>The relay, on every answer; the rule is repeated for questions, counts and questions over HTTP</td></tr>
 <tr class="new"><td>The same, after</td><td>The same people</td><td>Unchanged</td><td>The relay, in one place that every kind of answer uses</td></tr>
 <tr class="new"><td>What a copy is missing (new)</td><td>Only the person asking, and only about what they may read: something they cannot read is neither counted nor named</td><td>Nobody; it is an answer, not a stored thing</td><td>The relay, before it compares</td></tr>
 <tr><td>The copy on the device</td><td>The person signed in to Peek in that browser, until they sign out</td><td>Peek</td><td>Peek (unchanged)</td></tr>
@@ -186,12 +183,12 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 
 <h2>Checked</h2>
 <ul>
-<li><b>A reopen as Miky.</b> Production, 23 Nov, three reopens of <code>/app/desk</code> from the copy: Desk text at 25–32 ms, 165–178 questions, 40–41 MB (socket and HTTP), quiet at about 30.5 s; kind 1851 (file edits) about 25 MB. A cold open: 148 questions, 43 MB, quiet at 21 s. Kit: <code>catchup-capture.js</code> with the probe, signed in with Miky's delegated session.</li>
+<li><b>A reopen as Miky.</b> Production, 23 Nov, three reopens of <code>/app/desk</code> from the copy: Desk text at 25–32 ms, 165–178 questions, 40–41 MB (socket and HTTP), quiet at about 30.5 s; kind 1851 (file edits) about 25 MB. A cold open: 148 questions, 43 MB, quiet at 21 s. Measured as Miky with a capture of every relay frame, which the project's first issue folds into Peek's speed kit.</li>
 <li><b>The relay has no NIP-77.</b> Buzz <code>origin/nfb-demo-kinds</code>: no <code>NEG-</code> handling; an unknown verb gets a NOTICE (<code>crates/buzz-relay/src/protocol.rs:227</code>).</li>
 <li><b>Who can read, three places.</b> <code>handlers/req.rs:57</code> (questions), <code>handlers/count.rs:236</code> (counts), <code>api/bridge.rs:1469</code> (HTTP), part in the database and part per event afterwards (<code>req.rs:556-578</code>).</li>
-<li><b>1,000 per question.</b> <code>crates/buzz-db/src/store/event.rs:33</code>; a question with no limit gets 1,000 (<code>req.rs:1204</code>). The decision record says 500, which is what Block's apps ask for.</li>
+<li><b>1,000 per question.</b> <code>crates/buzz-db/src/store/event.rs:33</code>; a question with no limit gets 1,000 (<code>req.rs:1204</code>). The decision record says 500, which is what Block's apps ask for; its correction is a change to the record that waits for Miky's merge.</li>
 <li><b>50 requests per 5 s</b>, per person across connections, counting questions, counts and writes (<code>rejection.rs:49</code>).</li>
-<li><b>The copy.</b> <code>packages/platform/src/event-snapshot.ts</code> in estiva-foundation: per question, held events the answer leaves out are dropped (<code>:435-493</code>); 10,000 events. Peek only: Ship and Leaf do not use it, and no shared page exists in any repo.</li>
+<li><b>The copy.</b> <code>packages/platform/src/event-snapshot.ts</code> in estiva-foundation: per question, held events the answer leaves out are dropped (<code>:435-493</code>); 10,000 events. Peek only: Ship and Leaf do not use it, and no copy shared between the apps exists in any repo.</li>
 <li><b>Not verified:</b> when the Desk's own rows are current on a reopen (milestone 1 measures it); how many events the Desk's questions match in all, which decides how large a catch-up the relay must allow.</li>
 </ul>
 
