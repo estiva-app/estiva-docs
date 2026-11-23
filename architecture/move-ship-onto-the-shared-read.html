@@ -86,7 +86,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 
 <h2>Map: who reads a project or an issue</h2>
 
-<h3>Today</h3>
+<h3>Before (20 Nov)</h3>
 <figure>
 <svg viewBox="0 0 720 316" role="img">
 <title>Today: Ship reads a project or an issue with its own code. Peek, Leaf and the agent read it through the shared read, which has two parts: a file as a card, and each field's current value. The agent rebuilds a file's history itself. One test compares Ship's read with the shared read on seven fields.</title>
@@ -134,13 +134,13 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <path class="an" d="M300,250 L300,214"/>
 <rect class="ok" x="440" y="250" width="260" height="48" rx="8"/><text x="454" y="270" class="h">Link tests rerun</text><text x="668" y="270" class="tag">M4</text><text x="454" y="288" class="m">on any protocol change</text>
 </svg>
-<figcaption>As built: one read is left. It grew first (M2: interop 0.111.0 gives each field with who set it and when, and <code>historyOf</code> gives a file's history), and was then made about twice as fast on Miky's workspace (interop 0.112.0), so Ship opens no slower on it. Ship moved (M3): its lists and pages read through <code>projectEvents</code>, with a thin naming layer (<code>src/nostr/files.ts</code>), and its History panel and archive line read <code>historyOf</code>; its own read (<code>fold.ts</code>, 902 lines) is deleted. The agent dropped its rebuild (M4, agent 0.38.0), and Peek and Leaf run the same version (interop 0.113.0). The comparison test now guards Ship's naming against the shared read. What a history lists is the record <code>a-files-history-lists-only-the-changes-that-changed-it</code>. What Ship asks the relay for did not change.</figcaption>
+<figcaption>As built: one read is left. It grew first (M2: interop 0.111.0 gives each field with who set it and when, and <code>historyOf</code> gives a file's history), and was then made about twice as fast on Miky's workspace (interop 0.112.0), so Ship opens no slower on it. Ship moved (M3): its lists and pages read through <code>projectEvents</code>, with a thin naming layer (<code>src/nostr/files.ts</code>), and its History panel and archive line read <code>historyOf</code>; its own read (<code>fold.ts</code>, 761 lines by then) is deleted. The agent dropped its rebuild (M4, agent 0.38.0), and Peek and Leaf run the same version (interop 0.113.0). The comparison test now guards Ship's naming against the shared read. What a history lists is the record <code>a-files-history-lists-only-the-changes-that-changed-it</code>. What Ship asks the relay for did not change.</figcaption>
 </figure>
 
 <h2>What each read gives</h2>
 <div class="tw">
 <table>
-<thead><tr><th>About a project or an issue</th><th>Ship's own read, today</th><th>Shared read, today</th><th>Shared read, as built</th></tr></thead>
+<thead><tr><th>About a project or an issue</th><th>Ship's own read, before</th><th>Shared read, before</th><th>Shared read, as built</th></tr></thead>
 <tbody>
 <tr><td>Title, summary, parent, assignee, archived, deleted</td><td>Yes</td><td>Yes</td><td>Yes</td></tr>
 <tr class="new"><td>Status</td><td>As stored</td><td>The card gives its label only; the fields give it as stored</td><td>As stored and its label (M2)</td></tr>
