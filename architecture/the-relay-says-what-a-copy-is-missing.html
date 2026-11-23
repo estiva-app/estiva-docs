@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The relay says what a copy is missing: architecture</title>
+<!--
+  Classes: .b box · .w card · .ok new · .bad goes away · .q undecided (dashed)
+  · .f untouched (faint) · .a arrow · .an new arrow · .aq undecided arrow
+  · .m muted second line · .h bold label · .tag milestone tag.
+-->
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.example { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
+.legend .lgone::before { background: var(--warn-bg); border-color: var(--warn); }
+.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
+.legend .lf::before { opacity: .45; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+/* Below 560px a diagram scrolls inside its figure instead of shrinking its text. */
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); stroke-width: 1.5; }
+svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .f { opacity: .45; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
+svg .aq { stroke: var(--accent); fill: none; stroke-width: 1.6; stroke-dasharray: 5 4; marker-end: url(#arr-q); }
+svg .life { stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 3 4; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 560px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+tr.new td { background: var(--ok-bg); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+</style>
+</head>
+<body>
+<!-- Arrowheads, shared by every diagram on the page. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+    <marker id="arr-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<main>
+
+<h1>The relay says what a copy is missing</h1>
+<p class="sub"><span class="state">Shaped, 2026-11-23</span> · <a href="https://ship.estiva.app/#/project/53a6c61c-b3fa-4935-ba28-653e506b3759">Ship project</a> · Goal: when Miky reopens Peek, the Desk is up to date within seconds and downloads only what changed.</p>
+
+<p>Peek draws its Desk from the copy on the device at once, then asks the relay for everything again: as Miky, about 170 questions, 40 MB and 30 seconds on every reopen. This project teaches the relay to say what a copy is missing (Nostr's set reconciliation, NIP-77), and has Peek ask for the Desk's own rows first. Look at the Flow first: it is the reopen, before and after.</p>
+
+<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lgone">goes away</span><span class="lq">waits on a decision</span><span class="lf">untouched, for orientation</span></div>
+
+<h2>Map</h2>
+
+<h3>Today</h3>
+<figure>
+<svg viewBox="0 0 720 300" role="img">
+<title>Today: Peek's Desk draws from the copy on the device, then asks the relay about 170 questions again and downloads about 40 megabytes. The relay checks who can read in three separate places and answers at most 1,000 events per question. Ship and Leaf keep no copy.</title>
+<rect class="b" x="20" y="20" width="190" height="60" rx="8"/><text x="34" y="44" class="h">Peek's Desk</text><text x="34" y="62" class="m">on screen about 30 ms after the page</text>
+<rect class="b" x="20" y="130" width="190" height="64" rx="8"/><text x="34" y="154" class="h">Copy on the device</text><text x="34" y="172" class="m">Peek only · up to 10,000 events</text><text x="34" y="186" class="m">platform package</text>
+<g class="f"><rect class="b" x="20" y="230" width="90" height="50" rx="8"/><text x="34" y="254" class="h">Ship</text><text x="34" y="270" class="m">no copy</text>
+<rect class="b" x="120" y="230" width="90" height="50" rx="8"/><text x="134" y="254" class="h">Leaf</text><text x="134" y="270" class="m">no copy</text></g>
+<rect class="b" x="450" y="20" width="250" height="174" rx="8"/><text x="466" y="44" class="h">Relay</text>
+<rect class="w" x="464" y="56" width="222" height="56" rx="6"/><text x="476" y="78">Who can read</text><text x="476" y="96" class="m">worked out in three places: questions,</text><text x="476" y="108" class="m">counts, and questions over HTTP</text>
+<rect class="w" x="464" y="122" width="222" height="58" rx="6"/><text x="476" y="144">Answers a question</text><text x="476" y="162" class="m">at most 1,000 events, newest first;</text><text x="476" y="174" class="m">50 requests per 5 s per person</text>
+<path class="a" d="M115,130 L115,84"/><text x="124" y="110" class="m">draws from it</text>
+<path class="a" d="M210,40 L446,40"/><text x="222" y="32">asks about 170 questions again</text>
+<path class="a" d="M446,150 L214,150"/><text x="222" y="142">about 40 MB, kept in the copy</text>
+<path class="a f" d="M210,255 L330,255 L330,170 L446,170"/>
+</svg>
+<figcaption>The copy saves the first paint and nothing else: a reopen costs the relay and the network what a cold open does. Left out: Estiva ID, the agent, and the live socket that brings changes while the tab is open, which this project does not touch.</figcaption>
+</figure>
+
+<h3>After</h3>
+<figure>
+<svg viewBox="0 0 720 380" role="img">
+<title>After: the speed kit measures a reopen (milestone 1). The relay works out who can read in one place and says what a copy is missing (milestone 2). Peek asks for the Desk's own rows first and nothing twice (milestone 3). The copy sends what it holds and fetches only what is missing (milestone 4). The relay change is offered to Block (milestone 5). A catch-up counts once against the allowance, like a question. Who sends the offer to Block, and in what form, waits on a decision.</title>
+<rect class="ok" x="20" y="20" width="240" height="60" rx="8"/><text x="34" y="44" class="h">Peek's Desk</text><text x="34" y="62" class="m">its own rows first, nothing twice</text><text x="228" y="44" class="tag">M3</text>
+<rect class="ok" x="20" y="130" width="240" height="64" rx="8"/><text x="34" y="154" class="h">Copy on the device</text><text x="34" y="172" class="m">says what it holds, fetches only</text><text x="34" y="186" class="m">what is missing, drops what is gone</text><text x="228" y="154" class="tag">M4</text>
+<rect class="ok" x="20" y="232" width="190" height="52" rx="8"/><text x="34" y="254" class="h">Speed kit</text><text x="34" y="272" class="m">measures a reopen as Miky</text><text x="180" y="254" class="tag">M1</text>
+<rect class="b" x="450" y="20" width="250" height="196" rx="8"/><text x="466" y="44" class="h">Relay</text>
+<rect class="ok" x="464" y="56" width="222" height="44" rx="6"/><text x="476" y="76">Who can read, in one place</text><text x="476" y="92" class="m">every kind of answer uses it</text><text x="660" y="92" class="tag">M2</text>
+<rect class="ok" x="464" y="108" width="222" height="56" rx="6"/><text x="476" y="128">Says what a copy is missing</text><text x="476" y="144" class="m">the whole set, not a page of 1,000</text><text x="476" y="158" class="m">Nostr's NIP-77</text><text x="660" y="158" class="tag">M2</text>
+<rect class="w" x="464" y="172" width="222" height="34" rx="6"/><text x="476" y="194">Answers a question, as today</text>
+<path class="a" d="M115,130 L115,84"/><text x="124" y="110" class="m">draws from it</text>
+<path class="an" d="M260,146 L446,146 "/><text x="270" y="138">"this is what I hold"</text>
+<path class="an" d="M446,178 L264,178"/><text x="270" y="170">what is missing, what is gone</text>
+<text x="232" y="246" class="tag">M2 · decided 23 Nov</text><text x="232" y="262" class="m">a catch-up counts once against</text><text x="232" y="276" class="m">the 50 requests per 5 s; its rounds are capped</text>
+<rect class="ok" x="450" y="290" width="250" height="56" rx="8"/><text x="466" y="314" class="h">Block's Buzz</text><text x="466" y="332" class="m">the relay change, offered upstream</text><text x="650" y="286" class="tag">M5</text>
+<path class="aq" d="M575,216 L575,286"/><text x="586" y="244" class="tag">decision</text><text x="586" y="260" class="m">who sends it, and how?</text>
+<g class="f"><rect class="b" x="20" y="316" width="90" height="46" rx="8"/><text x="34" y="338" class="h">Ship</text><text x="34" y="354" class="m">later</text>
+<rect class="b" x="120" y="316" width="90" height="46" rx="8"/><text x="134" y="338" class="h">Leaf</text><text x="134" y="354" class="m">later</text></g>
+</svg>
+<figcaption>Asking a plain question stays, for small questions and for a relay that does not speak NIP-77. Ship and Leaf get catch-up when they get a copy, in their own projects. The copy stays Peek's own; one copy for all three apps is a later project. Two calls are still Miky's: who sends the offer to Block and in what form (dashed), and the seconds and megabytes the project is checked against, set once milestone 1 has measured a reopen.</figcaption>
+</figure>
+
+<h2>Flow</h2>
+
+<h3>Today: Miky reopens Peek</h3>
+<figure>
+<svg viewBox="0 0 720 250" role="img">
+<title>Today: the Desk draws from the copy in 30 milliseconds. Peek then asks about 170 questions, paced by the relay's allowance, each answered in full. About 40 megabytes arrive and the relay goes quiet after about 30 seconds.</title>
+<rect class="b" x="20" y="14" width="170" height="40" rx="8"/><text x="34" y="39" class="h">Miky · Peek's Desk</text>
+<rect class="b" x="275" y="14" width="170" height="40" rx="8"/><text x="289" y="39" class="h">Copy on the device</text>
+<rect class="b" x="530" y="14" width="170" height="40" rx="8"/><text x="590" y="39" class="h">Relay</text>
+<line class="life" x1="105" y1="54" x2="105" y2="240"/><line class="life" x1="360" y1="54" x2="360" y2="240"/><line class="life" x1="615" y1="54" x2="615" y2="240"/>
+<path class="a" d="M360,84 L109,84"/><text x="120" y="78">1  the saved Desk, in 30 ms</text>
+<path class="a" d="M105,124 L611,124"/><text x="120" y="118">2  about 170 questions, the same as on a cold open</text>
+<rect class="bad" x="380" y="140" width="225" height="40" rx="6"/><text x="390" y="158">3  each answered in full:</text><text x="390" y="174" class="m">about 40 MB, 25 MB of it file edits</text>
+<path class="a" d="M615,206 L364,206"/><text x="120" y="200">4  kept in the copy; quiet after about 30 s</text>
+</svg>
+<figcaption>Measured on production as Miky on 23 Nov, three reopens. The questions are paced by the relay's allowance, so their number alone takes about 20 seconds.</figcaption>
+</figure>
+
+<h3>After</h3>
+<figure>
+<svg viewBox="0 0 720 330" role="img">
+<title>After: the Desk draws from the copy. For the Desk's own rows the copy tells the relay what it holds. The relay works out what Miky may read, compares, and answers with what is missing and what is gone. The copy fetches only the missing events and drops the gone ones. The Desk's rows are current first; reading ahead into teams and files waits its turn. How many seconds and megabytes the project is checked against waits on a decision after milestone 1.</title>
+<rect class="b" x="20" y="14" width="170" height="40" rx="8"/><text x="34" y="39" class="h">Miky · Peek's Desk</text>
+<rect class="b" x="275" y="14" width="170" height="40" rx="8"/><text x="289" y="39" class="h">Copy on the device</text>
+<rect class="b" x="530" y="14" width="170" height="40" rx="8"/><text x="590" y="39" class="h">Relay</text>
+<line class="life" x1="105" y1="54" x2="105" y2="320"/><line class="life" x1="360" y1="54" x2="360" y2="320"/><line class="life" x1="615" y1="54" x2="615" y2="320"/>
+<path class="a" d="M360,84 L109,84"/><text x="120" y="78">1  the saved Desk, in 30 ms</text>
+<path class="an" d="M360,122 L611,122"/><text x="372" y="116">2  "for the Desk's rows, I hold this"</text><text x="300" y="140" class="tag">M3 · M4</text>
+<rect class="ok" x="400" y="148" width="205" height="42" rx="6"/><text x="410" y="166">3  works out what Miky may</text><text x="410" y="182" class="m">read, and compares</text><text x="575" y="182" class="tag">M2</text>
+<path class="an" d="M615,214 L364,214"/><text x="372" y="208">4  what is missing, what is gone</text>
+<path class="an" d="M360,250 L611,250"/><text x="372" y="244">5  fetches only the missing</text>
+<path class="an" d="M360,286 L109,286"/><text x="120" y="280">6  Desk rows current;</text><text x="120" y="304" class="m">teams and files wait their turn</text><rect class="q" x="420" y="272" width="280" height="42" rx="6"/><text x="430" y="290" class="tag">decision</text><text x="430" y="306" class="m">how many seconds, how many MB: after M1</text>
+</svg>
+<figcaption>Steps 2 to 5 are two round trips where today there is one, so a tiny question may stay a plain question. How many seconds step 6 may take, and how many megabytes a reopen may download, are Miky's to set once milestone 1 has measured a reopen.</figcaption>
+</figure>
+
+<h2>Access</h2>
+<div class="tw">
+<table>
+<thead><tr><th>What</th><th>Who can see it</th><th>Who can change it</th><th>Checked by</th></tr></thead>
+<tbody>
+<tr><td>A message, comment or file in a team (today)</td><td>People who can read that team</td><td>Its author, and whoever the team lets</td><td>The relay, on every answer; the rule is repeated for questions, counts and questions over HTTP</td></tr>
+<tr class="new"><td>The same, after</td><td>The same people</td><td>Unchanged</td><td>The relay, in one place that every kind of answer uses</td></tr>
+<tr class="new"><td>What a copy is missing (new)</td><td>Only the person asking, and only about what they may read: something they cannot read is neither counted nor named</td><td>Nobody; it is an answer, not a stored thing</td><td>The relay, before it compares</td></tr>
+<tr><td>The copy on the device</td><td>The person signed in to Peek in that browser, until they sign out</td><td>Peek</td><td>Peek (unchanged)</td></tr>
+</tbody>
+</table>
+</div>
+<p class="sub">Someone who loses access to a team gets its events back as "gone" at the next catch-up, as asking again does today.</p>
+
+<h2>Checked</h2>
+<ul>
+<li><b>A reopen as Miky.</b> Production, 23 Nov, three reopens of <code>/app/desk</code> from the copy: Desk text at 25–32 ms, 165–178 questions, 40–41 MB (socket and HTTP), quiet at about 30.5 s; kind 1851 (file edits) about 25 MB. A cold open: 148 questions, 43 MB, quiet at 21 s. Measured as Miky with a capture of every relay frame, which the project's first issue folds into Peek's speed kit.</li>
+<li><b>The relay has no NIP-77.</b> Buzz <code>origin/nfb-demo-kinds</code>: no <code>NEG-</code> handling; an unknown verb gets a NOTICE (<code>crates/buzz-relay/src/protocol.rs:227</code>).</li>
+<li><b>Who can read, three places.</b> <code>handlers/req.rs:57</code> (questions), <code>handlers/count.rs:236</code> (counts), <code>api/bridge.rs:1469</code> (HTTP), part in the database and part per event afterwards (<code>req.rs:556-578</code>).</li>
+<li><b>1,000 per question.</b> <code>crates/buzz-db/src/store/event.rs:33</code>; a question with no limit gets 1,000 (<code>req.rs:1204</code>). The decision record says 500, which is what Block's apps ask for; its correction is a change to the record that waits for Miky's merge.</li>
+<li><b>50 requests per 5 s</b>, per person across connections, counting questions, counts and writes (<code>rejection.rs:49</code>).</li>
+<li><b>The copy.</b> <code>packages/platform/src/event-snapshot.ts</code> in estiva-foundation: per question, held events the answer leaves out are dropped (<code>:435-493</code>); 10,000 events. Peek only: Ship and Leaf do not use it, and no copy shared between the apps exists in any repo.</li>
+<li><b>Not verified:</b> when the Desk's own rows are current on a reopen (milestone 1 measures it); how many events the Desk's questions match in all, which decides how large a catch-up the relay must allow.</li>
+</ul>
+
+</main>
+</body>
+</html>
