@@ -5,6 +5,12 @@
 - Decided by: Miky, in the shaping session of the project "Documents and topics stop downloading every edit" (2026-11-19), the project's `## Decided` lines: the hold, the delete and conformance as three calls, then removing a whole file for good as a fourth in the same session; and in the kickoff session of its issue "The SPEC says every file type is kept in order, and how the list closes" (2026-11-20): a team that ever held a file, and how an app declares Delete
 - Area: Files
 
+> Superseded in part, 2026-11-24: decision 1's wait for Katerina's look
+> before the close is replaced by
+> [the-old-way-goes-once-miky-has-looked](the-old-way-goes-once-miky-has-looked.md):
+> the old way goes once Miky has looked, and her look follows the close. The
+> rest of this record stands.
+
 > Supersedes in part:
 >
 > - [a-relay-advertises-the-list-read-apart-from-the-switch](a-relay-advertises-the-list-read-apart-from-the-switch.md):
