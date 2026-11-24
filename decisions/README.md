@@ -184,6 +184,7 @@ heading here.
 
 - [A file's address is the same in every app with only the host changed, every app answers it, and a pasted one is that file on any Estiva app's host](a-files-path-is-the-same-on-every-apps-host.md) — Accepted, 2026-10-20; its "a click opens the address as written" superseded by the one below, 2026-11-03
 - [A file's id is a random (version 4) lowercase uuid, the same rule as a team's id](a-files-id-is-a-random-uuid-the-same-rule-as-a-teams-id.md) — Accepted, 2026-11-24
+- [Every server that speaks the protocol refuses a file whose id is not a random uuid, not only ours](every-server-refuses-a-file-whose-id-is-not-a-random-uuid.md) — Accepted, 2026-11-24
 - [An old link shape is rewritten where it is stored and then no app reads it, and the Specification does not ask an app to keep reading links it once published](an-old-link-shape-is-rewritten-where-it-is-stored-and-then-no-app-reads-it.md) — Accepted, 2026-11-24
 - [A file's id is always a lowercase uuid, so every file has one short link that opens it in every app; an id a person knows it by is a field](a-files-id-is-a-lowercase-uuid.md) — Accepted, 2026-11-20
 - [A link opens in the app you are in when that app has a page made for that kind of file and can show what the link points at; otherwise it opens as written](a-link-opens-in-the-app-you-are-in-when-it-has-a-page-made-for-that-kind.md) — Accepted, 2026-11-03
