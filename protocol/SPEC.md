@@ -900,8 +900,8 @@ so a reconciliation tells a reader nothing a `REQ` would not.
   refused `auth-required:`; there is no bridge endpoint.
 - **One filter**, with only `ids`, `authors`, `kinds`, single-letter tags
   (`#h`, `#d`, …), `since` and `until`. Any other key, `limit` and `search`
-  included, is refused `invalid:` rather than ignored (strfry honours `limit`):
-  a set cut short would make "past the limit" look like "deleted".
+  included, is refused `invalid:` rather than ignored: a set cut short would
+  make "past the limit" look like "deleted".
 - **Who can read is checked once, at `NEG-OPEN`**, and the set is built then;
   later rounds answer from it. A filter naming only teams the reader may not
   read is refused in a `REQ`'s words (`restricted: not a channel member`),
