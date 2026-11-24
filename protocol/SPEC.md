@@ -4131,6 +4131,17 @@ the app *serving* a path:
    word outside that rather than writing it into an address, and an app whose
    own pages still sit at the root (rule 3) ignores their words too. Two manifests declaring one word for different kinds is a
    collision, which a manifest publisher MUST refuse to publish.
+   The kind's owner is the manifest that answers for its noun (*added
+   2026-11-24*, LIN-2): the newest claiming the kind by `k` and projecting it
+   (§6.11), and for a bare file (`30840`), which no manifest may claim, the
+   newest declaring the `conversation` aspect with an `naddr` `web` template
+   (§7.8). The author's `kind:31989` is not read for the word, which is the
+   kind's on every host. A writer ignores another manifest's word for the
+   kind, and writes the file's `/o/<naddr>` (rule 3) when the owner declares
+   no `<d>` path shape for it, or when its word would not match back as that
+   file and kind on every declared host, as when a stranger's manifest
+   declares the same word for another kind. A `30852` has no word: a `urls`
+   tag names a kind, and that kind holds every named type.
 2. **An app serves every declared shape.** For a path whose type word some
    manifest declares, an app resolves the `d` as a pasted link resolves it
    (`{kinds: [<kind>], "#d": ["<d>"]}`, one author) and then either draws the
