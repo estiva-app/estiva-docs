@@ -426,6 +426,13 @@ link, recover the object. They are usually the same strings and are separate
 fields because they answer different questions, and because an app that changes
 its routes still has to read the links it published under the old ones.
 
+> *Superseded 2026-11-24* (record
+> [an-old-link-shape-is-rewritten-where-it-is-stored-and-then-no-app-reads-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/an-old-link-shape-is-rewritten-where-it-is-stored-and-then-no-app-reads-it.md);
+> SPEC §7.7). An app that changes its routes is no longer asked to keep reading
+> the links it published under the old ones: stored old-shape links are
+> rewritten once, and then no app reads them. The `#/issue/<d>` line above and
+> the two paragraphs arguing for it are kept as history, not as a rule.
+
 **A consumer matches a pasted URL against the patterns from every published
 `kind:31990`.** Those are global and queryable ([SPEC §7](SPEC.md)), so this
 works for an app the consumer has never heard of, with no per-app integration,
@@ -445,7 +452,8 @@ infrastructure, so it is named rather than assumed.
 *Done, 2026-09-03 (SHI-16).* Ship serves `/project/<slug>-<d>` and
 `/issue/<slug>-<d>`, the fallback is in `deploy/nginx.conf`, and a deep path
 returns 200 on reload rather than 404. Links published under the old hash shape
-still resolve, and are declared in `urls` so consumers resolve them too. **Both
+still resolve, and are declared in `urls` so consumers resolve them too
+(*superseded 2026-11-24*: see the note in §7.5; no app is asked to keep them). **Both
 apps now implement §7**, which is what moved this section from a proposal to a
 description.
 

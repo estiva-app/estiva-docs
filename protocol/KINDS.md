@@ -157,6 +157,17 @@ only. A client's `45011` is refused: only the relay writes one. `30852` is
 `MessagesWrite` on `1851` is doing real work: it is what lets one member set a
 field on another member's object, which is the normal case in a tracker.
 
+**A file's `d` is a random lowercase uuid, or the event is refused** (*added
+2026-11-24*, SPEC §6.1, §9.2 R10). Every `30840`, `30842`, `30850`, `30851`
+and `30852` without exactly one `d` matching
+`^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$` is
+refused `invalid: bad-file-id:`, every save and not only the first. So is a
+`1851` or `1852` that names a file by any other id in its `a` (a file kind's
+address), its `o`, or a `1851`'s `O`. It is read from the event alone, after
+membership, so the answer is the same whether or not such a file is stored.
+Any other kind keeps its own `d` (an app's `30078` settings, a `31990`
+listing).
+
 `30842` / `30851` / `1851` / `40003` **require `h` at ingest.** The team is not
 optional — several apps write these kinds, and one of them forgetting would put
 an unreachable object into the shared space that nobody can unpublish.
