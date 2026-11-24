@@ -371,24 +371,24 @@ last owner. No new refusal code. Record
     not later than every marked first record in its team; the app writes it
     again with a later one and tells nobody (§6.1).
   - `requires-prev` (`invalid:`): a change with no `prev` to a file, of any
-    type (§6.13, *added 2026-11-18*; every type from the close). The app opens
+    type (§6.13, *added 2026-11-18*; every type since 2026-11-24). The app opens
     the file and writes the change again in order; a relay from before this
     code says it in words alone (§6.13, "A writer that did not name the change
     it follows").
   - `text-is-a-change` (`invalid:`): a new first record carries its text: a
     `30850`, `30851`, `30840` or `30842` with a `description` tag or with
     `content`, or a `30852` with `content` or a `set` of `description` (§6.1,
-    *added 2026-11-18*; every type from the close, §6.13). The app writes the
+    *added 2026-11-18*; every type since 2026-11-24, §6.13). The app writes the
     first record without it and the text as its first change.
   - `delete-by-field` (`invalid:`): a `kind:5` names the first record or a
     change of a file, of any type; the app writes the file's `deleted` field
-    instead (§6.5, *added 2026-11-18*; every type from the close). Only a signer
+    instead (§6.5, *added 2026-11-18*; every type since 2026-11-24). Only a signer
     who may read the file's team is told so; anyone else is refused as a
     `kind:5` naming no stored event is (`invalid: deletion target not found or
     not deletable by you`), never accepted, so the refusal never says that a
     file exists. A `kind:5` whose `a` names a file kind is refused by its kind
     alone, whether or not the file is stored (*clarified 2026-11-18*, ISS-2;
-    every file kind from the close).
+    every file kind since 2026-11-24).
   - `type-mismatch` (`invalid:`): a change's `K` is not the type of the file
     its `a` names (§6.2, *added 2026-11-20*).
   - `bad-file-id` (`invalid:`): a file's event whose `d` is not exactly one
@@ -948,8 +948,7 @@ newest change of each field but the text (§6.13).
 
 A root event carries **immutable facts only**. It MUST NOT carry any field that
 somebody other than its author may need to set. It is the file's **first
-record**, and it is written once (§6.13; before the close, a base type from
-its switch).
+record**, and it is written once (§6.13).
 
 NIP-33 addresses are `(pubkey, kind, d)`, so only an author can replace their own
 event. Putting a mutable field on the root makes it editable by its creator
@@ -1027,8 +1026,7 @@ author and under any of the five kinds, deleted ones included, and one whose
 new channel whose id a file already holds, deleted ones included. An app that
 is refused makes a new id and tries again without telling the person.
 
-**Written once.** On every file kind (§6.13; before the close, a base type
-from its switch), the relay refuses a second, different event at a first record's
+**Written once.** On every file kind (§6.13), the relay refuses a second, different event at a first record's
 address: the first record of a `30840`, `30842`,
 `30850`, `30851` or `30852` is never replaced, which changes NIP-01's
 replaceable rule for these kinds. Sending the same event again is a
@@ -1047,7 +1045,7 @@ signing key's own: an agent signing for its owner (§4) does not borrow the
 owner's role, and an app's key is no exception.
 
 - **Where it may stand.** Only on a first record, and only where that record is
-  written once (§6.13): on any `30852`, and on a base kind from its switch. The
+  written once (§6.13): on every file kind, `30852` included. The
   relay refuses a `writers` tag on any other event, so the mark can be neither
   added nor taken off later.
 - **Which values a relay keeps to, and since when.** The relay lists in its
@@ -1118,8 +1116,7 @@ returns such a change whole (§6.13) and the text would ride every list until
 its other fields changed. So a list of new files carries no text at all.
 
 - **The relay refuses a first record that carries text** (`text-is-a-change`,
-  §3.3), on every file kind (§6.13; before the close, a base type from its
-  switch, projects and issues from the issues switch).
+  §3.3), on every file kind (§6.13).
 - **Creating is two writes.** Until the text lands, readers show a file with
   no text. A writer keeps the person's words and says the file is created only
   once the text change is accepted; if it was not, it sends the change again,
@@ -1259,8 +1256,7 @@ and
 - **Every writer MUST write `prev` on every change, on every type.** The relay
   refuses a change with no `prev` on every file kind, a `member:<P>` or
   `follow:<P>` change excepted (below), and checks a change whose `prev` is
-  present (§6.13; before the close, a type not yet switched took one without
-  `prev`).
+  present (§6.13).
 - **`member:<P>` and `follow:<P>` are never in a `set` and need no `prev`**
   (§11.8): who is on a file, and at what level, is kept beside it, and two
   people joining never clash. An Add after a leave carries one all the same
@@ -1923,8 +1919,7 @@ D3, which stands):
 - **A `kind:5` naming a file's first record or one of its changes is refused**
   (`delete-by-field`, §3.3), on every file kind and from anyone, its author
   included. A file is deleted only by its field. A file removed by a `kind:5`
-  before its type was kept in order stays removed (§6.13). A writer writes
-  the field on every type, before the close too.
+  before its type was kept in order stays removed (§6.13).
 - **Only an admin removes a change for good**, for a pasted password: a
   `kind:9005` from the team's owners or admins, or an owner or admin of the
   workspace on the relay's roster; the relay refuses one from anybody else, the
@@ -2901,9 +2896,8 @@ names, its current `description` change as well, whole and as signed:
 
 - **Only with `#d`.** A filter with `"text": true` and no `#d` is refused
   (`400`): a list never carries text.
-- **Every relay takes it** (from the close, below, "Every file is kept in
-  order"). Before the close an app sends `"text"` only to a relay whose NIP-11
-  `file_list` says `"text": true`.
+- **Every relay takes it** (since 2026-11-24, below, "Every file is kept in
+  order").
 - **The current change of the text** is the newest a reader folds (§6.2), a
   change that set several fields included. **It goes only to a reader of the
   file's home**, its first record's `h`, else its `buzz-channel`, as search
@@ -2922,7 +2916,7 @@ names, its current `description` change as well, whole and as signed:
 `#a`/`#O`; a new change keeps its `a` (§6.2).
 
 **Every relay answers the read**, with `text` and `"fields": "times"`
-(below), from the close (*decided 2026-11-19*, record
+(below), since 2026-11-24 (*decided 2026-11-19*, record
 [every-file-type-is-kept-in-order-and-a-delete-only-marks-the-file](https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-file-type-is-kept-in-order-and-a-delete-only-marks-the-file.md)).
 A relay without it is not conformant (§9.2), and an app keeps no second way of
 reading files for one: reading every change of every file and folding them is
@@ -3040,7 +3034,7 @@ first records. The answer is an object:
 
 **Every file is kept in order** (*decided 2026-11-19*, record
 [every-file-type-is-kept-in-order-and-a-delete-only-marks-the-file](https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-file-type-is-kept-in-order-and-a-delete-only-marks-the-file.md)).
-From the close (below, "Before the close"), every relay that speaks this
+Since 2026-11-24, every relay that speaks this
 protocol keeps every type of file in order: projects, issues, documents,
 topics, every named type (`kind:30852`) and any type added later. It answers
 the read above, with `"text": true` and `"fields": "times"`, for every type.
@@ -3085,9 +3079,8 @@ bring back, so its entry may be taken off its team's list (§3.3's
 `prev` and stay as they are: a reader folds them by time (§6.3), and the first
 change written in order names the newest of them as its `prev`.
 
-**NIP-11.** Before the close, a relay advertises the read in `file_list` and
-the types it keeps in order in `files` (below). From the close, a relay MAY
-keep advertising them, for apps and agents loaded before it, as
+**NIP-11.** A relay MAY advertise the read in `file_list` and the types it
+keeps in order in `files`, for apps and agents loaded before 2026-11-24, as
 
 ```json
 "file_list": {"newest": true, "text": true, "times": true},
@@ -3095,7 +3088,7 @@ keep advertising them, for apps and agents loaded before it, as
 ```
 
 and MAY leave them out: neither is part of what makes a relay conformant
-(§9.2), and an app written after the close never reads them (*decided
+(§9.2), and an app written since 2026-11-24 never reads them (*decided
 2026-11-20*). `requires_prev`, where it is kept, names the four base types and
 never grows: a named type, and any type added later, is in order from its
 first event and is never listed.
@@ -3134,48 +3127,17 @@ not its type, falls back to §5.2's search by title. That is a different way
 to find a file, not a second way to read one: the list read above is the
 only one.
 
-**Before the close** (*this paragraph describes the move to the rule above;
-the close removes it and dates every "from the close"*). The rule came in
-one type at a time. A relay advertised `files` with the types it kept in order
-(**the switch**), for every team at once or not at all; a type joined
-`requires_prev` at one moment and could be turned back until the close. While
-listed, a type's changes named their `prev`, its first records were written
-once, its changes stayed in their file's team, a new first record carried no
-text and a `kind:5` on it was refused (`delete-by-field`). From 2026-11-20, on
-each team a type's switch covers, that type's first record and its fields'
-current changes are also removed by no other means, and neither they nor a
-change carry an `expiration`: for projects and issues on every team from that
-day, for documents and topics from their switch. A team that ever held a file is refused deletion from 2026-11-20
-whatever is listed, since that refusal names no type. Projects switched on 2026-11-11 and
-issues on 2026-11-19; documents and topics switch together, at one announced
-moment. Until then, on a team their switch does not cover, a writer names
-`prev` where it can, and a page or a topic is still deleted the way it was
-before: a `kind:5` asking the relay to remove it, its team's list giving it
-up, and a page's sub-pages moved up to its parent. A `deleted` change there
-would leave it in every reader that does not yet fold that field. The promise
-that a delete only marks the file starts at each type's switch. An app reads with `file_list` only as far as the relay
-advertises it. On the Estiva relay each switch can be turned back until the people using
-the apps have each checked their files after both the issues switch and the
-documents-and-topics switch; then the
-relay's per-type switches go and every app, the shared code and the agent
-drop the path that reads every change and writes without order — **the
-close**.
-
 **Upstream.** This section is Estiva's standard, on the Estiva relay. The
 `O`/`o` reference (§6.4) is offered to Block as a client convention. The
 relay's NIP-AR support (`kind:45010`) stays for Buzz's own uses, agent and team
 settings, and is not how a file is kept.
 
-**Where it stands (2026-11-20).** On production NIP-11 says `"files":
-{"requires_prev": ["osnova.project", "osnova.issue"]}`, `"file_list":
-{"newest": true, "text": true, "times": true}` and `"file_search": {"types":
-["osnova.project", "osnova.issue", "osnova.document", "osnova.topic"]}`:
-projects and issues are kept in order, and all four types are found by their
-words. Documents and topics are next, together, in the project
-"Documents and topics stop downloading every edit": the relay's half is built
-behind its switch, which is on for one test team only; then Leaf, Peek, Ship
-and the agent read and write them field by field, then one announced moment,
-then the close.
+**Where it stands (2026-11-24).** Every type of file is kept in order on
+every team, with no switch: projects since 2026-11-11, issues since
+2026-11-19, documents and topics since 2026-11-23, and from 2026-11-24 no
+setting turns any of them back. Leaf, Peek, Ship and the agent read and
+write every file one way, the read above and a change after the one it
+follows; all four base types are found by their words.
 
 ### 6.14 A file's list of other files
 
@@ -4447,7 +4409,7 @@ throwaway relay or a fake query.
 | C29 | **A host-swapped address.** With kept shapes `https://a.example/issue/<slug>-<d>` (30851) and `https://a.example/#/issue/<d>` from a manifest on `a.example`, and only `https://b.example/document/<slug>-<d>` from one on `b.example`: a message written with `https://b.example/issue/<any>-<d of V>` keeps that URL in its body, carries `["a", V]`, draws as C21 places it, opens that URL, and `V` lists it as a mention. `https://c.example/issue/<any>-<d of V>`, with no kept shape on `c.example`; `http://b.example/issue/…` and `https://b.example:8443/issue/…`; and `https://b.example/#/issue/<d of V>` carry no tag and stay links. A manifest whose `web` is on `c.example` and that declares `urls` on `a.example` adds no shape and no origin. A manifest on `c.example` that declares `https://c.example/issue/<slug>-<d>` for kind `K`: on `b.example`, a `d` held under both `30851` and `K` names nothing and carries no tag; on `a.example`, the link is `V` (§7.7, §13.1) |
 | C30 | *Retired 2026-10-30*, with the artifact shape it tested: a list now returns signed events (§6.13), so there is no row to build a change from |
 | C31 | **A topic's list** (*added 2026-10-30*, §6.14). An entry the app writes carries `a`, `O` (the topic's `d`), `field` `lists:<d>`, `value`, `h` (the topic root's), `ts`, `["o", <d>]`, in that order, and no `p`. Of two entries for one topic and file inside one second, the later by `ts` counts; a file is listed only by `true`, and `"1"` or an empty value lists nothing. Ignored, without hiding an older good entry: one whose `o` is not the field's `<d>` (with `o` naming it second, it counts); one whose `O` is not its `a`'s `d`; one listing the topic's own `d`; one whose `h` is not the topic root's. Which topics list a file names the topic for `#o`; a file's own changes by `#O` hold no entry listing it. A listed id held by two files, or only by a team's `39000`, is not drawn and not counted. **Its arrangement** (*added 2026-11-10*): placed files come by key compared byte for byte, equal keys by the lower `<d>`, then unplaced files, oldest listed first; a place older than the file's newest `lists:<d>` = `true` is ignored, so a file taken off and put back comes back unplaced; a key that is empty, holds a character outside `0-9A-Za-z` or ends in `0` places nothing; a look other than `row` or `card` draws the manifest's widget. One change setting `order:` for two files, each `set` with its `prev` and each file with its `o`, places both. An `order:` change with a stale `prev` is refused `conflict: order:<d> follows <id>`. An `order:` change whose `o` is not `<d>` neither moves the file nor hides the place before it |
-| C35 | **A change names the one it follows** (*added 2026-10-30*, §6.2; *changed 2026-11-20*: every file kind, from the close). A project's `status` change with `prev` its current `status` change is accepted; the same change with no `prev` is refused `invalid: requires-prev:`, and so is a `title` change with no `prev` on an issue, a document, a topic and a `30852`. A `member:<P>` or `follow:<P>` change with none, on any of them, is accepted (control) |
+| C35 | **A change names the one it follows** (*added 2026-10-30*, §6.2; *changed 2026-11-20*: every file kind, since 2026-11-24). A project's `status` change with `prev` its current `status` change is accepted; the same change with no `prev` is refused `invalid: requires-prev:`, and so is a `title` change with no `prev` on an issue, a document, a topic and a `30852`. A `member:<P>` or `follow:<P>` change with none, on any of them, is accepted (control) |
 | C36 | **A field's first change** (§6.2). The first `status` change on a new project names the first record's event id as `prev` and is accepted; one naming the project's `d` instead is refused. A second first record at the same address, by its author, is refused; the identical event sent again is a `duplicate:` (§6.1) |
 | C37 | **A several-field change** (§6.2, §6.3). A change with `["set", "title", T, p1]` and `["set", "status", "done", p2]`, `O`, `a`, `h` and `["stage", "status", "done"]`, where `p1` and `p2` are current, is accepted, and every conforming reader folds both fields at its time and counts it `done`. One also carrying `field`, or naming `title` twice, is refused. A reader that does not know `set` shows the older title and status, never a mix |
 | C38 | **A stale `prev`** (§6.2). Two apps read a project's `status` at change S; the first sets `started` naming S and is accepted, the second sets `done` naming S and is refused with `conflict:`; it sends `done` again naming the first's id and is accepted, and nobody is asked. A several-field change whose `status` names S and whose `title` is current is refused whole: its title is not changed. Two `description` saves naming the same change: the second is refused, and its app merges and sends again, never overwriting |
@@ -4491,7 +4453,7 @@ staged field, or writes one, also conforms to these.
 | C64 | **Only the workspace's admins write a marked file** (*added 2026-11-16*, §6.1, §6.5, §11.8). On a relay whose NIP-11 lists `"writers": {"workspace-admins": T}`: a `30852` with `["writers","workspace-admins"]` from a member who is not a workspace owner or admin is refused, and from an admin lands. On it, a member's `1851` setting `title`, `archived` or `deleted`, and their `1852` `move` of it, are refused; the same from an admin land. A member an admin added sets their own `member:<P>` to `false` and it lands. A `writers` tag on a `1851`, a `30852` with `["writers","team-admins"]`, and a second marked first record in the same team whose `created_at` is not after the first, are refused. A member setting their own `member:<P>` to `true` on it is refused, as is a `kind:9005` on its first record from anyone, a workspace admin included (*changed 2026-11-20*); a workspace admin's `9005` on one of its older changes that is no field's current change lands (control). On a relay that lists no `writers`, a reader treats a marked file as counting for nothing, and on one that lists `workspace-admins` from time `T`, a marked file dated before `T` counts for nothing too |
 | C65 | **The company's file labels, never counts** (*added 2026-11-16*, §7.4). With a marked `osnova.schema` file `of` `osnova.issue` in the Company team whose `property:status` adds `blocked` (label Blocked, stage `started`), an issue whose current change is `value` `blocked` with `["stage","status","started"]` shows Blocked and counts as started; a reader that cannot read the Company team shows `blocked` and counts it as started. The same file unmarked, or in another team, changes nothing. Of two marked files `of` the same type, the earlier by `created_at` is read; an archived one is skipped |
 | C66 | **The layer is found by type and field** (*added 2026-11-16*, §7.3). An action whose `appliesTo` is `30851` and whose `emits.field` is `status` offers the options of the company file `of` `osnova.issue`, field `property:status`, whatever name the manifest gives its vocabulary |
-| C67 | **A new file's text is its first change** (*added 2026-11-18*, §6.1, §7.3; every file kind from the close). A new `30851`, `30842` or `30840` with its text in `content` is refused `invalid: text-is-a-change:`; the same issue with empty `content` is accepted (control), and its text, a `kind:1851` `description` change with `prev` the first record's id, is accepted. A new `30850` with a `description` tag is refused the same way; a `30852` with a `set` of `description` is refused on any relay that takes `30852`. A list read of the team returns the issue's first record and no text. A consumer running `add-issue` with a `description` writes the root, then the change, and the `content-format` tag is on the change |
+| C67 | **A new file's text is its first change** (*added 2026-11-18*, §6.1, §7.3; every file kind since 2026-11-24). A new `30851`, `30842` or `30840` with its text in `content` is refused `invalid: text-is-a-change:`; the same issue with empty `content` is accepted (control), and its text, a `kind:1851` `description` change with `prev` the first record's id, is accepted. A new `30850` with a `description` tag is refused the same way; a `30852` with a `set` of `description` is refused on any relay that takes `30852`. A list read of the team returns the issue's first record and no text. A consumer running `add-issue` with a `description` writes the root, then the change, and the `content-format` tag is on the change |
 | C68 | **A deleted issue keeps its number** (*added 2026-11-18*, §6.1, §6.5). An issue `ABC-7` is deleted by a `deleted` change: a `kind:5` naming it is refused `invalid: delete-by-field:`; the list read leaves it out; the times read answers it, its `deleted` change among its changes. A client numbering a new issue under `ABC` reads it by id and gives `ABC-8`, not `ABC-7`; restoring it shows `ABC-7` again |
 | C69 | **An issue is found by its words** (*added 2026-11-18*, §6.13). With `osnova.issue` in `file_search.types`, a word from an issue's current title, summary, ref or text finds it for a reader of its team, `key` naming the ref in `match.fields`; a word only in an older text finds nothing; an issue written before §6.1's rule with its only text in `content` is found by a word of that text until its first `description` change |
 | C70 | **A delete touches only the file** (*added 2026-11-20*, §6.5, §6.7). Document D has sub-page E. Deleting D writes one `deleted` change: E's `parent` is unchanged and no `kind:1852` is written. The list read leaves D out and the reader draws E at the team's top. Someone who did not write D restores it, and E is under D again |
@@ -4562,13 +4524,13 @@ transaction on Postgres, and against production as two QA identities.
 *Added 2026-11-20*, record
 [every-file-type-is-kept-in-order-and-a-delete-only-marks-the-file](https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-file-type-is-kept-in-order-and-a-delete-only-marks-the-file.md).
 The checks above are what an app does; a relay that speaks this protocol does
-all of the following, from the close (§6.13), on every file kind. One that
+all of the following, since 2026-11-24 (§6.13), on every file kind. One that
 does not is not conformant, and an app keeps no second way of reading or
 writing files for it.
 
 | # | A relay |
 | --- | --- |
-| R1 | answers §6.13's read: `"fields": "newest"`, `"text": true` with `#d`, and `"fields": "times"` (advertising them in NIP-11 is optional from the close) |
+| R1 | answers §6.13's read: `"fields": "newest"`, `"text": true` with `#d`, and `"fields": "times"` (advertising them in NIP-11 is optional since 2026-11-24) |
 | R2 | refuses a change with no `prev`, a `member:<P>` or `follow:<P>` change excepted (`requires-prev`), and one whose `prev` is not its field's current change (`conflict: <field> follows <event id>`, §6.2) |
 | R3 | writes no first record twice, and refuses a change filed in another team than its file's |
 | R4 | refuses a new first record that carries text (`text-is-a-change`) |
