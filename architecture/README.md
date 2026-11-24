@@ -16,6 +16,11 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [Links](links.html)
+  — Shaped, 2026-11-24. The relay refuses a file whose id is not a random
+  lowercase uuid; one shared writer gives Peek, Ship, Leaf and the agent the
+  same short link; old link shapes are rewritten in text and no longer read.
+
 - [The relay says what a copy is missing](the-relay-says-what-a-copy-is-missing.html)
   — Shaped, 2026-11-23. The relay works out who can read in one place and
   learns to say what a copy on the device is missing (NIP-77); Peek asks for
