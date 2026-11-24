@@ -386,6 +386,15 @@ last owner. No new refusal code. Record
     file exists. A `kind:5` whose `a` names a file kind is refused by its kind
     alone, whether or not the file is stored (*clarified 2026-11-18*, ISS-2;
     every file kind from the close).
+  - `type-mismatch` (`invalid:`): a change's `K` is not the type of the file
+    its `a` names (§6.2, *added 2026-11-20*).
+  - `bad-file-id` (`invalid:`): a file's event whose `d` is not exactly one
+    random (version 4) lowercase uuid, or a change or move that names a file
+    by such an id (§6.1, §6.2, §9.2 R10, *added 2026-11-24*). It is read from
+    the event alone, after membership and before anything is looked up, so it
+    is the same whether or not such a file is stored. The app made the id
+    wrong: it writes the file again under a random uuid, and keeps the id it
+    knows the file by as a field.
 
   A `kind:9000` naming several people is refused with a code only when
   everyone in it is refused for that same code; otherwise it is refused
@@ -904,6 +913,21 @@ Reference root events:
 | `30840` | Bare file | `d`, `title`, `h`, `[a]`, `[summary]` — §6.7 |
 | `30842` | Document | `d`, `title`, `h`, `[a]`, `[summary]` — §6.11 |
 
+**A file's id is a random lowercase uuid** (*changed 2026-11-24*; records
+[a-files-id-is-a-random-uuid-the-same-rule-as-a-teams-id](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-files-id-is-a-random-uuid-the-same-rule-as-a-teams-id.md)
+and
+[every-server-refuses-a-file-whose-id-is-not-a-random-uuid](https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-server-refuses-a-file-whose-id-is-not-a-random-uuid.md)).
+Every file kind (the four above and `30852`) carries exactly one `d`, and it
+matches `^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$`:
+version 4 with the RFC variant, hyphenated, in lower case. So the all-zero
+uuid, any other version, upper case and the braced, `urn:uuid:` and unhyphenated
+forms are not ids. A file's link ends in its id (§7.7), and only this form
+reads back as the same file in every app. An id a person knows the file by,
+such as `PROJ-1` or a database key, is a field, never the `d`. A team's id
+follows the same rule (§3). Every relay refuses a file's event with any other
+`d`, every save and not only the first, and a change or move aimed at one
+(`bad-file-id`, §3.3, §6.13, §9.2 R10).
+
 **These four are Osnova's base types** (*added 2026-10-30*; record
 [osnovas-base-types-keep-their-records-and-every-new-type-starts-named](https://github.com/estiva-app/estiva-docs/blob/main/decisions/osnovas-base-types-keep-their-records-and-every-new-type-starts-named.md)),
 and they keep their own first records. Each kind is read as its type's name: a
@@ -916,7 +940,7 @@ it is a type that will join the base or an app's own:
 
 | tag | value |
 | --- | --- |
-| `d` | the file's id, a lowercase UUID |
+| `d` | the file's id, a random (version 4) lowercase uuid; exactly one (below) |
 | `k` | the file's type, such as `acme.invoice` ([TYPES.md](TYPES.md)); exactly one |
 | `h` | the team it is filed in, always; never `buzz-channel` |
 | `set` | `["set", <field>, <value>]`, one per field the creation gives a value, as that field's first value (§6.2); never `description` |
@@ -2286,7 +2310,7 @@ writer emits them; a reader finds each by name (§6.1):
 
 | tag | | |
 | --- | --- | --- |
-| `d` | REQUIRED | an opaque uuid (RFC 0.4 §4.3), never a slug |
+| `d` | REQUIRED | a random (version 4) lowercase uuid (§6.1), never a slug |
 | `title` | REQUIRED | seeds the `title` field; a rename is a change event |
 | `h` | REQUIRED | the team it was filed in (§3). The relay says SHOULD; **this document says MUST**, for the reason the relay already gives for issues — several apps write these, and one forgetting the `h` puts an unreachable object in the shared space that nobody can unpublish |
 | `a` | at most one | the address of the file this one sits under, of any kind. Seeds the `parent` field; a move is a change event |
@@ -2654,7 +2678,7 @@ writer emits them; a reader finds each by name (§6.1):
 
 | tag | | |
 | --- | --- | --- |
-| `d` | REQUIRED | an opaque uuid (RFC 0.4 §4.3), never a slug |
+| `d` | REQUIRED | a random (version 4) lowercase uuid (§6.1), never a slug |
 | `title` | REQUIRED | seeds the `title` field; a rename is a change event |
 | `h` | REQUIRED | the team it is filed in (§3). MUST, and the relay refuses a `30842` without one at ingest ([KINDS §4](KINDS.md)) |
 | `a` | at most one | the address of the file this one sits under, of any kind. Seeds the `parent` field; a move is a change event |
@@ -2985,7 +3009,14 @@ For every file kind (§6.1's table and `30852`), a relay:
   and admins included, nor a field's current change (§6.5);
 - **refuses a file's first record or change that carries a NIP-40
   `expiration` tag**, which would remove it for good;
-- **refuses to delete a team that ever held a file** (§3.3).
+- **refuses to delete a team that ever held a file** (§3.3);
+- **refuses a file whose id is not a random lowercase uuid** (§6.1): any
+  event of a file kind without exactly one such `d`, and a `1851` or `1852`
+  whose `a` names a file kind with any other `d`, or whose `o` is any other
+  id, or a `1851` naming a file whose `O` is (`bad-file-id`, §3.3; *added
+  2026-11-24*). Other tags that name a file (an issue's project `a`, a move's
+  `A`, a field's value, a comment's or a message's tags) are left to readers,
+  which read a file that cannot exist as any missing file.
 
 There is no list of types to ask a relay about, and no second way to read or
 write a file: a relay that does not do all of this is not conformant (§9.2).
@@ -4000,7 +4031,6 @@ from every published `kind:31990`.
 
 ```jsonc
 ["urls", "https://example.app/issue/<slug>-<d>", "30851"]
-["urls", "https://example.app/#/issue/<d>", "30851"]
 ["urls", "https://example.app/message/<id>", "9"]
 ```
 
@@ -4010,18 +4040,19 @@ carries. `<d>` is an addressable object's identifier and resolves with
 no `d`, and resolves with `{ids: […]}`. A consumer MUST read which from the
 declaration rather than from the value's shape.
 
-They are separate fields because they answer different questions, and because an
-app that changes its routes still has to read the links it published under the
-old ones — which is why the second line above exists in the example rather than
-being tidied away. [RFC 0.5 §7](RFC-0.5-ASSOCIATION.md) specifies the grammar
+They are separate fields because they answer different questions (*changed
+2026-11-24*: an app that changes its routes is not asked to keep reading the
+links it published under the old ones; record
+[an-old-link-shape-is-rewritten-where-it-is-stored-and-then-no-app-reads-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/an-old-link-shape-is-rewritten-where-it-is-stored-and-then-no-app-reads-it.md)).
+[RFC 0.5 §7](RFC-0.5-ASSOCIATION.md) specifies the grammar
 and the reasoning; this section is the manifest surface.
 
 **The third element is the kind, and it is what makes this work for a stranger.**
 §7.2 says the kind comes from the path segment — but `/issue/` means `30851`
 only to the app serving it, and a consumer has never heard of "issue". An app
 MAY omit it, in which case a consumer falls back to the kinds the manifest
-declares it handles; that is sound only because a `d` is a v4 uuid that one
-file's kinds do not share — except a team, whose `39000` and `30890` carry one
+declares it handles; that is sound only because a file's `d` is a random
+lowercase uuid (§6.1) that one file's kinds do not share — except a team, whose `39000` and `30890` carry one
 uuid (§3.2), which is why a lookup always names its kinds. Naming the kind is
 cheaper and clearer.
 
@@ -4406,6 +4437,7 @@ staged field, or writes one, also conforms to these.
 | C73 | **Nothing removes a whole file** (*added 2026-11-20*, §6.5, §6.13). A `kind:5` with an `a` naming a `30840` or a `30842` is refused `invalid: delete-by-field:`. A `kind:9005` on a document's first record is refused from the team's owner and from a workspace admin. A new `30842` carrying a NIP-40 `expiration` tag is refused, as is a change carrying one. A `kind:9008` on a team whose only file is deleted is refused, and one on a team that never held a file lands (control) |
 | C74 | **A document is read as it is now** (*added 2026-11-20*, §6.13). A list read of a team's documents and topics with `"fields": "newest"` returns each first record and its fields' current changes, and no text; opening a document with `#d` and `"text": true` returns one text, its current one, however many saves it has had. A word in a document's current title, summary or text finds it for a reader of its team, and a word only an older save had finds nothing |
 | C75 | **A change says its file's type** (*added 2026-11-20*, §6.2). A `title` change to an issue carrying `["K", "osnova.issue"]` after its `O`, and a change setting two fields with the same `K`, are accepted; `{"kinds":[1851], "authors":[<them>], "#K":["osnova.issue"]}` returns both and no change to a document, and the same read with a type no change carries returns nothing. The same change with `["K", "osnova.document"]` is refused `invalid: type-mismatch:` and the field's current change is unchanged; with no `K` it is accepted and found by `#a`, not by `#K`. An `archived` change on a team's `39000:` address carries no `K` and is accepted |
+| C76 | **A file's id is a random lowercase uuid** (*added 2026-11-24*, §6.1, §9.2 R10). A project, an issue, a topic, a document and a `30852` saved with the `d` `PROJ-1`, with a version 4 uuid in capitals, with a version 1 or 7 uuid, and with the all-zero uuid are each refused `invalid: bad-file-id:`, and so is one with two `d` tags; a `1851` whose `a` names `30850:<key>:PROJ-1`, one whose `o` is `PROJ-1`, and a `1852` listing such an `a` are refused the same way, whether or not such a file is stored. The same saves with a random lowercase uuid are accepted (control), and an app setting (`30078`) keeps its own `d` |
 ### 9.1 Reference checks
 
 ```bash
@@ -4482,6 +4514,7 @@ writing files for it.
 | R7 | refuses a file's first record or change that carries a NIP-40 `expiration` tag |
 | R8 | refuses a `kind:9008` once the team ever held a file, deleted ones and ones removed for good before their type was kept in order included, and always on the Company team (§3.3, §3.4) |
 | R9 | refuses a `remove` that takes a topic its author has not archived (a deleted one included) off the only team that lists it (`leaves-by-moving`) |
+| R10 | refuses a file's event whose `d` is not exactly one random (version 4) lowercase uuid, and a change or move aimed at a file by any other id (`bad-file-id`, §6.1, §6.13; *added 2026-11-24*) |
 
 `file_search` (§6.13) is optional; an app without it searches by title
 (§5.2).
@@ -4574,7 +4607,7 @@ does not already work. This section fixes the identifiers for the Estiva suite.
 | --- | --- | --- |
 | channel | `<channel-uuid>` — **bare, no prefix** | lowercase UUID v4 |
 | file | `<file-address>` — **bare, no prefix** (FOL-16) | `<kind>:<pubkey>:<d>`, kind 30000–39999, pubkey 64-char lowercase hex, `d` verbatim |
-| file, by its id | `file:<d>` (*added 2026-10-30*) | lowercase UUID, the file's id (§6.4) |
+| file, by its id | `file:<d>` (*added 2026-10-30*) | random (version 4) lowercase uuid, the file's id (§6.1, §6.4) |
 | thread | `thread:<root-event-id>` | 64-char lowercase hex |
 | message | `msg:<event-id>` | 64-char lowercase hex |
 | folder | `folder:<folder-address>` | **RESERVED, unspecified** — see §11.5 |
@@ -4618,7 +4651,8 @@ MUST NOT be treated as one.
 **A file named by its id is `file:<d>`** (*added 2026-10-30*, ALO-2; record
 [a-files-unread-state-is-keyed-file-and-its-id](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-files-unread-state-is-keyed-file-and-its-id.md)).
 A comment that names its file by its id in `O` (§6.4) is keyed by that id,
-and a file's id is a lowercase UUID, the same shape as a channel's. So its
+and a file's id is a random (version 4) lowercase uuid (§6.1), the same shape
+as a channel's. So its
 context is the id after a `file:` prefix, and the channel context keeps its
 bare uuid as above. The key is a fixed function of the root comment's `O` tag;
 nothing is looked up to derive it, and a comment with `O` is keyed by it even
