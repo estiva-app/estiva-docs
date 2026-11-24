@@ -5,6 +5,13 @@
 - Decided by: Miky, 2026-10-19, in the conversation of the Ship issue `30851:b38fd2687b17bbde2e8079577cba601936acfe1b731d2d2ba7cdef29a063db46:2726532e-ac9d-481a-96b9-e40826d9d64d`, asked as: when a launcher offers another app's "New …" on a Folder, how does it know where to send the person
 - Area: Apps & agents
 
+> Superseded in part, 2026-11-24: "Peek's launcher stops making Ship projects
+> itself and opens Ship's link" and "No app's signing limits widen" are replaced
+> by [an-app-makes-another-apps-file-in-place-from-its-declared-action](an-app-makes-another-apps-file-in-place-from-its-declared-action.md):
+> an app makes another app's kind of file in place by following the declared
+> action, and Leaf may sign Ship's issues and projects as Peek does. The create
+> link stands for a "New …" an app may not make itself.
+
 ## Who it affects
 
 Miky and Katerina pick New document, or New project, on a Folder in Peek's
