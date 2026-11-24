@@ -109,6 +109,9 @@ is, waiting long enough for the relay's quota to start over (buzz counts over
 5 s) rather than asking inside it. The client decides by the prefix alone; the
 words after it are the relay's, not a token to read.
 
+A catch-up (§5.3) is refused with the same prefixes in a `NEG-ERR` on its own
+id, never a `CLOSED`; §5.3 lists them with what a client does on each.
+
 ---
 
 ## 3. The team
@@ -875,6 +878,54 @@ is not conforming.
 finds `zebrafile`. A relay ignores `search_mode`: the reference relay used to
 read `"search_mode": "prefix"` on `/query` only, so the same search answered
 differently over the websocket, and clients from then may still send it.
+
+### 5.3 Catching up: what a copy is missing
+
+*Added 2026-11-24*, record
+[a-copy-on-the-device-catches-up-with-nip-77](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-copy-on-the-device-catches-up-with-nip-77.md).
+A copy on the device that asked a question before asks the relay what changed
+since with [NIP-77](https://github.com/nostr-protocol/nips/blob/master/77.md)
+(negentropy, protocol version `0x61`), and then fetches only the ids it is
+missing with a `REQ` by `ids`. A relay that does this lists `77` in its NIP-11
+`supported_nips`; on any other relay a copy asks the question again, which
+stays the fallback.
+
+**The set is the answer to asking again.** The relay reconciles against exactly
+the events a `REQ` with the same filter, by the same reader on the same sign-in,
+would return (§5, a team-scoped sign-in included), and the whole of them: no
+page limit, no history window. Nothing outside that answer is counted or named,
+so a reconciliation tells a reader nothing a `REQ` would not.
+
+- **Websocket only, signed in first.** `NEG-OPEN` before NIP-42 `AUTH` is
+  refused `auth-required:`; there is no bridge endpoint.
+- **One filter**, with only `ids`, `authors`, `kinds`, single-letter tags
+  (`#h`, `#d`, …), `since` and `until`. Any other key, `limit` and `search`
+  included, is refused `invalid:` rather than ignored (strfry honours `limit`):
+  a set cut short would make "past the limit" look like "deleted".
+- **Who can read is checked once, at `NEG-OPEN`**, and the set is built then;
+  later rounds answer from it. A filter naming only teams the reader may not
+  read is refused in a `REQ`'s words (`restricted: not a channel member`),
+  never answered with an empty set. A team lost during a reconciliation is
+  caught by the fetch, which is an ordinary `REQ`, and by the next catch-up.
+- **What the relay lacks is gone for this reader**: an id the copy holds and
+  the set does not is no longer in this question's answer, whether deleted,
+  replaced by a newer version, or out of the reader's reach. The copy drops it.
+  It never uploads it: `EVENT` stays the only way to write, with its own rules.
+- **A reconciliation counts once** against the websocket allowance, at
+  `NEG-OPEN`, like the `REQ` it replaces; its `NEG-MSG` rounds and `NEG-CLOSE`
+  are free.
+
+**Every refusal is a `NEG-ERR` on the reconciliation's id**, never a `CLOSED` or
+a `NOTICE`, and ends that reconciliation. A client reads the prefix only:
+
+| `NEG-ERR` reason | When | The client |
+| --- | --- | --- |
+| `blocked: …`, with the limit as a fourth element | the set is larger than the relay builds (buzz: 100,000 events) | splits the question by `since` and `until` and reconciles each part |
+| `invalid: …` | a filter key or message the relay does not take | fixes the question; asking it unchanged gets the same answer |
+| `rate-limited: …` | the allowance is spent, too many reconciliations open on one socket (buzz: 8), or the relay is busy | asks again with backoff, as for a read (§2) |
+| `closed: …` | no message for a while (buzz: 30 s), too many rounds (buzz: 100), or an id the relay does not know | opens it again from the start |
+| `auth-required:`, `restricted:` | as for a `REQ` | as for a `REQ` |
+| `error: relay busy`, `error: query timed out` | as for a read (§2) | as for a read (§2) |
 
 ---
 
@@ -4529,7 +4580,8 @@ writing files for it.
 | R10 | refuses a file's event whose `d` is not exactly one random (version 4) lowercase uuid, and a change or move aimed at a file by any other id (`bad-file-id`, §6.1, §6.13; *added 2026-11-24*) |
 
 `file_search` (§6.13) is optional; an app without it searches by title
-(§5.2).
+(§5.2). So is catching up with NIP-77 (§5.3); an app on a relay without it
+asks its questions again.
 
 ---
 
