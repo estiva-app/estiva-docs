@@ -266,7 +266,8 @@ properties and its history.
 - [Claude learns each app from the app's own manifest, and what it must know about the app goes in a guide there](claude-learns-each-app-from-its-manifest.md) — Accepted, 2026-10-13
 - [Which kinds an agent may sign is an admin's explicit grant per app, never derived from the apps](an-agent-signs-for-an-app-only-by-an-admin-grant.md) — Accepted, 2026-10-13
 - [An app may offer another app's "New …", and the app that owns that kind makes the file](another-apps-new-file-is-made-by-that-app.md) — Accepted, 2026-10-16; its part "the app that owns that kind makes the file" superseded by "A file's type is a shared meaning", 2026-10-26
-- [An app that owns a "New …" declares a create link in its manifest, and a launcher opens it](an-app-declares-a-create-link-for-its-new-action.md) — Accepted, 2026-10-19
+- [An app that owns a "New …" declares a create link in its manifest, and a launcher opens it](an-app-declares-a-create-link-for-its-new-action.md) — Accepted, 2026-10-19; its "Peek stops making Ship projects itself" and "No app's signing limits widen" superseded by the one below, 2026-11-24
+- [An app makes another app's kind of file in place, by following the action that app's manifest declares, so the person never leaves what they are doing](an-app-makes-another-apps-file-in-place-from-its-declared-action.md) — Accepted, 2026-11-24
 - [An agent says it is an agent in its own profile (NIP-24 `bot`), and Estiva ID publishes it](an-agent-says-it-is-a-bot-in-its-profile.md) — Accepted, 2026-09-24
 - [An agent's profile says, signed by its owner, whose agent it is, and a message by your own agent counts as your own](an-agents-profile-says-whose-it-is.md) — Accepted, 2026-11-09
 - [Removing an agent from a Folder keeps it out, even while the person it works for is in](removing-an-agent-from-a-folder-keeps-it-out.md) — Accepted, 2026-10-27

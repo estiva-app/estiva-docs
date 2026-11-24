@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Handing a new file over</title>
+<style>
+:root { --bg:#fbfaf7; --ink:#1d1d1b; --muted:#6b6a65; --box:#ffffff; --line:#c9c6bd; --peek:#e9f0fb; --ship:#eaf5ec; --leaf:#f6f0e2; --accent:#2f5fb3; --warn:#a2541b; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#1b1b1a; --ink:#ecebe6; --muted:#a3a29c; --box:#262624; --line:#4a4944; --peek:#1f2a3b; --ship:#1f3125; --leaf:#352f22; --accent:#8fb0ee; --warn:#e0a173; }
+}
+body { background:var(--bg); color:var(--ink); font:16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; margin:0; }
+main { max-width:760px; margin:0 auto; padding:24px 16px 64px; }
+h1 { font-size:1.6rem; margin:0 0 4px; }
+h2 { font-size:1.25rem; margin:40px 0 8px; border-top:1px solid var(--line); padding-top:24px; }
+h3 { font-size:1.05rem; margin:24px 0 6px; }
+.sub { color:var(--muted); margin:0 0 16px; }
+.q { font-size:1.1rem; font-weight:600; background:var(--box); border:1px solid var(--line); border-radius:8px; padding:12px 14px; }
+.rec { border-left:4px solid var(--accent); padding:4px 12px; background:var(--box); }
+table { border-collapse:collapse; width:100%; font-size:.92rem; margin:8px 0; }
+th, td { border:1px solid var(--line); padding:6px 8px; text-align:left; vertical-align:top; }
+th { background:var(--box); }
+svg { width:100%; height:auto; display:block; margin:8px 0 4px; }
+svg text { fill:var(--ink); font:13px system-ui, sans-serif; }
+svg .muted { fill:var(--muted); }
+svg .box { fill:var(--box); stroke:var(--line); }
+svg .peek { fill:var(--peek); stroke:var(--line); }
+svg .ship { fill:var(--ship); stroke:var(--line); }
+svg .leaf { fill:var(--leaf); stroke:var(--line); }
+svg .arrow { stroke:var(--ink); stroke-width:1.5; fill:none; marker-end:url(#a); }
+svg .dash { stroke:var(--muted); stroke-width:1.5; fill:none; stroke-dasharray:4 4; marker-end:url(#a); }
+.cap { color:var(--muted); font-size:.9rem; margin:0 0 16px; }
+code { font-size:.88em; }
+</style>
+</head>
+<body>
+<main>
+<h1>Handing a new file over</h1>
+<p class="sub">Two calls from KIN-11 (Leaf's ⌘K offers Ship's Create issue and Create project), 24 Nov 2026.</p>
+
+<h2>1. Who makes the file</h2>
+<p class="q">When an app could make another app's kind of file itself, does it make it where you are, or does it always send you to the app that owns that kind?</p>
+
+<h3>Today</h3>
+<p>In Peek's ⌘K, Create issue and Create project make the Ship file right there, in a form the box builds, and you stay in Peek. Leaf's ⌘K offers neither: Leaf may not write Ship's files, so the box hides them.</p>
+<p>On 19 October you decided that the app owning a "New …" declares a "create here" link, and that Peek would stop making Ship projects itself and open Ship's link instead. On 26 October you decided that a file's type is a shared meaning, and any app the workspace has added that declares the type may make its files. The two now disagree about Peek: the first sends Peek's Create project to Ship, the second lets Peek keep making it.</p>
+
+<h3>Why it reaches beyond this ticket</h3>
+<p>It is the rule every launcher follows, ours and an outside company's: when both "make it here" and "open the owner's link" are possible, which wins. <strong>Two-way door:</strong> it is a rule in launchers and a field in an app's listing. Nothing stored on the relay depends on it; switching later changes where a button goes, not any file.</p>
+
+<h3>The picture</h3>
+<svg viewBox="0 0 720 250" role="img">
+  <title>Option A: an app that may make the file makes it in place; one that may not opens the owner's link. Option B: the owner's link always wins.</title>
+  <defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+  <text x="10" y="20" font-weight="600">A — make it where you are when you may</text>
+  <rect class="peek" x="10" y="35" width="150" height="44" rx="6"/><text x="22" y="55">Peek's ⌘K</text><text x="22" y="71" class="muted">may write Ship's files</text>
+  <rect class="leaf" x="10" y="95" width="150" height="44" rx="6"/><text x="22" y="115">Leaf's ⌘K</text><text x="22" y="131" class="muted">may not</text>
+  <path class="arrow" d="M160,57 L250,57"/><text x="170" y="50" class="muted">makes it</text>
+  <rect class="box" x="250" y="35" width="100" height="44" rx="6"/><text x="262" y="62">the issue</text>
+  <path class="arrow" d="M160,117 L250,117"/><text x="170" y="110" class="muted">opens link</text>
+  <rect class="ship" x="250" y="95" width="100" height="44" rx="6"/><text x="262" y="115">Ship's form</text><text x="262" y="131" class="muted">Ship makes it</text>
+
+  <text x="390" y="20" font-weight="600">B — the owner's link always wins</text>
+  <rect class="peek" x="390" y="35" width="150" height="44" rx="6"/><text x="402" y="62">Peek's ⌘K</text>
+  <rect class="leaf" x="390" y="95" width="150" height="44" rx="6"/><text x="402" y="122">Leaf's ⌘K</text>
+  <path class="arrow" d="M540,57 L600,100"/>
+  <path class="arrow" d="M540,117 L600,117"/>
+  <rect class="ship" x="600" y="95" width="110" height="44" rx="6"/><text x="612" y="115">Ship's form</text><text x="612" y="131" class="muted">only Ship makes it</text>
+  <text x="10" y="180" class="muted">In both, an app that may not write the file and finds no link offers nothing, as Leaf does today.</text>
+  <text x="10" y="200" class="muted">In both, the file is the same issue on the relay; only where you are when you press Save differs.</text>
+</svg>
+
+<h3>Options</h3>
+<p><strong>A — make it where you are when you may.</strong> In Peek you pick Create project and fill the box's form without leaving the conversation, as today. In Leaf you go to Ship's form. An outside company's launcher makes the types it is allowed to and hands the rest over. <em>What could go wrong:</em> two forms for the same thing (the box's and Ship's), which can drift apart: Ship's form suggests the project's key, the box's form asks for it.</p>
+<p><strong>B — the owner's link always wins.</strong> Every Create issue, from every app, ends on Ship's own form. Peek's Create project leaves Peek. Later, Peek's permission to write Ship's projects can be withdrawn. An outside company never needs permission to write another app's types. <em>What could go wrong:</em> you lose your place in Peek for every new issue, which is most of what Peek's ⌘K makes today; it walks back the 26 Oct "any app that declares the type may make its files".</p>
+<p><strong>Do less — C: leave the rule unwritten.</strong> Peek keeps making Ship's files, Leaf opens the link, and the listing rule says nothing about which wins. Outside launchers each guess. <em>What could go wrong:</em> exactly that guessing, which a written rule exists to stop.</p>
+
+<table>
+<tr><th></th><th>Protocol shape</th><th>What Miky and Katerina see</th><th>Outside company</th><th>Undo</th><th>Build</th></tr>
+<tr><td>A</td><td>"Make it if you may, else open the owner's link"; follows 26 Oct; changes the 19 Oct record's Peek clause</td><td>Peek unchanged; Leaf hands over</td><td>Makes what it may, hands off the rest</td><td>None stored</td><td>As sketched</td></tr>
+<tr><td>B</td><td>"Owner's link first"; follows 19 Oct; narrows 26 Oct in practice</td><td>Every Create issue ends in Ship</td><td>Never writes another app's types</td><td>None stored</td><td>Plus Peek switches</td></tr>
+<tr><td>C</td><td>No rule</td><td>As A</td><td>Guesses</td><td>—</td><td>Least</td></tr>
+</table>
+
+<h3>How others do it</h3>
+<p>Slack's shortcuts for other tools (Jira, Asana) open that tool's own form inside Slack, drawn from what the tool declares; Linear's and GitHub's "create issue" links prefill the owner's page. Both keep the owner in charge of the form; Slack keeps you in place. Option A is the Slack shape for apps allowed to write; B is the link shape for all.</p>
+
+<p class="rec"><strong>Recommendation: A.</strong> It is what 26 October set (a type is shared, and any app that declares it may make its files), and it keeps you where you are when you can be. The link is for the app that may not. The 19 Oct record's Peek clause becomes "superseded in part".</p>
+
+<h2>2. What travels with you</h2>
+<p class="q">When Leaf hands your sentence to Ship, what goes with it, and what does Ship's New issue form show?</p>
+
+<h3>Today</h3>
+<p>In Peek's ⌘K you type "add an issue: escape should keep the sentence" and pick Create issue: where the browser's on-device model runs, it fills the title and description from your sentence; elsewhere the form opens plain. In Ship's own ⌘K, Add issue opens Ship's New issue form empty, and your sentence stays behind in the box. The 19 Oct record passes only where to make the file, nothing you typed.</p>
+
+<h3>Why it reaches beyond this ticket</h3>
+<p>Every app that hands over, and every app that receives, must agree on what arrives. <strong>Two-way door:</strong> a field in an app's listing; nothing on the relay depends on it. In every option the sentence travels only in the part of the link after <code>#</code>, which browsers never send to a server, and only to the app's own site.</p>
+
+<svg viewBox="0 0 720 230" role="img">
+  <title>A: your words as typed go to Ship, which fills its form from them. B: Leaf guesses the fields and sends them. C: your words as typed become the title.</title>
+  <defs><marker id="b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="currentColor"/></marker></defs>
+  <text x="10" y="20" font-weight="600">A — your words; Ship reads them</text>
+  <rect class="leaf" x="10" y="32" width="120" height="40" rx="6"/><text x="22" y="57">Leaf's ⌘K</text>
+  <path class="arrow" d="M130,52 L250,52" style="marker-end:url(#b)"/><text x="138" y="45" class="muted">"add an issue: …"</text>
+  <rect class="ship" x="250" y="32" width="210" height="40" rx="6"/><text x="262" y="50">Ship's form, filled by the model</text><text x="262" y="66" class="muted">plain words as title where it can't run</text>
+
+  <text x="10" y="102" font-weight="600">B — Leaf guesses the fields</text>
+  <rect class="leaf" x="10" y="114" width="120" height="40" rx="6"/><text x="22" y="132">Leaf's ⌘K</text><text x="22" y="148" class="muted">model fills</text>
+  <path class="arrow" d="M130,134 L250,134" style="marker-end:url(#b)"/><text x="138" y="127" class="muted">title, description</text>
+  <rect class="ship" x="250" y="114" width="210" height="40" rx="6"/><text x="262" y="139">Ship's form, as sent</text>
+
+  <text x="10" y="184" font-weight="600">C (do less) — your words are the title</text>
+  <rect class="leaf" x="10" y="192" width="120" height="34" rx="6"/><text x="22" y="214">Leaf's ⌘K</text>
+  <path class="arrow" d="M130,209 L250,209" style="marker-end:url(#b)"/><text x="138" y="202" class="muted">"add an issue: …"</text>
+  <rect class="ship" x="250" y="192" width="210" height="34" rx="6"/><text x="262" y="214">Title: add an issue: escape …</text>
+</svg>
+
+<h3>Options</h3>
+<p><strong>A — your words as typed; Ship fills its form from them, as Peek's ⌘K does.</strong> You land on Ship's New issue form with a title and description drawn from your sentence where the model runs, and your sentence as the title where it does not. Ship's own ⌘K starts doing the same, so the result is one behaviour from Peek, Leaf and Ship. An outside launcher passes one value and knows nothing of Ship's fields. <em>What could go wrong:</em> the model runs in Ship's tab after it opens, so the fields fill a moment after the form appears.</p>
+<p><strong>B — Leaf guesses the fields and sends each.</strong> The form arrives filled. But every launcher must know every app's form fields, which is the coupling a link exists to avoid, and a receiving app gets values it did not ask for. <em>What could go wrong:</em> an outside app renames a field and every launcher's guess lands in the wrong box.</p>
+<p><strong>C — do less: your words as typed become the title.</strong> Works in every browser, no model. You edit "add an issue:" out before Save. Ship's own ⌘K would do the same, so Peek fills while Leaf and Ship do not.</p>
+
+<table>
+<tr><th></th><th>Protocol shape</th><th>What Miky and Katerina see</th><th>Outside company</th><th>Undo</th><th>Build</th></tr>
+<tr><td>A</td><td>One value: the words as typed; the owner reads them</td><td>A filled form, same as Peek's</td><td>Passes one value; reads it however it likes</td><td>None stored</td><td>Ship learns to fill its two forms</td></tr>
+<tr><td>B</td><td>One value per declared field</td><td>A filled form</td><td>Must know each app's fields</td><td>None stored</td><td>Launcher fills, Ship reads fields</td></tr>
+<tr><td>C</td><td>One value: the words; owner puts them in the title</td><td>Your sentence as the title, to edit</td><td>As A</td><td>None stored</td><td>Least</td></tr>
+</table>
+
+<h3>How others do it</h3>
+<p>Linear's and GitHub's new-issue links take named fields (title, body) — option B, which works because each is one app whose fields everyone knows. Android's "share text" hands the receiving app plain text and lets it decide — option A.</p>
+
+<p class="rec"><strong>Recommendation: A.</strong> The app that owns the form owns how a sentence is read, so an outside launcher needs nothing beyond "here are the words". And you get the same filled form whether you typed in Peek, Ship or Leaf, which is the project's goal.</p>
+
+<h2>Checked</h2>
+<ul>
+<li>Ship's listing declares only how to open an existing file, no "create here" link (estiva-ship <code>src/nostr/manifest.ts</code>, origin/main 24 Nov). The protocol text has no such field yet.</li>
+<li>Leaf's ⌘K hides every action Leaf may not write (leaf <code>src/launcher/LeafLauncher.tsx:198</code>); Peek's box offers all (launcher <code>host.ts</code> <code>maySign</code>).</li>
+<li>Ship's ⌘K Add issue / New project open Ship's own dialogs with nothing typed carried in (estiva-ship <code>src/launcher/forms.ts</code>, KIN-6).</li>
+<li>Peek's ⌘K form is filled from the sentence by the on-device model (launcher <code>src/prefill.ts</code> <code>prefillInstruction</code>).</li>
+<li>Ship keeps where to return after sign-in in the tab and sends Estiva ID a plain return address, so the part after <code>#</code> survives the sign-in and reaches no server (estiva-ship <code>src/auth/boot.ts</code>, per the protocol pre-reviewer).</li>
+<li>Not verified: whether the model runs in Edge Dev's Ship tab the way it did in Edge Dev's Peek on 23 Nov.</li>
+</ul>
+
+<h2>For the record</h2>
+<p>KIN-11 (<code>30851:b38fd268…:79dc2a89…</code>). Records: an-app-declares-a-create-link-for-its-new-action (Accepted 19 Oct; question 1 A supersedes its Peek clause), a-files-type-is-a-shared-meaning-any-app-extends (Accepted 26 Oct). SPEC §7.3 (consumer builds the event, or opens the create link), new <code>create</code> template on a <code>kind:31990</code> action with <code>&lt;bech32&gt;</code> (the object it is offered on, empty when none) and <code>&lt;text&gt;</code> (fragment only; a template with <code>&lt;text&gt;</code> before <code>#</code> is refused; kept only when its origin equals the listing's <code>web</code> origin), §9 conformance lines. Repos: estiva-docs, estiva-foundation (interop, launcher), estiva-ship, leaf, peek-app.</p>
+</main>
+</body>
+</html>
