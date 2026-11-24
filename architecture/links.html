@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Links architecture</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.example { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
+.legend .lgone::before { background: var(--warn-bg); border-color: var(--warn); }
+.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
+.legend .lf::before { opacity: .45; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+/* Below 560px a diagram scrolls inside its figure instead of shrinking its text. */
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); stroke-width: 1.5; }
+svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .f { opacity: .45; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
+svg .aq { stroke: var(--accent); fill: none; stroke-width: 1.6; stroke-dasharray: 5 4; marker-end: url(#arr-q); }
+svg .life { stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 3 4; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 560px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+tr.new td { background: var(--ok-bg); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+</style>
+</head>
+<body>
+<!-- Arrowheads, shared by every diagram on the page. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+    <marker id="arr-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<main>
+
+<h1>Links</h1>
+<p class="sub"><span class="state">Shaped, 2026-11-24</span> · Goal: a file has one link, written and read the same way by Peek, Ship, Leaf and the agent, and the relay turns away a file that could not have one. · Follows <a href="move-ship-onto-the-shared-read.html">Move Ship onto the shared read</a>.</p>
+
+<p>Today each app turns a file into a link with its own code, and two of them keep a second link shape for a file whose id is unusual. No such file exists, and after this project none can: the relay refuses it. The link is then written by one shared piece of code, the old shapes already in text are rewritten, and the code that read them goes. Look at the Map first, then the table of link shapes.</p>
+
+<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lgone">goes away</span><span class="lf">untouched, for orientation</span></div>
+
+<h2>Map</h2>
+
+<h3>Today</h3>
+<figure>
+<svg viewBox="0 0 720 350" role="img">
+<title>Today: Peek, Ship and Leaf each write a file's link with their own code and share only the reading; the relay checks the id of one file type out of five; the agent prints the address Leaf declares</title>
+<rect class="b" x="20" y="16" width="216" height="104" rx="8"/><text x="34" y="38" class="h">Peek</text><text x="34" y="56" class="m">writes the short link</text>
+<rect class="bad" x="32" y="66" width="192" height="44" rx="6"/><text x="42" y="84">long link for an odd id</text><text x="42" y="101" class="m">its own copy of the link rules</text>
+<rect class="b" x="252" y="16" width="216" height="104" rx="8"/><text x="266" y="38" class="h">Ship</text><text x="266" y="56" class="m">writes the short link</text>
+<rect class="bad" x="264" y="66" width="192" height="44" rx="6"/><text x="274" y="84">for any id, even one</text><text x="274" y="101" class="m">it cannot read back</text>
+<rect class="b" x="484" y="16" width="216" height="104" rx="8"/><text x="498" y="38" class="h">Leaf</text><text x="498" y="56" class="m">short link for a page</text>
+<rect class="bad" x="496" y="66" width="192" height="44" rx="6"/><text x="506" y="84">/f/ link for everything else</text><text x="506" y="101" class="m">and as its "open" address</text>
+<rect class="b" x="252" y="170" width="448" height="56" rx="8"/><text x="266" y="194" class="h">Shared package</text><text x="266" y="212" class="m">reads a pasted link · has no code that writes one</text>
+<rect class="b" x="252" y="276" width="448" height="58" rx="8"/><text x="266" y="300" class="h">Relay</text><text x="266" y="318" class="m">stores every file · checks the id of 1 file type out of 5</text>
+<rect class="b" x="20" y="170" width="200" height="164" rx="8"/><text x="34" y="194" class="h">Agent</text><text x="34" y="212" class="m">prints the address the</text><text x="34" y="228" class="m">app declares: for a Leaf</text><text x="34" y="244" class="m">page, the /f/ link</text>
+<path class="a" d="M128,120 L128,146 L300,146 L300,166"/>
+<path class="a" d="M360,120 L360,166"/>
+<path class="a" d="M592,120 L592,146 L440,146 L440,166"/>
+<path class="a" d="M476,226 L476,272"/>
+<path class="a" d="M220,300 L248,300"/>
+<text x="486" y="254" class="m">saves and reads files</text>
+</svg>
+<figcaption>The red parts exist only for a file whose id is not a lowercase uuid, or are left from earlier link shapes. Estiva ID and the kit of components are left out: neither builds a link.</figcaption>
+</figure>
+
+<h3>After</h3>
+<figure>
+<svg viewBox="0 0 720 370" role="img">
+<title>After: the relay refuses a file with an odd id on all five file types (milestone 1); the shared package writes the link and all three apps call it (milestone 2); old links in text are rewritten and the code that read them is removed (milestone 3)</title>
+<rect class="ok" x="20" y="16" width="216" height="84" rx="8"/><text x="34" y="38" class="h">Peek</text><text x="34" y="56" class="m">asks the shared package</text><text x="34" y="72" class="m">no copy · no long link</text><text x="196" y="38" class="tag">M2</text>
+<rect class="ok" x="252" y="16" width="216" height="84" rx="8"/><text x="266" y="38" class="h">Ship</text><text x="266" y="56" class="m">asks the shared package</text><text x="266" y="72" class="m">writes only what it reads</text><text x="428" y="38" class="tag">M2</text>
+<rect class="ok" x="484" y="16" width="216" height="84" rx="8"/><text x="498" y="38" class="h">Leaf</text><text x="498" y="56" class="m">asks the shared package</text><text x="498" y="72" class="m">answers /o/ · no /f/</text><text x="660" y="38" class="tag">M2</text>
+<rect class="ok" x="252" y="150" width="448" height="56" rx="8"/><text x="266" y="174" class="h">Shared package</text><text x="266" y="192" class="m">writes and reads a file's link · will not build a file with an odd id</text><text x="660" y="174" class="tag">M2</text>
+<rect class="ok" x="252" y="256" width="448" height="58" rx="8"/><text x="266" y="280" class="h">Relay</text><text x="266" y="298" class="m">refuses a new file with an odd id, on all 5 file types</text><text x="660" y="280" class="tag">M1</text>
+<rect class="ok" x="20" y="150" width="200" height="164" rx="8"/><text x="34" y="174" class="h">Agent</text><text x="34" y="192" class="m">prints the short link</text><text x="180" y="174" class="tag">M2</text>
+<text x="34" y="226" class="m">rewrites the old links in</text><text x="34" y="242" class="m">9 descriptions and the</text><text x="34" y="258" class="m">comments, once</text><text x="180" y="226" class="tag">M3</text>
+<path class="an" d="M128,100 L128,126 L300,126 L300,146"/>
+<path class="an" d="M360,100 L360,146"/>
+<path class="an" d="M592,100 L592,126 L440,126 L440,146"/>
+<path class="a" d="M476,206 L476,252"/>
+<path class="an" d="M220,290 L248,290"/>
+<text x="20" y="346" class="tag">M3</text><text x="50" y="346" class="m">then Peek stops reading the long link and Leaf stops reading /f/. /o/ stays in every app.</text>
+</svg>
+<figcaption>Milestone 1 makes the odd case impossible, milestone 2 gives every app the same writer, milestone 3 clears what earlier shapes left behind. What a person sees does not change, apart from the rewritten links.</figcaption>
+</figure>
+
+<h2>The link shapes</h2>
+<div class="tw">
+<table>
+<thead><tr><th>Shape</th><th>Today</th><th>After</th></tr></thead>
+<tbody>
+<tr><td>Short link<br><code>/issue/&lt;name&gt;-&lt;id&gt;</code></td><td>Every app writes it for a uuid id; every app reads it</td><td>The only link an app writes for a file</td></tr>
+<tr><td>Generic address<br><code>/o/&lt;address&gt;</code></td><td>Peek and Ship answer it; Leaf does not</td><td class="new">Every app answers it, Leaf too (M2)</td></tr>
+<tr><td>Peek's long link<br><code>/topic/&lt;kind&gt;:&lt;key&gt;:&lt;id&gt;</code></td><td>Written for an odd id; read first. In 2 live comments</td><td>Rewritten in text, then not read (M3)</td></tr>
+<tr><td>Leaf's old link<br><code>/f/&lt;address&gt;</code></td><td>Written for every file that is not a page, and declared as Leaf's open address. In 9 live descriptions and 4 live comments</td><td>Not written (M2); rewritten in text, then not read (M3)</td></tr>
+</tbody>
+</table>
+</div>
+<p class="sub">A person's, a team's, a message's and a block's link are not in this table: their rules stay as they are.</p>
+
+<h2>Who checks a file's id</h2>
+<div class="tw">
+<table>
+<thead><tr><th>File type</th><th>Today</th><th>After</th></tr></thead>
+<tbody>
+<tr><td>A bare file</td><td>The relay: a lowercase uuid, or refused</td><td>The same</td></tr>
+<tr class="new"><td>A topic, a page, a project, an issue</td><td>Nobody. Every app happens to make a uuid</td><td>The relay, on the first save (M1); the shared code that builds the file, before it is sent (M2)</td></tr>
+<tr><td>A team</td><td>The relay makes the id itself</td><td>The same</td></tr>
+</tbody>
+</table>
+</div>
+<p class="sub">This is a format rule, not who may read or write: an odd id gives nobody access to anything.</p>
+
+<h2>Checked</h2>
+<ul>
+<li>Relay: <code>named_file_refusal</code>, buzz <code>crates/buzz-core/src/fields.rs:786</code>, called for the bare file only at <code>ingest.rs:3902</code>; the five file types are <code>FILE_KINDS</code>, <code>fields.rs:17</code> (branch <code>nfb-demo-kinds</code>, 22b138f).</li>
+<li>Peek: <code>src/lib/objectUrl.ts</code> <code>shortFilePath</code> :273, <code>filePath</code> :304; 25 production files import it. Ship: <code>src/router.ts</code> <code>href</code> :143, <code>parse</code> :208. Leaf: <code>src/route.ts</code> :44, :70, :85; <code>src/manifest.ts:180</code>. Each on <code>origin/main</code>, 24 Nov.</li>
+<li>Shared package: interop <code>objectUrl.ts</code> exports readers (<code>identifierFromRef</code>, <code>matchObjectUrl</code>) and <code>objectRef</code>, and no link writer; the agent prints interop's <code>openUrl</code>.</li>
+<li>Production database, 24 Nov: no live file of the five types has an odd id (two deleted probe topics do). Old-shape links: 9 live descriptions and 4 live comments with <code>/f/</code>, 2 live comments with the long link.</li>
+<li>Not verified: old links kept outside the relay (bookmarks, pull requests, other sites). They cannot be counted and will stop opening.</li>
+</ul>
+
+</main>
+</body>
+</html>
