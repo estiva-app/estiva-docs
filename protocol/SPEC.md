@@ -899,9 +899,10 @@ so a reconciliation tells a reader nothing a `REQ` would not.
 - **Websocket only, signed in first.** `NEG-OPEN` before NIP-42 `AUTH` is
   refused `auth-required:`; there is no bridge endpoint.
 - **One filter**, with only `ids`, `authors`, `kinds`, single-letter tags
-  (`#h`, `#d`, …), `since` and `until`. Any other key, `limit` and `search`
-  included, is refused `invalid:` rather than ignored: a set cut short would
-  make "past the limit" look like "deleted".
+  (`#h`, `#d`, …), `since` and `until`, and `"fields": "newest"` for a list of
+  files (§6.13, "A list catches up too"). Any other key, `limit`, `search` and
+  `text` included, is refused `invalid:` rather than ignored: a set cut short
+  would make "past the limit" look like "deleted".
 - **Who can read is checked once, at `NEG-OPEN`**, and the set is built then;
   later rounds answer from it. A filter naming only teams the reader may not
   read is refused in a `REQ`'s words (`restricted: not a channel member`),
@@ -2880,11 +2881,41 @@ field's own rules included, §6.14),
 
 **How files are picked.** A team's issues, documents and topics by `#h`, and
 a named type's by `"kinds": [30852]` with `#k` (§6.1). Projects are stored
-workspace-wide (§3.1) and placed by `buzz-channel`, which no filter can ask
-for, so a team's projects are the ones its `kind:30890` lists, asked for by
-`#d`, and those whose `buzz-channel` names it, read from
-`{"fields": "newest", "kinds": [30850]}`; a project in no other team names
-the Company team (§3.4).
+workspace-wide (§3.1) and placed by `buzz-channel`, which is not a tag a Nostr
+filter asks for (a relay may take `#buzz-channel` on `/query` as its own
+extension; nothing else does), so a team's projects are the ones its
+`kind:30890` lists, asked for by `#d`, and those whose `buzz-channel` names it,
+read from `{"fields": "newest", "kinds": [30850]}`; a project in no other team
+names the Company team (§3.4).
+
+**A list catches up too** (*added 2026-11-25*, record
+[a-file-list-catches-up-with-nip-77-too](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-file-list-catches-up-with-nip-77-too.md)).
+A copy that asked a list before catches it up as §5.3 says, with the list's
+filter, `"fields": "newest"` included, in the `NEG-OPEN`:
+
+```json
+["NEG-OPEN", "<id>", {"fields": "newest", "kinds": [30851], "#h": ["<folder>"]}, "<message>"]
+```
+
+- **The set is the list**: each first record the filter picks that is not
+  deleted, and each of its fields' current changes but the text, exactly what
+  the read above answers. It is read on the socket's own sign-in, so a sign-in
+  limited to some teams counts nothing outside them, though `/query` has no
+  such sign-in.
+- **`since` and `until` pick first records**; a change goes with its file,
+  whatever its own time.
+- **The filter passes the read's own rules** (file kinds only); `text`, `limit`,
+  `search` and `"fields"` other than `"newest"` are refused `invalid:`. A list
+  whose `limit` cannot cut it (`authors`, one kind and `#d`, with at least as
+  many as `#d` names, since each address has one first record) is caught up
+  without it; any other list with a `limit` is asked again.
+- **An id the set lacks has left the list**, not necessarily the reader's
+  reach: a replaced change and a deleted file's first record are still readable
+  by id (History, Restore). The copy drops it from that list only.
+- **Missing ids are fetched with a `REQ` by `ids`**, which returns the same
+  events as the read: each change is read by id under the ordinary rules.
+- **A list asked again stops at the relay's page** (buzz: 1,000 first records
+  per filter); its catch-up compares them all.
 
 **Opening a file reads its current text too** (*added 2026-11-02*, record
 [opening-a-file-reads-its-current-text-not-its-history](https://github.com/estiva-app/estiva-docs/blob/main/decisions/opening-a-file-reads-its-current-text-not-its-history.md)).
