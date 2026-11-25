@@ -1,7 +1,8 @@
 # A comment is the same object in every app; suggestions, review verdicts and an agent's assertions are objects of their own beside it
 
 - Date: 2026-10-16
-- Status: Proposed
+- Status: Accepted
+- Decided by: Miky, in the /sweep session of 2026-11-25, choosing "accept the whole record" over accepting only its first half or letting each app keep its own comment
 - Area: Messages
 
 ## Who it affects
@@ -43,6 +44,8 @@ comment with a flag that other apps would draw as an ordinary comment.
 ## Rejected alternatives
 
 - **A comment with a flag, for a suggestion or a verdict.** It would need no new kind. But every app that does not know the flag draws it as an ordinary comment, so a suggestion would look like a remark in Peek and an accepted verdict would look like chat. No case for it was found on 16 October.
+- **Accept only "a comment is the same in every app", and decide suggestions and verdicts when they are built** (turned down 2026-11-25). It would leave review and approval features without a rule, so the first app to ship one could ship a flagged comment that every other app draws as an ordinary remark.
+- **Let each app keep its own kind of comment** (turned down 2026-11-25). An outside company would have to support every app's variant, and it would undo the one conversation every app has drawn since 10 November.
 
 ## Consequences
 
