@@ -44,10 +44,11 @@ Project pages, newest first:
   Leaf and the agent use. Read at
   `https://docs.estiva.app/architecture/tests-that-try-thousands-of-inputs.html`.
 - [Documents and topics stop downloading every edit](documents-and-topics-stop-downloading-every-edit.html)
-  — Shaped, 2026-11-19. Leaf pages and Peek topics are read as they are now
-  and written in order at one announced moment, a delete marks only the file
-  and can be undone, and after a hold the old way of reading and writing files
-  is removed from the relay, the apps and the agent. Read at
+  — As built, 2026-11-25 (shaped 2026-11-19). Leaf pages and Peek topics are
+  read as they are now and written in order since one announced moment (23
+  Nov), every change says its file's type, a delete marks only the file and can
+  be undone, and once Miky had looked the old way of reading and writing files
+  was removed from the relay, the apps and the agent (24 Nov). Read at
   `https://docs.estiva.app/architecture/documents-and-topics-stop-downloading-every-edit.html`.
 
 - [Real page-open timings](real-page-open-timings.html)
