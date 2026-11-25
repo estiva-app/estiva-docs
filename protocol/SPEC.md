@@ -2882,8 +2882,8 @@ field's own rules included, §6.14),
 **How files are picked.** A team's issues, documents and topics by `#h`, and
 a named type's by `"kinds": [30852]` with `#k` (§6.1). Projects are stored
 workspace-wide (§3.1) and placed by `buzz-channel`, which is not a tag a Nostr
-filter asks for (a relay may take `#buzz-channel` on `/query` as its own
-extension; nothing else does), so a team's projects are the ones its
+filter asks for (a buzz relay takes `#buzz-channel` on `/query` as its own
+extension; a socket `REQ` and a catch-up do not), so a team's projects are the ones its
 `kind:30890` lists, asked for by `#d`, and those whose `buzz-channel` names it,
 read from `{"fields": "newest", "kinds": [30850]}`; a project in no other team
 names the Company team (§3.4).
@@ -2897,18 +2897,22 @@ filter, `"fields": "newest"` included, in the `NEG-OPEN`:
 ["NEG-OPEN", "<id>", {"fields": "newest", "kinds": [30851], "#h": ["<folder>"]}, "<message>"]
 ```
 
-- **The set is the list**: each first record the filter picks that is not
-  deleted, and each of its fields' current changes but the text, exactly what
-  the read above answers. It is read on the socket's own sign-in, so a sign-in
-  limited to some teams counts nothing outside them, though `/query` has no
-  such sign-in.
+- **The set is what the list read answers for this sign-in**: each first
+  record the filter picks that is not deleted, and the current change of each
+  of its fields except the text. A sign-in limited to some teams counts nothing
+  outside them.
 - **`since` and `until` pick first records**; a change goes with its file,
   whatever its own time.
-- **The filter passes the read's own rules** (file kinds only); `text`, `limit`,
-  `search` and `"fields"` other than `"newest"` are refused `invalid:`. A list
-  whose `limit` cannot cut it (`authors`, one kind and `#d`, with at least as
-  many as `#d` names, since each address has one first record) is caught up
-  without it; any other list with a `limit` is asked again.
+- **The relay takes the filter only as the read would** (file kinds only), and
+  refuses `text`, `limit`, `search` and `"fields"` other than `"newest"` with
+  `invalid:`.
+- **The client leaves a list's `limit` out** only when the limit cannot cut
+  it: `authors`, one kind and `#d`, with a `limit` at least the number of `#d`
+  values, since each address has one first record. It asks any other list with
+  a `limit` with a plain list read.
+- **A relay that refuses a list `NEG-OPEN`** (`invalid:` from one that predates
+  this rule, or `blocked:`) leaves the client to ask the list with a plain list
+  read.
 - **An id the set lacks has left the list**, not necessarily the reader's
   reach: a replaced change and a deleted file's first record are still readable
   by id (History, Restore). The copy drops it from that list only.
