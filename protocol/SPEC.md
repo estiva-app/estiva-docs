@@ -899,9 +899,10 @@ so a reconciliation tells a reader nothing a `REQ` would not.
 - **Websocket only, signed in first.** `NEG-OPEN` before NIP-42 `AUTH` is
   refused `auth-required:`; there is no bridge endpoint.
 - **One filter**, with only `ids`, `authors`, `kinds`, single-letter tags
-  (`#h`, `#d`, …), `since` and `until`. Any other key, `limit` and `search`
-  included, is refused `invalid:` rather than ignored: a set cut short would
-  make "past the limit" look like "deleted".
+  (`#h`, `#d`, …), `since` and `until`, and `"fields": "newest"` for a list of
+  files (§6.13, "A list catches up too"). Any other key, `limit`, `search` and
+  `text` included, is refused `invalid:` rather than ignored: a set cut short
+  would make "past the limit" look like "deleted".
 - **Who can read is checked once, at `NEG-OPEN`**, and the set is built then;
   later rounds answer from it. A filter naming only teams the reader may not
   read is refused in a `REQ`'s words (`restricted: not a channel member`),
@@ -2880,11 +2881,45 @@ field's own rules included, §6.14),
 
 **How files are picked.** A team's issues, documents and topics by `#h`, and
 a named type's by `"kinds": [30852]` with `#k` (§6.1). Projects are stored
-workspace-wide (§3.1) and placed by `buzz-channel`, which no filter can ask
-for, so a team's projects are the ones its `kind:30890` lists, asked for by
-`#d`, and those whose `buzz-channel` names it, read from
-`{"fields": "newest", "kinds": [30850]}`; a project in no other team names
-the Company team (§3.4).
+workspace-wide (§3.1) and placed by `buzz-channel`, which is not a tag a Nostr
+filter asks for (a buzz relay takes `#buzz-channel` on `/query` as its own
+extension; a socket `REQ` and a catch-up do not), so a team's projects are the ones its
+`kind:30890` lists, asked for by `#d`, and those whose `buzz-channel` names it,
+read from `{"fields": "newest", "kinds": [30850]}`; a project in no other team
+names the Company team (§3.4).
+
+**A list catches up too** (*added 2026-11-25*, record
+[a-file-list-catches-up-with-nip-77-too](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-file-list-catches-up-with-nip-77-too.md)).
+A copy that asked a list before catches it up as §5.3 says, with the list's
+filter, `"fields": "newest"` included, in the `NEG-OPEN`:
+
+```json
+["NEG-OPEN", "<id>", {"fields": "newest", "kinds": [30851], "#h": ["<folder>"]}, "<message>"]
+```
+
+- **The set is what the list read answers for this sign-in**: each first
+  record the filter picks that is not deleted, and the current change of each
+  of its fields except the text. A sign-in limited to some teams counts nothing
+  outside them.
+- **`since` and `until` pick first records**; a change goes with its file,
+  whatever its own time.
+- **The relay takes the filter only as the read would** (file kinds only), and
+  refuses `text`, `limit`, `search` and `"fields"` other than `"newest"` with
+  `invalid:`.
+- **The client leaves a list's `limit` out** only when the limit cannot cut
+  it: `authors`, one kind and `#d`, with a `limit` at least the number of `#d`
+  values, since each address has one first record. It asks any other list with
+  a `limit` with a plain list read.
+- **A relay that refuses a list `NEG-OPEN`** (`invalid:` from one that predates
+  this rule, or `blocked:`) leaves the client to ask the list with a plain list
+  read.
+- **An id the set lacks has left the list**, not necessarily the reader's
+  reach: a replaced change and a deleted file's first record are still readable
+  by id (History, Restore). The copy drops it from that list only.
+- **Missing ids are fetched with a `REQ` by `ids`**, which returns the same
+  events as the read: each change is read by id under the ordinary rules.
+- **A list asked again stops at the relay's page** (buzz: 1,000 first records
+  per filter); its catch-up compares them all.
 
 **Opening a file reads its current text too** (*added 2026-11-02*, record
 [opening-a-file-reads-its-current-text-not-its-history](https://github.com/estiva-app/estiva-docs/blob/main/decisions/opening-a-file-reads-its-current-text-not-its-history.md)).
