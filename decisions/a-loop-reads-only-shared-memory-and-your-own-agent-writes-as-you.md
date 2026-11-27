@@ -66,6 +66,10 @@ a person's own agent beyond what the person may do.
   your personal memory.** What it writes is yours to answer for, as your own
   writing is. Nothing stops it writing in a place with more readers, just as
   nothing stops you.
+- **An app may warn you, never stop you.** Before your agent posts, it can
+  say that the text may carry something from a place with fewer readers, so
+  you can look before it goes. The warning helps the person in charge; it is
+  not a protection, and the post goes out when you say so.
 - *Claude's reading:* a place's brief is read by that place's readers, and a
   personal brief by you alone. Personal memory points at its sources and
   never copies them, as items do, so leaving a team also takes what your
