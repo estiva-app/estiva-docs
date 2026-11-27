@@ -275,6 +275,7 @@ properties and its history.
 - [The person an agent works for can end that at once, and the relay cuts the agent off](an-agents-owner-ends-its-access-at-once.md) — Accepted, 2026-10-27
 - [Nothing an agent or a loop does to memory is hidden: each mark says why, each change says who, what and why, and a person can undo it](nothing-an-agent-does-to-memory-is-hidden.md) — Accepted, 2026-11-19
 - [A loop may change an Accepted item, merging or updating it; the item says who, what and why, whoever added it is told in Activity, and they can undo it](a-loop-may-change-an-accepted-item-and-whoever-added-it-can-undo-it.md) — Accepted, 2026-11-19
+- [Memory has two layers: a place's shared memory, which its loops read and the relay holds to that place's readers, and your personal memory, which only your own agent reads; what your agent writes from it is yours to answer for](a-loop-reads-only-shared-memory-and-your-own-agent-writes-as-you.md) — Accepted, 2026-11-27
 - [A company picks the AI models its apps and agents use once, from any provider, and a team cannot narrow that choice](a-company-picks-its-ai-models-once-from-any-provider.md) — Accepted, 2026-11-19
 - [An app defines the files it needs, and the workspace's owner or admin decides which apps are installed, so every Estiva app may start a file of a named type](an-app-defines-the-files-it-needs-and-the-owner-installs-it.md) — Accepted, 2026-11-02
 
