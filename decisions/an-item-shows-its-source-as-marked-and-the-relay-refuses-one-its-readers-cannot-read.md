@@ -5,6 +5,12 @@
 - Decided by: Miky, in the shaping session of 16 November 2026 for the project "Insights, Journal and Risks", on the brief "What an item keeps" ([page](briefs/what-an-item-keeps-of-its-source.html)): "Yes, pinned + relay", taking the brief's recommendation, option D checked by the relay (R). The title starting filled, with a hint that it is kept, was part of that recommendation and came with it. Lines marked as Claude's are the brief's reading, not his words; his merge of this record accepts them
 - Area: Files
 
+> Superseded in part, 2026-11-27: its line "If the source is deleted, or that
+> version of a page is deleted, the item shows that it was deleted". That holds
+> while the item has other sources left, and for an item a person accepted;
+> an item no person accepted goes with its last source, in
+> [an-item-goes-with-its-last-source-unless-a-person-accepted-it](an-item-goes-with-its-last-source-unless-a-person-accepted-it.md).
+
 > Supersedes in part
 > [an-items-readers-are-fixed-when-it-is-made-and-a-move-changes-only-where-it-is-listed](an-items-readers-are-fixed-when-it-is-made-and-a-move-changes-only-where-it-is-listed.md):
 > its "not decided here, and not built before it is" line. Whether an item
