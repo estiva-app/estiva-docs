@@ -84,7 +84,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <main>
 
 <h1>⌘K in every app</h1>
-<p class="sub"><span class="state">Shaped, 2026-11-20</span> · <a href="https://ship.estiva.app/#/project/b70b356d-b536-446f-b748-68fa9c1d9932">Ship project</a> · Goal: ⌘K opens the same box in Peek, Leaf and Ship: a name finds anything, a sentence asks about what is open, and the box suggests what to do with it.</p>
+<p class="sub"><span class="state">As built, 2026-11-27</span> · shaped 2026-11-20 · <a href="https://ship.estiva.app/#/project/b70b356d-b536-446f-b748-68fa9c1d9932">Ship project</a> · Goal: ⌘K opens the same box in Peek, Leaf and Ship: a name finds anything, a sentence asks about what is open, and the box suggests what to do with it.</p>
 
 <p>Today the ⌘K box and everything it knows live inside Peek. This project moves that into one shared piece that Peek, Leaf and Ship all mount, each handing it what is open. The browser's own model gains a second job: guessing which action a sentence wants. Nothing the relay stores or checks changes.</p>
 
@@ -113,25 +113,27 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 
 <h3>After</h3>
 <figure>
-<svg viewBox="0 0 720 360" role="img">
+<svg viewBox="0 0 720 410" role="img">
 <title>After: one shared launcher is mounted by Peek, Leaf and Ship. The kit gains a preview and a dot. The browser's Decisions API orders the suggested actions. Chrome's on-device model still answers a prompt.</title>
 <rect class="ok" x="20" y="20" width="210" height="64" rx="8"/><text x="36" y="44" class="h">Peek</text><text x="36" y="62" class="m">the open conversation</text><text x="156" y="78" class="tag">M1 · M2</text>
 <rect class="ok" x="260" y="20" width="200" height="64" rx="8"/><text x="276" y="44" class="h">Ship</text><text x="276" y="62" class="m">the open issue or project</text><text x="416" y="78" class="tag">M2</text>
 <rect class="ok" x="490" y="20" width="210" height="64" rx="8"/><text x="506" y="44" class="h">Leaf</text><text x="506" y="62" class="m">the open page</text><text x="656" y="78" class="tag">M2</text>
-<rect class="ok" x="140" y="136" width="440" height="76" rx="8"/><text x="156" y="160" class="h">The launcher, shared</text><text x="156" y="178" class="m">one field: search, then a prompt · keeps the sentence on Escape</text><text x="156" y="196" class="m">a new shared package</text><text x="536" y="204" class="tag">M2</text>
+<rect class="ok" x="140" y="136" width="440" height="76" rx="8"/><text x="156" y="160" class="h">The launcher, shared</text><text x="156" y="178" class="m">one field: search, then a prompt · keeps your asks under Recent</text><text x="156" y="196" class="m">@estiva-app/launcher, a new shared package</text><text x="536" y="204" class="tag">M2</text>
 <path class="an" d="M125,84 L125,110 L250,110 L250,132"/>
 <path class="an" d="M360,84 L360,132"/>
 <path class="an" d="M595,84 L595,110 L470,110 L470,132"/>
 <rect class="ok" x="20" y="270" width="150" height="70" rx="8"/><text x="34" y="294" class="h">The kit</text><text x="34" y="312" class="m">+ file preview</text><text x="34" y="328" class="m">+ dot on the search</text><text x="130" y="294" class="tag">M1</text>
 <rect class="b" x="190" y="270" width="150" height="70" rx="8"/><text x="204" y="294" class="h">Chrome's model</text><text x="204" y="312" class="m">answers a prompt</text>
-<rect class="ok" x="360" y="270" width="170" height="70" rx="8"/><text x="374" y="294" class="h">Decisions API</text><text x="374" y="312" class="m">Chrome, Edge · a flag</text><text x="374" y="328" class="m">orders the actions</text><text x="490" y="294" class="tag">M3</text>
+<rect class="ok" x="360" y="270" width="170" height="70" rx="8"/><text x="374" y="294" class="h">Decisions API</text><text x="374" y="312" class="m">a flag · Edge today</text><text x="374" y="328" class="m">orders, once checked</text><text x="490" y="294" class="tag">M3</text>
 <rect class="b" x="550" y="270" width="150" height="70" rx="8"/><text x="564" y="294" class="h">Relay</text><text x="564" y="312" class="m">search · actions</text>
 <path class="a" d="M180,212 L180,240 L95,240 L95,266"/>
 <path class="a" d="M280,212 L280,266"/>
 <path class="an" d="M440,212 L440,266"/>
 <path class="a" d="M540,212 L540,240 L625,240 L625,266"/>
+<text x="20" y="372" class="m">As built: under a prompt, Leaf offers Ship's Add issue and New project, and Peek and Ship offer Leaf's</text>
+<text x="20" y="390" class="m">New document. Each makes the other app's file in place, signed through Estiva ID, which lets that app sign it.</text>
 </svg>
-<figcaption>M1 makes Peek's box the approved one. M2 lifts it out of Peek so Leaf and Ship mount the same thing. M3 adds the guess, which only reorders the suggested actions and is absent without the flag. In this project answers stay with Chrome's on-device model, so asking works in Chrome only. That a company's models may answer is <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-company-picks-its-ai-models-once-from-any-provider.md">decided</a>; building it is not planned yet (Miky, 20 Nov).</figcaption>
+<figcaption>M1 makes Peek's box the approved one. M2 lifts it out of Peek so Leaf and Ship mount the same thing. M3 adds the guess, which only reorders the suggested actions and is absent without the flag. In this project answers stay with Chrome's on-device model, so asking works in Chrome only. That a company's models may answer is <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-company-picks-its-ai-models-once-from-any-provider.md">decided</a>; building it is not planned yet (Miky, 20 Nov). As built, 27 Nov: the guess moves an action first at 0.6 or more, with hidden "something else" options that move nothing, and only where the model passes a check of known sentences when the box opens (Edge Dev today; Chrome's model fails it). Making another app's file from ⌘K follows <a href="https://github.com/estiva-app/estiva-docs/blob/main/decisions/an-app-makes-another-apps-file-in-place-from-its-declared-action.md">an app makes another app's file in place from its declared action</a>; that is the one change outside the box, in what Estiva ID lets an app sign.</figcaption>
 </figure>
 
 <h2>Flow</h2>
@@ -140,12 +142,13 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <title>A sentence in the box: the third word makes it a prompt, the browser guesses the action, Enter asks, Escape hides it and a dot shows on the search until the answer is read.</title>
 <rect class="b" x="10" y="30" width="125" height="70" rx="8"/><text x="20" y="54" class="h">Miky types</text><text x="20" y="72" class="m">two words:</text><text x="20" y="88" class="m">a search</text>
 <rect class="ok" x="155" y="30" width="125" height="70" rx="8"/><text x="165" y="54" class="h">Third word</text><text x="165" y="72" class="m">the field grows,</text><text x="165" y="88" class="m">actions appear</text>
-<rect class="ok" x="300" y="30" width="125" height="70" rx="8"/><text x="310" y="54" class="h">The guess</text><text x="310" y="72" class="m">sure (0.85)? that</text><text x="310" y="88" class="m">action goes first</text>
+<rect class="ok" x="300" y="30" width="125" height="70" rx="8"/><text x="310" y="54" class="h">The guess</text><text x="310" y="72" class="m">checked, sure (0.6)?</text><text x="310" y="88" class="m">action goes first</text>
 <rect class="b" x="445" y="30" width="125" height="70" rx="8"/><text x="455" y="54" class="h">Enter</text><text x="455" y="72" class="m">asks about</text><text x="455" y="88" class="m">what is open</text>
 <rect class="ok" x="590" y="30" width="120" height="70" rx="8"/><text x="600" y="54" class="h">Escape</text><text x="600" y="72" class="m">box hides, dot</text><text x="600" y="88" class="m">on the search</text>
 <path class="a" d="M135,65 L151,65"/><path class="an" d="M280,65 L296,65"/><path class="a" d="M425,65 L441,65"/><path class="an" d="M570,65 L586,65"/>
 <text x="10" y="140" class="m">Nothing waits for the guess: in Chrome it arrives in about 40 ms, in Edge about 2 s after the last key.</text>
-<text x="10" y="160" class="m">⌘K again shows the same sentence and the answer. Nothing is written until an action's form is saved.</text>
+<text x="10" y="160" class="m">⌘K again in the same place shows the sentence and the answer.</text>
+<text x="10" y="180" class="m">Elsewhere it opens fresh and the ask waits under Recent. Nothing is written until a form is saved.</text>
 </svg>
 <figcaption>Miky's 4 Sep note, as one pass through the box. The guess never decides whether the sentence is a search or a question; the word count does.</figcaption>
 </figure>
@@ -157,6 +160,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <li>The kit holds the shell and parts and no preview part: <code>estiva-ui/src/CommandPalette.tsx</code>; the file card is <code>LinkCard</code>.</li>
 <li>No app calls a hosted model, and no company model setting exists in any repository.</li>
 <li>The Decisions API: run on Miky's PC on 20 Nov in Chrome 160 and Edge Dev 160, 40 sentences each.</li>
+<li>As built, 27 Nov, on <code>origin/main</code>: Peek, Ship and Leaf depend on <code>@estiva-app/launcher</code> (<code>estiva-foundation/packages/launcher</code>); the guess's 0.6 bar and its check are in <code>actionGuess.ts</code>; Estiva ID lets Leaf sign Ship's project and issue (estiva-id#107) and Peek and Ship sign Leaf's document (estiva-id#108). On production as QA-1, with a stand-in model, in all three apps: the search in the top bar opens the box; two words find Ship's issues, Leaf's pages, topics and people; a lit file shows its card; an ask waits under Recent elsewhere; the dot is working, then waiting, then gone once seen. The real model and the guess in Edge Dev were checked by Miky.</li>
 <li>Not verified: whether the relay's own agent crates (upstream Buzz) are deployed. This project does not use them.</li>
 </ul>
 
