@@ -76,7 +76,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <main>
 
 <h1>Links</h1>
-<p class="sub"><span class="state">Shaped, 2026-11-24</span> · Goal: a file has one link, written and read the same way by Peek, Ship, Leaf and the agent, and the relay turns away a file that could not have one. · Follows <a href="move-ship-onto-the-shared-read.html">Move Ship onto the shared read</a>.</p>
+<p class="sub"><span class="state">As built, 2026-11-27</span> · shaped 2026-11-24 · Goal: a file has one link, written and read the same way by Peek, Ship, Leaf and the agent, and the relay turns away a file that could not have one. · Follows <a href="move-ship-onto-the-shared-read.html">Move Ship onto the shared read</a>.</p>
 
 <p>Today each app turns a file into a link with its own code, and two of them keep a second link shape for a file whose id is unusual. No such file exists, and after this project none can: the relay refuses it. The link is then written by one shared piece of code, the old shapes already in text are rewritten, and the code that read them goes. Look at the Map first, then the table of link shapes.</p>
 
@@ -117,7 +117,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <rect class="ok" x="252" y="150" width="448" height="56" rx="8"/><text x="266" y="174" class="h">Shared package</text><text x="266" y="192" class="m">writes and reads a file's link · will not build a file with an odd id</text><text x="660" y="174" class="tag">M2</text>
 <rect class="ok" x="252" y="256" width="448" height="58" rx="8"/><text x="266" y="280" class="h">Relay</text><text x="266" y="298" class="m">refuses a new file with an odd id, on all 5 file types</text><text x="660" y="280" class="tag">M1</text>
 <rect class="ok" x="20" y="150" width="200" height="164" rx="8"/><text x="34" y="174" class="h">Agent</text><text x="34" y="192" class="m">prints the short link</text><text x="180" y="174" class="tag">M2</text>
-<text x="34" y="226" class="m">rewrites the old links in</text><text x="34" y="242" class="m">9 descriptions and the</text><text x="34" y="258" class="m">comments, once</text><text x="180" y="226" class="tag">M3</text>
+<text x="34" y="226" class="m">rewrites the old links in</text><text x="34" y="242" class="m">17 descriptions and 6</text><text x="34" y="258" class="m">comments, once</text><text x="180" y="226" class="tag">M3</text>
 <path class="an" d="M128,100 L128,126 L300,126 L300,146"/>
 <path class="an" d="M360,100 L360,146"/>
 <path class="an" d="M592,100 L592,126 L440,126 L440,146"/>
@@ -161,6 +161,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <li>Peek: <code>src/lib/objectUrl.ts</code> <code>shortFilePath</code> :273, <code>filePath</code> :304; 25 production files import it. Ship: <code>src/router.ts</code> <code>href</code> :143, <code>parse</code> :208. Leaf: <code>src/route.ts</code> :44, :70, :85; <code>src/manifest.ts:180</code>. Each on <code>origin/main</code>, 24 Nov.</li>
 <li>Shared package: interop <code>objectUrl.ts</code> exports readers (<code>identifierFromRef</code>, <code>matchObjectUrl</code>) and <code>objectRef</code>, and no link writer; the agent prints interop's <code>openUrl</code>.</li>
 <li>Production database, 24 Nov: no live file of the five types has an odd id (two deleted probe topics do). Old-shape links: 9 live descriptions and 4 live comments with <code>/f/</code>, 2 live comments with the long link.</li>
+<li>As built, 27 Nov, on each <code>origin/main</code>: interop <code>packages/interop/src/fileLink.ts</code> writes the link (<code>fileLinkWordsOf</code> :68, <code>filePathOf</code> :96); Peek's <code>src/lib/objectUrl.ts</code>, Ship's <code>src/lib/fileLinks.ts</code>, Leaf's <code>src/route.ts</code> and <code>src/linkWords.ts</code>, and the agent's <code>lib/agent/links.ts</code> (<code>fileLinkOf</code>) call it. The relay's <code>file_id_refusal</code>, buzz <code>crates/buzz-core/src/fields.rs:671</code> (<code>nfb-demo-kinds</code>, 4321e40), refuses an odd id on all five file types with <code>bad-file-id</code>. On production as QA-1: Copy link in each app gives the short link and it opens on all three hosts; <code>/o/</code> opens in all three and moves to the short link; Peek's long link and Leaf's <code>/f/</code> open nothing; the old-link count reads 0 descriptions and 0 comments.</li>
 <li>Not verified: old links kept outside the relay (bookmarks, pull requests, other sites). They cannot be counted and will stop opening.</li>
 </ul>
 
