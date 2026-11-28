@@ -140,6 +140,7 @@ export const isInternal = (file) => INTERNAL.has(file) || INTERNAL_DIRS.some((di
  * page, from architecture/README.md).
  */
 export const DRAWINGS = [
+  'architecture/the-journal-in-ship-with-claude-recording-into-it.html',
   'architecture/links.html',
   'architecture/the-relay-says-what-a-copy-is-missing.html',
   'architecture/move-ship-onto-the-shared-read.html',

@@ -16,6 +16,10 @@ every project's "today" starts from it.
 
 Project pages, newest first:
 
+- [The Journal in Ship, with Claude recording into it](the-journal-in-ship-with-claude-recording-into-it.html)
+  — Shaped, 2026-11-28. A Claude session writes a Decision or an Update as a
+  highlight, a file of its own in the project's team, and Ship lists a
+  project's on a new Journal tab.
 - [Links](links.html)
   — Shaped, 2026-11-24. The relay refuses a file whose id is not a random
   lowercase uuid; one shared writer gives Peek, Ship, Leaf and the agent the
