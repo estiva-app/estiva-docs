@@ -22,6 +22,11 @@
 > [every-app-relies-on-an-items-stage-and-core-fields-and-each-company-adds-its-own-on-top](every-app-relies-on-an-items-stage-and-core-fields-and-each-company-adds-its-own-on-top.md).
 > Its scope is widened from a project to any file of any app, in
 > [an-item-can-be-about-any-file-of-any-app-and-every-app-that-opens-that-file-shows-it](an-item-can-be-about-any-file-of-any-app-and-every-app-that-opens-that-file-shows-it.md).
+> Its three shared types, and a Journal entry's and a Risk's kind, are
+> superseded in part, 2026-11-28: a highlight is one shared type and Insight,
+> Decision, Update, Concern, Question and Blocker are its word, a field that
+> can change, in
+> [a-highlight-is-one-type-and-its-word-is-a-field](a-highlight-is-one-type-and-its-word-is-a-field.md).
 > Everything else stands as this record says.
 
 ## Who it affects

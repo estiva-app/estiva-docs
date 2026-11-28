@@ -1216,7 +1216,11 @@ The bracketed tags and those after `ts` appear only where a rule asks for them:
   parent. It is an index, not a second target: `a` (with `O`, the same file) is
   the only file a change targets.
 - **`o`**, any other file the change points at, by its id (§6.4): the file a
-  list entry lists or arranges (§6.14).
+  list entry lists or arranges (§6.14), or the file a field whose value is a
+  file's id names, such as a highlight's `about` (TYPES.md; *added
+  2026-11-28*). An `o` stays on its change when the field later names another
+  file, so a reader that finds files by `#o` keeps one only while its
+  field's current value is a file it asked about.
 - **`content-format`** `estiva-blocks-1`, on a change whose value is a §13.3
   block document, with one `imeta` per attachment (§13.4).
 - **`p`**, the person a change names, where the relay indexes them (§11.8).
@@ -1381,7 +1385,7 @@ its `value` and carries the option's stage beside it, last:
 ```
 
 - **The tag names its field**: `["stage", <field>, <stage>]`, where `<stage>` is
-  `open`, `started`, `done` or `dropped`. The tag's name is the protocol's,
+  one of the eight stages of §7.4. The tag's name is the protocol's,
   not declared in `records` (§7.1), so an app with its own change kind writes
   the same tag. Naming the field keeps one form when a change may set several
   fields (record
@@ -1403,8 +1407,8 @@ its `value` and carries the option's stage beside it, last:
   change, on a choice field whose options carry no stage, or naming another
   field.
 - **A change with no stage**, written before this rule or by an app that does
-  not write it, or one whose stage is outside the four (which counts as absent,
-  not as a fifth stage), is counted by the stage the tracker's listing gives
+  not write it, or one whose stage is outside the eight (which counts as absent,
+  not as a ninth stage), is counted by the stage the tracker's listing gives
   that option (§7.4), and failing that by the reader's own reading of the
   label, as before this rule. A reader never takes it from the company's
   statuses, for the reason above. §7.4 says which app is the tracker and
@@ -3907,7 +3911,11 @@ describes:
   ```
 
   An option's `stage` is one of the described type's own stages, as its
-  directory entry (TYPES.md) gives them. `default` is the option an app that
+  directory entry (TYPES.md) gives them. An option MAY carry `"words": [...]`,
+  the values of the type's `word` field it is offered for (a highlight,
+  TYPES.md; *added 2026-11-28*): an app offers it only for those words, and
+  every reader still labels and counts it whatever the file's word is now.
+  An option with no `words` is offered for every word. `default` is the option an app that
   creates a file sets (§6.3: it is written, never read). Labels, priorities
   and a company's own columns are more `property:<id>` fields of the same
   file.
@@ -3940,14 +3948,24 @@ vocabulary, and **its listing** is that manifest (§7), not a team's listing
 [an-app-counts-only-once-the-workspace-adds-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/an-app-counts-only-once-the-workspace-adds-it.md)),
 it is the first such app the workspace added. Until then a reader and a
 writer take a base type's default options and their stages from its directory
-entry (TYPES.md), never from a manifest they resolved, and for any other kind
+entry (TYPES.md), never from a manifest they resolved, and so for every shared
+type the directory lists (`osnova.*`, *added 2026-11-28*: a named type has no
+manifest that can claim it yet, §6.1); for any other kind
 a reader counts a change with no stage by its own reading of the label. A vocabulary is **staged**
 when its options carry a stage, and a change to a field it maps writes the
 option's stage (§6.2). A vocabulary that is not a status may carry none (Ship's
 `archived` does not), and its fields are not staged.
 
-**`stage` says what a status *means*** — `open`, `started`, `done` or `dropped`
-— as distinct from what it is called or how it is drawn. Without it a consumer
+**`stage` says what a status *means*** — `open`, `started`, `done`,
+`dropped`, `proposed`, `accepted`, `superseded` or `outdated` — as distinct
+from what it is called or how it is drawn. **The eight are one list for every
+type** (*the last four added 2026-11-28*; record
+[every-app-relies-on-an-items-stage-and-core-fields-and-each-company-adds-its-own-on-top](https://github.com/estiva-app/estiva-docs/blob/main/decisions/every-app-relies-on-an-items-stage-and-core-fields-and-each-company-adds-its-own-on-top.md)):
+a word means the same whichever type uses it, and a type's directory entry
+(TYPES.md) says which of them its statuses use. `proposed` is suggested and
+not yet taken up; `accepted` is taken up and standing; `superseded` was
+replaced by a later one; `outdated` is no longer true. A project or an issue
+uses the first four, a highlight the others with `done` and `dropped`. Without it a consumer
 reporting progress has to infer meaning from the label, and the only way to do
 that is a list of words in the consumer, which fails for the next app that
 spells its statuses differently: its objects render, its progress reads as zero,
