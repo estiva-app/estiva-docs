@@ -148,7 +148,7 @@ a Concern, a Question or a Blocker is its **word**, a field that can change,
 so re-sorting a highlight never makes a new file (record
 [a-highlight-is-one-type-and-its-word-is-a-field](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-highlight-is-one-type-and-its-word-is-a-field.md),
 Miky, 2026-11-28). Ship opens it: a project's highlights whose word is
-`decision` or `update` are its Journal.
+`decision` or `update` are its Journal tab (being built, November 2026).
 
 Its first record is a `kind:30852` with `["k", "osnova.highlight"]`, the team
 it is filed in as its `h` (its readers are that team's, fixed when it is
@@ -191,9 +191,10 @@ with no status, team or word that can change; one can later be a highlight's
 source, never a highlight. A highlight's sources (the messages or blocks it
 was marked from) are specified with marking.
 
-**Reading a file's highlights**: every change to a highlight carries
-`["K", "osnova.highlight"]` (the type is new, so no older change lacks it), and
-a reader asks for the changes
+**Reading a file's highlights**: a writer MUST put `["K",
+"osnova.highlight"]` on every change to a highlight (the type is new, so no
+older change lacks it; a change without it is not found by this read), and a
+reader asks for the changes
 `{"kinds": [1851], "#K": ["osnova.highlight"], "#o": [<file ids>]}`, then
 those highlights by their ids; a team's: `{"kinds": [30852], "#k":
 ["osnova.highlight"], "#h": [<team>]}`.
