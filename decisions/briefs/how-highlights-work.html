@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Highlights work: the whole picture</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.example { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
+.legend .lgone::before { background: var(--warn-bg); border-color: var(--warn); }
+.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
+.legend .lf::before { opacity: .45; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+/* Below 560px a diagram scrolls inside its figure instead of shrinking its text. */
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); stroke-width: 1.5; }
+svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .f { opacity: .45; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
+svg .aq { stroke: var(--accent); fill: none; stroke-width: 1.6; stroke-dasharray: 5 4; marker-end: url(#arr-q); }
+svg .life { stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 3 4; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 560px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+tr.new td { background: var(--ok-bg); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+</style>
+</head>
+<body>
+<!-- Arrowheads, shared by every diagram on the page. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+    <marker id="arr-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<main>
+
+<h1>How Highlights work: the whole picture</h1>
+<p class="sub"><span class="state">Brainstorm, 2026-11-28</span> · For Miky. Nothing here is decided by this page; it draws what the Accepted records already say as one system, and marks what is still open.</p>
+
+<p>A <b>highlight</b> is something worth keeping from the work: what we learned, what we decided, what happened, what worries us. Each is kept as a file of its own, which people read in their apps and which AI reads as memory. Updates and Decisions are the first two words of it to be built. This page draws the whole, so the first slice is cut from the right shape. Read the Map, then the one open shape question under Objects.</p>
+
+<div class="legend"><span>decided (Accepted records)</span><span class="lnew">the first slice: the Journal with Claude recording</span><span class="lq">open</span><span class="lf">later projects</span></div>
+
+<h2 id="map">Map: ways in, the store, ways out</h2>
+<figure>
+<svg viewBox="0 0 720 470" role="img">
+<title>Highlights come in five ways: a person marks a message, block or comment; a person types one by hand; the app suggests a mark while you write; a Claude session records one; an app's or a team's loop marks one. All of them write the same thing, a highlight kept as a file in one team on the company's relay. Highlights go out four ways: lists in every app that opens the file they are about, with Ship's project tabs first; the Desk; a brief that loops write from them, which agents read as memory; and search.</title>
+<text x="20" y="24" class="h">Ways in</text><text x="280" y="24" class="h">The store</text><text x="520" y="24" class="h">Ways out</text>
+
+<rect class="b f" x="20" y="40" width="200" height="56" rx="8"/><text x="32" y="62" class="h f">A person marks</text><text x="32" y="80" class="m f">a message, a block, a comment</text>
+<rect class="ok" x="20" y="108" width="200" height="56" rx="8"/><text x="32" y="130" class="h">A person types one</text><text x="32" y="148" class="m">the Journal box in Ship</text>
+<rect class="b f" x="20" y="176" width="200" height="56" rx="8"/><text x="32" y="198" class="h f">The app suggests a mark</text><text x="32" y="216" class="m f">the model on your device</text>
+<rect class="ok" x="20" y="244" width="200" height="56" rx="8"/><text x="32" y="266" class="h">A Claude session records</text><text x="32" y="284" class="m">your own agent, writing as you</text>
+<rect class="b f" x="20" y="312" width="200" height="56" rx="8"/><text x="32" y="334" class="h f">A loop marks or tidies</text><text x="32" y="352" class="m f">an app's or a team's; with Undo</text>
+<rect class="b f" x="20" y="380" width="200" height="56" rx="8"/><text x="32" y="402" class="h f">Another app sends one</text><text x="32" y="420" class="m f">analytics, a support desk</text>
+
+<rect class="ok" x="270" y="108" width="190" height="260" rx="8"/><text x="284" y="132" class="h">The company's relay</text>
+<text x="284" y="156" class="m">each highlight: a file</text><text x="284" y="172" class="m">in one team</text>
+<text x="284" y="198" class="m">about a file of any app</text>
+<text x="284" y="224" class="m">its status, and who</text><text x="284" y="240" class="m">signed each change</text>
+<text x="284" y="266" class="m">its sources, pinned</text><text x="284" y="282" class="m">as they were marked</text>
+<text x="284" y="308" class="m">readers: the team's,</text><text x="284" y="324" class="m">held by the relay</text>
+<rect class="q" x="280" y="336" width="170" height="24" rx="4"/><text x="288" y="352" class="m">one type, or one per word?</text>
+
+<rect class="ok" x="510" y="40" width="190" height="72" rx="8"/><text x="522" y="62" class="h">Lists in the apps</text><text x="522" y="80" class="m">Ship's Journal tab first; then</text><text x="522" y="96" class="m">Insights, Risks, Peek, Leaf</text>
+<rect class="b f" x="510" y="124" width="190" height="56" rx="8"/><text x="522" y="146" class="h f">The Desk</text><text x="522" y="164" class="m f">what needs you, per project</text>
+<rect class="q" x="510" y="192" width="190" height="72" rx="8"/><text x="522" y="214" class="h">The brief</text><text x="522" y="232" class="m">written from the highlights;</text><text x="522" y="248" class="m">what is it as a file?</text>
+<rect class="b f" x="510" y="276" width="190" height="72" rx="8"/><text x="522" y="298" class="h f">Agents and loops read</text><text x="522" y="316" class="m f">the brief as memory; each</text><text x="522" y="332" class="m f">highlight shows where it was used</text>
+<rect class="b f" x="510" y="360" width="190" height="56" rx="8"/><text x="522" y="382" class="h f">Search</text><text x="522" y="400" class="m f">⌘K, by meaning</text>
+
+<path class="a" d="M220,68 L266,150"/><path class="an" d="M220,136 L266,180"/><path class="a" d="M220,204 L266,215"/><path class="an" d="M220,272 L266,250"/><path class="a" d="M220,340 L266,290"/><path class="a" d="M220,408 L266,330"/>
+<path class="an" d="M460,170 L506,80"/><path class="a" d="M460,200 L506,152"/><path class="a" d="M460,236 L506,228"/><path class="a" d="M605,264 L605,272"/><path class="a" d="M460,300 L506,388"/>
+<path class="a" d="M510,330 C420,440 300,430 300,372"/><text x="330" y="452" class="m">loops write back: merge, mark outdated, propose</text>
+</svg>
+<figcaption>Every way in writes the same thing, and every way out reads the same thing. That is the architecture: the six ways in differ only in who signs and what the highlight starts as. A Claude session recording a decision is not a separate feature; it is "an agent marks", with the session as where it was said.</figcaption>
+</figure>
+
+<h2 id="objects">Objects: what a highlight is</h2>
+<figure>
+<svg viewBox="0 0 720 300" role="img">
+<title>A highlight has a core every word shares: a title, summary and details, the team it is filed in, what it is about, its sources, its status with who signed each change, why it was made, its conversation, and where it was used. On top, each word adds a little: a Decision or Update adds who decided; a Concern, Question or Blocker adds severity, options and who it waits on; an Insight adds a category. A Highlight not sorted yet, a To-do and a How-to are on trial or liked, not decided.</title>
+<rect class="b" x="20" y="20" width="680" height="96" rx="8"/><text x="36" y="44" class="h">Every highlight</text>
+<text x="36" y="66" class="m">title · summary · details  |  filed in one team  |  about a file of any app  |  sources, pinned</text>
+<text x="36" y="86" class="m">status, with who signed each change  |  why it was made  |  its own conversation  |  where it was used</text>
+<text x="36" y="106" class="m">starts Proposed; who may accept is each company's rule (ours: a person)</text>
+<rect class="ok" x="20" y="140" width="210" height="84" rx="8"/><text x="34" y="162" class="h">Journal</text><text x="34" y="180" class="m">Decision · Update</text><text x="34" y="196" class="m">+ decided by</text><text x="34" y="212" class="m">Accepted → Superseded</text>
+<rect class="b f" x="255" y="140" width="210" height="84" rx="8"/><text x="269" y="162" class="h f">Risks</text><text x="269" y="180" class="m f">Concern · Question · Blocker</text><text x="269" y="196" class="m f">+ severity, options, waits on</text><text x="269" y="212" class="m f">Open → Resolved</text>
+<rect class="b f" x="490" y="140" width="210" height="84" rx="8"/><text x="504" y="162" class="h f">Insights</text><text x="504" y="180" class="m f">by category</text><text x="504" y="196" class="m f">+ numbers, a quote</text><text x="504" y="212" class="m f">Accepted → Outdated</text>
+<rect class="q" x="20" y="244" width="680" height="44" rx="8"/><text x="36" y="262" class="m">On trial or liked, not decided: a Highlight not sorted into a word yet · a To-do · a How-to · a Trap (an agent's own lesson, AI only)</text><text x="36" y="279" class="m">Sorting a Highlight into a word, or turning a Question into a Decision, changes what it is.</text>
+</svg>
+<figcaption>Nine tenths of a highlight is shared by every word. What differs is the small part on top and the name of its last status.</figcaption>
+</figure>
+
+<h3>The open shape question: one type with a word, or a type per word</h3>
+<p>The records say three shared types (Insight, Journal entry, Risk), each word a field inside its type. A file's type is written once, on its first record, and never changes. So under today's records a Decision can become an Update (a field), but a Highlight cannot become an Insight, and a Question cannot become a Decision: each is a new file that points at the old one. This decides the first slice, because the first Journal entry written fixes it.</p>
+<div class="tw"><table>
+<tr><th></th><th>A. Three types (the records today)</th><th>B. One type, "highlight", with its word as a field</th><th>C. A type per word</th></tr>
+<tr><td>What it is</td><td>Insight, Journal entry, Risk; the word inside each</td><td>One file type; Decision, Update, Insight, Concern, To-do… are values of one field</td><td>Decision, Update, Insight, Concern, Question each its own type</td></tr>
+<tr><td>Sorting a Highlight later; a loop re-sorting one</td><td>A new file, linked to the old; history and conversation split in two</td><td>One change to the same file; history, conversation and "used in" stay</td><td>A new file, always</td></tr>
+<tr><td>A resolved Question leading to a Decision</td><td>A new Journal entry naming the Risk as its source (the record says so, on purpose)</td><td>Either: stays a new one by rule, not by necessity</td><td>A new file</td></tr>
+<tr><td>A new word (How-to, To-do)</td><td>A new shared type each time, or squeezed into one of the three</td><td>A new value; each company can add its own words</td><td>A new shared type each time</td></tr>
+<tr><td>What an outside company gets</td><td>Three well-known things; a Risk means the same in two companies</td><td>One thing to support, and every app that reads highlights reads all of them; the shared words still mean the same</td><td>Many small types to support</td></tr>
+<tr><td>What an agent reads as memory</td><td>Three reads, three status sets</td><td>One read; the word is a filter</td><td>Many reads</td></tr>
+<tr><td>Statuses</td><td>Each type its own end, as decided</td><td>The last status depends on the word, so a status follows the word field</td><td>Each its own</td></tr>
+<tr><td>Undo cost once files exist</td><td>Moving to B later means rewriting every file</td><td>Splitting later means rewriting every file</td><td>The same</td></tr>
+<tr><td>Against a record</td><td>No</td><td>Yes: it would replace "three shared types" of 13 Nov</td><td>Yes</td></tr>
+</table></div>
+<p><b>Miky chose B on 28 Nov.</b> The reasoning: you call the whole thing Highlights, the trial already has "a Highlight not sorted yet", the model's suggestion is the main way to mark, and loops re-sort. All of that treats the word as something that changes, and only B lets it change without splitting a file. The honest cost: statuses that depend on a field are a shape no file has today, and it reopens a record of 13 Nov.</p>
+
+<h2 id="scope">Scope: team highlights and personal highlights</h2>
+<figure>
+<svg viewBox="0 0 720 400" role="img">
+<title>Highlights are scoped by who can read them. Each place has its own shared memory: the company, an open team, a private team. A highlight made from sources in two places belongs to the narrower one. A place's brief is written only from that place's highlights and read only by its readers. A loop works inside one place. Beside them is your personal memory: your private notes and what your agent learns for you, read only by you and your own agent. Your own agent is the only reader that sees several places at once; what it writes into a wider place is yours to answer for, and the app warns you first.</title>
+<rect class="b" x="20" y="20" width="480" height="300" rx="8"/><text x="36" y="44" class="h">The company</text><text x="130" y="44" class="m">shared memory everyone in the company reads</text>
+<rect class="b" x="40" y="64" width="200" height="110" rx="8"/><text x="54" y="86" class="h">An open team</text><text x="54" y="104" class="m">its highlights, its brief</text><text x="54" y="120" class="m">read by: anyone in the company</text><text x="54" y="150" class="m">its loop reads only here</text>
+<rect class="b" x="270" y="64" width="210" height="110" rx="8"/><text x="284" y="86" class="h">A private team</text><text x="284" y="104" class="m">its highlights, its brief</text><text x="284" y="120" class="m">read by: its members only</text><text x="284" y="150" class="m">its loop reads only here</text>
+<rect class="ok" x="130" y="200" width="260" height="56" rx="8"/><text x="144" y="222" class="h">A highlight from both</text><text x="144" y="240" class="m">belongs to the private team: the narrower</text>
+<path class="a" d="M150,174 L200,196"/><path class="a" d="M370,174 L330,196"/><path class="an" d="M390,228 C440,228 440,190 420,178"/>
+<text x="36" y="290" class="m">Held by the relay: a highlight is refused if some of its readers cannot read one of its sources.</text>
+<text x="36" y="308" class="m">Initiatives are a lens across teams: they show highlights, and never change who reads one.</text>
+<rect class="ok" x="530" y="20" width="170" height="154" rx="8"/><text x="544" y="44" class="h">Yours alone</text><text x="544" y="64" class="m">personal highlights:</text><text x="544" y="80" class="m">your private notes, what</text><text x="544" y="96" class="m">your agent learns for you</text><text x="544" y="122" class="m">read by: you and your</text><text x="544" y="138" class="m">own agent, nobody else,</text><text x="544" y="154" class="m">no loop</text>
+<rect class="b" x="530" y="200" width="170" height="120" rx="8"/><text x="544" y="222" class="h">Your own agent</text><text x="544" y="242" class="m">reads every place you</text><text x="544" y="258" class="m">can read, plus yours</text><text x="544" y="284" class="m">writes as you; the app</text><text x="544" y="300" class="m">warns before a wider post</text>
+<path class="a" d="M615,200 L615,178"/><path class="a" d="M530,250 L504,250"/>
+<rect class="q" x="20" y="340" width="680" height="48" rx="8"/><text x="36" y="360" class="m">Open: personal highlights as files (where they live, how one becomes a team's) · highlights only agents use, and whether</text><text x="36" y="377" class="m">"not shown" may ever mean "not readable" · an agent carrying a private team's words into a wider place ("deserves in depth brainstorming")</text>
+</svg>
+<figcaption>Your words of 27 Nov, now an Accepted record: "the team memories are maybe not that rich because they are limited with the access, but they are available to all… Then there is second layer with your personal memories… available just to you." And: a memory made from a company-wide message and a top-management message is top-management's alone. Private teams are drawn as if they exist ("Imagine as if we have it already", 19 Nov).</figcaption>
+</figure>
+<p>What keeps a highlight from leaking, by layer:</p>
+<div class="tw"><table>
+<tr><th>Where a leak could happen</th><th>What stops it</th><th>How strong</th></tr>
+<tr><td>A highlight filed where more people read than its source</td><td>The relay refuses it; with several sources, the narrowest wins</td><td>Hard; built with marking, together with sources</td></tr>
+<tr><td>A team's brief carrying another team's words</td><td>A place's brief is written only from that place's highlights, by a loop that reads only that place</td><td>Hard for the loop; the brief's readers are my reading in the record, not yet your words</td></tr>
+<tr><td>A loop reading a person's private notes</td><td>A loop never reads personal memory</td><td>Hard</td></tr>
+<tr><td>Your own agent using a private team's worry in an open team</td><td>You answer for it; the app warns before it posts; you can see exactly what your agent was given</td><td>Soft, on purpose: "a helper", not a protection</td></tr>
+<tr><td>You leave a team</td><td>Personal memory points at its sources and never copies them, so what it drew from that team leaves your view</td><td>Hard, once personal highlights are built that way</td></tr>
+</table></div>
+<p>For the first slice this means: a Claude session's entry is filed in the project's team and read by that team. The session may know things from your other teams and your notes, so the warning before it writes into a wider place belongs to the recording command from day one.</p>
+
+<h2 id="life">A highlight's life</h2>
+<figure>
+<svg viewBox="0 0 720 200" role="img">
+<title>A highlight starts Proposed. A person accepts it, or it is turned down. A Proposed one nobody uses fades and is archived. An accepted one is used, shown with where; later it ends as Outdated, Superseded or Resolved. A loop may merge or update an accepted one, saying who, what and why, with Undo. When the last source is deleted, an unaccepted highlight goes with it and an accepted one stays.</title>
+<rect class="b" x="20" y="60" width="130" height="50" rx="8"/><text x="36" y="90" class="h">Proposed</text>
+<rect class="b" x="220" y="60" width="150" height="50" rx="8"/><text x="236" y="82" class="h">Accepted</text><text x="236" y="100" class="m">(a Risk: Open)</text>
+<rect class="b" x="450" y="60" width="250" height="50" rx="8"/><text x="466" y="82" class="h">Outdated · Superseded · Resolved</text><text x="466" y="100" class="m">kept, and read as history</text>
+<rect class="b f" x="20" y="140" width="130" height="44" rx="8"/><text x="36" y="166" class="m f">turned down, or fades</text>
+<path class="a" d="M150,85 L216,85"/><text x="156" y="78" class="m">a person</text>
+<path class="a" d="M370,85 L446,85"/>
+<path class="a" d="M85,110 L85,136"/>
+<path class="a" d="M295,60 C295,20 330,20 330,56"/><text x="340" y="30" class="m">used: each use is shown · a loop merges or updates, with Undo</text>
+<text x="236" y="150" class="m">Last source deleted: an unaccepted one goes with it;</text><text x="236" y="166" class="m">an accepted one stays and says it has no source left.</text>
+</svg>
+<figcaption>All decided. "Proposed counts for less" (19 Nov): what a person accepted or commented on weighs more in memory than what a model suggested.</figcaption>
+</figure>
+
+<h2 id="memory">Memory: who reads what</h2>
+<div class="tw"><table>
+<tr><th>Reader</th><th>Reads</th><th>Writes</th><th>Held by</th></tr>
+<tr><td>A person, in any app</td><td>The highlights of the teams they can read</td><td>Marks, accepts, comments</td><td>The relay</td></tr>
+<tr><td>A loop of an app or a team</td><td>Only the shared memory of the place it looks after</td><td>Proposals, merges and updates there, each with who, what, why and Undo</td><td>The relay: the room it runs in</td></tr>
+<tr><td>Your own agent (a Claude session)</td><td>Shared memory where it works, plus your personal memory</td><td>As you; what it carries elsewhere is yours to answer for</td><td>You; an app may warn, never stop</td></tr>
+<tr><td>Which models</td><td colspan="3">One company switch, any provider; a team cannot narrow it</td></tr>
+</table></div>
+<p>What an agent actually reads is <b>the brief</b>: a text written from a place's highlights, with the highlights as its sources a person can open and correct. So the chain is: work → highlights → brief → the next session. The first slice builds the first link for sessions (they write highlights). The last link (they start from the brief) is what makes it memory.</p>
+
+<h2 id="open">Decided, and open</h2>
+<div class="tw"><table>
+<tr><th>Part</th><th>State</th><th>Where</th></tr>
+<tr><td>What a highlight has; team; about; sources pinned; readers; decider</td><td>Decided</td><td>Records of 13–17 Nov</td></tr>
+<tr><td>Status starts Proposed; who accepts is each company's rule</td><td>Decided</td><td>Record of 16 Nov</td></tr>
+<tr><td>Used-in, fading, last source, loops change with Undo, nothing hidden</td><td>Decided</td><td>Records of 19 and 27 Nov</td></tr>
+<tr><td>Two layers of memory; the brief is what agents read; one model switch</td><td>Decided</td><td>Records of 19 and 27 Nov</td></tr>
+<tr><td>A session's Updates land as posted, a person's in-session decision lands accepted, entries replace the lines</td><td>Decided today</td><td>This session</td></tr>
+<tr class="new"><td><b>One type, "highlight", with the word as a field</b></td><td>Miky chose B, 28 Nov; a record replacing "three shared types" follows the relay probe</td><td>Above</td></tr>
+<tr class="new"><td>The public names (the type, its fields, its words)</td><td>Open; follows the one above</td><td>—</td></tr>
+<tr class="new"><td>Highlight (unsorted), To-do, How-to, Trap as words</td><td>Open; a trial on the prototype</td><td>Proposed record, 19 Nov</td></tr>
+<tr><td>Anyone who can read a highlight can delete it; only Activity keeps a trace</td><td>Decided</td><td>Record of 19 Nov</td></tr>
+<tr><td>Team and personal memory; the narrowest source decides who reads; loops stay in their place; your agent writes as you</td><td>Decided</td><td>Records of 16 and 27 Nov</td></tr>
+<tr class="new"><td>An agent carrying private words into a wider place, beyond the warning</td><td>Open; you called it a big one</td><td>Its own brainstorm</td></tr>
+<tr class="new"><td>Highlights only agents use: each app decides what it shows; may "not shown" mean "not readable"?</td><td>Open</td><td>—</td></tr>
+<tr class="new"><td>What the brief is as a file (you agreed: an index, with files opened on demand, and a "when it matters" line per highlight)</td><td>Open as a shape</td><td>With loops</td></tr>
+<tr class="new"><td>How-to or Info as a word; whether it comes mostly from AI</td><td>Open</td><td>With the words trial</td></tr>
+<tr class="new"><td>Where loops run, who pays, how a builder ships one</td><td>Partly answered 19 Nov</td><td>With loops</td></tr>
+<tr class="new"><td>Marks in a private team or a DM; personal memory as files</td><td>Open</td><td>With the Private initiative</td></tr>
+<tr class="new"><td>A Claude session as something you can open</td><td>Open</td><td>With the plugin project</td></tr>
+</table></div>
+
+<h2 id="order">How the build cuts through it</h2>
+<div class="tw"><table>
+<tr><th>Project</th><th>Way in</th><th>Words</th><th>Way out</th></tr>
+<tr class="new"><td>The Journal, with Claude recording (now)</td><td>A session records; typed by hand</td><td>Decision, Update</td><td>Ship's Journal tab</td></tr>
+<tr><td>Mark it: Peek and Leaf</td><td>A person marks; sources and their check on the relay</td><td>all</td><td>The mark drawn on its source</td></tr>
+<tr><td>Suggested marks</td><td>The app suggests</td><td>all</td><td>—</td></tr>
+<tr><td>Risks, questions and Insights</td><td>—</td><td>the rest</td><td>Ship's other tabs, the Desk</td></tr>
+<tr><td>Dreaming loops</td><td>A loop tidies</td><td>—</td><td>The brief; agents read it</td></tr>
+</table></div>
+<p>The first slice is one row and one column of the Map. It is safe to build first only if what it fixes for good, the type and its field names, is the shape the other rows will use. That is the open question above, and nothing else in the first slice is one-way.</p>
+
+<h2 id="checked">Checked</h2>
+<ul>
+<li>A file's type is one tag on its first record, written once (estiva-docs SPEC §6.1, KINDS.md, origin/main, 28 Nov).</li>
+<li>The records named are Accepted on origin/main (<code>decisions/README.md</code>, Areas Files, Read state, Apps &amp; agents); six were read in full today, the rest by their titles in the index.</li>
+<li>"A resolved Risk usually leads to a Journal entry that names it as a source": record what-a-project-learns…, 13 Nov.</li>
+<li>Highlight and To-do are a Proposed record (19 Nov); How-to and Trap are Miky's words of 26 Nov, in no record.</li>
+<li>Miky's calls of 16–27 Nov were read from the two sessions (the prototype session and the agent-memory session of 27 Nov) and compared with this page on 28 Nov. Left out on purpose: the item panel's and the Desk's design, which are on the prototype.</li>
+<li>The whole is named the intelligence layer (Miky, 20 Nov); "Highlights" here means its memory part.</li>
+<li>Not checked: whether the relay can hold a status whose last step depends on another field (option B). It needs a probe before B is chosen.</li>
+</ul>
+
+</main>
+</body>
+</html>

@@ -66,7 +66,7 @@ an app searches it by title (SPEC §5.2).
 **Its statuses are each company's own**, starting from its tracker's defaults
 ([each-company-defines-its-own-statuses](https://github.com/estiva-app/estiva-docs/blob/main/decisions/each-company-defines-its-own-statuses.md),
 Miky, 2026-10-30). What every app shares is what a status means: one of the
-four stages of [SPEC §7.4](SPEC.md). A company's own are kept in its
+stages `open`, `started`, `done` and `dropped` of [SPEC §7.4](SPEC.md). A company's own are kept in its
 `osnova.schema` file for projects (below); until it saves one, Ship's
 defaults:
 
@@ -134,10 +134,69 @@ the earliest whose mark the relay honours counts ([SPEC §7.4](SPEC.md)).
 | field | value |
 | --- | --- |
 | `title` | its name, such as "Issue statuses" |
-| `property:<id>` | one property of the described type, such as `property:status`: JSON `{"label", "type": "choice", "default", "options": [{"value", "label", "colour", "stage"}]}`. Each option's `colour` is a colour name (`neutral`, `blue`, `green`, `muted`), never a hex code, and its `stage` one of the described type's stages ([SPEC §7.4](SPEC.md)) |
+| `property:<id>` | one property of the described type, such as `property:status`: JSON `{"label", "type": "choice", "default", "options": [{"value", "label", "colour", "stage", "words"?}]}`; `words` only on a type with a `word` field, such as a highlight. Each option's `colour` is a colour name (`neutral`, `blue`, `green`, `muted`), never a hex code, and its `stage` one of the described type's stages ([SPEC §7.4](SPEC.md)) |
 | `archived`, `deleted` | as on any file; an archived or deleted one does not count |
 
 Until a company saves its own, every app uses the defaults listed above.
+
+## `osnova.highlight`
+
+Something worth keeping from the work: what was decided, what happened, what
+was learned, what worries us. People read highlights in their apps, and agents
+read them as a team's memory. Whether it is a Decision, an Update, an Insight,
+a Concern, a Question or a Blocker is its **word**, a field that can change,
+so re-sorting a highlight never makes a new file (record
+[a-highlight-is-one-type-and-its-word-is-a-field](https://github.com/estiva-app/estiva-docs/blob/main/decisions/a-highlight-is-one-type-and-its-word-is-a-field.md),
+Miky, 2026-11-28). Ship opens it: a project's highlights whose word is
+`decision` or `update` are its Journal.
+
+Its first record is a `kind:30852` with `["k", "osnova.highlight"]`, the team
+it is filed in as its `h` (its readers are that team's, fixed when it is
+made), and its title and word as first values; a text given at creation is
+its first change ([SPEC §6.1](SPEC.md)).
+
+| field | tag | value |
+| --- | --- | --- |
+| `title` | — | its name, one line |
+| `word` | — | `decision`, `update`, `insight`, `concern`, `question` or `blocker`. Optional: a highlight with no word, or a word the reader does not know (a company's own), is read as a plain highlight |
+| `status` | — | the company's own status, below. A change carries its `stage` ([SPEC §6.2](SPEC.md)). A highlight with no status change is `proposed`, at stage `proposed` |
+| `about` | `o` | the id of the file it is about (an issue, a project, any file of any app), with `["o", <id>]` beside it; empty when it is just the team's. A reader that finds highlights by `#o` keeps one only while its current `about` is a file it asked about ([SPEC §6.2](SPEC.md)) |
+| `decider` | `p` | the pubkey of who will decide a Question and who decided a Decision, with `["p", <pubkey>]` beside it; one field, so it stays set when a Question becomes a Decision |
+| `summary` | — | its short line ([SPEC §6.12](SPEC.md)) |
+| `description` | — | its details, a block document ([SPEC §6.10](SPEC.md)) |
+| `archived`, `deleted` | — | as on any file ([SPEC §6.5](SPEC.md)). Anyone who can read a highlight can delete it, whatever its word or status |
+
+**Its statuses are one list for the type**, each with its stage
+([SPEC §7.4](SPEC.md)) and the words an app offers it for; a status stays
+readable when the word changes, and an app that resets it with the word sets
+both in one change. A company names its own on top in its `osnova.schema`
+file. The defaults:
+
+| status | label | stage | offered for |
+| --- | --- | --- | --- |
+| `proposed` | Proposed | `proposed` | every word |
+| `rejected` | Rejected | `dropped` | every word |
+| `accepted` | Accepted | `accepted` | `decision`, `update`, `insight` |
+| `open` | Open | `accepted` | `concern`, `question`, `blocker` |
+| `superseded` | Superseded | `superseded` | `decision`, `update` |
+| `outdated` | Outdated | `outdated` | `insight` |
+| `resolved` | Resolved | `done` | `concern`, `question`, `blocker` |
+
+Who may accept, reject or close one is each app's, company's or team's own
+rule; a reader weighs a status by who signed the change that set it (record
+[who-accepts-an-item-is-each-companys-own-rule-and-the-protocol-carries-its-status](https://github.com/estiva-app/estiva-docs/blob/main/decisions/who-accepts-an-item-is-each-companys-own-rule-and-the-protocol-carries-its-status.md)).
+
+**It is not a NIP-84 highlight.** A `kind:9802` is a fixed quote of a source,
+with no status, team or word that can change; one can later be a highlight's
+source, never a highlight. A highlight's sources (the messages or blocks it
+was marked from) are specified with marking.
+
+**Reading a file's highlights**: every change to a highlight carries
+`["K", "osnova.highlight"]` (the type is new, so no older change lacks it), and
+a reader asks for the changes
+`{"kinds": [1851], "#K": ["osnova.highlight"], "#o": [<file ids>]}`, then
+those highlights by their ids; a team's: `{"kinds": [30852], "#k":
+["osnova.highlight"], "#h": [<team>]}`.
 
 ## Why projects and issues are not git's
 

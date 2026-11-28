@@ -221,9 +221,11 @@ Source of truth: `SEED_APPS` in `estiva-id/src/db/seed.ts`, stored in the
 | Estiva Ship | `estiva-ship` | `9101, 30850, 30851, 1851, 9, 5, 9007, 9002, 31989, 27235, 1111, 30078, 7, 40003, 1852, 24242, 22242` |
 | Estiva Leaf | `estiva-leaf` | `27235, 22242, 30842, 1852, 1851, 1111, 40003, 5, 24242, 9101, 7` |
 
-*Copied from `seed.ts` on origin/main, 2026-11-02.* **The production rows
-differ from the seed:** on 2026-11-02 Peek, Ship and Leaf each signed a
-`30852` as QA-1, though the seed grants none of them the kind. The agents'
+*Copied from `seed.ts` on origin/main, 2026-11-02.* **Every installed app
+also holds `30852`** (`EVERY_INSTALLED_APP` in `seed.ts`, ALO-11; record
+[an-app-defines-the-files-it-needs-and-the-owner-installs-it](https://github.com/estiva-app/estiva-docs/blob/main/decisions/an-app-defines-the-files-it-needs-and-the-owner-installs-it.md)),
+so Peek, Ship and Leaf may each start a named file, a highlight included
+(checked on origin/main and, for a highlight, signed as QA-1, 2026-11-28). The agents'
 credentials are not seeded: `claude-agent`, `pc-0a4935` and `vscode-604525`
 were granted `45010` on 2026-10-30, which signs nothing an app writes now. No
 credential holds `9005`, so no app or agent removes a change for good (SPEC
