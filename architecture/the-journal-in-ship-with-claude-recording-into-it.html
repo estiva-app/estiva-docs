@@ -89,7 +89,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <title>Today: a Claude session uses the Estiva agent to write Decided and Progress lines into an issue's and a project's description. Ship's project has Overview and Issues tabs and shows the lines as text. The relay accepts a file of a named type but nothing writes one.</title>
 <rect class="b" x="20" y="20" width="310" height="72" rx="8"/><text x="36" y="44" class="h">A Claude session</text><text x="36" y="63" class="m">the Estiva agent: writes Decided and Progress</text><text x="36" y="80" class="m">lines into descriptions · plugin: no skills, no hooks</text>
 <rect class="b" x="390" y="20" width="310" height="72" rx="8"/><text x="406" y="44" class="h">Ship</text><text x="406" y="63" class="m">a project: Overview · Issues</text><text x="406" y="80" class="m">the lines are text in the description</text>
-<rect class="b f" x="20" y="128" width="680" height="40" rx="8"/><text x="36" y="153" class="h f">Estiva ID</text><text x="120" y="153" class="m f">signs for Ship and for Claude's key · Claude's key may not sign a named file</text>
+<rect class="b f" x="20" y="128" width="680" height="40" rx="8"/><text x="36" y="153" class="h f">Estiva ID</text><text x="120" y="153" class="m f">signs for Ship and for Claude's key · an agent's key signs only what an admin granted</text>
 <rect class="b" x="20" y="204" width="680" height="56" rx="8"/><text x="36" y="228" class="h">The relay</text><text x="118" y="228" class="m">projects, issues, documents, topics, each kept as its fields in order</text><text x="36" y="247" class="m">accepts a file of a named type since 2 Nov · no app or agent writes one</text>
 <path class="a" d="M175,92 L175,200"/><text x="183" y="116" class="m">edit the description</text>
 <path class="a" d="M545,200 L545,96"/><text x="553" y="116" class="m">read the project</text>
@@ -106,21 +106,21 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <rect class="ok" x="20" y="136" width="680" height="40" rx="8"/><text x="36" y="161" class="h">Estiva ID</text><text x="120" y="161" class="tag">M1</text><text x="150" y="161" class="m">Claude's key is granted the named file, by an admin with a passkey</text>
 <rect class="ok" x="20" y="212" width="680" height="76" rx="8"/><text x="36" y="236" class="h">The relay</text><text x="118" y="236" class="tag">M1</text><text x="36" y="255" class="m">keeps each Journal entry as a file in the project's team, with its status and who signed each change</text>
 <rect class="q" x="36" y="262" width="300" height="20" rx="4"/><text x="44" y="276" class="m">one type, highlight: Miky's merge of its record</text>
-<path class="an" d="M175,100 L175,208"/><text x="183" y="124" class="m">write the entry</text>
+<path class="an" d="M175,100 L175,208"/><text x="183" y="124" class="m">write the entry · read entries</text>
 <path class="an" d="M545,208 L545,104"/><text x="553" y="124" class="m">list, accept, write</text>
 </svg>
-<figcaption>Peek and Leaf do not change. The relay needs no new rule: it already keeps named files. What is new there is the first type everyone shares, so its name and fields go into the public SPEC before anything is written.</figcaption>
+<figcaption>Leaf does not change. Peek tells a named decider as it tells an assignee, and the click opens the entry in Ship (M2). Kickoff, the reviewers and the sweep read entries through the agent, where they read lines in descriptions today (M3). The relay needs no new rule: it already keeps named files. What is new there is the first type everyone shares, so its name and fields go into the public SPEC before anything is written.</figcaption>
 </figure>
 
 <h2 id="objects">Objects</h2>
 <h3>After: what a Journal entry is</h3>
 <figure>
 <svg viewBox="0 0 720 330" role="img">
-<title>A Journal entry is a file in one team. It has a title, a summary, details, a word (Decision or Update), a status, who decided it and who wrote it, a reason line, and its own conversation. It is about an issue or a project. It may have a source, the comment the decision was said in; an entry from a session has none and carries the person's words as its text.</title>
+<title>A Journal entry is a file in one team. It has a title, a summary, details, a word (Decision or Update), a status, who decided it and who wrote it, a reason line, and its own conversation. It is about an issue or a project. It links the comment the decision was said in, when there is one; an entry from a session carries the person's words as its text. It has no pinned source in this project.</title>
 <rect class="b f" x="20" y="20" width="200" height="56" rx="8"/><text x="36" y="44" class="h f">A team</text><text x="36" y="62" class="m f">its people read the entry</text>
 <rect class="ok" x="260" y="20" width="440" height="190" rx="8"/><text x="276" y="44" class="h">A Journal entry</text><text x="400" y="44" class="m">a file of its own</text>
 <text x="276" y="68" class="m">title · summary · details</text>
-<text x="276" y="88" class="m">a highlight · word: Decision or Update (later: Insight, Concern…)</text>
+<rect class="q" x="270" y="75" width="420" height="19" rx="4"/><text x="276" y="88" class="m">a highlight · word: Decision or Update (later: Insight, Concern…)</text>
 <text x="276" y="108" class="m">status: Proposed → Accepted → Superseded (or Rejected)</text>
 <text x="276" y="128" class="m">decided by (a person) · written by (whoever signed it)</text>
 <text x="276" y="148" class="m">why: where it was said, in words a person can check</text>
@@ -128,13 +128,13 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <text x="276" y="196" class="m">every change signed, kept in its history</text>
 <rect class="b" x="20" y="250" width="200" height="60" rx="8"/><text x="36" y="274" class="h">An issue or a project</text><text x="36" y="292" class="m">what the entry is about</text>
 <rect class="b" x="260" y="250" width="200" height="60" rx="8"/><text x="276" y="274" class="h">A comment</text><text x="276" y="292" class="m">linked, when it was said there</text>
-<rect class="b" x="500" y="250" width="200" height="60" rx="8"/><text x="516" y="274" class="h">The decider</text><text x="516" y="292" class="m">a member of it; told once</text>
+<rect class="b" x="500" y="250" width="200" height="60" rx="8"/><text x="516" y="274" class="h">The decider</text><text x="660" y="274" class="tag">M2</text><text x="516" y="292" class="m">a member, as an assignee</text>
 <path class="an" d="M260,48 L224,48"/>
 <path class="an" d="M300,210 L140,246"/><text x="150" y="226" class="m">about</text>
 <path class="an" d="M380,210 L370,246"/><text x="384" y="232" class="m">links</text>
 <path class="an" d="M560,210 L590,246"/><text x="586" y="226" class="m">decided by</text>
 </svg>
-<figcaption>All of this is the Accepted records of 13–19 November; nothing is redefined here. New in this project: an entry carries the person's words as its own text and says where they were said, with a link when that was a comment. A pinned source the relay checks comes with marking.</figcaption>
+<figcaption>The fields are the Accepted records of 13–19 November. Dashed: that a highlight is one type with its word as a field replaces the three types of 13 November, and waits on Miky's merge of its record. Also new in this project: an entry's text is its writer's own words, answered for as their own writing is (record of 27 November), and says where the decision was said, with a link when that was a comment. The link is not a source: this project writes no sources.</figcaption>
 </figure>
 
 <h2 id="flow">Flow: Miky answers a question in a session, and reads it in Ship</h2>
@@ -145,7 +145,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <path class="life" d="M50,34 L50,350"/><path class="life" d="M220,34 L220,350"/><path class="life" d="M400,34 L400,350"/><path class="life" d="M590,34 L590,350"/>
 <path class="a" d="M50,62 L216,62"/><text x="62" y="56" class="m">answers a question</text>
 <path class="an" d="M220,92 L396,92"/><text x="232" y="86" class="m">a Decision · decided by Miky</text>
-<text x="232" y="110" class="m">accepted: his answer is the approval</text>
+<text x="232" y="110" class="m">accepted: he approved it</text>
 <path class="an" d="M220,150 L396,150"/><text x="232" y="144" class="m">a call Claude made itself</text>
 <text x="232" y="168" class="m">Proposed, with why</text><text x="62" y="130" class="m">warned first if the team</text><text x="62" y="146" class="m">is wider than the source</text>
 <path class="an" d="M220,208 L396,208"/><text x="232" y="202" class="m">an Update: merged, checked</text>
@@ -155,14 +155,15 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <text x="424" y="288" class="m">To decide: Claude's own call,</text><text x="424" y="304" class="m">Accept / ✕</text>
 <path class="an" d="M590,330 L404,330"/><text x="430" y="324" class="m">Accept, signed by Miky</text>
 </svg>
-<figcaption>Nothing interrupts Miky: entries wait on the project. An entry that names Katerina as the decider tells her once and waits for her, as the record says. Claude's own message is not news to the person it works for.</figcaption>
+<figcaption>Nothing interrupts Miky: entries wait on the project. An entry that names Katerina as the decider makes her a member of it, as an assignee is of an issue, so she hears of it and can correct it.</figcaption>
 </figure>
 
 <h2 id="access">Access</h2>
 <div class="tw"><table>
 <tr><th>What</th><th>Who can see it</th><th>Who can change it</th><th>Where that is checked</th></tr>
 <tr class="new"><td>A Journal entry</td><td>The people of the team its project is in, fixed when it is made</td><td>Anyone who may write in that team, Claude's key included once granted</td><td>The relay, as for every file in a team; Estiva ID, for what Claude's key may sign</td></tr>
-<tr class="new"><td>Accepting or turning down an entry</td><td>Shown with who signed it</td><td>Our rule: a person; Claude only for an Update, or a decision the person gave in the session</td><td>The app and the agent (the protocol sets no rule)</td></tr>
+<tr class="new"><td>Accepting or turning down an entry</td><td>Shown with who signed it</td><td>Our rule: a person; Claude only for an Update, or a decision the person gave in the session (Miky, 28 Nov, on the project)</td><td>The app and the agent (the protocol sets no rule)</td></tr>
+<tr class="new"><td>Deleting an entry</td><td>—</td><td>Open: a highlight can be deleted by anyone who reads it (record of 19 November); whether that holds for an accepted Decision is asked with the one-type record</td><td>Decided before the first entry is written</td></tr>
 <tr class="new"><td>The decider of a Decision</td><td>Becomes a member, as an assignee</td><td>Can correct it, as any member</td><td>As for an issue's members</td></tr>
 <tr><td>An issue's or project's description</td><td>Unchanged</td><td>Unchanged; sessions stop adding Decided and Progress lines</td><td>Unchanged</td></tr>
 </table></div>
@@ -173,7 +174,7 @@ code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius
 <li>The relay keeps a named file and refuses one with text or a base type's name; nothing in Ship, Leaf, Peek, the shared packages or the agent creates one outside tests (buzz <code>nfb-demo-kinds</code> <code>crates/buzz-core/src/kind.rs</code>; SPEC §6.1; code search, 28 Nov).</li>
 <li>Ship, Peek and Leaf may sign a named file; a new agent credential may sign nothing but its sign-in until an admin grants more (estiva-id <code>src/db/seed.ts</code>, <code>src/http/routes/admin.ts</code>).</li>
 <li>The agent's plugin holds its server only: no skills, no hooks; its create command cannot make a file of a named type (estiva-agent 0.40.0, <code>plugin/</code>, <code>lib/agent/apps/file.ts</code>).</li>
-<li>No Journal type is in SPEC, TYPES or KINDS; its name was left to the SPEC change (estiva-docs, record an-app-names-the-types-it-opens-in-its-own-listing).</li>
+<li>No highlight or Journal type is in SPEC, TYPES or KINDS (estiva-docs, origin/main, 28 Nov). That a highlight is one type with its word as a field is Miky's call of 28 Nov; its record is written in the project's first issue.</li>
 <li>Issues, documents and topics are kept in the new shape since 19 and 24 November (records every-file-type-is-kept-in-order…, architecture/issues-stop-downloading-every-edit.html).</li>
 <li>Not checked: what Claude's credential holds on production today, and the cost of reading a project's entries on Miky's workspace. Both are milestone 1's probe.</li>
 </ul>
