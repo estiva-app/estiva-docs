@@ -168,8 +168,13 @@ its first change ([SPEC §6.1](SPEC.md)).
 
 **Its statuses are one list for the type**, each with its stage
 ([SPEC §7.4](SPEC.md)) and the words an app offers it for; a status stays
-readable when the word changes, and an app that resets it with the word sets
-both in one change. A company names its own on top in its `osnova.schema`
+readable when the word changes. **A re-sort keeps the meaning**: when the new
+word is not offered the current status, the app that changes the word sets, in
+the same change, the new word's status at the same stage (an `open` Question
+that becomes a Decision is `accepted`); a status at a stage the new word does
+not use goes to that word's standing one (`resolved` → `accepted`, `outdated`
+or `superseded` → `open`, `accepted` → `open` for a Concern). `proposed` and
+`rejected` stay as they are. A company names its own on top in its `osnova.schema`
 file. The defaults:
 
 | status | label | stage | offered for |

@@ -2,7 +2,7 @@
 
 - Date: 2026-11-28
 - Status: Accepted
-- Decided by: Miky, in the shaping session of 28 November 2026 for the project "The Journal in Ship, with Claude recording into it", on the brief "How Highlights work: the whole picture" ([page](briefs/how-highlights-work.html)): option B, "one type, highlight, with its word as a field"; and in the kickoff session of 28 November for its first issue, "A highlight is one shared type in the public SPEC, with its word as a field": the 19 November delete rule holds for an accepted Decision, and the names `osnova.highlight`, `word` and one `decider`
+- Decided by: Miky, in the shaping session of 28 November 2026 for the project "The Journal in Ship, with Claude recording into it", on the brief "How Highlights work: the whole picture" ([page](briefs/how-highlights-work.html)): option B, "one type, highlight, with its word as a field"; and in the kickoff session of 28 November for its first issue, "A highlight is one shared type in the public SPEC, with its word as a field": the 19 November delete rule holds for an accepted Decision, and the names `osnova.highlight`, `word` and one `decider`; and, in the same session on the review of estiva-docs#501, "a re-sort keeps its meaning" (map the status by stage)
 - Area: Files
 
 > Supersedes in part
@@ -74,7 +74,11 @@ writes, a word it does not know included.
   (stage accepted, a Risk's), resolved (stage done), superseded and outdated.
   Each option says which words an app offers it for: a Decision or an Update
   ends Superseded, an Insight Outdated, a Concern, a Question or a Blocker
-  Resolved. A status stays readable after the word changes. A highlight with
+  Resolved. A status stays readable after the word changes, and **a re-sort
+  keeps its meaning**: when the new word is not offered the current status,
+  the change that sets the word also sets the new word's status with the same
+  meaning, so an Open Question that becomes a Decision is an Accepted
+  Decision in every app, and nobody accepts it again. A highlight with
   no status yet is proposed. A company names its own statuses on top, as for
   any type.
 - **Anyone who can read a highlight can delete it, an accepted Decision
@@ -104,6 +108,10 @@ writes, a word it does not know included.
   Turned down for the same bypass, and it breaks the rule that a delete only
   marks a file and can be undone
   ([every-file-type-is-kept-in-order-and-a-delete-only-marks-the-file](every-file-type-is-kept-in-order-and-a-delete-only-marks-the-file.md)).
+- **A re-sorted highlight keeps its old status** (a Decision shown "Open"),
+  or **goes back to Proposed**. Turned down: the first shows a label the word
+  does not have, differently in each app; the second turns every tidy-up by
+  a loop or a model into a new queue for a person.
 - **Two person fields, `decider` and `decided-by`.** Turned down: after a
   Question becomes a Decision, "decided by" would be empty until someone
   fills it in, for the same person.
