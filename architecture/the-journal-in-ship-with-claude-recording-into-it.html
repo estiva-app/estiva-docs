@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Journal in Ship, with Claude recording into it: architecture</title>
+<style>
+:root {
+  --bg: #fbfaf7; --card: #ffffff; --ink: #1d1f23; --muted: #5b616d; --line: #d9d5cc;
+  --box: #f0ede6; --accent: #2f5bd3; --chip: #e4ebfb; --warn: #b0432b; --warn-bg: #fbe8e2; --ok: #2c7548; --ok-bg: #e3f2e8;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+    --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #16181c; --card: #1d2025; --ink: #e8e6e0; --muted: #a3a8b1; --line: #373b43;
+  --box: #252830; --accent: #93b2ff; --chip: #26324d; --warn: #f0896d; --warn-bg: #3b231d; --ok: #7cc898; --ok-bg: #1c3226;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+main { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; }
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 0 0 4px; }
+h2 { font-size: 1.15rem; margin: 36px 0 8px; padding-top: 12px; border-top: 1px solid var(--line); }
+h3 { font-size: 1rem; margin: 20px 0 6px; }
+p, li { margin: 6px 0; }
+a { color: var(--accent); }
+.sub { color: var(--muted); margin: 0 0 16px; }
+.state { display: inline-block; font-size: .85rem; padding: 1px 8px; border-radius: 10px; background: var(--chip); color: var(--accent); }
+.example { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 10px 14px; border-radius: 6px; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: .88rem; color: var(--muted); margin: 8px 0; }
+.legend span::before { content: ""; display: inline-block; width: 14px; height: 10px; margin-right: 6px; border-radius: 2px; vertical-align: middle; border: 1.5px solid var(--line); background: var(--box); }
+.legend .lnew::before { background: var(--ok-bg); border-color: var(--ok); }
+.legend .lgone::before { background: var(--warn-bg); border-color: var(--warn); }
+.legend .lq::before { background: transparent; border: 1.5px dashed var(--accent); }
+.legend .lf::before { opacity: .45; }
+figure { margin: 14px 0; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px; overflow-x: auto; }
+figcaption { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+/* Below 560px a diagram scrolls inside its figure instead of shrinking its text. */
+svg { width: 100%; min-width: 560px; height: auto; display: block; }
+svg text { font: 13px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; fill: var(--ink); }
+svg .m { fill: var(--muted); font-size: 12px; }
+svg .h { font-weight: 600; }
+svg .tag { fill: var(--accent); font-size: 12px; font-weight: 600; }
+svg .b { fill: var(--box); stroke: var(--line); }
+svg .w { fill: var(--card); stroke: var(--line); }
+svg .ok { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.5; }
+svg .bad { fill: var(--warn-bg); stroke: var(--warn); stroke-width: 1.5; }
+svg .q { fill: none; stroke: var(--accent); stroke-width: 1.5; stroke-dasharray: 5 4; }
+svg .f { opacity: .45; }
+svg .a { stroke: var(--ink); fill: none; stroke-width: 1.4; marker-end: url(#arr); }
+svg .an { stroke: var(--ok); fill: none; stroke-width: 2; marker-end: url(#arr-ok); }
+svg .aq { stroke: var(--accent); fill: none; stroke-width: 1.6; stroke-dasharray: 5 4; marker-end: url(#arr-q); }
+svg .life { stroke: var(--line); stroke-width: 1.4; stroke-dasharray: 3 4; }
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: .92rem; min-width: 560px; }
+th, td { border: 1px solid var(--line); padding: 7px 8px; vertical-align: top; text-align: left; }
+th { background: var(--box); }
+tr.new td { background: var(--ok-bg); }
+code { font-size: .88em; background: var(--box); padding: 1px 4px; border-radius: 3px; word-break: break-all; }
+</style>
+</head>
+<body>
+<!-- Arrowheads, shared by every diagram on the page. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ink)"/></marker>
+    <marker id="arr-ok" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--ok)"/></marker>
+    <marker id="arr-q" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/></marker>
+  </defs>
+</svg>
+<main>
+
+<h1>The Journal in Ship, with Claude recording into it</h1>
+<p class="sub"><span class="state">Shaped, 2026-11-28</span> · <a href="https://ship.estiva.app/#/project/636ba7cd-9100-42cd-94c6-793eda3eb2fc">Ship project</a> · Goal: you open a project in Ship and read on its Journal tab what was decided and what happened since you last looked, written there by Claude's sessions and by people. Earlier page: <a href="insights-journal-and-risks.html">Insights, Journal and Risks</a>.</p>
+
+<p>Today a Claude session writes what was decided and what happened as lines of text inside an issue's and a project's description. No app can list them, accept one or answer one. This project makes each a <b>Journal entry</b>: a highlight, a file of its own, whose word is Decision or Update. Highlight is one shared type, written here for the first time; the record that says so is written in this project's first issue. Claude writes entries with its own key, Ship lists a project's on a new <b>Journal</b> tab, and only the calls Claude made itself wait for a person. Marking a message or a block comes in a later project. Start with the Flow picture.</p>
+
+<div class="legend"><span>unchanged</span><span class="lnew">new or changed</span><span class="lq">waits on a decision</span><span class="lf">untouched, for orientation</span></div>
+
+<h2 id="map">Map</h2>
+<h3>Today</h3>
+<figure>
+<svg viewBox="0 0 720 270" role="img">
+<title>Today: a Claude session uses the Estiva agent to write Decided and Progress lines into an issue's and a project's description. Ship's project has Overview and Issues tabs and shows the lines as text. The relay accepts a file of a named type but nothing writes one.</title>
+<rect class="b" x="20" y="20" width="310" height="72" rx="8"/><text x="36" y="44" class="h">A Claude session</text><text x="36" y="63" class="m">the Estiva agent: writes Decided and Progress</text><text x="36" y="80" class="m">lines into descriptions · plugin: no skills, no hooks</text>
+<rect class="b" x="390" y="20" width="310" height="72" rx="8"/><text x="406" y="44" class="h">Ship</text><text x="406" y="63" class="m">a project: Overview · Issues</text><text x="406" y="80" class="m">the lines are text in the description</text>
+<rect class="b f" x="20" y="128" width="680" height="40" rx="8"/><text x="36" y="153" class="h f">Estiva ID</text><text x="120" y="153" class="m f">signs for Ship and for Claude's key · an agent's key signs only what an admin granted</text>
+<rect class="b" x="20" y="204" width="680" height="56" rx="8"/><text x="36" y="228" class="h">The relay</text><text x="118" y="228" class="m">projects, issues, documents, topics, each kept as its fields in order</text><text x="36" y="247" class="m">accepts a file of a named type since 2 Nov · no app or agent writes one</text>
+<path class="a" d="M175,92 L175,200"/><text x="183" y="116" class="m">edit the description</text>
+<path class="a" d="M545,200 L545,96"/><text x="553" y="116" class="m">read the project</text>
+</svg>
+<figcaption>A decision is a bullet under a heading. Reviewers and the sweep find it by reading the text line by line; Katerina's Claude and every other app cannot find it at all.</figcaption>
+</figure>
+
+<h3>After</h3>
+<figure>
+<svg viewBox="0 0 720 300" role="img">
+<title>After: a Claude session records a Journal entry through one new command of the Estiva agent, guided by a skill in the plugin. Estiva ID signs it with Claude's key, which an admin has granted. The relay keeps the entry as a file in the project's team. Ship lists a project's entries on a Journal tab, shows what is new, and lets a person accept or turn down what waits.</title>
+<rect class="ok" x="20" y="20" width="310" height="80" rx="8"/><text x="36" y="44" class="h">A Claude session</text><text x="270" y="44" class="tag">M1 M3</text><text x="36" y="63" class="m">the agent: one command records an entry</text><text x="36" y="80" class="m">the plugin: a skill says when to record;</text><text x="36" y="95" class="m">our process skills stop writing the lines</text>
+<rect class="ok" x="390" y="20" width="310" height="80" rx="8"/><text x="406" y="44" class="h">Ship</text><text x="656" y="44" class="tag">M2</text><text x="406" y="63" class="m">a project: Overview · Issues · Journal</text><text x="406" y="80" class="m">an issue lists its own entries · Accept / ✕</text><text x="406" y="95" class="m">write an update or a decision by hand</text>
+<rect class="ok" x="20" y="136" width="680" height="40" rx="8"/><text x="36" y="161" class="h">Estiva ID</text><text x="120" y="161" class="tag">M1</text><text x="150" y="161" class="m">Claude's key is granted the named file, by an admin with a passkey</text>
+<rect class="ok" x="20" y="212" width="680" height="76" rx="8"/><text x="36" y="236" class="h">The relay</text><text x="118" y="236" class="tag">M1</text><text x="36" y="255" class="m">keeps each Journal entry as a file in the project's team, with its status and who signed each change</text>
+<rect class="q" x="36" y="262" width="300" height="20" rx="4"/><text x="44" y="276" class="m">one type, highlight: Miky's merge of its record</text>
+<path class="an" d="M175,100 L175,208"/><text x="183" y="124" class="m">write the entry · read entries</text>
+<path class="an" d="M545,208 L545,104"/><text x="553" y="124" class="m">list, accept, write</text>
+</svg>
+<figcaption>Leaf does not change. Peek tells a named decider as it tells an assignee, and the click opens the entry in Ship (M2). Kickoff, the reviewers and the sweep read entries through the agent, where they read lines in descriptions today (M3). The relay needs no new rule: it already keeps named files. What is new there is the first type everyone shares, so its name and fields go into the public SPEC before anything is written.</figcaption>
+</figure>
+
+<h2 id="objects">Objects</h2>
+<h3>After: what a Journal entry is</h3>
+<figure>
+<svg viewBox="0 0 720 330" role="img">
+<title>A Journal entry is a file in one team. It has a title, a summary, details, a word (Decision or Update), a status, who decided it and who wrote it, a reason line, and its own conversation. It is about an issue or a project. It links the comment the decision was said in, when there is one; an entry from a session carries the person's words as its text. It has no pinned source in this project.</title>
+<rect class="b f" x="20" y="20" width="200" height="56" rx="8"/><text x="36" y="44" class="h f">A team</text><text x="36" y="62" class="m f">its people read the entry</text>
+<rect class="ok" x="260" y="20" width="440" height="190" rx="8"/><text x="276" y="44" class="h">A Journal entry</text><text x="400" y="44" class="m">a file of its own</text>
+<text x="276" y="68" class="m">title · summary · details</text>
+<rect class="q" x="270" y="75" width="420" height="19" rx="4"/><text x="276" y="88" class="m">a highlight · word: Decision or Update (later: Insight, Concern…)</text>
+<text x="276" y="108" class="m">status: Proposed → Accepted → Superseded (or Rejected)</text>
+<text x="276" y="128" class="m">decided by (a person) · written by (whoever signed it)</text>
+<text x="276" y="148" class="m">why: where it was said, in words a person can check</text>
+<text x="276" y="168" class="m">its own conversation, to question it</text>
+<text x="276" y="196" class="m">every change signed, kept in its history</text>
+<rect class="b" x="20" y="250" width="200" height="60" rx="8"/><text x="36" y="274" class="h">An issue or a project</text><text x="36" y="292" class="m">what the entry is about</text>
+<rect class="b" x="260" y="250" width="200" height="60" rx="8"/><text x="276" y="274" class="h">A comment</text><text x="276" y="292" class="m">linked, when it was said there</text>
+<rect class="b" x="500" y="250" width="200" height="60" rx="8"/><text x="516" y="274" class="h">The decider</text><text x="660" y="274" class="tag">M2</text><text x="516" y="292" class="m">a member, as an assignee</text>
+<path class="an" d="M260,48 L224,48"/>
+<path class="an" d="M300,210 L140,246"/><text x="150" y="226" class="m">about</text>
+<path class="an" d="M380,210 L370,246"/><text x="384" y="232" class="m">links</text>
+<path class="an" d="M560,210 L590,246"/><text x="586" y="226" class="m">decided by</text>
+</svg>
+<figcaption>The fields are the Accepted records of 13–19 November. Dashed: that a highlight is one type with its word as a field replaces the three types of 13 November, and waits on Miky's merge of its record. Also new in this project: an entry's text is its writer's own words, answered for as their own writing is (record of 27 November), and says where the decision was said, with a link when that was a comment. The link is not a source: this project writes no sources.</figcaption>
+</figure>
+
+<h2 id="flow">Flow: Miky answers a question in a session, and reads it in Ship</h2>
+<figure>
+<svg viewBox="0 0 720 360" role="img">
+<title>Miky answers a question in a Claude session. Claude records a Decision, decided by Miky and written by Claude, accepted because his answer is the approval. Later Claude takes an engineering call itself and records it as Proposed, and when the work is merged and checked it records an Update, which lands as posted. Miky opens the project in Ship: the Journal shows the three as new, and the one under To decide offers Accept and ✕.</title>
+<text x="30" y="24" class="h">Miky</text><text x="170" y="24" class="h">Claude's session</text><text x="370" y="24" class="h">The relay</text><text x="540" y="24" class="h">Miky in Ship</text>
+<path class="life" d="M50,34 L50,350"/><path class="life" d="M220,34 L220,350"/><path class="life" d="M400,34 L400,350"/><path class="life" d="M590,34 L590,350"/>
+<path class="a" d="M50,62 L216,62"/><text x="62" y="56" class="m">answers a question</text>
+<path class="an" d="M220,92 L396,92"/><text x="232" y="86" class="m">a Decision · decided by Miky</text>
+<text x="232" y="110" class="m">accepted: he approved it</text>
+<path class="an" d="M220,150 L396,150"/><text x="232" y="144" class="m">a call Claude made itself</text>
+<text x="232" y="168" class="m">Proposed, with why</text><text x="62" y="130" class="m">warned first if the team</text><text x="62" y="146" class="m">is wider than the source</text>
+<path class="an" d="M220,208 L396,208"/><text x="232" y="202" class="m">an Update: merged, checked</text>
+<text x="232" y="226" class="m">lands as posted</text>
+<text x="408" y="172" class="m">checks Claude may write</text><text x="408" y="188" class="m">in the project's team</text>
+<path class="an" d="M400,262 L586,262"/><text x="420" y="256" class="m">Journal tab: three new</text>
+<text x="424" y="288" class="m">To decide: Claude's own call,</text><text x="424" y="304" class="m">Accept / ✕</text>
+<path class="an" d="M590,330 L404,330"/><text x="430" y="324" class="m">Accept, signed by Miky</text>
+</svg>
+<figcaption>Nothing interrupts Miky: entries wait on the project. An entry that names Katerina as the decider makes her a member of it, as an assignee is of an issue, so she hears of it and can correct it.</figcaption>
+</figure>
+
+<h2 id="access">Access</h2>
+<div class="tw"><table>
+<tr><th>What</th><th>Who can see it</th><th>Who can change it</th><th>Where that is checked</th></tr>
+<tr class="new"><td>A Journal entry</td><td>The people of the team its project is in, fixed when it is made</td><td>Anyone who may write in that team, Claude's key included once granted</td><td>The relay, as for every file in a team; Estiva ID, for what Claude's key may sign</td></tr>
+<tr class="new"><td>Accepting or turning down an entry</td><td>Shown with who signed it</td><td>Our rule: a person; Claude only for an Update, or a decision the person gave in the session (Miky, 28 Nov, on the project)</td><td>The app and the agent (the protocol sets no rule)</td></tr>
+<tr class="new"><td>Deleting an entry</td><td>—</td><td>Open: a highlight can be deleted by anyone who reads it (record of 19 November); whether that holds for an accepted Decision is asked with the one-type record</td><td>Decided before the first entry is written</td></tr>
+<tr class="new"><td>The decider of a Decision</td><td>Becomes a member, as an assignee</td><td>Can correct it, as any member</td><td>As for an issue's members</td></tr>
+<tr><td>An issue's or project's description</td><td>Unchanged</td><td>Unchanged; sessions stop adding Decided and Progress lines</td><td>Unchanged</td></tr>
+</table></div>
+
+<h2 id="checked">Checked</h2>
+<ul>
+<li>Ship's project has Overview and Issues tabs, and no view of updates or decisions (estiva-ship <code>src/views/ProjectView.tsx</code>, origin/main, 28 Nov).</li>
+<li>The relay keeps a named file and refuses one with text or a base type's name; nothing in Ship, Leaf, Peek, the shared packages or the agent creates one outside tests (buzz <code>nfb-demo-kinds</code> <code>crates/buzz-core/src/kind.rs</code>; SPEC §6.1; code search, 28 Nov).</li>
+<li>Ship, Peek and Leaf may sign a named file; a new agent credential may sign nothing but its sign-in until an admin grants more (estiva-id <code>src/db/seed.ts</code>, <code>src/http/routes/admin.ts</code>).</li>
+<li>The agent's plugin holds its server only: no skills, no hooks; its create command cannot make a file of a named type (estiva-agent 0.40.0, <code>plugin/</code>, <code>lib/agent/apps/file.ts</code>).</li>
+<li>No highlight or Journal type is in SPEC, TYPES or KINDS (estiva-docs, origin/main, 28 Nov). That a highlight is one type with its word as a field is Miky's call of 28 Nov; its record is written in the project's first issue.</li>
+<li>Issues, documents and topics are kept in the new shape since 19 and 24 November (records every-file-type-is-kept-in-order…, architecture/issues-stop-downloading-every-edit.html).</li>
+<li>Not checked: what Claude's credential holds on production today, and the cost of reading a project's entries on Miky's workspace. Both are milestone 1's probe.</li>
+</ul>
+
+</main>
+</body>
+</html>
